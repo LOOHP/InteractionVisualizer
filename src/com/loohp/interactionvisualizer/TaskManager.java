@@ -21,6 +21,7 @@ import com.loohp.interactionvisualizer.Blocks.GrindstoneDisplay;
 import com.loohp.interactionvisualizer.Blocks.LoomDisplay;
 import com.loohp.interactionvisualizer.Blocks.SmokerDisplay;
 import com.loohp.interactionvisualizer.Blocks.StonecutterDisplay;
+import com.loohp.interactionvisualizer.Debug.Debug;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class TaskManager {
@@ -69,7 +70,8 @@ public class TaskManager {
 		}
 		tasks.clear();
 		
-		Bukkit.getPluginManager().registerEvents(new com.loohp.interactionvisualizer.Listeners.Events(), plugin);		
+		Bukkit.getPluginManager().registerEvents(new Debug(), plugin);
+		Bukkit.getPluginManager().registerEvents(new com.loohp.interactionvisualizer.Listeners.Events(), plugin);
 		Bukkit.getPluginManager().registerEvents(new PacketSending(), plugin);
 		
 		if (config.getBoolean("Blocks.CraftingTable.Enabled")) {

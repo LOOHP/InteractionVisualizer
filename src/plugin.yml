@@ -22,7 +22,7 @@ permissions:
     default: true
   interactionvisualizer.toggle.others:
     description: Allows you to toggle modules for others
-    default: true
+    default: op
   interactionvisualizer.update:
     description: Allows you receive update messages
     default: op

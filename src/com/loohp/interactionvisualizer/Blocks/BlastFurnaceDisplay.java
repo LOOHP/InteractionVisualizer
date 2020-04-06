@@ -58,7 +58,7 @@ public class BlastFurnaceDisplay implements Listener {
 			return;
 		}
 		
-		if (event.getRawSlot() <= 2) {
+		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 2) {
 			PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 		}
 	}
@@ -82,7 +82,7 @@ public class BlastFurnaceDisplay implements Listener {
 		}
 		
 		for (int slot : event.getRawSlots()) {
-			if (slot <= 2) {
+			if (slot >= 0 && slot <= 2) {
 				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				break;
 			}

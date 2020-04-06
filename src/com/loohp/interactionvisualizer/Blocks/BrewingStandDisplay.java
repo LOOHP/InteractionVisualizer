@@ -56,7 +56,7 @@ public class BrewingStandDisplay implements Listener {
 			return;
 		}
 		
-		if (event.getRawSlot() <= 4) {
+		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 4) {
 			PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 		}
 	}
@@ -80,7 +80,7 @@ public class BrewingStandDisplay implements Listener {
 		}
 		
 		for (int slot : event.getRawSlots()) {
-			if (slot <= 4) {
+			if (slot >= 0 && slot <= 4) {
 				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				break;
 			}

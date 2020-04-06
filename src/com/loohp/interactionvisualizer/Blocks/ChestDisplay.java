@@ -66,7 +66,7 @@ public class ChestDisplay implements Listener {
 		boolean isMove = false;
 		ItemStack itemstack = null;
 		
-		if (event.getRawSlot() <= 26) {
+		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 26) {
 			
 			itemstack = event.getCurrentItem();
 			if (itemstack != null) {
@@ -174,7 +174,7 @@ public class ChestDisplay implements Listener {
 		}
 		
 		for (int slot : event.getRawSlots()) {
-			if (slot <= 26) {
+			if (slot >= 0 && slot <= 26) {
 				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				
 				ItemStack itemstack = event.getOldCursor();

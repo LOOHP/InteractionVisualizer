@@ -2,9 +2,9 @@ package com.loohp.interactionvisualizer.Utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -25,7 +25,7 @@ public class PacketSending implements Listener {
 	
 	public static ProtocolManager protocolManager = InteractionVisualizer.protocolManager;
 	
-	public static HashMap<Entity, List<Player>> active = new HashMap<Entity, List<Player>>();
+	public static ConcurrentHashMap<Entity, List<Player>> active = new ConcurrentHashMap<Entity, List<Player>>();
 	
 	public static void sendHandMovement(List<Player> players, Player entity) {
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ANIMATION);

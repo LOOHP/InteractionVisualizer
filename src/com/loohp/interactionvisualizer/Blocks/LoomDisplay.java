@@ -53,7 +53,7 @@ public class LoomDisplay implements Listener {
 			return;
 		}
 		
-		if (event.getRawSlot() <= 3) {
+		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 3) {
 			PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 		}
 	}
@@ -77,7 +77,7 @@ public class LoomDisplay implements Listener {
 		}
 		
 		for (int slot : event.getRawSlots()) {
-			if (slot <= 3) {
+			if (slot >= 0 && slot <= 3) {
 				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				break;
 			}

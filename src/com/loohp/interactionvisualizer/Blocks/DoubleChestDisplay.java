@@ -86,7 +86,7 @@ public class DoubleChestDisplay implements Listener {
 		boolean isMove = false;
 		ItemStack itemstack = null;
 		
-		if (event.getRawSlot() <= 53) {
+		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 53) {
 			
 			itemstack = event.getCurrentItem();
 			if (itemstack != null) {
@@ -210,7 +210,7 @@ public class DoubleChestDisplay implements Listener {
 		}
 		
 		for (int slot : event.getRawSlots()) {
-			if (slot <= 53) {
+			if (slot >= 0 && slot <= 53) {
 				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				
 				ItemStack itemstack = event.getOldCursor();

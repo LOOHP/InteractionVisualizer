@@ -13,6 +13,8 @@ import org.bukkit.scoreboard.Scoreboard;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.loohp.interactionvisualizer.Database.Database;
+import com.loohp.interactionvisualizer.Metrics.Charts;
+import com.loohp.interactionvisualizer.Metrics.Metrics;
 import com.loohp.interactionvisualizer.Utils.Updater;
 
 import net.md_5.bungee.api.ChatColor;
@@ -45,6 +47,10 @@ public class InteractionVisualizer extends JavaPlugin {
 		scoreboard = getServer().getScoreboardManager().getMainScoreboard();
 		
 		protocolManager = ProtocolLibrary.getProtocolManager();
+		
+		int pluginId = 7024;
+
+		Metrics metrics = new Metrics(this, pluginId);
 		
 		plugin.getConfig().options().copyDefaults(true);
 		config = plugin.getConfig();
@@ -95,6 +101,8 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		TaskManager.setup();
 		TaskManager.load();
+		
+		Charts.registerCharts(metrics);
 		
 		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "InteractionVisualizer has been enabled!");
 	}

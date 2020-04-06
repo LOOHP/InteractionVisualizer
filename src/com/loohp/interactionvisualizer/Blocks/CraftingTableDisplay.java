@@ -88,7 +88,7 @@ public class CraftingTableDisplay implements Listener {
 			return;
 		}
 		
-		if (event.getRawSlot() <= 9) {
+		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 9) {
 			PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 		}
 	}
@@ -112,7 +112,7 @@ public class CraftingTableDisplay implements Listener {
 		}
 		
 		for (int slot : event.getRawSlots()) {
-			if (slot <= 9) {
+			if (slot >= 0 && slot <= 9) {
 				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				break;
 			}

@@ -38,20 +38,20 @@ public class Updater {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (player.hasPermission("interactionvisualizer.update")) {
 				player.sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] A new version is available on SpigotMC: " + version);
-				TextComponent url = new TextComponent(ChatColor.GOLD + "https://www.spigotmc.org/resources/75804");
+				TextComponent url = new TextComponent(ChatColor.GOLD + "https://www.spigotmc.org/resources/77050");
 				url.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.AQUA + "Click me!").create()));
-				url.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/resources/75870"));
+				url.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/resources/77050"));
 				player.spigot().sendMessage(url);
 			}
 		}
 		Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] A new version is available on SpigotMC: " + version);
-		Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "Download: https://www.spigotmc.org/resources/75870");
+		Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "Download: https://www.spigotmc.org/resources/77050");
 	}
 
     public static String checkUpdate() {
         try {
             String localPluginVersion = InteractionVisualizer.plugin.getDescription().getVersion();
-            String spigotPluginVersion = readStringFromURL("https://api.spigotmc.org/legacy/update.php?resource=75870");
+            String spigotPluginVersion = readStringFromURL("https://api.spigotmc.org/legacy/update.php?resource=77050");
             if (!spigotPluginVersion.isEmpty() && !spigotPluginVersion.equals(localPluginVersion)) {
                 return spigotPluginVersion;
             } else {

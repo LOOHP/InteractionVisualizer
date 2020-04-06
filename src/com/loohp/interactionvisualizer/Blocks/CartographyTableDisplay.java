@@ -46,7 +46,7 @@ public class CartographyTableDisplay implements Listener {
 			return;
 		}
 		
-		if (event.getRawSlot() <= 1) {
+		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 1) {
 			PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 		}
 	}
@@ -68,7 +68,7 @@ public class CartographyTableDisplay implements Listener {
 		}
 		
 		for (int slot : event.getRawSlots()) {
-			if (slot <= 1) {
+			if (slot >= 0 && slot <= 1) {
 				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				break;
 			}
