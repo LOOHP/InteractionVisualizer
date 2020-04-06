@@ -1,0 +1,62 @@
+Database:
+  #Player data storage type, MYSQL or SQLITE
+  Type: SQLITE
+  MYSQL:
+    Host: localhost
+    Port: 3306
+    Database: InteractionVisualizer
+    Username: mysql
+    Password: password
+
+Messages:
+  NoPermission: "&cYou do not have permission to use that command!"
+  Reload: "&aInteractionVisualizer sucessfully reloaded!"
+  Toggle:
+    Usage: "&cUsage: /interactionvisualizer toggle <itemstand/itemdrop/hologram>"
+    Modes: "&cToggle Modes: itemstand, itemdrop, hologram"
+    Console: "&cPlease provide a player name: /interactionvisualizer toggle <mode> [player]"
+    ToggleOn: "&aToggled %s on"
+    ToggleOff: "&eToggled %s off"
+    PlayerNotFound: "&cThe player is not online!"
+
+#Enable InteractionVisualizer for these blocks
+Blocks:
+  Anvil:
+    Enabled: true
+  BlastFurnace:
+    Enabled: true
+  BrewingStand:
+    Enabled: true
+  CartographyTable:
+    Enabled: true
+  Chest:
+    Enabled: true
+  CraftingTable:
+    Enabled: true
+  DoubleChest:
+    Enabled: true
+  EnchantmentTable:
+    Enabled: true
+  Furnace:
+    Enabled: true
+  Grindstone:
+    Enabled: true
+  Loom:
+    Enabled: true
+  Smoker:
+    Enabled: true
+  Stonecutter:
+    Enabled: true
+
+#Enable these modules for InteractionVisualizer displays
+#ItemStand represents all displays using armorstands and itemframes
+#ItemDrop represents all displays using dropped items
+#Hologram represents all holograpgic displays using armorstands
+Modules:
+  ItemStand:
+    Enabled: true
+  ItemDrop:
+    Enabled: true
+  Hologram:
+    Enabled: true
+  

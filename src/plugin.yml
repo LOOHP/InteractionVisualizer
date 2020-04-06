@@ -1,0 +1,28 @@
+name: InteractionVisualizer
+author: loohp
+version: 1.0.0
+main: com.loohp.interactionvisualizer.InteractionVisualizer
+api-version: 1.13
+description: Makes function blocks better
+depend: [ProtocolLib, LightAPI]
+prefix: InteractionVisualizer
+
+commands:
+  interactionvisualizer:
+    usage: /<command>
+    aliases: [iv]
+    description: Plugin main command
+
+permissions:
+  interactionvisualizer.reload:
+    description: Allows you to reload the plugin
+    default: op
+  interactionvisualizer.toggle:
+    description: Allows you to toggle modules
+    default: true
+  interactionvisualizer.toggle.others:
+    description: Allows you to toggle modules for others
+    default: true
+  interactionvisualizer.update:
+    description: Allows you receive update messages
+    default: op
