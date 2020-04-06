@@ -1,7 +1,7 @@
 package com.loohp.interactionvisualizer;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -28,11 +28,11 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	public static String version = "";
 	
-	public static List<Player> itemStand = new ArrayList<Player>();
-	public static List<Player> itemDrop = new ArrayList<Player>();
-	public static List<Player> holograms = new ArrayList<Player>();
+	public static List<Player> itemStand = new CopyOnWriteArrayList<Player>();
+	public static List<Player> itemDrop = new CopyOnWriteArrayList<Player>();
+	public static List<Player> holograms = new CopyOnWriteArrayList<Player>();
 	
-	public static List<Player> onlinePlayers = new ArrayList<Player>();
+	public static List<Player> onlinePlayers = new CopyOnWriteArrayList<Player>();
 	
 	public static boolean itemStandEnabled = true;
 	public static boolean itemDropEnabled = true;

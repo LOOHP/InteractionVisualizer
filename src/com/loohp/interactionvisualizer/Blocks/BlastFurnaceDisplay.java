@@ -329,6 +329,7 @@ public class BlastFurnaceDisplay implements Listener {
 		stand.setSmall(true);
 		stand.setInvulnerable(true);
 		stand.setVisible(false);
+		stand.setSilent(true);
 		stand.setCustomName("");
 		stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 	}

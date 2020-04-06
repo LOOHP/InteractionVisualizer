@@ -327,6 +327,7 @@ public class SmokerDisplay implements Listener {
 		stand.setMarker(true);
 		stand.setGravity(false);
 		stand.setSmall(true);
+		stand.setSilent(true);
 		stand.setInvulnerable(true);
 		stand.setVisible(false);
 		stand.setCustomName("");

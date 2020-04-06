@@ -226,6 +226,7 @@ public class LoomDisplay implements Listener {
 		stand.setBasePlate(false);
 		stand.setMarker(true);
 		stand.setGravity(false);
+		stand.setSilent(true);
 		stand.setInvulnerable(true);
 		stand.setVisible(false);
 		stand.setSmall(true);

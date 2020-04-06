@@ -380,6 +380,7 @@ public class CraftingTableDisplay implements Listener {
 		stand.setSmall(true);
 		stand.setInvulnerable(true);
 		stand.setVisible(false);
+		stand.setSilent(true);
 		stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 		stand.setCustomName("IV.CraftingTable.Item");
 		stand.setRotation(yaw, stand.getLocation().getPitch());
@@ -391,6 +392,7 @@ public class CraftingTableDisplay implements Listener {
 		stand.setMarker(true);
 		stand.setGravity(false);
 		stand.setSmall(true);
+		stand.setSilent(true);
 		stand.setInvulnerable(true);
 		stand.setVisible(false);
 	}

@@ -328,6 +328,7 @@ public class FurnaceDisplay implements Listener {
 		stand.setGravity(false);
 		stand.setSmall(true);
 		stand.setInvulnerable(true);
+		stand.setSilent(true);
 		stand.setVisible(false);
 		stand.setCustomName("");
 		stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));

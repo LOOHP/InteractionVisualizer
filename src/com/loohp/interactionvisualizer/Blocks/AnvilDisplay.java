@@ -337,6 +337,7 @@ public class AnvilDisplay implements Listener {
 		stand.setGravity(false);
 		stand.setInvulnerable(true);
 		stand.setVisible(false);
+		stand.setSilent(true);
 		stand.setSmall(true);
 		stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 		stand.setCustomName("IV.Anvil.Item");
@@ -348,6 +349,7 @@ public class AnvilDisplay implements Listener {
 		stand.setBasePlate(false);
 		stand.setMarker(true);
 		stand.setSmall(true);
+		stand.setSilent(true);
 		stand.setGravity(false);
 		stand.setInvulnerable(true);
 		stand.setVisible(false);

@@ -161,7 +161,7 @@ public class DoubleChestDisplay implements Listener {
 						list.remove(item);
 						item.remove();
 					}
-				}.runTaskLaterAsynchronously(InteractionVisualizer.plugin, 40);
+				}.runTaskLater(InteractionVisualizer.plugin, 40);
 			}						
 		}
 	}
@@ -242,7 +242,7 @@ public class DoubleChestDisplay implements Listener {
 							list.remove(item);
 							item.remove();
 						}
-					}.runTaskLaterAsynchronously(InteractionVisualizer.plugin, 40);
+					}.runTaskLater(InteractionVisualizer.plugin, 40);
 				}
 				break;
 			}

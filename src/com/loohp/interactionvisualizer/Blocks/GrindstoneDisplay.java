@@ -332,6 +332,7 @@ public class GrindstoneDisplay implements Listener {
 		stand.setMarker(true);
 		stand.setGravity(false);
 		stand.setInvulnerable(true);
+		stand.setSilent(true);
 		stand.setVisible(false);
 		stand.setSmall(true);
 		stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -345,6 +346,7 @@ public class GrindstoneDisplay implements Listener {
 		stand.setMarker(true);
 		stand.setSmall(true);
 		stand.setGravity(false);
+		stand.setSilent(true);
 		stand.setInvulnerable(true);
 		stand.setVisible(false);
 	}
