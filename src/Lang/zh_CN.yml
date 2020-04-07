@@ -65,6 +65,3 @@ Modules:
 #中国网络限制更新功能建议关闭
 Options:
   Updater: false
-
-  
-rueOptions:  Updater: false  
