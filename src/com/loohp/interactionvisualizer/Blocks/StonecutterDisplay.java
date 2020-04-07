@@ -1,6 +1,8 @@
 package com.loohp.interactionvisualizer.Blocks;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
@@ -107,6 +109,7 @@ public class StonecutterDisplay implements Listener {
 		if (map.get("Item") instanceof Item) {
 			Entity entity = (Entity) map.get("Item");
 			PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
+			entity.remove();
 		}
 		openedStonecutter.remove(block);
 	}
@@ -114,6 +117,32 @@ public class StonecutterDisplay implements Listener {
 	public static int run() {		
 		return new BukkitRunnable() {
 			public void run() {
+				
+				Iterator<Entry<Block, HashMap<String, Object>>> itr = openedStonecutter.entrySet().iterator();
+				while (itr.hasNext()) {
+					Entry<Block, HashMap<String, Object>> entry = itr.next();
+					Block block = entry.getKey();
+					HashMap<String, Object> map = entry.getValue();
+					if (block.getType().equals(Material.STONECUTTER)) {
+						Player player = (Player) map.get("Player");
+						if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
+							if (player.getOpenInventory() != null) {
+								if (player.getOpenInventory().getTopInventory() != null) {
+									if (player.getOpenInventory().getTopInventory() instanceof StonecutterInventory) {
+										continue;
+									}
+								}
+							}
+						}
+					}
+					
+					if (map.get("Item") instanceof Item) {
+						Entity entity = (Entity) map.get("Item");
+						PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
+						entity.remove();
+					}
+					itr.remove();
+				}
 				
 				for (Player player : InteractionVisualizer.getOnlinePlayers()) {
 					if (player.getGameMode().equals(GameMode.SPECTATOR)) {

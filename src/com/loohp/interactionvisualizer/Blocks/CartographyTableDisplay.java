@@ -1,6 +1,8 @@
 package com.loohp.interactionvisualizer.Blocks;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.GameMode;
@@ -113,6 +115,32 @@ public class CartographyTableDisplay implements Listener {
 	public static int run() {		
 		return new BukkitRunnable() {
 			public void run() {
+				
+				Iterator<Entry<Block, HashMap<String, Object>>> itr = openedCTable.entrySet().iterator();
+				while (itr.hasNext()) {
+					Entry<Block, HashMap<String, Object>> entry = itr.next();
+					Block block = entry.getKey();
+					HashMap<String, Object> map = entry.getValue();
+					if (block.getType().equals(Material.CARTOGRAPHY_TABLE)) {
+						Player player = (Player) map.get("Player");
+						if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
+							if (player.getOpenInventory() != null) {
+								if (player.getOpenInventory().getTopInventory() != null) {
+									if (player.getOpenInventory().getTopInventory() instanceof CartographyInventory) {
+										continue;
+									}
+								}
+							}
+						}
+					}
+					
+					if (map.get("Item") instanceof ItemFrame) {
+						Entity entity = (Entity) map.get("Item");
+						PacketSending.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), (ItemFrame) entity);
+						entity.remove();
+					}
+					itr.remove();
+				}
 				
 				for (Player player : InteractionVisualizer.getOnlinePlayers()) {
 					if (player.getGameMode().equals(GameMode.SPECTATOR)) {

@@ -31,6 +31,7 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Utils.EntityCreator;
+import com.loohp.interactionvisualizer.Utils.LegacyFacingUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class DoubleChestDisplay implements Listener {
@@ -66,8 +67,13 @@ public class DoubleChestDisplay implements Listener {
 		}
 		
 		DoubleChest doublechest = (DoubleChest) holder;
-		BlockData blockData = chest.getBlockData();
-		BlockFace facing = ((Directional) blockData).getFacing();
+		BlockFace facing = null;
+		if (!InteractionVisualizer.version.contains("legacy")) {
+			BlockData blockData = chest.getBlockData();
+			facing = ((Directional) blockData).getFacing();
+		} else {
+			facing = LegacyFacingUtils.getFacing(chest.getBlock());
+		}
 		if (facing.equals(BlockFace.EAST)) {
 			block = doublechest.getLeftSide().getInventory().getLocation().getBlock();
 			loc = block.getLocation().add(0.0, 0.0, 0.5);
@@ -193,8 +199,13 @@ public class DoubleChestDisplay implements Listener {
 			return;
 		}
 		DoubleChest doublechest = (DoubleChest) holder;
-		BlockData blockData = chest.getBlockData();
-		BlockFace facing = ((Directional) blockData).getFacing();
+		BlockFace facing = null;
+		if (!InteractionVisualizer.version.contains("legacy")) {
+			BlockData blockData = chest.getBlockData();
+			facing = ((Directional) blockData).getFacing();
+		} else {
+			facing = LegacyFacingUtils.getFacing(chest.getBlock());
+		}
 		if (facing.equals(BlockFace.EAST)) {
 			block = doublechest.getLeftSide().getInventory().getLocation().getBlock();
 			loc = block.getLocation().add(0.0, 0.0, 0.5);

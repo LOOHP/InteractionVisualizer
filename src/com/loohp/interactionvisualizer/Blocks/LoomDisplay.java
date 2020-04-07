@@ -1,6 +1,8 @@
 package com.loohp.interactionvisualizer.Blocks;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -118,6 +120,7 @@ public class LoomDisplay implements Listener {
 				LightAPI.updateChunk(info, LightType.BLOCK);
 			}
 			PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
+			entity.remove();
 		}
 		openedLooms.remove(block);
 	}
@@ -125,6 +128,36 @@ public class LoomDisplay implements Listener {
 	public static int run() {		
 		return new BukkitRunnable() {
 			public void run() {
+				
+				Iterator<Entry<Block, HashMap<String, Object>>> itr = openedLooms.entrySet().iterator();
+				while (itr.hasNext()) {
+					Entry<Block, HashMap<String, Object>> entry = itr.next();
+					Block block = entry.getKey();
+					HashMap<String, Object> map = entry.getValue();
+					if (block.getType().equals(Material.LOOM)) {
+						Player player = (Player) map.get("Player");
+						if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
+							if (player.getOpenInventory() != null) {
+								if (player.getOpenInventory().getTopInventory() != null) {
+									if (player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().equals(Material.LOOM)) {
+										continue;
+									}
+								}
+							}
+						}
+					}
+					
+					if (map.get("Banner") instanceof Entity) {
+						Entity entity = (Entity) map.get("Banner");
+						LightAPI.deleteLight(entity.getLocation(), LightType.BLOCK, false);
+						for (ChunkInfo info : LightAPI.collectChunks(entity.getLocation(), LightType.BLOCK, 15)) {
+							LightAPI.updateChunk(info, LightType.BLOCK);
+						}
+						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
+						entity.remove();
+					}
+					itr.remove();
+				}
 				
 				for (Player player : InteractionVisualizer.getOnlinePlayers()) {
 					if (player.getGameMode().equals(GameMode.SPECTATOR)) {

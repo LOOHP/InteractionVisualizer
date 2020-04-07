@@ -15,6 +15,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.Metrics.Charts;
 import com.loohp.interactionvisualizer.Metrics.Metrics;
+import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.Updater;
 
 import net.md_5.bungee.api.ChatColor;
@@ -48,28 +49,11 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		protocolManager = ProtocolLibrary.getProtocolManager();
 		
+		LangManager.generate();
+		
 		int pluginId = 7024;
 
 		Metrics metrics = new Metrics(this, pluginId);
-		
-		plugin.getConfig().options().copyDefaults(true);
-		config = plugin.getConfig();
-		plugin.saveConfig();
-		loadConfig();
-		
-		Database.setup();
-		
-		getCommand("interactionvisualizer").setExecutor(new Commands());
-		
-		if (scoreboard.getTeam("ChestIn") == null) {
-			scoreboard.registerNewTeam("ChestIn");			
-		}
-		scoreboard.getTeam("ChestIn").setColor(org.bukkit.ChatColor.GREEN);
-		
-		if (scoreboard.getTeam("ChestOut") == null) {
-			scoreboard.registerNewTeam("ChestOut");
-		}
-		scoreboard.getTeam("ChestOut").setColor(org.bukkit.ChatColor.RED);
 		
 		if (getServer().getClass().getPackage().getName().contains("1_15_R1") == true) {
 	    	version = "1.15";
@@ -98,6 +82,31 @@ public class InteractionVisualizer extends JavaPlugin {
 	    } else {
 	    	getServer().getConsoleSender().sendMessage(ChatColor.RED + "This version of minecraft is unsupported!");
 	    }
+		
+		plugin.getConfig().options().copyDefaults(true);
+		config = plugin.getConfig();
+		plugin.saveConfig();
+		loadConfig();
+		
+		Database.setup();
+		
+		MaterialUtils.setup();
+		
+		getCommand("interactionvisualizer").setExecutor(new Commands());
+		
+		if (scoreboard.getTeam("ChestIn") == null) {
+			scoreboard.registerNewTeam("ChestIn");			
+		}
+		if (!version.contains("legacy") || version.equals("legacy1.12")) {
+			scoreboard.getTeam("ChestIn").setColor(org.bukkit.ChatColor.GREEN);
+		}
+		
+		if (scoreboard.getTeam("ChestOut") == null) {
+			scoreboard.registerNewTeam("ChestOut");
+		}
+		if (!version.contains("legacy") || version.equals("legacy1.12")) {
+			scoreboard.getTeam("ChestOut").setColor(org.bukkit.ChatColor.RED);
+		}
 		
 		TaskManager.setup();
 		TaskManager.load();

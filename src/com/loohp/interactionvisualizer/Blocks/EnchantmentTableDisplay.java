@@ -42,8 +42,14 @@ public class EnchantmentTableDisplay implements Listener {
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.ENCHANTING_TABLE)) {
-			return;
+		if (!InteractionVisualizer.version.contains("legacy")) {
+			if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTING_TABLE")) {
+				return;
+			}
+		} else {
+			if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTMENT_TABLE")) {
+				return;
+			}
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 1) {
@@ -65,8 +71,14 @@ public class EnchantmentTableDisplay implements Listener {
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.ENCHANTING_TABLE)) {
-			return;
+		if (!InteractionVisualizer.version.contains("legacy")) {
+			if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTING_TABLE")) {
+				return;
+			}
+		} else {
+			if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTMENT_TABLE")) {
+				return;
+			}
 		}
 		
 		for (int slot : event.getRawSlots()) {
@@ -88,8 +100,14 @@ public class EnchantmentTableDisplay implements Listener {
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.ENCHANTING_TABLE)) {
-			return;
+		if (!InteractionVisualizer.version.contains("legacy")) {
+			if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTING_TABLE")) {
+				return;
+			}
+		} else {
+			if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTMENT_TABLE")) {
+				return;
+			}
 		}
 		
 		Block block = event.getView().getTopInventory().getLocation().getBlock();
@@ -130,8 +148,14 @@ public class EnchantmentTableDisplay implements Listener {
 					if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
 						continue;
 					}
-					if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().equals(Material.ENCHANTING_TABLE)) {
-						continue;
+					if (!InteractionVisualizer.version.contains("legacy")) {
+						if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTING_TABLE")) {
+							continue;
+						}
+					} else {
+						if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTMENT_TABLE")) {
+							continue;
+						}
 					}
 					
 					InventoryView view = player.getOpenInventory();

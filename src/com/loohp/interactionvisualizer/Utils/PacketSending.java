@@ -24,6 +24,7 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 public class PacketSending implements Listener {
 	
 	public static ProtocolManager protocolManager = InteractionVisualizer.protocolManager;
+	public static String version = InteractionVisualizer.version;
 	
 	public static ConcurrentHashMap<Entity, List<Player>> active = new ConcurrentHashMap<Entity, List<Player>>();
 	
@@ -48,7 +49,11 @@ public class PacketSending implements Listener {
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
 
 		packet.getIntegers().write(0, entity.getEntityId());
-		packet.getIntegers().write(1, 1);
+		if (!version.contains("legacy")) {
+			packet.getIntegers().write(1, 1);
+		} else {
+			packet.getIntegers().write(1, 30);
+		}
 		packet.getDoubles().write(0, entity.getLocation().getX());
 		packet.getDoubles().write(1, entity.getLocation().getY());
 		packet.getDoubles().write(2, entity.getLocation().getZ());

@@ -1,0 +1,70 @@
+#Spanish Language default config translated by Itaquito
+#https://www.spigotmc.org/members/itaquito.138085/
+#Rename this file to "config.yml" and replace the original "config.yml" to use!
+
+Database:
+#Player data storage type, MYSQL or SQLITE
+#Información de jugadores almacenada en MYSQL o SQLITE
+  Type: SQLITE
+  MYSQL:
+    Host: localhost
+    Port: 3306
+    Database: InteractionVisualizer
+    Username: mysql
+    Password: password
+
+Messages:
+  NoPermission: "&c¡No tienes permisos para usar este comando!"
+  Reload: "&a¡InteractionVisualizer se recargó exitosamente!"
+  Toggle:
+    Usage: "&cUso: /interactionvisualizer toggle <itemstand/itemdrop/hologram>"
+    Modes: "&cModos que se pueden alternar: itemstand, itemdrop, hologram"
+    Console: "&cPor favor propociona el nombre de un jugador: /interactionvisualizer toggle <modo> [jugador]"
+    ToggleOn: "&a%s se habilitó"
+    ToggleOff: "&e%s se deshabilitó"
+    PlayerNotFound: "&c¡El jugador no esta en línea!"
+
+#Enable InteractionVisualizer for these blocks
+#Habilita InteractionVisualizer para estos bloques
+Blocks:
+  Anvil:
+    Enabled: true
+  BlastFurnace:
+    Enabled: true
+  BrewingStand:
+    Enabled: true
+  CartographyTable:
+    Enabled: true
+  Chest:
+    Enabled: true
+  CraftingTable:
+    Enabled: true
+  DoubleChest:
+    Enabled: true
+  EnchantmentTable:
+    Enabled: true
+  Furnace:
+    Enabled: true
+  Grindstone:
+    Enabled: true
+  Loom:
+    Enabled: true
+  Smoker:
+    Enabled: true
+  Stonecutter:
+    Enabled: true
+
+#Enable these modules for InteractionVisualizer displays
+#ItemStand represents all displays using armorstands and itemframes
+#ItemDrop represents all displays using dropped items
+#Hologram represents all holograpgic displays using armorstands
+#Habilita estos módulos para los displays de InteractionVisualizer
+#ItemStand representa todos los displays que usan armorstands y itemframes
+#ItemDrop representa todos los displays usando items en el suelo
+#Hologram representa todolos los display holográficos usando armorstands
+Modules:
+  ItemStand:
+    Enabled: true
+  ItemDrop:
+    Enabled: true
+  Hologram:

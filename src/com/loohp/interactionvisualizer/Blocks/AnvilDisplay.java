@@ -1,8 +1,6 @@
 package com.loohp.interactionvisualizer.Blocks;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -25,45 +23,14 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.Utils.ArmorStandUtils;
 import com.loohp.interactionvisualizer.Utils.EntityCreator;
+import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class AnvilDisplay implements Listener {
 	
-	public static HashMap<Block, HashMap<String, Object>> openedAnvil = new HashMap<Block, HashMap<String, Object>>();
-	@SuppressWarnings("serial")
-	public static List<Material> tools = new ArrayList<Material>(){
-		{
-			add(Material.WOODEN_AXE);
-			add(Material.WOODEN_HOE);
-			add(Material.WOODEN_PICKAXE);
-			add(Material.WOODEN_SHOVEL);
-			add(Material.WOODEN_SWORD);
-			add(Material.STONE_AXE);
-			add(Material.STONE_HOE);
-			add(Material.STONE_PICKAXE);
-			add(Material.STONE_SHOVEL);
-			add(Material.STONE_SWORD);
-			add(Material.IRON_AXE);
-			add(Material.IRON_HOE);
-			add(Material.IRON_PICKAXE);
-			add(Material.IRON_SHOVEL);
-			add(Material.IRON_SWORD);
-			add(Material.GOLDEN_AXE);
-			add(Material.GOLDEN_HOE);
-			add(Material.GOLDEN_PICKAXE);
-			add(Material.GOLDEN_SHOVEL);
-			add(Material.GOLDEN_SWORD);
-			add(Material.DIAMOND_AXE);
-			add(Material.DIAMOND_HOE);
-			add(Material.DIAMOND_PICKAXE);
-			add(Material.DIAMOND_SHOVEL);
-			add(Material.DIAMOND_SWORD);
-			add(Material.BOW);
-			add(Material.FISHING_ROD);
-		}
-	};
-	
+	public static HashMap<Block, HashMap<String, Object>> openedAnvil = new HashMap<Block, HashMap<String, Object>>();	
 
 	@EventHandler
 	public void onUseAnvil(InventoryClickEvent event) {
@@ -79,7 +46,7 @@ public class AnvilDisplay implements Listener {
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.ANVIL)) {
+		if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().contains("ANVIL")) {
 			return;
 		}
 		
@@ -102,7 +69,7 @@ public class AnvilDisplay implements Listener {
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.ANVIL)) {
+		if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().contains("ANVIL")) {
 			return;
 		}
 		
@@ -125,7 +92,7 @@ public class AnvilDisplay implements Listener {
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.ANVIL)) {
+		if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().contains("ANVIL")) {
 			return;
 		}
 		
@@ -174,7 +141,7 @@ public class AnvilDisplay implements Listener {
 					if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
 						continue;
 					}
-					if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().equals(Material.ANVIL)) {
+					if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().contains("ANVIL")) {
 						continue;
 					}
 					
@@ -245,9 +212,9 @@ public class AnvilDisplay implements Listener {
 						if (item != null) {
 							if (item.getType().isBlock() && !standMode(stand).equals("Block")) {
 								toggleStandMode(stand, "Block");
-							} else if (tools.contains(item.getType()) && !standMode(stand).equals("Tool")) {
+							} else if (MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Tool")) {
 								toggleStandMode(stand, "Tool");
-							} else if (!item.getType().isBlock() && !tools.contains(item.getType()) && !standMode(stand).equals("Item")) {
+							} else if (!item.getType().isBlock() && !MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Item")) {
 								toggleStandMode(stand, "Item");
 							}
 							stand.getEquipment().setItemInMainHand(item);
@@ -274,7 +241,7 @@ public class AnvilDisplay implements Listener {
 		if (!stand.getCustomName().equals("IV.Anvil.Item")) {
 			if (stand.getCustomName().equals("IV.Anvil.Block")) {
 				stand.setCustomName("IV.Anvil.Item");
-				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
+				ArmorStandUtils.setRotation(stand, stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());				
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().multiply(-0.09), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().multiply(-0.12)));
@@ -292,7 +259,7 @@ public class AnvilDisplay implements Listener {
 			stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().multiply(0.12)));
 			stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().multiply(0.09), -90)));
 			stand.setRightArmPose(new EulerAngle(357.9, 0.0, 0.0));
-			stand.setRotation(stand.getLocation().getYaw() + 45, stand.getLocation().getPitch());		
+			ArmorStandUtils.setRotation(stand, stand.getLocation().getYaw() + 45, stand.getLocation().getPitch());		
 		}
 		if (mode.equals("Tool")) {
 			stand.setCustomName("IV.Anvil.Tool");
@@ -308,7 +275,7 @@ public class AnvilDisplay implements Listener {
 		Location loc = block.getLocation().clone().add(0.5, 0.600781, 0.5);
 		ArmorStand center = (ArmorStand) EntityCreator.create(loc, EntityType.ARMOR_STAND);
 		float yaw = getCardinalDirection(player);
-		center.setRotation(yaw, center.getLocation().getPitch());
+		ArmorStandUtils.setRotation(center, yaw, center.getLocation().getPitch());
 		setStand(center);
 		center.setCustomName("IV.Anvil.Center");
 		Vector vector = rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.19), -100).add(center.getLocation().clone().getDirection().normalize().multiply(-0.11));
@@ -341,7 +308,7 @@ public class AnvilDisplay implements Listener {
 		stand.setSmall(true);
 		stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 		stand.setCustomName("IV.Anvil.Item");
-		stand.setRotation(yaw, stand.getLocation().getPitch());
+		ArmorStandUtils.setRotation(stand, yaw, stand.getLocation().getPitch());
 	}
 	
 	public static void setStand(ArmorStand stand) {

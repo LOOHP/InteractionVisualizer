@@ -34,6 +34,7 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Utils.EntityCreator;
+import com.loohp.interactionvisualizer.Utils.LegacyFacingUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class FurnaceDisplay implements Listener {
@@ -54,7 +55,7 @@ public class FurnaceDisplay implements Listener {
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.FURNACE)) {
+		if (!isFurnace(event.getView().getTopInventory().getLocation().getBlock().getType())) {
 			return;
 		}
 		
@@ -77,7 +78,7 @@ public class FurnaceDisplay implements Listener {
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.FURNACE)) {
+		if (!isFurnace(event.getView().getTopInventory().getLocation().getBlock().getType())) {
 			return;
 		}
 		
@@ -96,7 +97,7 @@ public class FurnaceDisplay implements Listener {
 				while (itr.hasNext()) {
 					Entry<Block, HashMap<String, Object>> entry = itr.next();
 					Block block = entry.getKey();
-					if (!block.getType().equals(Material.FURNACE)) {
+					if (!isFurnace(block.getType())) {
 						HashMap<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
@@ -149,7 +150,7 @@ public class FurnaceDisplay implements Listener {
 				
 				
 				for (Entry<Block, HashMap<String, Object>> entry : furnaceMap.entrySet()) {
-					if (!entry.getKey().getType().equals(Material.FURNACE)) {
+					if (!isFurnace(entry.getKey().getType())) {
 						continue;
 					}
 					
@@ -207,7 +208,10 @@ public class FurnaceDisplay implements Listener {
 						ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
 						if (hasFuel(furnace)) {
 							int time = furnace.getCookTime();
-							int max = furnace.getCookTimeTotal();
+							int max = 10 * 20;
+							if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+								max = furnace.getCookTimeTotal();
+							}
 							String symbol = "";
 							double percentagescaled = (double) time / (double) max * 15.0;
 							double i = 1;
@@ -295,7 +299,7 @@ public class FurnaceDisplay implements Listener {
 			states.addAll(Arrays.asList(chunk.getTileEntities()));
 		}
 		for (BlockState state : states) {
-			if (state.getBlock().getType().equals(Material.FURNACE)) {
+			if (isFurnace(state.getBlock().getType())) {
 				blocks.add(state.getBlock());
 			}
 		}
@@ -305,9 +309,14 @@ public class FurnaceDisplay implements Listener {
 	public static HashMap<String, ArmorStand> spawnArmorStands(Block block) {
 		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location origin = block.getLocation();	
-		
-		BlockData blockData = block.getState().getBlockData();
-		BlockFace facing = ((Directional) blockData).getFacing();			
+	
+		BlockFace facing = null;
+		if (!InteractionVisualizer.version.contains("legacy")) {
+			BlockData blockData = block.getState().getBlockData();
+			facing = ((Directional) blockData).getFacing();	
+		} else {
+			facing = LegacyFacingUtils.getFacing(block);
+		}
 		Location target = block.getRelative(facing).getLocation();
 		Vector direction = target.toVector().subtract(origin.toVector()).multiply(0.7);
 		
@@ -332,6 +341,16 @@ public class FurnaceDisplay implements Listener {
 		stand.setVisible(false);
 		stand.setCustomName("");
 		stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+	}
+	
+	public static boolean isFurnace(Material material) {
+		if (material.toString().toUpperCase().equals("FURNACE")) {
+			return true;
+		}
+		if (material.toString().toUpperCase().equals("BURNING_FURNACE")) {
+			return true;
+		}
+		return false;
 	}
 
 }

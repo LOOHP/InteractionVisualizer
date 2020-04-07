@@ -1,8 +1,6 @@
 package com.loohp.interactionvisualizer.Blocks;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -26,44 +24,12 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Utils.EntityCreator;
+import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class GrindstoneDisplay implements Listener {
 	
-	public static HashMap<Block, HashMap<String, Object>> openedGrindstone = new HashMap<Block, HashMap<String, Object>>();
-	@SuppressWarnings("serial")
-	public static List<Material> tools = new ArrayList<Material>(){
-		{
-			add(Material.WOODEN_AXE);
-			add(Material.WOODEN_HOE);
-			add(Material.WOODEN_PICKAXE);
-			add(Material.WOODEN_SHOVEL);
-			add(Material.WOODEN_SWORD);
-			add(Material.STONE_AXE);
-			add(Material.STONE_HOE);
-			add(Material.STONE_PICKAXE);
-			add(Material.STONE_SHOVEL);
-			add(Material.STONE_SWORD);
-			add(Material.IRON_AXE);
-			add(Material.IRON_HOE);
-			add(Material.IRON_PICKAXE);
-			add(Material.IRON_SHOVEL);
-			add(Material.IRON_SWORD);
-			add(Material.GOLDEN_AXE);
-			add(Material.GOLDEN_HOE);
-			add(Material.GOLDEN_PICKAXE);
-			add(Material.GOLDEN_SHOVEL);
-			add(Material.GOLDEN_SWORD);
-			add(Material.DIAMOND_AXE);
-			add(Material.DIAMOND_HOE);
-			add(Material.DIAMOND_PICKAXE);
-			add(Material.DIAMOND_SHOVEL);
-			add(Material.DIAMOND_SWORD);
-			add(Material.BOW);
-			add(Material.FISHING_ROD);
-		}
-	};
-	
+	public static HashMap<Block, HashMap<String, Object>> openedGrindstone = new HashMap<Block, HashMap<String, Object>>();	
 
 	@EventHandler
 	public void onUseGrindstone(InventoryClickEvent event) {
@@ -241,9 +207,9 @@ public class GrindstoneDisplay implements Listener {
 						if (item != null) {
 							if (item.getType().isBlock() && !standMode(stand).equals("Block")) {
 								toggleStandMode(stand, "Block");
-							} else if (tools.contains(item.getType()) && !standMode(stand).equals("Tool")) {
+							} else if (MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Tool")) {
 								toggleStandMode(stand, "Tool");
-							} else if (!item.getType().isBlock() && !tools.contains(item.getType()) && !standMode(stand).equals("Item")) {
+							} else if (!item.getType().isBlock() && !MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Item")) {
 								toggleStandMode(stand, "Item");
 							}
 							stand.getEquipment().setItemInMainHand(item);
