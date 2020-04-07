@@ -44,6 +44,8 @@ public class MaterialUtils {
 			tools.add(Material.valueOf("DIAMOND_SWORD"));
 			tools.add(Material.valueOf("BOW"));
 			tools.add(Material.valueOf("FISHING_ROD"));
+			tools.add(Material.valueOf("STICK"));
+			tools.add(Material.valueOf("BLAZE_ROD"));
 		} else {
 			tools.add(Material.valueOf("WOOD_AXE"));
 			tools.add(Material.valueOf("WOOD_HOE"));
@@ -72,6 +74,8 @@ public class MaterialUtils {
 			tools.add(Material.valueOf("DIAMOND_SWORD"));
 			tools.add(Material.valueOf("BOW"));
 			tools.add(Material.valueOf("FISHING_ROD"));
+			tools.add(Material.valueOf("STICK"));
+			tools.add(Material.valueOf("BLAZE_ROD"));
 		}
 		
 		fluid.add(Material.valueOf("WATER"));
