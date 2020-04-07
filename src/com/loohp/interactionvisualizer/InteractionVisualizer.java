@@ -71,14 +71,19 @@ public class InteractionVisualizer extends JavaPlugin {
 	    	version = "legacy1.10";
 	    } else if (getServer().getClass().getPackage().getName().contains("1_9_R2") == true) {
 	    	version = "legacy1.9.4";
+	    	getServer().getConsoleSender().sendMessage(ChatColor.RED + "This version of minecraft is unsupported!");
 	    } else if (getServer().getClass().getPackage().getName().contains("1_9_R1") == true) {
 	    	version = "legacy1.9";
+	    	getServer().getConsoleSender().sendMessage(ChatColor.RED + "This version of minecraft is unsupported!");
 	    } else if (getServer().getClass().getPackage().getName().contains("1_8_R3") == true) {
 	    	version = "OLDlegacy1.8.4";
+	    	getServer().getConsoleSender().sendMessage(ChatColor.RED + "This version of minecraft is unsupported!");
 	    } else if (getServer().getClass().getPackage().getName().contains("1_8_R2") == true) {
 	    	version = "OLDlegacy1.8.3";
+	    	getServer().getConsoleSender().sendMessage(ChatColor.RED + "This version of minecraft is unsupported!");
 	    } else if (getServer().getClass().getPackage().getName().contains("1_8_R1") == true) {
 	    	version = "OLDlegacy1.8";
+	    	getServer().getConsoleSender().sendMessage(ChatColor.RED + "This version of minecraft is unsupported!");
 	    } else {
 	    	getServer().getConsoleSender().sendMessage(ChatColor.RED + "This version of minecraft is unsupported!");
 	    }
