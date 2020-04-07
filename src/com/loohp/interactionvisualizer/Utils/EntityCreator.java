@@ -11,8 +11,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
-import com.loohp.interactionvisualizer.InteractionVisualizer;
-
 public class EntityCreator {
 
     /**
@@ -23,7 +21,7 @@ public class EntityCreator {
      */
     public static Entity create(Location location, EntityType entityType) {
     	try {
-        	if (InteractionVisualizer.version.equals("1.15") || !entityType.equals(EntityType.DROPPED_ITEM)) {
+        	if (!entityType.equals(EntityType.DROPPED_ITEM)) {
 	            // We get the craftworld class with nms so it can be used in multiple versions
 	            Class<?> craftWorldClass = getNMSClass("org.bukkit.craftbukkit.", "CraftWorld");
 	
