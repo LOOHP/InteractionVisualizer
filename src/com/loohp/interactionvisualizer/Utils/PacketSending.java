@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -182,6 +183,9 @@ public class PacketSending implements Listener {
 		if (!active.containsKey(entity)) {
 			active.put(entity, players);
 		}
+		if (entity.getItemStack().getType().equals(Material.AIR)) {
+			return;
+		}
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
 
         //Location
@@ -251,6 +255,9 @@ public class PacketSending implements Listener {
 	}
 	
 	public static void updateItem(List<Player> players, Item entity) {
+		if (entity.getItemStack().getType().equals(Material.AIR)) {
+			return;
+		}
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
         //Entity ID
 		packet.getIntegers().write(0, entity.getEntityId());
@@ -302,6 +309,9 @@ public class PacketSending implements Listener {
 	}
 	
 	public static void removeItem(List<Player> players, Item entity, boolean removeFromActive) {
+		if (entity.getItemStack().getType().equals(Material.AIR)) {
+			return;
+		}
 		if (removeFromActive) {
 			if (active.containsKey(entity)) {
 				active.remove(entity);

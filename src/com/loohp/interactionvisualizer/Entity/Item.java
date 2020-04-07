@@ -91,6 +91,10 @@ public class Item {
 	}
 	
 	public void setItemStack(ItemStack item) {
+		if (item.getType().equals(Material.AIR)) {
+			this.item = new ItemStack(Material.STONE);
+			return;
+		}
 		this.item = item.clone();
 	}
 	public ItemStack getItemStack() {
