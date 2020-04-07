@@ -1,10 +1,14 @@
 package com.loohp.interactionvisualizer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,6 +23,9 @@ import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.Updater;
 
 import net.md_5.bungee.api.ChatColor;
+import ru.beykerykt.lightapi.LightAPI;
+import ru.beykerykt.lightapi.LightType;
+import ru.beykerykt.lightapi.chunks.ChunkInfo;
 
 public class InteractionVisualizer extends JavaPlugin {
 	
@@ -28,6 +35,8 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static FileConfiguration config;
 	
 	public static String version = "";
+	
+	public static List<Chunk> chunksGoneOver = new ArrayList<Chunk>();
 	
 	public static List<Player> itemStand = new CopyOnWriteArrayList<Player>();
 	public static List<Player> itemDrop = new CopyOnWriteArrayList<Player>();
@@ -117,6 +126,21 @@ public class InteractionVisualizer extends JavaPlugin {
 		TaskManager.load();
 		
 		Charts.registerCharts(metrics);
+		
+		for (World world : Bukkit.getWorlds()) {
+			for (Chunk chunk : world.getLoadedChunks()) {
+				for (Entity entity : chunk.getEntities()) {
+					if (entity.getScoreboardTags().contains("isInteractionVisualizer")) {
+						LightAPI.deleteLight(entity.getLocation(), LightType.BLOCK, false);
+						for (ChunkInfo info : LightAPI.collectChunks(entity.getLocation(), LightType.BLOCK, 15)) {
+							LightAPI.updateChunk(info, LightType.BLOCK);
+						}
+						entity.remove();
+					}
+				}
+				chunksGoneOver.add(chunk);
+			}
+		}
 		
 		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "InteractionVisualizer has been enabled!");
 	}

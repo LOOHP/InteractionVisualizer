@@ -36,6 +36,17 @@ public class LangManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        String ChineseSimplifiedLang = "zh_CN.yml";
+        file = new File(LangFolder, ChineseSimplifiedLang);
+        if (file.exists()) {
+        	file.delete();
+        }
+        try (InputStream in = InteractionVisualizer.class.getClassLoader().getResourceAsStream("Lang/" + ChineseSimplifiedLang)) {
+            Files.copy(in, file.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 
 }

@@ -12,14 +12,14 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 public class EntityCreator {
+	
+	public static Entity create(Location location, EntityType entityType) {
+		Entity entity = createRaw(location, entityType);
+		entity.addScoreboardTag("isInteractionVisualizer");
+		return entity;
+	}
 
-    /**
-     *
-     * @param entityType The type of entity that you want to create
-     * @param location The location where you want the entity.
-     * @return Entity
-     */
-    public static Entity create(Location location, EntityType entityType) {
+    public static Entity createRaw(Location location, EntityType entityType) {
     	try {
         	if (!entityType.equals(EntityType.DROPPED_ITEM)) {
 	            // We get the craftworld class with nms so it can be used in multiple versions
@@ -67,13 +67,6 @@ public class EntityCreator {
         return null;
     }
 
-    /**
-     *
-     * @param prefix What comes before the version number
-     * @param nmsClassString What comes after the version number
-     * @return Class The class that you tried to access
-     * @throws ClassNotFoundException throws an exception if the class it not found
-     */
     private static Class<?> getNMSClass(String prefix, String nmsClassString) throws ClassNotFoundException {
         // Getting the version by splitting the package
        String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
