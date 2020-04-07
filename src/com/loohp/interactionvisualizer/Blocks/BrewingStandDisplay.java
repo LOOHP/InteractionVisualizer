@@ -14,10 +14,8 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,7 +28,8 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Utils.EntityCreator;
+import com.loohp.interactionvisualizer.Entity.ArmorStand;
+import com.loohp.interactionvisualizer.Entity.Item;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class BrewingStandDisplay implements Listener {
@@ -165,7 +164,7 @@ public class BrewingStandDisplay implements Listener {
 					Item item = null;
 					if (entry.getValue().get("Item") instanceof String) {
 						if (itemstack != null) {
-							item = (Item) EntityCreator.create(block.getLocation().clone().add(0.5, 1.0, 0.5), EntityType.DROPPED_ITEM);
+							item = new Item(block.getLocation().clone().add(0.5, 1.0, 0.5));
 							item.setItemStack(itemstack);
 							item.setVelocity(new Vector(0, 0, 0));
 							item.setPickupDelay(32767);
@@ -292,7 +291,7 @@ public class BrewingStandDisplay implements Listener {
 	public static HashMap<String, ArmorStand> spawnArmorStands(Block block) { //.add(0.68, 0.700781, 0.35)
 		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location loc = block.getLocation().clone().add(0.5, 0.700781, 0.5);
-		ArmorStand slot1 = (ArmorStand) EntityCreator.create(loc.clone(), EntityType.ARMOR_STAND);
+		ArmorStand slot1 = new ArmorStand(loc.clone());
 		setStand(slot1);
 		
 		map.put("Stand", slot1);

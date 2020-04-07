@@ -7,7 +7,7 @@ import java.nio.file.Files;
 
 public class LangManager {
 	
-	public static File LangFolder = new File(InteractionVisualizer.plugin.getDataFolder().getPath(), "Lang");
+	public static File LangFolder = new File(InteractionVisualizer.plugin.getDataFolder(), "Lang");
 	
 	public static void generate() {
 		

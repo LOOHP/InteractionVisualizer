@@ -9,10 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,8 +24,9 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.Entity.ArmorStand;
+import com.loohp.interactionvisualizer.Entity.Item;
 import com.loohp.interactionvisualizer.Utils.ArmorStandUtils;
-import com.loohp.interactionvisualizer.Utils.EntityCreator;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
@@ -193,20 +191,19 @@ public class CraftingTableDisplay implements Listener {
 		}
 		
 		for (int i = 0; i <= 9; i++) {
-			if (map.get(String.valueOf(i)) instanceof Entity) {
-				Entity entity = (Entity) map.get(String.valueOf(i));
-				if (i == 5) {
-					LightAPI.deleteLight(entity.getLocation(), LightType.BLOCK, false);
-					for (ChunkInfo info : LightAPI.collectChunks(entity.getLocation(), LightType.BLOCK, 15)) {
-						LightAPI.updateChunk(info, LightType.BLOCK);
-					}
-				}
+			if (!(map.get(String.valueOf(i)) instanceof String)) {
+				Object entity = map.get(String.valueOf(i));
 				if (entity instanceof Item) {
 					PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
 				} else if (entity instanceof ArmorStand) {
 					PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
+					if (i == 5) {
+						LightAPI.deleteLight(((ArmorStand) entity).getLocation(), LightType.BLOCK, false);
+						for (ChunkInfo info : LightAPI.collectChunks(((ArmorStand) entity).getLocation(), LightType.BLOCK, 15)) {
+							LightAPI.updateChunk(info, LightType.BLOCK);
+						}
+					}
 				}
-				entity.remove();
 			}
 		}
 		openedBenches.remove(block);
@@ -344,7 +341,7 @@ public class CraftingTableDisplay implements Listener {
 						Item item = null;
 						if (map.get("0") instanceof String) {
 							if (itemstack != null) {
-								item = (Item) EntityCreator.create(loc.clone().add(0.5, 1.2, 0.5), EntityType.DROPPED_ITEM);
+								item = new Item(loc.clone().add(0.5, 1.2, 0.5));
 								item.setItemStack(itemstack);
 								item.setVelocity(new Vector(0, 0, 0));
 								item.setPickupDelay(32767);
@@ -385,10 +382,10 @@ public class CraftingTableDisplay implements Listener {
 							} else if (!item.getType().isBlock() && !MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Item")) {
 								toggleStandMode(stand, "Item");
 							}
-							stand.getEquipment().setItemInMainHand(item);
+							stand.setItemInMainHand(item);
 							PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 						} else {
-							stand.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
+							stand.setItemInMainHand(new ItemStack(Material.AIR));
 							PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 						}
 					}
@@ -451,29 +448,29 @@ public class CraftingTableDisplay implements Listener {
 	public static HashMap<String, ArmorStand> spawnArmorStands(Player player, Block block) { //.add(0.68, 0.600781, 0.35)
 		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location loc = block.getLocation().clone().add(0.5, 0.600781, 0.5);
-		ArmorStand center = (ArmorStand) EntityCreator.create(loc, EntityType.ARMOR_STAND);
+		ArmorStand center = new ArmorStand(loc);
 		float yaw = getCardinalDirection(player);
 		ArmorStandUtils.setRotation(center, yaw, center.getLocation().getPitch());
 		setStand(center);
 		center.setCustomName("IV.CraftingTable.Center");
 		Vector vector = rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.19), -100).add(center.getLocation().clone().getDirection().normalize().multiply(-0.11));
-		ArmorStand slot5 = (ArmorStand) EntityCreator.create(loc.clone().add(vector), EntityType.ARMOR_STAND);
+		ArmorStand slot5 = new ArmorStand(loc.clone().add(vector));
 		setStand(slot5, yaw);
-		ArmorStand slot2 = (ArmorStand) EntityCreator.create(slot5.getLocation().clone().add(center.getLocation().clone().getDirection().normalize().multiply(0.2)), EntityType.ARMOR_STAND);
+		ArmorStand slot2 = new ArmorStand(slot5.getLocation().clone().add(center.getLocation().clone().getDirection().normalize().multiply(0.2)));
 		setStand(slot2, yaw);
-		ArmorStand slot1 = (ArmorStand) EntityCreator.create(slot2.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), -90)), EntityType.ARMOR_STAND);
+		ArmorStand slot1 = new ArmorStand(slot2.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), -90)));
 		setStand(slot1, yaw);
-		ArmorStand slot3 = (ArmorStand) EntityCreator.create(slot2.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), 90)), EntityType.ARMOR_STAND);
+		ArmorStand slot3 = new ArmorStand(slot2.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), 90)));
 		setStand(slot3, yaw);
-		ArmorStand slot4 = (ArmorStand) EntityCreator.create(slot5.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), -90)), EntityType.ARMOR_STAND);
+		ArmorStand slot4 = new ArmorStand(slot5.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), -90)));
 		setStand(slot4, yaw);
-		ArmorStand slot6 = (ArmorStand) EntityCreator.create(slot5.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), 90)), EntityType.ARMOR_STAND);
+		ArmorStand slot6 = new ArmorStand(slot5.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), 90)));
 		setStand(slot6, yaw);
-		ArmorStand slot8 = (ArmorStand) EntityCreator.create(slot5.getLocation().clone().add(center.getLocation().getDirection().clone().normalize().multiply(-0.2)), EntityType.ARMOR_STAND);
+		ArmorStand slot8 = new ArmorStand(slot5.getLocation().clone().add(center.getLocation().getDirection().clone().normalize().multiply(-0.2)));
 		setStand(slot8, yaw);
-		ArmorStand slot7 = (ArmorStand) EntityCreator.create(slot8.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), -90)), EntityType.ARMOR_STAND);
+		ArmorStand slot7 = new ArmorStand(slot8.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), -90)));
 		setStand(slot7, yaw);
-		ArmorStand slot9 = (ArmorStand) EntityCreator.create(slot8.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), 90)), EntityType.ARMOR_STAND);
+		ArmorStand slot9 = new ArmorStand(slot8.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), 90)));
 		setStand(slot9, yaw);
 		
 		map.put("1", slot1);

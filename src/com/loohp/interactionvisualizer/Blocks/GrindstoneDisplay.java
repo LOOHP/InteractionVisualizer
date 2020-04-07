@@ -6,10 +6,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,7 +20,8 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Utils.EntityCreator;
+import com.loohp.interactionvisualizer.Entity.ArmorStand;
+import com.loohp.interactionvisualizer.Entity.Item;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
@@ -107,14 +105,13 @@ public class GrindstoneDisplay implements Listener {
 		}
 		
 		for (int i = 0; i <= 2; i++) {
-			if (map.get(String.valueOf(i)) instanceof Entity) {
-				Entity entity = (Entity) map.get(String.valueOf(i));
+			if (!(map.get(String.valueOf(i)) instanceof String)) {
+				Object entity = map.get(String.valueOf(i));
 				if (entity instanceof Item) {
 					PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
 				} else if (entity instanceof ArmorStand) {
 					PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
 				}
-				entity.remove();
 			}
 		}
 		openedGrindstone.remove(block);
@@ -171,7 +168,7 @@ public class GrindstoneDisplay implements Listener {
 						Item item = null;
 						if (map.get("2") instanceof String) {
 							if (itemstack != null) {
-								item = (Item) EntityCreator.create(loc.clone().add(0.5, 1.2, 0.5), EntityType.DROPPED_ITEM);
+								item = new Item(loc.clone().add(0.5, 1.2, 0.5));
 								item.setItemStack(itemstack);
 								item.setVelocity(new Vector(0, 0, 0));
 								item.setPickupDelay(32767);
@@ -212,10 +209,10 @@ public class GrindstoneDisplay implements Listener {
 							} else if (!item.getType().isBlock() && !MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Item")) {
 								toggleStandMode(stand, "Item");
 							}
-							stand.getEquipment().setItemInMainHand(item);
+							stand.setItemInMainHand(item);
 							PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 						} else {
-							stand.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
+							stand.setItemInMainHand(new ItemStack(Material.AIR));
 							PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 						}
 					}
@@ -268,17 +265,17 @@ public class GrindstoneDisplay implements Listener {
 	public static HashMap<String, ArmorStand> spawnArmorStands(Player player, Block block) { //.add(0.68, 0.600781, 0.35)
 		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location loc = block.getLocation().clone().add(0.5, 0.600781, 0.5);
-		ArmorStand center = (ArmorStand) EntityCreator.create(loc, EntityType.ARMOR_STAND);
+		ArmorStand center = new ArmorStand(loc);
 		float yaw = getCardinalDirection(player);
 		center.setRotation(yaw, center.getLocation().getPitch());
 		setStand(center);
 		center.setCustomName("IV.Grindstone.Center");
 		Vector vector = rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.19), -100).add(center.getLocation().clone().getDirection().normalize().multiply(-0.11));
-		ArmorStand middle = (ArmorStand) EntityCreator.create(loc.clone().add(vector), EntityType.ARMOR_STAND);
+		ArmorStand middle = new ArmorStand(loc.clone().add(vector));
 		setStand(middle, yaw);
-		ArmorStand slot0 = (ArmorStand) EntityCreator.create(middle.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), -90)), EntityType.ARMOR_STAND);
+		ArmorStand slot0 = new ArmorStand(middle.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), -90)));
 		setStand(slot0, yaw + 20);
-		ArmorStand slot1 = (ArmorStand) EntityCreator.create(middle.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), 90)), EntityType.ARMOR_STAND);
+		ArmorStand slot1 = new ArmorStand(middle.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), 90)));
 		setStand(slot1, yaw - 20);
 		
 		map.put("0", slot0);

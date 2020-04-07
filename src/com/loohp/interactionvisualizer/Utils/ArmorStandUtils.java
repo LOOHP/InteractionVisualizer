@@ -1,7 +1,8 @@
 package com.loohp.interactionvisualizer.Utils;
 
 import org.bukkit.Location;
-import org.bukkit.entity.ArmorStand;
+
+import com.loohp.interactionvisualizer.Entity.ArmorStand;
 
 public class ArmorStandUtils {
 	

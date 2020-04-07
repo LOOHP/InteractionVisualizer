@@ -11,8 +11,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,7 +25,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Utils.EntityCreator;
+import com.loohp.interactionvisualizer.Entity.Item;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class ChestDisplay implements Listener {
@@ -86,6 +84,12 @@ public class ChestDisplay implements Listener {
 						isMove = true;
 					}
 				}
+			} else {
+				if (event.getCursor() != null) {
+					if (event.getCursor().getType().equals(itemstack.getType())) {
+						isIn = true;
+					}
+				}
 			}
 			if (itemstack == null) {
 				if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) || event.getAction().equals(InventoryAction.HOTBAR_SWAP)) {
@@ -117,7 +121,15 @@ public class ChestDisplay implements Listener {
 		if (isMove == true) {
 			PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 			if (itemstack != null) {
-				Item item = (Item) EntityCreator.create(loc.clone().add(0.5, 1, 0.5), EntityType.DROPPED_ITEM);
+				Item item = new Item(loc.clone().add(0.5, 1, 0.5));
+				Vector offset = new Vector(0.0, 0.15, 0.0);
+				Vector vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().toVector()).multiply(-0.15).add(offset);
+				item.setVelocity(vector);
+				if (isIn) {
+					item.teleport(event.getWhoClicked().getEyeLocation());
+					vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().toVector()).multiply(0.15).add(offset);
+					item.setVelocity(vector);
+				}
 				PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
 				item.setItemStack(itemstack);
 				if (isIn == true) {
@@ -125,9 +137,8 @@ public class ChestDisplay implements Listener {
 				} else {
 					scoreboard.getTeam("ChestOut").addEntry(item.getUniqueId().toString());
 				}
-				item.setVelocity(new Vector(0, 0, 0));
 				item.setPickupDelay(32767);
-				item.setGravity(false);
+				item.setGravity(true);
 				item.setGlowing(true);
 				PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 				if (!link.containsKey(block)) {
@@ -135,6 +146,19 @@ public class ChestDisplay implements Listener {
 				}
 				List<Item> list = link.get(block);
 				list.add(item);
+				boolean finalIsIn = isIn;
+				new BukkitRunnable() {
+					public void run() {
+						if (finalIsIn) {
+							item.teleport(loc.clone().add(0.5, 1, 0.5));
+						} else {
+							item.teleport(event.getWhoClicked().getEyeLocation());
+						}
+						item.setVelocity(new Vector(0.0, 0.0, 0.0));
+						item.setGravity(false);
+						PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+					}
+				}.runTaskLater(InteractionVisualizer.plugin, 8);
 				new BukkitRunnable() {
 					public void run() {
 						PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
@@ -185,14 +209,16 @@ public class ChestDisplay implements Listener {
 				}
 				
 				if (itemstack != null) {
-					Item item = (Item) EntityCreator.create(loc.clone().add(0.5, 1, 0.5), EntityType.DROPPED_ITEM);
+					Item item = new Item(event.getWhoClicked().getEyeLocation());
+					Vector offset = new Vector(0.0, 0.15, 0.0);
+					Vector vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().toVector()).multiply(0.15).add(offset);
+					item.setVelocity(vector);
 					PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
 					item.setItemStack(itemstack);
 					scoreboard.getTeam("ChestIn").addEntry(item.getUniqueId().toString());
 					item.setCustomName(System.currentTimeMillis() + "");
-					item.setVelocity(new Vector(0, 0, 0));
 					item.setPickupDelay(32767);
-					item.setGravity(false);
+					item.setGravity(true);
 					item.setGlowing(true);
 					PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 					if (!link.containsKey(block)) {
@@ -200,6 +226,14 @@ public class ChestDisplay implements Listener {
 					}
 					List<Item> list = link.get(block);
 					list.add(item);
+					new BukkitRunnable() {
+						public void run() {
+							item.teleport(loc.clone().add(0.5, 1, 0.5));
+							item.setVelocity(new Vector(0.0, 0.0, 0.0));
+							item.setGravity(false);
+							PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+						}
+					}.runTaskLater(InteractionVisualizer.plugin, 8);
 					new BukkitRunnable() {
 						public void run() {
 							PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);

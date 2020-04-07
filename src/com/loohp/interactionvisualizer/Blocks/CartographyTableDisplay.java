@@ -10,8 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,7 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Utils.EntityCreator;
+import com.loohp.interactionvisualizer.Entity.ItemFrame;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class CartographyTableDisplay implements Listener {
@@ -105,8 +103,8 @@ public class CartographyTableDisplay implements Listener {
 		}
 		
 		if (map.get("Item") instanceof ItemFrame) {
-			Entity entity = (Entity) map.get("Item");
-			PacketSending.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), (ItemFrame) entity);
+			ItemFrame entity = (ItemFrame) map.get("Item");
+			PacketSending.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), entity);
 			entity.remove();
 		}
 		openedCTable.remove(block);
@@ -196,29 +194,30 @@ public class CartographyTableDisplay implements Listener {
 					}
 						
 					ItemFrame item = null;
-					if (map.get("Item") instanceof String) {
-						if (itemstack != null) {
-							item = (ItemFrame) EntityCreator.create(block.getRelative(BlockFace.UP).getLocation(), EntityType.ITEM_FRAME);
-							item.setItem(itemstack, false);
-							item.setFacingDirection(BlockFace.UP);
-							map.put("Item", item);
-							PacketSending.sendItemFrameSpawn(InteractionVisualizer.itemStand, item);
-							PacketSending.updateItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
-						} else {
-							map.put("Item", "N/A");
-						}
-					} else {
-						item = (ItemFrame) map.get("Item");
-						if (itemstack != null) {
-							if (!item.getItem().equals(itemstack)) {
-								item.setItem(itemstack, false);
+					if (!block.getRelative(BlockFace.UP).getType().isSolid()) {
+						if (map.get("Item") instanceof String) {
+							if (itemstack != null) {
+								item = new ItemFrame(block.getRelative(BlockFace.UP).getLocation());
+								item.setItem(itemstack);
+								item.setFacingDirection(BlockFace.UP);
+								map.put("Item", item);
+								PacketSending.sendItemFrameSpawn(InteractionVisualizer.itemStand, item);
 								PacketSending.updateItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
+							} else {
+								map.put("Item", "N/A");
 							}
-							item.setGravity(false);
 						} else {
-							map.put("Item", "N/A");
-							PacketSending.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
-							item.remove();
+							item = (ItemFrame) map.get("Item");
+							if (itemstack != null) {
+								if (!item.getItem().equals(itemstack)) {
+									item.setItem(itemstack);
+									PacketSending.updateItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
+								}
+							} else {
+								map.put("Item", "N/A");
+								PacketSending.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
+								item.remove();
+							}
 						}
 					}
 				}

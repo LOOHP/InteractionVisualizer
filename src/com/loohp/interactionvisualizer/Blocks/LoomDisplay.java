@@ -9,9 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,7 +23,7 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Utils.EntityCreator;
+import com.loohp.interactionvisualizer.Entity.ArmorStand;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 import ru.beykerykt.lightapi.LightAPI;
@@ -217,9 +215,9 @@ public class LoomDisplay implements Listener {
 					
 					ArmorStand stand = (ArmorStand) map.get("Banner");
 					if (item != null) {
-						stand.getEquipment().setHelmet(item);
+						stand.setHelmet(item);
 					} else {
-						stand.getEquipment().setHelmet(new ItemStack(Material.AIR));
+						stand.setHelmet(new ItemStack(Material.AIR));
 					}
 					PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 					
@@ -244,7 +242,7 @@ public class LoomDisplay implements Listener {
 		Location loc = block.getLocation().clone().add(0.5, 0.0, 0.5);
 		Location temploc = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ()).setDirection(player.getLocation().getDirection().normalize().multiply(-1));
 		float yaw = temploc.getYaw();
-		ArmorStand banner = (ArmorStand) EntityCreator.create(loc.clone(), EntityType.ARMOR_STAND);
+		ArmorStand banner = new ArmorStand(loc.clone());
 		setStand(banner, yaw);
 		
 		map.put("Banner", banner);

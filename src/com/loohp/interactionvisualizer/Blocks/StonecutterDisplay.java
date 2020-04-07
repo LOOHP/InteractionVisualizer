@@ -11,9 +11,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,7 +24,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Utils.EntityCreator;
+import com.loohp.interactionvisualizer.Entity.Item;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class StonecutterDisplay implements Listener {
@@ -107,8 +104,8 @@ public class StonecutterDisplay implements Listener {
 		}
 		
 		if (map.get("Item") instanceof Item) {
-			Entity entity = (Entity) map.get("Item");
-			PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
+			Item entity = (Item) map.get("Item");
+			PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), entity);
 			entity.remove();
 		}
 		openedStonecutter.remove(block);
@@ -137,7 +134,7 @@ public class StonecutterDisplay implements Listener {
 					}
 					
 					if (map.get("Item") instanceof Item) {
-						Entity entity = (Entity) map.get("Item");
+						Item entity = (Item) map.get("Item");
 						PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
 						entity.remove();
 					}
@@ -215,7 +212,7 @@ public class StonecutterDisplay implements Listener {
 					Item item = null;
 					if (map.get("Item") instanceof String) {
 						if (itemstack != null) {
-							item = (Item) EntityCreator.create(loc.clone().add(0.5, 0.75, 0.5), EntityType.DROPPED_ITEM);
+							item = new Item(loc.clone().add(0.5, 0.75, 0.5));
 							item.setItemStack(itemstack);
 							item.setVelocity(new Vector(0, 0, 0));
 							item.setPickupDelay(32767);

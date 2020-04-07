@@ -7,10 +7,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -20,13 +16,16 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.Entity.ArmorStand;
+import com.loohp.interactionvisualizer.Entity.Item;
+import com.loohp.interactionvisualizer.Entity.ItemFrame;
 
 public class PacketSending implements Listener {
 	
 	public static ProtocolManager protocolManager = InteractionVisualizer.protocolManager;
 	public static String version = InteractionVisualizer.version;
 	
-	public static ConcurrentHashMap<Entity, List<Player>> active = new ConcurrentHashMap<Entity, List<Player>>();
+	public static ConcurrentHashMap<Object, List<Player>> active = new ConcurrentHashMap<Object, List<Player>>();
 	
 	public static void sendHandMovement(List<Player> players, Player entity) {
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ANIMATION);
@@ -75,11 +74,11 @@ public class PacketSending implements Listener {
     		//Entity ID
     		.write(0, entity.getEntityId())
     		//Velocity x
-    		.write(1, entity.getVelocity().getBlockX())
+    		.write(1, 0)
     		//Velocity y
-    		.write(2, entity.getVelocity().getBlockY())
+    		.write(2, 0)
     		//Velocity z
-    		.write(3, entity.getVelocity().getBlockZ());
+    		.write(3, 0);
         try {
         	for (Player player : players) {
 				protocolManager.sendServerPacket(player, packet);
@@ -87,12 +86,12 @@ public class PacketSending implements Listener {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-        
+
         packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
         //Entity ID
 		packet.getIntegers().write(0, entity.getEntityId());
 
-        WrappedDataWatcher wpw = WrappedDataWatcher.getEntityWatcher(entity);
+        WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
         packet.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
         try {
         	for (Player player : players) {
@@ -108,7 +107,7 @@ public class PacketSending implements Listener {
         //Entity ID
 		packet.getIntegers().write(0, entity.getEntityId());
 
-        WrappedDataWatcher wpw = WrappedDataWatcher.getEntityWatcher(entity);
+        WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
         packet.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
         try {
         	for (Player player : players) {
@@ -121,7 +120,7 @@ public class PacketSending implements Listener {
         packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
 		packet.getIntegers().write(0, entity.getEntityId());
 		packet.getItemSlots().write(0, ItemSlot.MAINHAND);
-		packet.getItemModifier().write(0, entity.getEquipment().getItemInMainHand());
+		packet.getItemModifier().write(0, entity.getItemInMainHand());
         try {
         	for (Player player : players) {
 				protocolManager.sendServerPacket(player, packet);
@@ -133,7 +132,7 @@ public class PacketSending implements Listener {
         packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
 		packet.getIntegers().write(0, entity.getEntityId());
 		packet.getItemSlots().write(0, ItemSlot.HEAD);
-		packet.getItemModifier().write(0, entity.getEquipment().getHelmet());
+		packet.getItemModifier().write(0, entity.getHelmet());
         try {
         	for (Player player : players) {
 				protocolManager.sendServerPacket(player, packet);
@@ -194,11 +193,11 @@ public class PacketSending implements Listener {
             //Entity ID
             .write(0, entity.getEntityId())
             //Velocity x
-            .write(1, entity.getVelocity().getBlockX())
-            //Velocity y
-            .write(2, entity.getVelocity().getBlockY())
-            //Velocity z
-            .write(3, entity.getVelocity().getBlockZ())
+            .write(1, (int) (entity.getVelocity().getX() * 8000))
+	        //Velocity y
+	        .write(2, (int) (entity.getVelocity().getY() * 8000))
+	        //Velocity z
+	        .write(3, (int) (entity.getVelocity().getZ() * 8000))
             //Pitch
             .write(4, (int) (entity.getLocation().getPitch() * 256.0F / 360.0F))
             //Yaw
@@ -237,11 +236,11 @@ public class PacketSending implements Listener {
             //Entity ID
             .write(0, entity.getEntityId())
             //Velocity x
-            .write(1, entity.getVelocity().getBlockX())
-            //Velocity y
-            .write(2, entity.getVelocity().getBlockY())
-            //Velocity z
-            .write(3, entity.getVelocity().getBlockZ());
+            .write(1, (int) (entity.getVelocity().getX() * 8000))
+	        //Velocity y
+	        .write(2, (int) (entity.getVelocity().getY() * 8000))
+	        //Velocity z
+	        .write(3, (int) (entity.getVelocity().getZ() * 8000));
         try {
         	for (Player player : players) {
 				protocolManager.sendServerPacket(player, packet);
@@ -258,9 +257,24 @@ public class PacketSending implements Listener {
 
         //List<DataWatcher$Item> Type are more complex
         //Create a DataWatcher
-        WrappedDataWatcher wpw = WrappedDataWatcher.getEntityWatcher(entity);
+        WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
         packet.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
         try {
+        	for (Player player : players) {
+				protocolManager.sendServerPacket(player, packet);
+			}
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+        
+        packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
+        packet.getIntegers().write(0, entity.getEntityId());
+        packet.getDoubles().write(0, entity.getLocation().getX());
+		packet.getDoubles().write(1, entity.getLocation().getY());
+		packet.getDoubles().write(2, entity.getLocation().getZ());
+		packet.getBytes().write(0, (byte)(int) (entity.getLocation().getYaw() * 256.0F / 360.0F));
+		packet.getBytes().write(1, (byte)(int) (entity.getLocation().getPitch() * 256.0F / 360.0F));
+		try {
         	for (Player player : players) {
 				protocolManager.sendServerPacket(player, packet);
 			}
@@ -273,11 +287,11 @@ public class PacketSending implements Listener {
         	//Entity ID
         	.write(0, entity.getEntityId())
         	//Velocity x
-	        .write(1, entity.getVelocity().getBlockX())
+	        .write(1, (int) (entity.getVelocity().getX() * 8000))
 	        //Velocity y
-	        .write(2, entity.getVelocity().getBlockY())
+	        .write(2, (int) (entity.getVelocity().getY() * 8000))
 	        //Velocity z
-	        .write(3, entity.getVelocity().getBlockZ());
+	        .write(3, (int) (entity.getVelocity().getZ() * 8000));
         try {
         	for (Player player : players) {
 				protocolManager.sendServerPacket(player, packet);
@@ -323,25 +337,25 @@ public class PacketSending implements Listener {
             //Entity ID
             .write(0, entity.getEntityId())
             //Velocity x
-            .write(1, entity.getVelocity().getBlockX())
+            .write(1, 0)
             //Velocity y
-            .write(2, entity.getVelocity().getBlockY())
+            .write(2, 0)
             //Velocity z
-            .write(3, entity.getVelocity().getBlockZ())
+            .write(3, 0)
             //Pitch
-            .write(4, (int) (entity.getLocation().getPitch() * 256.0F / 360.0F))
+            .write(4, (int) (entity.getRealLocation().getPitch() * 256.0F / 360.0F))
             //Yaw
-            .write(5, (int) (entity.getLocation().getYaw() * 256.0F / 360.0F));
+            .write(5, (int) (entity.getRealLocation().getYaw() * 256.0F / 360.0F));
 
         if (InteractionVisualizer.version.equals("1.13") || InteractionVisualizer.version.equals("1.13.1") || InteractionVisualizer.version.contains("legacy")) {
             packet.getIntegers().write(6, 33);
             //int data to mark
-            packet.getIntegers().write(7, getItemFramData(entity));
+            packet.getIntegers().write(7, getItemFrameData(entity));
         } else {
             //EntityType
             packet.getEntityTypeModifier().write(0, entity.getType());
             //int data to mark
-            packet.getIntegers().write(6, getItemFramData(entity));
+            packet.getIntegers().write(6, getItemFrameData(entity));
         }
         //UUID
         packet.getUUIDs().write(0, entity.getUniqueId());
@@ -362,7 +376,7 @@ public class PacketSending implements Listener {
 		}
 	}
 	
-	public static int getItemFramData(ItemFrame frame) {
+	public static int getItemFrameData(ItemFrame frame) {
 		switch (frame.getAttachedFace()) {
 		case DOWN:
 			return 0;
@@ -388,7 +402,7 @@ public class PacketSending implements Listener {
 
         //List<DataWatcher$Item> Type are more complex
         //Create a DataWatcher
-        WrappedDataWatcher wpw = WrappedDataWatcher.getEntityWatcher(entity);
+        WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
         packet.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
         try {
         	for (Player player : players) {
@@ -423,8 +437,8 @@ public class PacketSending implements Listener {
 	@SuppressWarnings("serial")
 	public static void removeAll(Player theplayer) {
 		List<Player> player = new ArrayList<Player>(){{add(theplayer);}};
-		for (Entry<Entity, List<Player>> entry : active.entrySet()) {
-			Entity entity = entry.getKey();
+		for (Entry<Object, List<Player>> entry : active.entrySet()) {
+			Object entity = entry.getKey();
 			if (entity instanceof ArmorStand) {
 				removeArmorStand(player, (ArmorStand) entity, false);
 			}
@@ -440,8 +454,8 @@ public class PacketSending implements Listener {
 	@SuppressWarnings("serial")
 	public static void sendPlayerPackets(Player theplayer) {
 		List<Player> player = new ArrayList<Player>(){{add(theplayer);}};
-		for (Entry<Entity, List<Player>> entry : active.entrySet()) {
-			Entity entity = entry.getKey();
+		for (Entry<Object, List<Player>> entry : active.entrySet()) {
+			Object entity = entry.getKey();
 			if (entry.getValue().contains(theplayer)) {
 				if (entity instanceof ArmorStand) {
 					sendArmorStandSpawn(player, (ArmorStand) entity);
