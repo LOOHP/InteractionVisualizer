@@ -101,6 +101,9 @@ public class SmokerDisplay implements Listener {
 		Location loc = block.getLocation();
 		
 		Player player = (Player) event.getWhoClicked();
+		if (map.get("Item") instanceof String) {
+			map.put("Item", new Item(block.getLocation().clone().add(0.5, 1.2, 0.5)));
+		}
 		Item item = (Item) map.get("Item");
 		
 		map.put("Item", "N/A");

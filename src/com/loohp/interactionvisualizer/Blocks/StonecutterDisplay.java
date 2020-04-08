@@ -84,6 +84,9 @@ public class StonecutterDisplay implements Listener {
 		Location loc = block.getLocation();
 		
 		Player player = (Player) event.getWhoClicked();
+		if (map.get("Item") instanceof String) {
+			map.put("Item", new Item(block.getLocation().clone().add(0.5, 1.2, 0.5)));
+		}
 		Item item = (Item) map.get("Item");
 		
 		openedStonecutter.remove(block);
@@ -275,12 +278,12 @@ public class StonecutterDisplay implements Listener {
 							public void run() {
 								player.getWorld().spawnParticle(Particle.ITEM_CRACK, loc.clone().add(0.5, 0.7, 0.5), 25, 0.1, 0.1, 0.1, 0.1, itempar);
 							}
-						}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 1).getTaskId();
+						}.runTaskTimer(InteractionVisualizer.plugin, 0, 1).getTaskId();
 						new BukkitRunnable() {
 							public void run() {
 								Bukkit.getScheduler().cancelTask(taskid);
 							}
-						}.runTaskLaterAsynchronously(InteractionVisualizer.plugin, 4);
+						}.runTaskLater(InteractionVisualizer.plugin, 4);
 					}
 					
 					Item item = null;

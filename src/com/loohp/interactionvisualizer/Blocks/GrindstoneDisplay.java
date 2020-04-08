@@ -88,6 +88,9 @@ public class GrindstoneDisplay implements Listener {
 		Player player = (Player) event.getWhoClicked();
 		ArmorStand slot0 = (ArmorStand) map.get("0");
 		ArmorStand slot1 = (ArmorStand) map.get("1");
+		if (map.get("2") instanceof String) {
+			map.put("2", new Item(block.getLocation().clone().add(0.5, 1.2, 0.5)));
+		}
 		Item item = (Item) map.get("2");
 		
 		openedGrindstone.remove(block);

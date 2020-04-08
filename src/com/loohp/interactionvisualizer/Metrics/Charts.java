@@ -100,6 +100,17 @@ public class Charts {
 	        }
 	    }));
 		
+		metrics.addCustomChart(new Metrics.SimplePie("enderchest_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (config.getBoolean("Blocks.EnderChest.Enabled") == true) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
 		metrics.addCustomChart(new Metrics.SimplePie("furnace_enabled", new Callable<String>() {
 	        @Override
 	        public String call() throws Exception {

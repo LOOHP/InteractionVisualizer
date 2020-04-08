@@ -125,6 +125,9 @@ public class CraftingTableDisplay implements Listener {
 		Location loc = block.getLocation();
 		
 		Player player = (Player) event.getWhoClicked();
+		if (map.get("0") instanceof String) {
+			map.put("0", new Item(block.getLocation().clone().add(0.5, 1.2, 0.5)));
+		}
 		Item item = (Item) map.get("0");
 		ArmorStand slot1 = (ArmorStand) map.get("1");
 		ArmorStand slot2 = (ArmorStand) map.get("2");

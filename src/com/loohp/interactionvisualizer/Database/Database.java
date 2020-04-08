@@ -128,10 +128,14 @@ public class Database {
         	PreparedStatement statement = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + table + " (UUID Text, NAME Text, ITEMSTAND BOOLEAN, ITEMDROP BOOLEAN, HOLOGRAM BOOLEAN)");
 
             statement.execute();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        try {
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
     }
     
     public static boolean playerExists(Player player) {
@@ -148,6 +152,10 @@ public class Database {
 			if (results.next()) {
 				return true;
 			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try {
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -165,6 +173,10 @@ public class Database {
 			insert.setBoolean(4, true);
 			insert.setBoolean(5, true);
 			insert.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try {
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -185,12 +197,16 @@ public class Database {
 			statement.setBoolean(1, newvalue);
 			statement.setString(2, player.getUniqueId().toString());
 			statement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try {
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		PacketSending.removeAll(player);
-		Bukkit.getScheduler().runTaskLaterAsynchronously(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
 		return newvalue;
 	}
 	
@@ -208,12 +224,16 @@ public class Database {
 			statement.setBoolean(1, newvalue);
 			statement.setString(2, player.getUniqueId().toString());
 			statement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try {
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		PacketSending.removeAll(player);
-		Bukkit.getScheduler().runTaskLaterAsynchronously(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
 		return newvalue;
 	}
 	
@@ -231,12 +251,16 @@ public class Database {
 			statement.setBoolean(1, newvalue);
 			statement.setString(2, player.getUniqueId().toString());
 			statement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try {
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		PacketSending.removeAll(player);
-		Bukkit.getScheduler().runTaskLaterAsynchronously(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
 		return newvalue;
 	}
 	
@@ -279,12 +303,16 @@ public class Database {
 					InteractionVisualizer.holograms.remove(player);
 				}
 			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try {
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		PacketSending.removeAll(player);
-		Bukkit.getScheduler().runTaskLaterAsynchronously(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
 	}
 
 }
