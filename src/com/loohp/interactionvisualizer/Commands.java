@@ -108,7 +108,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 						}
 					}
 					if (Bukkit.getPlayer(args[2]) == null) {
-						sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.PlayerNotFound")));
+						sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.PlayerNotFound")));
 						return true;
 					}
 					Player player = Bukkit.getPlayer(args[2]);
