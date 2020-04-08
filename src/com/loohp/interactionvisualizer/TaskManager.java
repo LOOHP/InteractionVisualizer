@@ -16,6 +16,7 @@ import com.loohp.interactionvisualizer.Blocks.ChestDisplay;
 import com.loohp.interactionvisualizer.Blocks.CraftingTableDisplay;
 import com.loohp.interactionvisualizer.Blocks.DoubleChestDisplay;
 import com.loohp.interactionvisualizer.Blocks.EnchantmentTableDisplay;
+import com.loohp.interactionvisualizer.Blocks.EnderchestDisplay;
 import com.loohp.interactionvisualizer.Blocks.FurnaceDisplay;
 import com.loohp.interactionvisualizer.Blocks.GrindstoneDisplay;
 import com.loohp.interactionvisualizer.Blocks.LoomDisplay;
@@ -38,6 +39,7 @@ public class TaskManager {
 	public static CraftingTableDisplay craftingtable;
 	public static DoubleChestDisplay doublechest;
 	public static EnchantmentTableDisplay enchantmenttable;
+	public static EnderchestDisplay enderchest;
 	public static FurnaceDisplay furnace;
 	public static GrindstoneDisplay grindstone;
 	public static LoomDisplay loom;
@@ -55,6 +57,7 @@ public class TaskManager {
 		craftingtable = new CraftingTableDisplay();
 		doublechest = new DoubleChestDisplay();
 		enchantmenttable = new EnchantmentTableDisplay();
+		enderchest = new EnderchestDisplay();
 		furnace = new FurnaceDisplay();
 		grindstone = new GrindstoneDisplay();
 		loom = new LoomDisplay();
@@ -147,6 +150,10 @@ public class TaskManager {
 				) {
 			Bukkit.getPluginManager().registerEvents(new SmokerDisplay(), plugin);
 			tasks.add(SmokerDisplay.run());
+		}
+		
+		if (config.getBoolean("Blocks.EnderChest.Enabled")) {
+			Bukkit.getPluginManager().registerEvents(new EnderchestDisplay(), plugin);
 		}
 	}
 

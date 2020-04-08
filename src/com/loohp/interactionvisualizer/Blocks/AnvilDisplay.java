@@ -22,7 +22,6 @@ import org.bukkit.util.Vector;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Entity.ArmorStand;
 import com.loohp.interactionvisualizer.Entity.Item;
-import com.loohp.interactionvisualizer.Utils.ArmorStandUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
@@ -238,7 +237,7 @@ public class AnvilDisplay implements Listener {
 		if (!stand.getCustomName().equals("IV.Anvil.Item")) {
 			if (stand.getCustomName().equals("IV.Anvil.Block")) {
 				stand.setCustomName("IV.Anvil.Item");
-				ArmorStandUtils.setRotation(stand, stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());				
+				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());				
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().multiply(-0.09), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().multiply(-0.12)));
@@ -256,7 +255,7 @@ public class AnvilDisplay implements Listener {
 			stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().multiply(0.12)));
 			stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().multiply(0.09), -90)));
 			stand.setRightArmPose(new EulerAngle(357.9, 0.0, 0.0));
-			ArmorStandUtils.setRotation(stand, stand.getLocation().getYaw() + 45, stand.getLocation().getPitch());		
+			stand.setRotation(stand.getLocation().getYaw() + 45, stand.getLocation().getPitch());		
 		}
 		if (mode.equals("Tool")) {
 			stand.setCustomName("IV.Anvil.Tool");
@@ -272,7 +271,7 @@ public class AnvilDisplay implements Listener {
 		Location loc = block.getLocation().clone().add(0.5, 0.600781, 0.5);
 		ArmorStand center = new ArmorStand(loc);
 		float yaw = getCardinalDirection(player);
-		ArmorStandUtils.setRotation(center, yaw, center.getLocation().getPitch());
+		center.setRotation(yaw, center.getLocation().getPitch());
 		setStand(center);
 		center.setCustomName("IV.Anvil.Center");
 		Vector vector = rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.19), -100).add(center.getLocation().clone().getDirection().normalize().multiply(-0.11));
@@ -305,7 +304,7 @@ public class AnvilDisplay implements Listener {
 		stand.setSmall(true);
 		stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 		stand.setCustomName("IV.Anvil.Item");
-		ArmorStandUtils.setRotation(stand, yaw, stand.getLocation().getPitch());
+		stand.setRotation(yaw, stand.getLocation().getPitch());
 	}
 	
 	public static void setStand(ArmorStand stand) {

@@ -54,6 +54,10 @@ public class PacketSending implements Listener {
 		} else {
 			packet.getIntegers().write(1, 30);
 		}
+		packet.getIntegers().write(2, (int) (entity.getVelocity().getX() * 8000));
+		packet.getIntegers().write(3, (int) (entity.getVelocity().getY() * 8000));
+		packet.getIntegers().write(4, (int) (entity.getVelocity().getZ() * 8000));
+		
 		packet.getDoubles().write(0, entity.getLocation().getX());
 		packet.getDoubles().write(1, entity.getLocation().getY());
 		packet.getDoubles().write(2, entity.getLocation().getZ());
@@ -75,11 +79,11 @@ public class PacketSending implements Listener {
     		//Entity ID
     		.write(0, entity.getEntityId())
     		//Velocity x
-    		.write(1, 0)
-    		//Velocity y
-    		.write(2, 0)
-    		//Velocity z
-    		.write(3, 0);
+            .write(1, (int) (entity.getVelocity().getX() * 8000))
+	        //Velocity y
+	        .write(2, (int) (entity.getVelocity().getY() * 8000))
+	        //Velocity z
+	        .write(3, (int) (entity.getVelocity().getZ() * 8000));
         try {
         	for (Player player : players) {
 				protocolManager.sendServerPacket(player, packet);
@@ -150,6 +154,24 @@ public class PacketSending implements Listener {
 		packet.getBytes().write(0, (byte)(int) (entity.getLocation().getYaw() * 256.0F / 360.0F));
 		packet.getBytes().write(1, (byte)(int) (entity.getLocation().getPitch() * 256.0F / 360.0F));
 		try {
+        	for (Player player : players) {
+				protocolManager.sendServerPacket(player, packet);
+			}
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_VELOCITY);
+		packet.getIntegers()
+    		//Entity ID
+    		.write(0, entity.getEntityId())
+    		//Velocity x
+            .write(1, (int) (entity.getVelocity().getX() * 8000))
+	        //Velocity y
+	        .write(2, (int) (entity.getVelocity().getY() * 8000))
+	        //Velocity z
+	        .write(3, (int) (entity.getVelocity().getZ() * 8000));
+        try {
         	for (Player player : players) {
 				protocolManager.sendServerPacket(player, packet);
 			}

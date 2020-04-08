@@ -31,7 +31,7 @@ import com.loohp.interactionvisualizer.Utils.PacketSending;
 public class ChestDisplay implements Listener {
 	
 	public static Scoreboard scoreboard = InteractionVisualizer.scoreboard;
-	public static ConcurrentHashMap<Block, List<Item>> link = new ConcurrentHashMap<Block, List<Item>>();
+	public static ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<Player, List<Item>>();
 	
 	@EventHandler
 	public void onUseChest(InventoryClickEvent event) {
@@ -123,11 +123,11 @@ public class ChestDisplay implements Listener {
 			if (itemstack != null) {
 				Item item = new Item(loc.clone().add(0.5, 1, 0.5));
 				Vector offset = new Vector(0.0, 0.15, 0.0);
-				Vector vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().toVector()).multiply(-0.15).add(offset);
+				Vector vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, -0.5, 0.0).toVector()).multiply(-0.15).add(offset);
 				item.setVelocity(vector);
 				if (isIn) {
 					item.teleport(event.getWhoClicked().getEyeLocation());
-					vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().toVector()).multiply(0.15).add(offset);
+					vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().toVector()).multiply(0.15).add(offset);
 					item.setVelocity(vector);
 				}
 				PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
@@ -141,10 +141,10 @@ public class ChestDisplay implements Listener {
 				item.setGravity(true);
 				item.setGlowing(true);
 				PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-				if (!link.containsKey(block)) {
-					link.put(block, new ArrayList<Item>());
+				if (!link.containsKey((Player) event.getWhoClicked())) {
+					link.put((Player) event.getWhoClicked(), new ArrayList<Item>());
 				}
-				List<Item> list = link.get(block);
+				List<Item> list = link.get((Player) event.getWhoClicked());
 				list.add(item);
 				boolean finalIsIn = isIn;
 				new BukkitRunnable() {
@@ -152,7 +152,7 @@ public class ChestDisplay implements Listener {
 						if (finalIsIn) {
 							item.teleport(loc.clone().add(0.5, 1, 0.5));
 						} else {
-							item.teleport(event.getWhoClicked().getEyeLocation());
+							item.teleport(event.getWhoClicked().getEyeLocation().add(0.0, -0.5, 0.0));
 						}
 						item.setVelocity(new Vector(0.0, 0.0, 0.0));
 						item.setGravity(false);
@@ -211,7 +211,7 @@ public class ChestDisplay implements Listener {
 				if (itemstack != null) {
 					Item item = new Item(event.getWhoClicked().getEyeLocation());
 					Vector offset = new Vector(0.0, 0.15, 0.0);
-					Vector vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().toVector()).multiply(0.15).add(offset);
+					Vector vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().toVector()).multiply(0.15).add(offset);
 					item.setVelocity(vector);
 					PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
 					item.setItemStack(itemstack);
@@ -221,10 +221,10 @@ public class ChestDisplay implements Listener {
 					item.setGravity(true);
 					item.setGlowing(true);
 					PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-					if (!link.containsKey(block)) {
-						link.put(block, new ArrayList<Item>());
+					if (!link.containsKey((Player) event.getWhoClicked())) {
+						link.put((Player) event.getWhoClicked(), new ArrayList<Item>());
 					}
-					List<Item> list = link.get(block);
+					List<Item> list = link.get((Player) event.getWhoClicked());
 					list.add(item);
 					new BukkitRunnable() {
 						public void run() {
@@ -259,12 +259,10 @@ public class ChestDisplay implements Listener {
 			return;
 		}
 		
-		Block block = event.getView().getTopInventory().getLocation().getBlock();
-		
-		if (!link.containsKey(block)) {
+		if (!link.containsKey((Player) event.getPlayer())) {
 			return;
 		}
-		List<Item> list = link.get(block);
+		List<Item> list = link.get((Player) event.getPlayer());
 		Iterator<Item> itr = list.iterator();
 		while (itr.hasNext()) {
 			Item item = itr.next();
@@ -272,6 +270,6 @@ public class ChestDisplay implements Listener {
 			item.remove();
 		}
 		
-		link.remove(block);
+		link.remove((Player) event.getPlayer());
 	}
 }

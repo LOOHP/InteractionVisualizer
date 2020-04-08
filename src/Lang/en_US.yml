@@ -40,6 +40,8 @@ Blocks:
     Enabled: true
   EnchantmentTable:
     Enabled: true
+  EnderChest:
+    Enabled: true
   Furnace:
     Enabled: true
   Grindstone:

@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
+import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.loohp.interactionvisualizer.Utils.EntityCreator;
@@ -31,6 +32,8 @@ public class ArmorStand {
 	ItemStack mainhand;
 	String customName;
 	boolean custonNameVisible;
+	Vector velocity;
+	boolean lock;
 	
 	public ArmorStand(Location location) {
 		this.id = (int) (Math.random() * Integer.MAX_VALUE);
@@ -50,9 +53,14 @@ public class ArmorStand {
 		this.mainhand = new ItemStack(Material.AIR);
 		this.customName = "";
 		this.custonNameVisible = false;
+		this.velocity = new Vector(0.0, 0.0, 0.0);
+		this.lock = false;
 	}
 	
 	public void setRotation(float yaw, float pitch) {
+		if (lock) {
+			return;
+		}
 		teleport(location.getWorld(), location.getX(), location.getY(), location.getZ(), yaw, pitch);
 	}
 	
@@ -98,6 +106,13 @@ public class ArmorStand {
 	}	
 	public boolean hasArms() {
 		return hasArms;
+	}
+	
+	public void setLocked(boolean bool) {
+		this.lock = bool;
+	}	
+	public boolean isLocked() {
+		return lock;
 	}
 
 	public void setBasePlate(boolean bool) {
@@ -150,6 +165,9 @@ public class ArmorStand {
 	}
 
 	public void setRightArmPose(EulerAngle angle) {
+		if (lock) {
+			return;
+		}
 		this.rightArmPose = angle;
 	}	
 	public EulerAngle getRightArmPose() {
@@ -157,6 +175,9 @@ public class ArmorStand {
 	}
 	
 	public void setHeadPose(EulerAngle angle) {
+		if (lock) {
+			return;
+		}
 		this.headPose = angle;
 	}	
 	public EulerAngle getHeadPose() {
@@ -164,6 +185,9 @@ public class ArmorStand {
 	}
 
 	public void setHelmet(ItemStack item) {
+		if (lock) {
+			return;
+		}
 		this.helment = item;
 	}	
 	public ItemStack getHelmet() {
@@ -171,10 +195,20 @@ public class ArmorStand {
 	}
 
 	public void setItemInMainHand(ItemStack item) {
+		if (lock) {
+			return;
+		}
 		this.mainhand = item;
 	}	
 	public ItemStack getItemInMainHand() {
 		return mainhand;
+	}
+	
+	public void setVelocity(Vector vector) {
+		this.velocity = vector.clone();
+	}
+	public Vector getVelocity() {
+		return velocity;
 	}
 	
 	public UUID getUniqueId() {

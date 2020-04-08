@@ -24,6 +24,7 @@ public class Item {
 	String customName;
 	boolean custonNameVisible;
 	Vector velocity;
+	boolean lock;
 	
 	public Item(Location location) {
 		this.id = (int) (Math.random() * Integer.MAX_VALUE);
@@ -36,6 +37,7 @@ public class Item {
 		this.custonNameVisible = false;
 		this.isGlowing = false;
 		this.velocity = new Vector(0.0, 0.0, 0.0);
+		this.lock = false;
 	}
 	
 	public void setCustomName(String customName) {
@@ -91,6 +93,9 @@ public class Item {
 	}
 	
 	public void setItemStack(ItemStack item) {
+		if (lock) {
+			return;
+		}
 		if (item.getType().equals(Material.AIR)) {
 			this.item = new ItemStack(Material.STONE);
 			return;
@@ -122,6 +127,13 @@ public class Item {
 	}
 	public int getPickupDelay() {
 		return pickupDelay;
+	}
+	
+	public void setLocked(boolean bool) {
+		this.lock = bool;
+	}	
+	public boolean isLocked() {
+		return lock;
 	}
 	
 	public UUID getUniqueId() {

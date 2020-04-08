@@ -41,6 +41,8 @@ Blocks:
     Enabled: true
   DoubleChest:
     Enabled: true
+  EnderChest:
+    Enabled: true
   EnchantmentTable:
     Enabled: true
   Furnace:

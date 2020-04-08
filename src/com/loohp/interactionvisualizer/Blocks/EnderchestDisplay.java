@@ -5,15 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,7 +17,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
@@ -29,68 +25,48 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Entity.Item;
-import com.loohp.interactionvisualizer.Utils.LegacyFacingUtils;
+import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
-public class DoubleChestDisplay implements Listener {
+public class EnderchestDisplay implements Listener {
 	
 	public static Scoreboard scoreboard = InteractionVisualizer.scoreboard;
 	public static ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<Player, List<Item>>();
 	
 	@EventHandler
-	public void onUseDoubleChest(InventoryClickEvent event) {
+	public void onUseChest(InventoryClickEvent event) {
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation() == null) {
+		if (!event.getView().getTopInventory().getType().equals(InventoryType.ENDER_CHEST)) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
-			return;
-		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.CHEST)) {
-			return;
-		}
-		
-		Block block = event.getView().getTopInventory().getLocation().getBlock();
-		Location loc = block.getLocation();
-		
-		Chest chest = (Chest) block.getState();
-		InventoryHolder holder = chest.getInventory().getHolder();
-		if (!(holder instanceof DoubleChest)) {
-			return;
-		}
-		
-		DoubleChest doublechest = (DoubleChest) holder;
-		BlockFace facing = null;
-		if (!InteractionVisualizer.version.contains("legacy")) {
-			BlockData blockData = chest.getBlockData();
-			facing = ((Directional) blockData).getFacing();
+		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+			if (!event.getWhoClicked().getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.ENDER_CHEST)) {
+				return;
+			}
 		} else {
-			facing = LegacyFacingUtils.getFacing(chest.getBlock());
+			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7).getType().equals(Material.ENDER_CHEST)) {
+				return;
+			}
 		}
-		if (facing.equals(BlockFace.EAST)) {
-			block = doublechest.getLeftSide().getInventory().getLocation().getBlock();
-			loc = block.getLocation().add(0.0, 0.0, 0.5);
-		} else if (facing.equals(BlockFace.SOUTH)) {
-			block = doublechest.getRightSide().getInventory().getLocation().getBlock();
-			loc = block.getLocation().add(0.5, 0.0, 0.0);
-		} else if (facing.equals(BlockFace.WEST)) {
-			block = doublechest.getRightSide().getInventory().getLocation().getBlock();
-			loc = block.getLocation().add(0.0, 0.0, 0.5);
-		} else if (facing.equals(BlockFace.NORTH)) {
-			block = doublechest.getLeftSide().getInventory().getLocation().getBlock();
-			loc = block.getLocation().add(0.5, 0.0, 0.0);
+		
+		Block block = null;
+		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+			block = event.getWhoClicked().getTargetBlockExact(7, FluidCollisionMode.NEVER);
+		} else {
+			block = event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7);
 		}
+		Location loc = block.getLocation();
 		
 		boolean isIn = true;
 		boolean isMove = false;
 		ItemStack itemstack = null;
 		
-		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 53) {
+		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 26) {
 			
 			itemstack = event.getCurrentItem();
 			if (itemstack != null) {
@@ -173,11 +149,10 @@ public class DoubleChestDisplay implements Listener {
 				List<Item> list = link.get((Player) event.getWhoClicked());
 				list.add(item);
 				boolean finalIsIn = isIn;
-				Location finalLoc = loc;
 				new BukkitRunnable() {
 					public void run() {
 						if (finalIsIn) {
-							item.teleport(finalLoc.clone().add(0.5, 1, 0.5));
+							item.teleport(loc.clone().add(0.5, 1, 0.5));
 						} else {
 							item.teleport(event.getWhoClicked().getEyeLocation().add(0.0, -0.5, 0.0));
 						}
@@ -198,55 +173,36 @@ public class DoubleChestDisplay implements Listener {
 	}
 	
 	@EventHandler
-	public void onDragDoubleChest(InventoryDragEvent event) {
+	public void onDragChest(InventoryDragEvent event) {
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation() == null) {
+		if (!event.getView().getTopInventory().getType().equals(InventoryType.ENDER_CHEST)) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
-			return;
-		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.CHEST)) {
-			return;
+		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+			if (!event.getWhoClicked().getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.ENDER_CHEST)) {
+				return;
+			}
+		} else {
+			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7).getType().equals(Material.ENDER_CHEST)) {
+				return;
+			}
 		}
 		
-		Block block = event.getView().getTopInventory().getLocation().getBlock();
+		Block block = null;
+		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+			block = event.getWhoClicked().getTargetBlockExact(7, FluidCollisionMode.NEVER);
+		} else {
+			block = event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7);
+		}
 		Location loc = block.getLocation();
 		
-		Chest chest = (Chest) block.getState();
-		InventoryHolder holder = chest.getInventory().getHolder();
-		if (!(holder instanceof DoubleChest)) {
-			return;
-		}
-		DoubleChest doublechest = (DoubleChest) holder;
-		BlockFace facing = null;
-		if (!InteractionVisualizer.version.contains("legacy")) {
-			BlockData blockData = chest.getBlockData();
-			facing = ((Directional) blockData).getFacing();
-		} else {
-			facing = LegacyFacingUtils.getFacing(chest.getBlock());
-		}
-		if (facing.equals(BlockFace.EAST)) {
-			block = doublechest.getLeftSide().getInventory().getLocation().getBlock();
-			loc = block.getLocation().add(0.0, 0.0, 0.5);
-		} else if (facing.equals(BlockFace.SOUTH)) {
-			block = doublechest.getRightSide().getInventory().getLocation().getBlock();
-			loc = block.getLocation().add(0.5, 0.0, 0.0);
-		} else if (facing.equals(BlockFace.WEST)) {
-			block = doublechest.getRightSide().getInventory().getLocation().getBlock();
-			loc = block.getLocation().add(0.0, 0.0, 0.5);
-		} else if (facing.equals(BlockFace.NORTH)) {
-			block = doublechest.getLeftSide().getInventory().getLocation().getBlock();
-			loc = block.getLocation().add(0.5, 0.0, 0.0);
-		}
-		
 		for (int slot : event.getRawSlots()) {
-			if (slot >= 0 && slot <= 53) {
+			if (slot >= 0 && slot <= 26) {
 				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				
 				ItemStack itemstack = event.getOldCursor();
@@ -274,10 +230,9 @@ public class DoubleChestDisplay implements Listener {
 					}
 					List<Item> list = link.get((Player) event.getWhoClicked());
 					list.add(item);
-					Location finalLoc = loc;
 					new BukkitRunnable() {
 						public void run() {
-							item.teleport(finalLoc.clone().add(0.5, 1, 0.5));
+							item.teleport(loc.clone().add(0.5, 1, 0.5));
 							item.setVelocity(new Vector(0.0, 0.0, 0.0));
 							item.setGravity(false);
 							PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
@@ -297,7 +252,7 @@ public class DoubleChestDisplay implements Listener {
 	}
 	
 	@EventHandler
-	public void onCloseDoubleChest(InventoryCloseEvent event) {
+	public void onCloseChest(InventoryCloseEvent event) {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
