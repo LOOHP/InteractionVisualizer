@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -22,12 +23,115 @@ import org.bukkit.util.Vector;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Entity.ArmorStand;
 import com.loohp.interactionvisualizer.Entity.Item;
+import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class AnvilDisplay implements Listener {
 	
 	public static HashMap<Block, HashMap<String, Object>> openedAnvil = new HashMap<Block, HashMap<String, Object>>();	
+	
+	@EventHandler
+	public void onAnvil(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		if (event.getRawSlot() != 2) {
+			return;
+		}
+		if (event.getCurrentItem() == null) {
+			return;
+		}
+		if (event.getCurrentItem().getType().equals(Material.AIR)) {
+			return;
+		}
+		if (event.getCursor() != null) {
+			if (!event.getCursor().getType().equals(Material.AIR)) {
+				if (event.getCursor().getAmount() >= event.getCursor().getType().getMaxStackSize()) {
+					return;
+				}
+			}
+		}
+		if (event.isShiftClick()) {
+			if (!InventoryUtils.stillHaveSpace(event.getWhoClicked().getInventory(), event.getView().getItem(2).getType())) {
+				return;
+			}
+		}
+		
+		if (event.getView().getTopInventory() == null) {
+			return;
+		}
+		if (event.getView().getTopInventory().getLocation() == null) {
+			return;
+		}
+		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
+			return;
+		}
+		if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().contains("ANVIL")) {
+			return;
+		}
+		
+		Block block = event.getView().getTopInventory().getLocation().getBlock();
+		
+		if (!openedAnvil.containsKey(block)) {
+			return;
+		}
+		
+		HashMap<String, Object> map = openedAnvil.get(block);
+		if (!map.get("Player").equals((Player) event.getWhoClicked())) {
+			return;
+		}
+		
+		ItemStack itemstack = event.getCurrentItem();
+		Location loc = block.getLocation();
+		
+		Player player = (Player) event.getWhoClicked();
+		ArmorStand slot0 = (ArmorStand) map.get("0");
+		ArmorStand slot1 = (ArmorStand) map.get("1");
+		Item item = (Item) map.get("2");
+		
+		openedAnvil.remove(block);
+		
+		slot0.setLocked(true);
+		slot1.setLocked(true);
+		item.setLocked(true);
+		
+		float yaw = getCardinalDirection(player);
+		Vector vector = new Location(slot0.getWorld(), slot0.getLocation().getX(), slot0.getLocation().getY(), slot0.getLocation().getZ(), yaw, 0).getDirection().normalize();
+		slot0.teleport(slot0.getLocation().add(rotateVectorAroundY(vector.clone(), 90).multiply(0.1)));		
+		slot1.teleport(slot1.getLocation().add(rotateVectorAroundY(vector.clone(), -90).multiply(0.1)));
+		
+		PacketSending.updateArmorStand(InteractionVisualizer.itemStand, slot0);
+		PacketSending.updateArmorStand(InteractionVisualizer.itemStand, slot1);
+		
+		new BukkitRunnable() {
+			public void run() {
+				for (Player each : InteractionVisualizer.itemDrop) {
+					each.spawnParticle(Particle.CLOUD, loc.clone().add(0.5, 1.1, 0.5), 10, 0.05, 0.05, 0.05, 0.05);
+				}
+			}
+		}.runTaskLater(InteractionVisualizer.plugin, 6);
+		
+		new BukkitRunnable() {
+			public void run() {
+				Vector lift = new Vector(0.0, 0.15, 0.0);
+				Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
+				item.setItemStack(itemstack);
+				item.setVelocity(pickup);
+				item.setGravity(true);
+				item.setPickupDelay(32767);
+				PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				
+				new BukkitRunnable() {
+					public void run() {
+						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot0);
+						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot1);
+						PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+					}
+				}.runTaskLater(InteractionVisualizer.plugin, 8);
+			}
+		}.runTaskLater(InteractionVisualizer.plugin, 10);
+	}
 
 	@EventHandler
 	public void onUseAnvil(InventoryClickEvent event) {

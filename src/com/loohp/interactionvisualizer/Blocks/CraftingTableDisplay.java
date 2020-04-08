@@ -154,7 +154,7 @@ public class CraftingTableDisplay implements Listener {
 		slot1.teleport(slot1.getLocation().add(rotateVectorAroundY(vector.clone(), 135).multiply(0.2828)));
 		slot2.teleport(slot2.getLocation().add(rotateVectorAroundY(vector.clone(), 180).multiply(0.2)));
 		slot3.teleport(slot3.getLocation().add(rotateVectorAroundY(vector.clone(), 225).multiply(0.2828)));
-		slot2.teleport(slot4.getLocation().add(rotateVectorAroundY(vector.clone(), 90).multiply(0.2)));
+		slot4.teleport(slot4.getLocation().add(rotateVectorAroundY(vector.clone(), 90).multiply(0.2)));
 		
 		slot6.teleport(slot6.getLocation().add(rotateVectorAroundY(vector.clone(), -90).multiply(0.2)));
 		slot7.teleport(slot7.getLocation().add(rotateVectorAroundY(vector.clone(), 45).multiply(0.2828)));
@@ -187,7 +187,6 @@ public class CraftingTableDisplay implements Listener {
 				item.setVelocity(pickup);
 				item.setGravity(true);
 				item.setPickupDelay(32767);
-				PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
 				PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 				
 				new BukkitRunnable() {
@@ -421,11 +420,11 @@ public class CraftingTableDisplay implements Listener {
 					}
 					
 					for (int i = 0; i <= 9; i++) {
-						if (map.get(String.valueOf(i)) instanceof Entity) {
-							Entity entity = (Entity) map.get(String.valueOf(i));
+						if (!(map.get(String.valueOf(i)) instanceof String)) {
+							Object entity = map.get(String.valueOf(i));
 							if (i == 5) {
-								LightAPI.deleteLight(entity.getLocation(), LightType.BLOCK, false);
-								for (ChunkInfo info : LightAPI.collectChunks(entity.getLocation(), LightType.BLOCK, 15)) {
+								LightAPI.deleteLight(((ArmorStand) entity).getLocation(), LightType.BLOCK, false);
+								for (ChunkInfo info : LightAPI.collectChunks(((ArmorStand) entity).getLocation(), LightType.BLOCK, 15)) {
 									LightAPI.updateChunk(info, LightType.BLOCK);
 								}
 							}
@@ -434,7 +433,6 @@ public class CraftingTableDisplay implements Listener {
 							} else if (entity instanceof ArmorStand) {
 								PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
 							}
-							entity.remove();
 						}
 					}
 					itr.remove();

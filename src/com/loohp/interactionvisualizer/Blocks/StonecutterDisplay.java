@@ -25,11 +25,85 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Entity.Item;
+import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class StonecutterDisplay implements Listener {
 	
 	public static HashMap<Block, HashMap<String, Object>> openedStonecutter = new HashMap<Block, HashMap<String, Object>>();
+	
+	@EventHandler
+	public void onStonecutter(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		if (event.getRawSlot() != 1) {
+			return;
+		}
+		if (event.getCurrentItem() == null) {
+			return;
+		}
+		if (event.getCurrentItem().getType().equals(Material.AIR)) {
+			return;
+		}
+		if (event.getCursor() != null) {
+			if (!event.getCursor().getType().equals(Material.AIR)) {
+				if (event.getCursor().getAmount() >= event.getCursor().getType().getMaxStackSize()) {
+					return;
+				}
+			}
+		}
+		if (event.isShiftClick()) {
+			if (!InventoryUtils.stillHaveSpace(event.getWhoClicked().getInventory(), event.getView().getItem(1).getType())) {
+				return;
+			}
+		}
+		
+		if (event.getView().getTopInventory() == null) {
+			return;
+		}
+		if (!(event.getView().getTopInventory() instanceof StonecutterInventory)) {
+			return;
+		}
+		if (!event.getWhoClicked().getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.STONECUTTER)) {
+			return;
+		}
+		
+		Block block = event.getWhoClicked().getTargetBlockExact(7, FluidCollisionMode.NEVER);
+		
+		if (!openedStonecutter.containsKey(block)) {
+			return;
+		}
+		
+		HashMap<String, Object> map = openedStonecutter.get(block);
+		if (!map.get("Player").equals((Player) event.getWhoClicked())) {
+			return;
+		}
+		
+		ItemStack itemstack = event.getCurrentItem();
+		Location loc = block.getLocation();
+		
+		Player player = (Player) event.getWhoClicked();
+		Item item = (Item) map.get("Item");
+		
+		openedStonecutter.remove(block);
+		
+		item.setItemStack(itemstack);
+		item.setLocked(true);
+		
+		Vector lift = new Vector(0.0, 0.15, 0.0);
+		Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
+		item.setVelocity(pickup);
+		item.setGravity(true);
+		item.setPickupDelay(32767);
+		PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+		
+		new BukkitRunnable() {
+			public void run() {
+				PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+			}
+		}.runTaskLater(InteractionVisualizer.plugin, 8);
+	}
 
 	@EventHandler
 	public void onUseStonecutter(InventoryClickEvent event) {

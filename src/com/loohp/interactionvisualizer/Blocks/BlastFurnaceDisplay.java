@@ -33,11 +33,94 @@ import org.bukkit.util.Vector;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Entity.ArmorStand;
 import com.loohp.interactionvisualizer.Entity.Item;
+import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class BlastFurnaceDisplay implements Listener {
 	
 	public static HashMap<Block, HashMap<String, Object>> blastfurnaceMap = new HashMap<Block, HashMap<String, Object>>();
+	
+	@EventHandler
+	public void onBlastFurnace(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		if (event.getRawSlot() != 0 && event.getRawSlot() != 2) {
+			return;
+		}
+		if (event.getCurrentItem() == null) {
+			return;
+		}
+		if (event.getCurrentItem().getType().equals(Material.AIR)) {
+			return;
+		}
+		if (event.getRawSlot() == 2) {
+			if (event.getCursor() != null) {
+				if (!event.getCursor().getType().equals(Material.AIR)) {
+					if (event.getCursor().getAmount() >= event.getCursor().getType().getMaxStackSize()) {
+						return;
+					}
+				}
+			}
+		} else {
+			if (event.getCursor() != null) {
+				if (event.getCursor().getType().equals(event.getCurrentItem().getType())) {
+					return;
+				}
+			}
+		}
+		
+		if (event.isShiftClick()) {
+			if (!InventoryUtils.stillHaveSpace(event.getWhoClicked().getInventory(), event.getView().getItem(event.getRawSlot()).getType())) {
+				return;
+			}
+		}
+		
+		if (event.getView().getTopInventory() == null) {
+			return;
+		}
+		if (event.getView().getTopInventory().getLocation() == null) {
+			return;
+		}
+		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
+			return;
+		}
+		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.BLAST_FURNACE)) {
+			return;
+		}
+		
+		Block block = event.getView().getTopInventory().getLocation().getBlock();
+		
+		if (!blastfurnaceMap.containsKey(block)) {
+			return;
+		}
+		
+		HashMap<String, Object> map = blastfurnaceMap.get(block);
+		
+		ItemStack itemstack = event.getCurrentItem();
+		Location loc = block.getLocation();
+		
+		Player player = (Player) event.getWhoClicked();
+		Item item = (Item) map.get("Item");
+		
+		map.put("Item", "N/A");
+		
+		item.setItemStack(itemstack);
+		item.setLocked(true);
+		
+		Vector lift = new Vector(0.0, 0.15, 0.0);
+		Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
+		item.setVelocity(pickup);
+		item.setGravity(true);
+		item.setPickupDelay(32767);
+		PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+		
+		new BukkitRunnable() {
+			public void run() {
+				PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+			}
+		}.runTaskLater(InteractionVisualizer.plugin, 8);
+	}
 	
 	@EventHandler
 	public void onUseBlastFurnace(InventoryClickEvent event) {
