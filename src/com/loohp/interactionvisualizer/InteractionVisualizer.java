@@ -38,6 +38,8 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	public static boolean openinv = false;
 	public static boolean vanish = false;
+	public static boolean cmi = false;
+	public static boolean ess3 = false;
 	
 	public static List<Chunk> chunksGoneOver = new ArrayList<Chunk>();
 	
@@ -64,8 +66,14 @@ public class InteractionVisualizer extends JavaPlugin {
 		if (getServer().getPluginManager().getPlugin("OpenInv") != null) {
 			openinv = true;
 		}
-		if (Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
+		if (getServer().getPluginManager().isPluginEnabled("SuperVanish") || getServer().getPluginManager().isPluginEnabled("PremiumVanish")) {
 			vanish = true;
+		}
+		if (getServer().getPluginManager().getPlugin("CMI") != null) {
+			cmi = true;
+		}
+		if (getServer().getPluginManager().getPlugin("Essentials") != null) {
+			ess3 = true;
 		}
 		
 		LangManager.generate();
