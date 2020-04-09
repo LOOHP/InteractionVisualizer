@@ -36,6 +36,7 @@ import com.loohp.interactionvisualizer.Entity.Item;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.LegacyFacingUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
+import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class FurnaceDisplay implements Listener {
 	
@@ -43,6 +44,9 @@ public class FurnaceDisplay implements Listener {
 	
 	@EventHandler
 	public void onFurnace(InventoryClickEvent event) {
+		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
+			return;
+		}
 		if (event.isCancelled()) {
 			return;
 		}

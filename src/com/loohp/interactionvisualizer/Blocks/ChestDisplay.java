@@ -26,7 +26,9 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Entity.Item;
+import com.loohp.interactionvisualizer.Utils.OpenInvUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
+import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class ChestDisplay implements Listener {
 	
@@ -35,6 +37,12 @@ public class ChestDisplay implements Listener {
 	
 	@EventHandler
 	public void onUseChest(InventoryClickEvent event) {
+		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
+			return;
+		}
+		if (OpenInvUtils.isSlientChest((Player) event.getWhoClicked())) {
+			return;
+		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}

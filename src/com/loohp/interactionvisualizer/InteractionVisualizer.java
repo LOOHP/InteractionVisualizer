@@ -36,6 +36,9 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	public static String version = "";
 	
+	public static boolean openinv = false;
+	public static boolean vanish = false;
+	
 	public static List<Chunk> chunksGoneOver = new ArrayList<Chunk>();
 	
 	public static List<Player> itemStand = new CopyOnWriteArrayList<Player>();
@@ -57,6 +60,13 @@ public class InteractionVisualizer extends JavaPlugin {
 		scoreboard = getServer().getScoreboardManager().getMainScoreboard();
 		
 		protocolManager = ProtocolLibrary.getProtocolManager();
+		
+		if (getServer().getPluginManager().getPlugin("OpenInv") != null) {
+			openinv = true;
+		}
+		if (Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
+			vanish = true;
+		}
 		
 		LangManager.generate();
 		

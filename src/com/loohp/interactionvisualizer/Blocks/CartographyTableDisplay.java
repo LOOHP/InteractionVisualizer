@@ -24,6 +24,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Entity.ItemFrame;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
+import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class CartographyTableDisplay implements Listener {
 	
@@ -141,6 +142,9 @@ public class CartographyTableDisplay implements Listener {
 				}
 				
 				for (Player player : InteractionVisualizer.getOnlinePlayers()) {
+					if (VanishUtils.isVanished(player)) {
+						return;
+					}
 					if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 						continue;
 					}

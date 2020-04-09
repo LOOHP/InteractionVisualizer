@@ -26,6 +26,7 @@ import com.loohp.interactionvisualizer.Entity.Item;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
+import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class AnvilDisplay implements Listener {
 	
@@ -33,6 +34,9 @@ public class AnvilDisplay implements Listener {
 	
 	@EventHandler
 	public void onAnvil(InventoryClickEvent event) {
+		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
+			return;
+		}
 		if (event.isCancelled()) {
 			return;
 		}
@@ -229,6 +233,9 @@ public class AnvilDisplay implements Listener {
 			public void run() {
 				
 				for (Player player : InteractionVisualizer.getOnlinePlayers()) {
+					if (VanishUtils.isVanished(player)) {
+						return;
+					}
 					if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 						continue;
 					}

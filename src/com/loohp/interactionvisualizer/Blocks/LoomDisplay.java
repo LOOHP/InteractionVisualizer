@@ -25,6 +25,7 @@ import org.bukkit.util.Vector;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Entity.ArmorStand;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
+import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 import ru.beykerykt.lightapi.LightAPI;
 import ru.beykerykt.lightapi.LightType;
@@ -158,6 +159,9 @@ public class LoomDisplay implements Listener {
 				}
 				
 				for (Player player : InteractionVisualizer.getOnlinePlayers()) {
+					if (VanishUtils.isVanished(player)) {
+						return;
+					}
 					if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 						continue;
 					}

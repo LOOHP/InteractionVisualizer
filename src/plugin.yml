@@ -1,9 +1,10 @@
 name: InteractionVisualizer
 author: loohp
-version: 1.4.3
+version: 1.5.0
 main: com.loohp.interactionvisualizer.InteractionVisualizer
 api-version: 1.13
 description: Makes function blocks better
+softdepend: [OpenInv, SuperVanish, PremiumVanish]
 depend: [ProtocolLib, LightAPI]
 prefix: InteractionVisualizer
 

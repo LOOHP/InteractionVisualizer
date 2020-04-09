@@ -30,6 +30,7 @@ import com.loohp.interactionvisualizer.Entity.Item;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
+import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 import ru.beykerykt.lightapi.LightAPI;
 import ru.beykerykt.lightapi.LightType;
@@ -41,6 +42,9 @@ public class CraftingTableDisplay implements Listener {
 	
 	@EventHandler
 	public void onCraft(InventoryClickEvent event) {
+		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
+			return;
+		}
 		if (event.isCancelled()) {
 			return;
 		}
@@ -442,6 +446,9 @@ public class CraftingTableDisplay implements Listener {
 				}
 				
 				for (Player player : InteractionVisualizer.getOnlinePlayers()) {
+					if (VanishUtils.isVanished(player)) {
+						return;
+					}
 					if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 						continue;
 					}

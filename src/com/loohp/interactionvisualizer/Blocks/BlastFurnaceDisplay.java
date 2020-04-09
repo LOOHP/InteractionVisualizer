@@ -35,6 +35,7 @@ import com.loohp.interactionvisualizer.Entity.ArmorStand;
 import com.loohp.interactionvisualizer.Entity.Item;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
+import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class BlastFurnaceDisplay implements Listener {
 	
@@ -42,6 +43,9 @@ public class BlastFurnaceDisplay implements Listener {
 	
 	@EventHandler
 	public void onBlastFurnace(InventoryClickEvent event) {
+		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
+			return;
+		}
 		if (event.isCancelled()) {
 			return;
 		}

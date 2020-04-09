@@ -20,6 +20,7 @@ import org.bukkit.util.Vector;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Entity.Item;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
+import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class EnchantmentTableDisplay implements Listener {
 	
@@ -130,6 +131,9 @@ public class EnchantmentTableDisplay implements Listener {
 			public void run() {
 				
 				for (Player player : InteractionVisualizer.getOnlinePlayers()) {
+					if (VanishUtils.isVanished(player)) {
+						return;
+					}
 					if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 						continue;
 					}
