@@ -49,7 +49,7 @@ public class EnderchestDisplay implements Listener {
 				return;
 			}
 		} else {
-			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7).getType().equals(Material.ENDER_CHEST)) {
+			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().equals(Material.ENDER_CHEST)) {
 				return;
 			}
 		}
@@ -58,7 +58,7 @@ public class EnderchestDisplay implements Listener {
 		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
 			block = event.getWhoClicked().getTargetBlockExact(7, FluidCollisionMode.NEVER);
 		} else {
-			block = event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7);
+			block = event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7);
 		}
 		Location loc = block.getLocation();
 		
@@ -188,7 +188,7 @@ public class EnderchestDisplay implements Listener {
 				return;
 			}
 		} else {
-			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7).getType().equals(Material.ENDER_CHEST)) {
+			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().equals(Material.ENDER_CHEST)) {
 				return;
 			}
 		}
@@ -197,7 +197,7 @@ public class EnderchestDisplay implements Listener {
 		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
 			block = event.getWhoClicked().getTargetBlockExact(7, FluidCollisionMode.NEVER);
 		} else {
-			block = event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7);
+			block = event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7);
 		}
 		Location loc = block.getLocation();
 		

@@ -13,7 +13,7 @@ public class MaterialUtils {
 	
 	private static String version = InteractionVisualizer.version;
 	private static List<Material> tools = new ArrayList<Material>();
-	private static List<Material> fluid = new ArrayList<Material>();
+	private static List<Material> nonSolid = new ArrayList<Material>();
 	
 	public static void setup() {	
 		if (!version.contains("legacy")) {
@@ -78,15 +78,13 @@ public class MaterialUtils {
 			tools.add(Material.valueOf("BLAZE_ROD"));
 		}
 		
-		fluid.add(Material.valueOf("WATER"));
-		fluid.add(Material.valueOf("LAVA"));
-		fluid.add(Material.valueOf("AIR"));
-		if (Material.getMaterial("CAVE_AIR") != null) {
-			fluid.add(Material.valueOf("CAVE_AIR"));
-		}
-		if (version.contains("legacy")) {
-			fluid.add(Material.valueOf("STATIONARY_WATER"));
-			fluid.add(Material.valueOf("STATIONARY_LAVA"));
+		for (Material material : Material.values()) {
+			if (!material.isBlock()) {
+				continue;
+			}
+			if (!material.isSolid()) {
+				nonSolid.add(material);
+			}
 		}
 	}
 	
@@ -94,12 +92,12 @@ public class MaterialUtils {
 		return tools.contains(material);
 	}
 	
-	public static List<Material> getFluidList() {
-		return fluid;
+	public static List<Material> getNonSolidList() {
+		return nonSolid;
 	}
 	
-	public static Set<Material> getFluidSet() {
-		return convertListToSet(fluid);
+	public static Set<Material> getNonSolidSet() {
+		return convertListToSet(nonSolid);
 	}
 	
 	public static <T> Set<T> convertListToSet(List<T> list) { 

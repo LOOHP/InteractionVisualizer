@@ -87,7 +87,7 @@ public class CraftingTableDisplay implements Listener {
 				if (((CraftingInventory) event.getView().getTopInventory()).getMatrix().length != 9) {
 					return;
 				}
-				if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
+				if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
 					return;
 				}
 			}
@@ -98,7 +98,7 @@ public class CraftingTableDisplay implements Listener {
 			if (((CraftingInventory) event.getView().getTopInventory()).getMatrix().length != 9) {
 				return;
 			}
-			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
+			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
 				return;
 			}
 		}
@@ -107,7 +107,7 @@ public class CraftingTableDisplay implements Listener {
 		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
 			blockTemp = event.getView().getTopInventory().getLocation().getBlock();
 		} else {
-			blockTemp = event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7);
+			blockTemp = event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7);
 		}
 		
 		Block block = blockTemp;
@@ -236,7 +236,7 @@ public class CraftingTableDisplay implements Listener {
 				if (((CraftingInventory) event.getView().getTopInventory()).getMatrix().length != 9) {
 					return;
 				}
-				if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
+				if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
 					return;
 				}
 			}
@@ -247,7 +247,7 @@ public class CraftingTableDisplay implements Listener {
 			if (((CraftingInventory) event.getView().getTopInventory()).getMatrix().length != 9) {
 				return;
 			}
-			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
+			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
 				return;
 			}
 		}
@@ -283,7 +283,7 @@ public class CraftingTableDisplay implements Listener {
 				if (((CraftingInventory) event.getView().getTopInventory()).getMatrix().length != 9) {
 					return;
 				}
-				if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
+				if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
 					return;
 				}
 			}
@@ -294,7 +294,7 @@ public class CraftingTableDisplay implements Listener {
 			if (((CraftingInventory) event.getView().getTopInventory()).getMatrix().length != 9) {
 				return;
 			}
-			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getFluidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
+			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
 				return;
 			}
 		}
@@ -330,7 +330,7 @@ public class CraftingTableDisplay implements Listener {
 				if (((CraftingInventory) event.getView().getTopInventory()).getMatrix().length != 9) {
 					return;
 				}
-				if (!event.getPlayer().getTargetBlock(MaterialUtils.getFluidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
+				if (!event.getPlayer().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
 					return;
 				}
 			}
@@ -341,7 +341,7 @@ public class CraftingTableDisplay implements Listener {
 			if (((CraftingInventory) event.getView().getTopInventory()).getMatrix().length != 9) {
 				return;
 			}
-			if (!event.getPlayer().getTargetBlock(MaterialUtils.getFluidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
+			if (!event.getPlayer().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
 				return;
 			}
 		}
@@ -350,7 +350,7 @@ public class CraftingTableDisplay implements Listener {
 		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
 			block = event.getView().getTopInventory().getLocation().getBlock();
 		} else {
-			block = event.getPlayer().getTargetBlock(MaterialUtils.getFluidSet(), 7);
+			block = event.getPlayer().getTargetBlock(MaterialUtils.getNonSolidSet(), 7);
 		}
 		
 		if (!openedBenches.containsKey(block)) {
@@ -469,7 +469,7 @@ public class CraftingTableDisplay implements Listener {
 							if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length != 9) {
 								continue;
 							}
-							if (!player.getTargetBlock(MaterialUtils.getFluidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
+							if (!player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
 								continue;
 							}
 						}
@@ -480,7 +480,7 @@ public class CraftingTableDisplay implements Listener {
 						if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length != 9) {
 							continue;
 						}
-						if (!player.getTargetBlock(MaterialUtils.getFluidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
+						if (!player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
 							continue;
 						}
 					}
@@ -490,7 +490,7 @@ public class CraftingTableDisplay implements Listener {
 					if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
 						block = view.getTopInventory().getLocation().getBlock();
 					} else {
-						block = player.getTargetBlock(MaterialUtils.getFluidSet(), 7);
+						block = player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7);
 					}
 					Location loc = block.getLocation();
 					
