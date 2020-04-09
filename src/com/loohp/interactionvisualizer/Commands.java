@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.Database.Database;
+import com.loohp.interactionvisualizer.Utils.PacketSending;
 import com.loohp.interactionvisualizer.Utils.Updater;
 
 import net.md_5.bungee.api.ChatColor;
@@ -38,6 +39,21 @@ public class Commands implements CommandExecutor, TabCompleter {
 				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Reload")));
 			} else {
 				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.NoPermission")));
+			}
+			return true;
+		}
+		
+		if (args[0].equalsIgnoreCase("refresh")) {
+			if (sender instanceof Player) {
+				Player player = (Player) sender;
+				if (player.hasPermission("interactionvisualizer.refresh")) {
+					PacketSending.removeAll(player);
+					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
+				} else {
+					sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.NoPermission")));
+				}
+			} else {
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.Console")));
 			}
 			return true;
 		}
@@ -169,6 +185,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 			if (sender.hasPermission("interactionvisualizer.toggle")) {
 				tab.add("toggle");
 			}
+			if (sender.hasPermission("interactionvisualizer.refresh")) {
+				tab.add("refresh");
+			}
 			return tab;
 		case 1:
 			if (sender.hasPermission("interactionvisualizer.reload")) {
@@ -184,6 +203,11 @@ public class Commands implements CommandExecutor, TabCompleter {
 			if (sender.hasPermission("interactionvisualizer.toggle")) {
 				if ("toggle".startsWith(args[0].toLowerCase())) {
 					tab.add("toggle");
+				}
+			}
+			if (sender.hasPermission("interactionvisualizer.refresh")) {
+				if ("refresh".startsWith(args[0].toLowerCase())) {
+					tab.add("refresh");
 				}
 			}
 			return tab;
@@ -208,7 +232,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 					if (args[1].toLowerCase().equals("itemstand") || args[1].toLowerCase().equals("itemdrop") || args[1].toLowerCase().equals("hologram")) {
 						if (sender.hasPermission("interactionvisualizer.toggle.others")) {
 							for (Player each : Bukkit.getOnlinePlayers()) {
-								tab.add(each.getName());
+								if (each.getName().toLowerCase().startsWith(args[2].toLowerCase())) {
+									tab.add(each.getName());
+								}
 							}
 						}
 					}

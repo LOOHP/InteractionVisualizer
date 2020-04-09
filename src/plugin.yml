@@ -1,6 +1,6 @@
 name: InteractionVisualizer
 author: loohp
-version: 1.4.2
+version: 1.4.3
 main: com.loohp.interactionvisualizer.InteractionVisualizer
 api-version: 1.13
 description: Makes function blocks better
@@ -17,6 +17,9 @@ permissions:
   interactionvisualizer.reload:
     description: Allows you to reload the plugin
     default: op
+  interactionvisualizer.refresh:
+    description: Allows you to refresh all display items
+    default: true
   interactionvisualizer.toggle:
     description: Allows you to toggle modules
     default: true
