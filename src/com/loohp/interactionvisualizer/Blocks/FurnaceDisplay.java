@@ -21,6 +21,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -42,7 +43,7 @@ public class FurnaceDisplay implements Listener {
 	
 	public static HashMap<Block, HashMap<String, Object>> furnaceMap = new HashMap<Block, HashMap<String, Object>>();
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onFurnace(InventoryClickEvent event) {
 		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
 			return;
@@ -130,8 +131,11 @@ public class FurnaceDisplay implements Listener {
 		}.runTaskLater(InteractionVisualizer.plugin, 8);
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseFurnace(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
@@ -153,8 +157,11 @@ public class FurnaceDisplay implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onDragFurnace(InventoryDragEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}

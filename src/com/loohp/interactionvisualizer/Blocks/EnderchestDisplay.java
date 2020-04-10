@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -35,8 +36,11 @@ public class EnderchestDisplay implements Listener {
 	public static Scoreboard scoreboard = InteractionVisualizer.scoreboard;
 	public static ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<Player, List<Item>>();
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseChest(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
 			return;
 		}
@@ -180,8 +184,11 @@ public class EnderchestDisplay implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onDragChest(InventoryDragEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}

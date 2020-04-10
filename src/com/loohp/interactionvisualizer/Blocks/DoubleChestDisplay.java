@@ -16,6 +16,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -39,8 +40,11 @@ public class DoubleChestDisplay implements Listener {
 	public static Scoreboard scoreboard = InteractionVisualizer.scoreboard;
 	public static ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<Player, List<Item>>();
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseDoubleChest(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
 			return;
 		}
@@ -205,8 +209,11 @@ public class DoubleChestDisplay implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onDragDoubleChest(InventoryDragEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}

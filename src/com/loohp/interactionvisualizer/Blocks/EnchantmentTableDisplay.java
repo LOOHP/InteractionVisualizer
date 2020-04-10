@@ -128,7 +128,7 @@ public class EnchantmentTableDisplay implements Listener {
 		}.runTaskLater(InteractionVisualizer.plugin, 88);
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onEnchantmentTableTake(InventoryClickEvent event) {
 		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
 			return;
@@ -230,8 +230,11 @@ public class EnchantmentTableDisplay implements Listener {
 		}.runTaskAsynchronously(InteractionVisualizer.plugin);
 	}
 
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseEnchantmentTable(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
@@ -259,8 +262,11 @@ public class EnchantmentTableDisplay implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onDragEnchantmentTable(InventoryDragEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}

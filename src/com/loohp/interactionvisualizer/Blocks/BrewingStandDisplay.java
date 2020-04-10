@@ -18,6 +18,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -37,8 +38,11 @@ public class BrewingStandDisplay implements Listener {
 	public static HashMap<Block, HashMap<String, Object>> brewstand = new HashMap<Block, HashMap<String, Object>>();
 	public static int max = 20 * 20;
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseBrewingStand(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
@@ -60,8 +64,11 @@ public class BrewingStandDisplay implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onDragBrewingStand(InventoryDragEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}

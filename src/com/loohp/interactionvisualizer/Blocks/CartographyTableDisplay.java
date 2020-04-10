@@ -12,6 +12,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -31,8 +32,11 @@ public class CartographyTableDisplay implements Listener {
 	public static HashMap<Block, HashMap<String, Object>> openedCTable = new HashMap<Block, HashMap<String, Object>>();
 	
 
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseCartographyTable(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		Player player = (Player) event.getWhoClicked();
 		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
@@ -52,8 +56,11 @@ public class CartographyTableDisplay implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onDragCartographyTable(InventoryDragEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		Player player = (Player) event.getWhoClicked();
 		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 			return;

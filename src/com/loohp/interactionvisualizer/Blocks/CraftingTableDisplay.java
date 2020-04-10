@@ -13,6 +13,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -40,8 +41,11 @@ public class CraftingTableDisplay implements Listener {
 	
 	public static HashMap<Block, HashMap<String, Object>> openedBenches = new HashMap<Block, HashMap<String, Object>>();
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onCraft(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
 			return;
 		}
@@ -214,8 +218,11 @@ public class CraftingTableDisplay implements Listener {
 		}.runTaskLater(InteractionVisualizer.plugin, 10);
 	}
 
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseCraftingBench(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
@@ -261,8 +268,11 @@ public class CraftingTableDisplay implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onDragCraftingBench(InventoryDragEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}

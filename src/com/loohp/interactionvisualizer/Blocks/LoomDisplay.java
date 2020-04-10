@@ -11,6 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -36,7 +37,7 @@ public class LoomDisplay implements Listener {
 	
 	public static HashMap<Block, HashMap<String, Object>> openedLooms = new HashMap<Block, HashMap<String, Object>>();
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onLoom(InventoryClickEvent event) {
 		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
 			return;
@@ -120,8 +121,11 @@ public class LoomDisplay implements Listener {
 		}.runTaskLater(InteractionVisualizer.plugin, 8);
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseLoom(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
@@ -143,8 +147,11 @@ public class LoomDisplay implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onDragLoom(InventoryDragEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}

@@ -13,6 +13,7 @@ import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -33,7 +34,7 @@ public class StonecutterDisplay implements Listener {
 	
 	public static HashMap<Block, HashMap<String, Object>> openedStonecutter = new HashMap<Block, HashMap<String, Object>>();
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onStonecutter(InventoryClickEvent event) {
 		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
 			return;
@@ -112,8 +113,11 @@ public class StonecutterDisplay implements Listener {
 		}.runTaskLater(InteractionVisualizer.plugin, 8);
 	}
 
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseStonecutter(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		Player player = (Player) event.getWhoClicked();
 		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
@@ -133,8 +137,11 @@ public class StonecutterDisplay implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onDragStonecutter(InventoryDragEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
 		Player player = (Player) event.getWhoClicked();
 		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
