@@ -63,7 +63,7 @@ public class DoubleChestDisplay implements Listener {
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.CHEST)) {
+		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.CHEST) && !event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.TRAPPED_CHEST)) {
 			return;
 		}
 		
@@ -204,7 +204,7 @@ public class DoubleChestDisplay implements Listener {
 						list.remove(item);
 						item.remove();
 					}
-				}.runTaskLater(InteractionVisualizer.plugin, 40);
+				}.runTaskLater(InteractionVisualizer.plugin, 20);
 			}						
 		}
 	}
@@ -226,7 +226,7 @@ public class DoubleChestDisplay implements Listener {
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.CHEST)) {
+		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.CHEST) && !event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.TRAPPED_CHEST)) {
 			return;
 		}
 		
@@ -304,7 +304,7 @@ public class DoubleChestDisplay implements Listener {
 							list.remove(item);
 							item.remove();
 						}
-					}.runTaskLater(InteractionVisualizer.plugin, 40);
+					}.runTaskLater(InteractionVisualizer.plugin, 20);
 				}
 				break;
 			}
