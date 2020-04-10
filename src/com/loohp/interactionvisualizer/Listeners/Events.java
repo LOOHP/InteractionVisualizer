@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Database.Database;
@@ -21,11 +22,15 @@ public class Events implements Listener {
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();	
-		if (!Database.playerExists(player)) {
-			Database.createPlayer(player);
-		}
-		Database.loadPlayer(player);
+		Player player = event.getPlayer();
+		new BukkitRunnable() {
+			public void run() {
+				if (!Database.playerExists(player)) {
+					Database.createPlayer(player);
+				}
+				Database.loadPlayer(player);
+			}
+		}.runTaskAsynchronously(InteractionVisualizer.plugin);
 	}
 	
 	@EventHandler

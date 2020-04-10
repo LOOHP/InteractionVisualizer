@@ -28,7 +28,7 @@ public class ArmorStand {
 	boolean isSilent;
 	EulerAngle rightArmPose;
 	EulerAngle headPose;
-	ItemStack helment;
+	ItemStack helmet;
 	ItemStack mainhand;
 	String customName;
 	boolean custonNameVisible;
@@ -49,7 +49,7 @@ public class ArmorStand {
 		this.isSilent = false;
 		this.rightArmPose = new EulerAngle(0.0, 0.0, 0.0);
 		this.headPose = new EulerAngle(0.0, 0.0, 0.0);
-		this.helment = new ItemStack(Material.AIR);
+		this.helmet = new ItemStack(Material.AIR);
 		this.mainhand = new ItemStack(Material.AIR);
 		this.customName = "";
 		this.custonNameVisible = false;
@@ -188,17 +188,17 @@ public class ArmorStand {
 		if (lock) {
 			return;
 		}
-		this.helment = item;
+		this.helmet = item.clone();
 	}	
 	public ItemStack getHelmet() {
-		return helment;
+		return helmet;
 	}
 
 	public void setItemInMainHand(ItemStack item) {
 		if (lock) {
 			return;
 		}
-		this.mainhand = item;
+		this.mainhand = item.clone();
 	}	
 	public ItemStack getItemInMainHand() {
 		return mainhand;
@@ -231,7 +231,7 @@ public class ArmorStand {
 		stand.setSilent(isSilent);
 		stand.setRightArmPose(rightArmPose);
 		stand.setHeadPose(headPose);
-		stand.getEquipment().setHelmet(helment);
+		stand.getEquipment().setHelmet(helmet);
 		stand.getEquipment().setItemInMainHand(mainhand);
 		stand.setCustomName(customName);
 		stand.setCustomNameVisible(custonNameVisible);

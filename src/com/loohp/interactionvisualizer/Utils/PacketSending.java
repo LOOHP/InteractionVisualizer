@@ -54,9 +54,9 @@ public class PacketSending implements Listener {
 		} else {
 			packet.getIntegers().write(1, 30);
 		}
-		packet.getIntegers().write(2, (int) (entity.getVelocity().getX() * 8000));
-		packet.getIntegers().write(3, (int) (entity.getVelocity().getY() * 8000));
-		packet.getIntegers().write(4, (int) (entity.getVelocity().getZ() * 8000));
+		packet.getIntegers().write(2, 0);
+		packet.getIntegers().write(3, 0);
+		packet.getIntegers().write(4, 0);
 		
 		packet.getDoubles().write(0, entity.getLocation().getX());
 		packet.getDoubles().write(1, entity.getLocation().getY());

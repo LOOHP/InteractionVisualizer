@@ -35,6 +35,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			if (sender.hasPermission("interactionvisualizer.reload")) {
 				InteractionVisualizer.plugin.reloadConfig();
 				InteractionVisualizer.loadConfig();
+				EnchantmentManager.reloadConfig();
 				TaskManager.load();
 				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Reload")));
 			} else {
@@ -86,31 +87,35 @@ public class Commands implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					Player player = (Player) sender;
-					switch (args[1].toLowerCase()) {
-					case "itemstand":
-						if (Database.toggleItemStand(player)) {
-							sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
-						} else {
-							sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
+					new BukkitRunnable() {
+						public void run() {
+							switch (args[1].toLowerCase()) {
+							case "itemstand":
+								if (Database.toggleItemStand(player)) {
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
+								} else {
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
+								}
+								break;
+							case "itemdrop":
+								if (Database.toggleItemDrop(player)) {
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
+								} else {
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
+								}
+								break;
+							case "hologram":
+								if (Database.toggleHologram(player)) {
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
+								} else {
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
+								}
+								break;
+							default:
+								sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.Modes")));
+							}
 						}
-						break;
-					case "itemdrop":
-						if (Database.toggleItemDrop(player)) {
-							sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
-						} else {
-							sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
-						}
-						break;
-					case "hologram":
-						if (Database.toggleHologram(player)) {
-							sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
-						} else {
-							sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
-						}
-						break;
-					default:
-						sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.Modes")));
-					}
+					}.runTaskAsynchronously(InteractionVisualizer.plugin);
 					return true;
 				} else if (args.length == 3) {
 					if (sender instanceof Player) {
@@ -128,31 +133,35 @@ public class Commands implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					Player player = Bukkit.getPlayer(args[2]);
-					switch (args[1].toLowerCase()) {
-					case "itemstand":
-						if (Database.toggleItemStand(player)) {
-							sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
-						} else {
-							sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
+					new BukkitRunnable() {
+						public void run() {
+							switch (args[1].toLowerCase()) {
+							case "itemstand":
+								if (Database.toggleItemStand(player)) {
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
+								} else {
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
+								}
+								break;
+							case "itemdrop":
+								if (Database.toggleItemDrop(player)) {
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
+								} else {
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
+								}
+								break;
+							case "hologram":
+								if (Database.toggleHologram(player)) {
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
+								} else {
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
+								}
+								break;
+							default:
+								sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.Modes")));
+							}
 						}
-						break;
-					case "itemdrop":
-						if (Database.toggleItemDrop(player)) {
-							sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
-						} else {
-							sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
-						}
-						break;
-					case "hologram":
-						if (Database.toggleHologram(player)) {
-							sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
-						} else {
-							sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
-						}
-						break;
-					default:
-						sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.Modes")));
-					}
+					}.runTaskAsynchronously(InteractionVisualizer.plugin);
 					return true;
 				} else {
 					sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.Usage")));

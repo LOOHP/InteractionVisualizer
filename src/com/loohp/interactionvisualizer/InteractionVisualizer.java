@@ -120,6 +120,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		plugin.saveConfig();
 		loadConfig();
 		
+		EnchantmentManager.setup();
 		Database.setup();
 		
 		MaterialUtils.setup();

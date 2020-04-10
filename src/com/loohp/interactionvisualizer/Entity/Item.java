@@ -92,6 +92,16 @@ public class Item {
 		return location;
 	}
 	
+	public void setItemStack(ItemStack item, boolean force) {
+		if (lock && !force) {
+			return;
+		}
+		if (item.getType().equals(Material.AIR)) {
+			this.item = new ItemStack(Material.STONE);
+			return;
+		}
+		this.item = item.clone();
+	}
 	public void setItemStack(ItemStack item) {
 		if (lock) {
 			return;

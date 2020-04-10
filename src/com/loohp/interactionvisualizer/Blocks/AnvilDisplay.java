@@ -234,7 +234,7 @@ public class AnvilDisplay implements Listener {
 				
 				for (Player player : InteractionVisualizer.getOnlinePlayers()) {
 					if (VanishUtils.isVanished(player)) {
-						return;
+						continue;
 					}
 					if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 						continue;
