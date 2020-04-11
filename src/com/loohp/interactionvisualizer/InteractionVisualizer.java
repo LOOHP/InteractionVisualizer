@@ -19,8 +19,8 @@ import com.comphenix.protocol.ProtocolManager;
 import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.Metrics.Charts;
 import com.loohp.interactionvisualizer.Metrics.Metrics;
+import com.loohp.interactionvisualizer.Updater.Updater;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
-import com.loohp.interactionvisualizer.Utils.Updater;
 
 import net.md_5.bungee.api.ChatColor;
 import ru.beykerykt.lightapi.LightAPI;

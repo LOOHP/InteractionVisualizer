@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Utils;
+package com.loohp.interactionvisualizer.Updater;
 
 import java.io.IOException;
 import java.net.URL;
@@ -52,7 +52,9 @@ public class Updater {
         try {
             String localPluginVersion = InteractionVisualizer.plugin.getDescription().getVersion();
             String spigotPluginVersion = readStringFromURL("https://api.spigotmc.org/legacy/update.php?resource=77050");
-            if (!spigotPluginVersion.isEmpty() && !spigotPluginVersion.equals(localPluginVersion)) {
+            Version current = new Version(localPluginVersion);
+            Version spigotmc = new Version(spigotPluginVersion);
+            if (!spigotPluginVersion.isEmpty() && current.compareTo(spigotmc) < 0) {
                 return spigotPluginVersion;
             } else {
             	return "latest";

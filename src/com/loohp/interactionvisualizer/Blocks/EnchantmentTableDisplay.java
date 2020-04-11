@@ -21,6 +21,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -49,11 +50,20 @@ public class EnchantmentTableDisplay implements Listener {
 		Block block = event.getEnchantBlock();
 		Location loc = block.getLocation();
 		ItemStack itemstack = new ItemStack(event.getItem().getType());
+		if (itemstack.getType().equals(Material.BOOK)) {
+			itemstack.setType(Material.ENCHANTED_BOOK);
+		}
 		itemstack.setAmount(event.getItem().getAmount());
 		for (Entry<Enchantment, Integer> entry : event.getEnchantsToAdd().entrySet()) {
 			Enchantment ench = entry.getKey();
 			int level = entry.getValue();
-			itemstack.addEnchantment(ench, level);
+			if (!itemstack.getType().equals(Material.ENCHANTED_BOOK)) {
+				EnchantmentStorageMeta meta = (EnchantmentStorageMeta) itemstack.getItemMeta();
+				meta.addStoredEnchant(ench, level, true);
+				itemstack.setItemMeta(meta);
+			} else {
+				itemstack.addUnsafeEnchantment(ench, level);
+			}
 		}
 		
 		if (!openedETable.containsKey(block)) {

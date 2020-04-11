@@ -20,11 +20,13 @@ public class Database {
 	
 	public static boolean isMYSQL = false;
 	
-	public static Connection connection;
-	public static FileConfiguration config = InteractionVisualizer.config;
-	public static String host, database, username, password;
-	public static String table = "InteractionVisualizer_USER_PERFERENCES";
-    public static int port;
+	private static Connection connection;
+	private static FileConfiguration config = InteractionVisualizer.config;
+	private static String host, database, username, password;
+	private static String table = "InteractionVisualizer_USER_PERFERENCES";
+	private static int port;
+    
+    private static Object syncdb = new Object();
 	
 	public static void setup() {
 		String type = config.getString("Database.Type");
@@ -33,25 +35,27 @@ public class Database {
 		} else {
 			isMYSQL = false;
 		}
-		if (isMYSQL) {
-			mysqlSetup(true);
-			createTable();
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		} else {
-			sqliteSetup(true);
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+		synchronized (syncdb) {
+			if (isMYSQL) {
+				mysqlSetup(true);
+				createTable();
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} else {
+				sqliteSetup(true);
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 	
-	public static void open() {
+	private static void open() {
 		if (isMYSQL) {
 			mysqlSetup(false);
 		} else {
@@ -66,52 +70,48 @@ public class Database {
         username = config.getString("Database.MYSQL.Username");
         password = config.getString("Database.MYSQL.Password");
 
-		synchronized (Database.class) {
-			try {
-				if (getConnection() != null && !getConnection().isClosed()) {
-					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "MYSQL Failed to connect! [getConnection() != null && !getConnection().isClosed()]");
-					return;
-				}
-				Class.forName("com.mysql.jdbc.Driver");
-				setConnection(DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password));
-				
-				if (echo == true) {
-					Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "MYSQL CONNECTED");
-				}
-			} catch (SQLException e) {
-				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "MYSQL Failed to connect! (SQLException)");
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "MYSQL Failed to connect! (ClassNotFoundException)");
-				e.printStackTrace();
+        try {
+			if (getConnection() != null && !getConnection().isClosed()) {
+				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "MYSQL Failed to connect! [getConnection() != null && !getConnection().isClosed()]");
+				return;
 			}
+			Class.forName("com.mysql.jdbc.Driver");
+			setConnection(DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password));
+			
+			if (echo == true) {
+				Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "MYSQL CONNECTED");
+			}
+		} catch (SQLException e) {
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "MYSQL Failed to connect! (SQLException)");
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "MYSQL Failed to connect! (ClassNotFoundException)");
+			e.printStackTrace();
 		}
 	}
 	
 	public static void sqliteSetup(boolean echo) {	   
-		synchronized (Database.class) {
-			try {
-				Class.forName("org.sqlite.JDBC");
-		         connection = DriverManager.getConnection("jdbc:sqlite:plugins/InteractionVisualizer/database.db");
-		         if (echo) {
-		        	 Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Opened Sqlite database successfully");
-		         }
-	
-		         Statement stmt = connection.createStatement();
-		         String sql = "CREATE TABLE IF NOT EXISTS " + table + " " +
-		                       "(UUID TEXT PRIMARY KEY, " +
-		                        "NAME TEXT NOT NULL, " + 
-		                        "ITEMSTAND BOOLEAN, " + 
-		                        "ITEMDROP BOOLEAN, " + 
-		                        "HOLOGRAM BOOLEAN);"; 
-		         stmt.executeUpdate(sql);
-		         stmt.close(); 
-		    } catch (Exception e) {
-		    	Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Unable to connect to sqlite database!!!");
-		    	e.printStackTrace();
-		    	InteractionVisualizer.plugin.getPluginLoader().disablePlugin(InteractionVisualizer.plugin);
-		    }
-		}
+		try {
+			Class.forName("org.sqlite.JDBC");
+	         connection = DriverManager.getConnection("jdbc:sqlite:plugins/InteractionVisualizer/database.db");
+	         if (echo) {
+	        	 Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Opened Sqlite database successfully");
+	         }
+
+	         Statement stmt = connection.createStatement();
+	         String sql = "CREATE TABLE IF NOT EXISTS " + table + " " +
+	                       "(UUID TEXT PRIMARY KEY, " +
+	                        "NAME TEXT NOT NULL, " + 
+	                        "ITEMSTAND BOOLEAN, " + 
+	                        "ITEMDROP BOOLEAN, " + 
+	                        "HOLOGRAM BOOLEAN);"; 
+	         stmt.executeUpdate(sql);
+	         stmt.close(); 
+	    } catch (Exception e) {
+	    	Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Unable to connect to sqlite database!!!");
+	    	e.printStackTrace();
+	    	InteractionVisualizer.plugin.getPluginLoader().disablePlugin(InteractionVisualizer.plugin);
+	    }
 	}
 
 	public static Connection getConnection() {
@@ -123,7 +123,7 @@ public class Database {
 	}
 	
     public static void createTable() {
-    	synchronized (Database.class) {
+    	synchronized (syncdb) {
 	    	open();
 	        try {
 	        	PreparedStatement statement = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + table + " (UUID Text, NAME Text, ITEMSTAND BOOLEAN, ITEMDROP BOOLEAN, HOLOGRAM BOOLEAN)");
@@ -145,7 +145,7 @@ public class Database {
     }
     
 	public static boolean playerExists(UUID uuid) {
-		synchronized (Database.class) {
+		synchronized (syncdb) {
 			open();
 			try {
 				PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE UUID=?");
@@ -168,7 +168,7 @@ public class Database {
 	}
 
 	public static void createPlayer(Player player) {
-		synchronized (Database.class) {
+		synchronized (syncdb) {
 			open();
 			try {
 				PreparedStatement insert = getConnection().prepareStatement("INSERT INTO " + table + " (UUID,NAME,ITEMSTAND,ITEMDROP,HOLOGRAM) VALUES (?,?,?,?,?)");
@@ -190,7 +190,7 @@ public class Database {
 	}
 	
 	public static boolean toggleItemStand(Player player) {
-		synchronized (Database.class) {
+		synchronized (syncdb) {
 			open();
 			boolean newvalue = true;
 			if (InteractionVisualizer.itemStand.contains(player)) {
@@ -219,7 +219,7 @@ public class Database {
 	}
 	
 	public static boolean toggleItemDrop(Player player) {
-		synchronized (Database.class) {
+		synchronized (syncdb) {
 			open();
 			boolean newvalue = true;
 			if (InteractionVisualizer.itemDrop.contains(player)) {
@@ -248,7 +248,7 @@ public class Database {
 	}
 	
 	public static boolean toggleHologram(Player player) {
-		synchronized (Database.class) {
+		synchronized (syncdb) {
 			open();
 			boolean newvalue = true;
 			if (InteractionVisualizer.holograms.contains(player)) {
@@ -277,7 +277,7 @@ public class Database {
 	}
 	
 	public static void loadPlayer(Player player) {
-		synchronized (Database.class) {
+		synchronized (syncdb) {
 			open();
 			try {
 				PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE UUID=?");

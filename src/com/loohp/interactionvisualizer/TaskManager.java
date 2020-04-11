@@ -123,6 +123,7 @@ public class TaskManager {
 		if (config.getBoolean("Blocks.BrewingStand.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new BrewingStandDisplay(), plugin);
 			tasks.add(BrewingStandDisplay.run());
+			tasks.add(BrewingStandDisplay.gc());
 		}
 		
 		if (config.getBoolean("Blocks.Chest.Enabled")) {
@@ -136,6 +137,7 @@ public class TaskManager {
 		if (config.getBoolean("Blocks.Furnace.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new FurnaceDisplay(), plugin);
 			tasks.add(FurnaceDisplay.run());
+			tasks.add(FurnaceDisplay.gc());
 		}
 		
 		if (config.getBoolean("Blocks.BlastFurnace.Enabled") &&
@@ -143,6 +145,7 @@ public class TaskManager {
 				) {
 			Bukkit.getPluginManager().registerEvents(new BlastFurnaceDisplay(), plugin);
 			tasks.add(BlastFurnaceDisplay.run());
+			tasks.add(BlastFurnaceDisplay.gc());
 		}
 		
 		if (config.getBoolean("Blocks.Smoker.Enabled") &&
@@ -150,6 +153,7 @@ public class TaskManager {
 				) {
 			Bukkit.getPluginManager().registerEvents(new SmokerDisplay(), plugin);
 			tasks.add(SmokerDisplay.run());
+			tasks.add(SmokerDisplay.gc());
 		}
 		
 		if (config.getBoolean("Blocks.EnderChest.Enabled")) {

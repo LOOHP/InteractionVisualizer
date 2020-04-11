@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.Database.Database;
+import com.loohp.interactionvisualizer.Updater.Updater;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
-import com.loohp.interactionvisualizer.Utils.Updater;
 
 import net.md_5.bungee.api.ChatColor;
 
