@@ -57,7 +57,7 @@ public class EnchantmentTableDisplay implements Listener {
 		for (Entry<Enchantment, Integer> entry : event.getEnchantsToAdd().entrySet()) {
 			Enchantment ench = entry.getKey();
 			int level = entry.getValue();
-			if (!itemstack.getType().equals(Material.ENCHANTED_BOOK)) {
+			if (itemstack.getType().equals(Material.ENCHANTED_BOOK)) {
 				EnchantmentStorageMeta meta = (EnchantmentStorageMeta) itemstack.getItemMeta();
 				meta.addStoredEnchant(ench, level, true);
 				itemstack.setItemMeta(meta);

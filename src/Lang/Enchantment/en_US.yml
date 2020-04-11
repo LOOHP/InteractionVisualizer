@@ -1,0 +1,41 @@
+#This is the default enchantment.yml in English
+#Rename this file to "enchantment.yml" and replace the original "enchantment.yml" to use!
+
+Enchantments:
+    PROTECTION_FIRE: Fire Protection
+    DAMAGE_ALL: Sharpness
+    ARROW_FIRE: Flame
+    WATER_WORKER: Aqua Affinity
+    ARROW_KNOCKBACK: Punch
+    LOYALTY: Loyalty
+    DEPTH_STRIDER: Depth Strider
+    VANISHING_CURSE: Vanishing Curse
+    DURABILITY: Unbreaking
+    KNOCKBACK: Knockback
+    LUCK: Luck Of The Sea
+    BINDING_CURSE: Binding Curse
+    LOOT_BONUS_BLOCKS: Fortune
+    PROTECTION_ENVIRONMENTAL: Protection
+    DIG_SPEED: Efficiency
+    MENDING: Mending
+    FROST_WALKER: Frost Walker
+    LURE: Lure
+    LOOT_BONUS_MOBS: Looting
+    PIERCING: Piercing
+    PROTECTION_EXPLOSIONS: Blast Protection
+    DAMAGE_UNDEAD: Smite
+    MULTISHOT: Multishot
+    FIRE_ASPECT: Fire Aspect
+    CHANNELING: Channeling
+    SWEEPING_EDGE: Sweeping
+    THORNS: Thorns
+    DAMAGE_ARTHROPODS: Bane Of Arthropods
+    OXYGEN: Respiration
+    RIPTIDE: Riptide
+    SILK_TOUCH: Silk Touch
+    QUICK_CHARGE: Quick Charge
+    PROTECTION_PROJECTILE: Projectile Protection
+    IMPALING: Impaling
+    PROTECTION_FALL: Feather Falling
+    ARROW_DAMAGE: Power
+    ARROW_INFINITE: Infinity

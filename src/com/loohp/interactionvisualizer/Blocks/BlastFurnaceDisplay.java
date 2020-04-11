@@ -212,11 +212,11 @@ public class BlastFurnaceDisplay implements Listener {
 			public void run() {
 				Iterator<Entry<Block, HashMap<String, Object>>> itr = blastfurnaceMap.entrySet().iterator();
 				int count = 0;
-				int max = (int) Math.ceil((double) blastfurnaceMap.size() / (double) 600);
+				int maxper = (int) Math.ceil((double) blastfurnaceMap.size() / (double) 600);
 				int delay = 1;
 				while (itr.hasNext()) {
 					count++;
-					if (count > max) {
+					if (count > maxper) {
 						count = 0;
 						delay++;
 					}
@@ -287,13 +287,13 @@ public class BlastFurnaceDisplay implements Listener {
 				
 				Iterator<Entry<Block, HashMap<String, Object>>> itr = blastfurnaceMap.entrySet().iterator();
 				int count = 0;
-				int max = (int) Math.ceil((double) blastfurnaceMap.size() / (double) 20);
+				int maxper = (int) Math.ceil((double) blastfurnaceMap.size() / (double) 20);
 				int delay = 1;
 				while (itr.hasNext()) {
 					Entry<Block, HashMap<String, Object>> entry = itr.next();
 					
 					count++;
-					if (count > max) {
+					if (count > maxper) {
 						count = 0;
 						delay++;
 					}
@@ -358,7 +358,7 @@ public class BlastFurnaceDisplay implements Listener {
 									int time = blastfurnace.getCookTime();
 									int max = blastfurnace.getCookTimeTotal();
 									String symbol = "";
-									double percentagescaled = (double) time / (double) max * 15.0;
+									double percentagescaled = (double) time / (double) max * 10.0;
 									double i = 1;
 									for (i = 1; i < percentagescaled; i = i + 1) {
 										symbol = symbol + "§e\u258e";
@@ -371,7 +371,7 @@ public class BlastFurnaceDisplay implements Listener {
 									} else if ((percentagescaled - i) > 0) {
 										symbol = symbol + "§e\u258e";
 									}
-									for (i = 15 - 1; i >= percentagescaled; i = i - 1) {
+									for (i = 10 - 1; i >= percentagescaled; i = i - 1) {
 										symbol = symbol + "§7\u258e";
 									}
 									

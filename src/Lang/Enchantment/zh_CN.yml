@@ -1,0 +1,42 @@
+#Chinese (Simplified) Language default enchantment.yml translated by StarYunmeng
+#https://www.spigotmc.org/members/staryunmeng.589461/
+#Rename this file to "enchantment.yml" and replace the original "enchantment.yml" to use!
+
+Enchantments:
+  PROTECTION_FIRE: 火焰保护
+  DAMAGE_ALL: 锋利
+  ARROW_FIRE: 火矢
+  WATER_WORKER: 水下速掘
+  ARROW_KNOCKBACK: 冲击
+  LOYALTY: 忠诚
+  DEPTH_STRIDER: 深海探索者
+  VANISHING_CURSE: 消失诅咒
+  DURABILITY: 耐久
+  KNOCKBACK: 击退
+  LUCK: 海之眷顾
+  BINDING_CURSE: 绑定诅咒
+  LOOT_BONUS_BLOCKS: 时运
+  PROTECTION_ENVIRONMENTAL: 保护
+  DIG_SPEED: 效率
+  MENDING: 经验修补
+  FROST_WALKER: 冰霜行者
+  LURE: 饵钓
+  LOOT_BONUS_MOBS: 抢夺
+  PIERCING: 穿透
+  PROTECTION_EXPLOSIONS: 爆炸保护
+  DAMAGE_UNDEAD: 亡灵杀手
+  MULTISHOT: 多重射击
+  FIRE_ASPECT: 火焰附加
+  CHANNELING: 引雷
+  SWEEPING_EDGE: 横扫之刃
+  THORNS: 荆棘
+  DAMAGE_ARTHROPODS: 截肢杀手
+  OXYGEN: 水下呼吸
+  RIPTIDE: 激流
+  SILK_TOUCH: 精准采集
+  QUICK_CHARGE: 快速上弦
+  PROTECTION_PROJECTILE: 弹射物保护
+  IMPALING: 穿刺
+  PROTECTION_FALL: 摔落保护
+  ARROW_DAMAGE: 力量
+  ARROW_INFINITE: 无限

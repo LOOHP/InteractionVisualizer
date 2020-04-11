@@ -120,11 +120,11 @@ public class BrewingStandDisplay implements Listener {
 			public void run() {
 				Iterator<Entry<Block, HashMap<String, Object>>> itr = brewstand.entrySet().iterator();
 				int count = 0;
-				int max = (int) Math.ceil((double) brewstand.size() / (double) 600);
+				int maxper = (int) Math.ceil((double) brewstand.size() / (double) 600);
 				int delay = 1;
 				while (itr.hasNext()) {
 					count++;
-					if (count > max) {
+					if (count > maxper) {
 						count = 0;
 						delay++;
 					}
@@ -195,13 +195,13 @@ public class BrewingStandDisplay implements Listener {
 				
 				Iterator<Entry<Block, HashMap<String, Object>>> itr = brewstand.entrySet().iterator();
 				int count = 0;
-				int max = (int) Math.ceil((double) brewstand.size() / (double) 20);
+				int maxper = (int) Math.ceil((double) brewstand.size() / (double) 20);
 				int delay = 1;
 				while (itr.hasNext()) {
 					Entry<Block, HashMap<String, Object>> entry = itr.next();
 					
 					count++;
-					if (count > max) {
+					if (count > maxper) {
 						count = 0;
 						delay++;
 					}
@@ -283,7 +283,6 @@ public class BrewingStandDisplay implements Listener {
 									for (i = 10 - 1; i >= percentagescaled; i = i - 1) {
 										symbol = symbol + "§7\u258e";
 									}
-									
 									stand.setCustomNameVisible(true);
 									stand.setCustomName(symbol);
 									PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
