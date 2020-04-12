@@ -1,9 +1,7 @@
 package com.loohp.interactionvisualizer.Blocks;
 
 import java.util.HashMap;
-import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -241,125 +239,108 @@ public class GrindstoneDisplay implements Listener {
 		return new BukkitRunnable() {
 			public void run() {
 				
-				int count = 0;
-				int maxper = (int) Math.ceil((double) InteractionVisualizer.getOnlinePlayers().size() / (double) 5);
-				int delay = 1;
-				for (Player eachplayer : InteractionVisualizer.getOnlinePlayers()) {
-					count++;
-					if (count > maxper) {
-						count = 0;
-						delay++;
+				for (Player player : InteractionVisualizer.getOnlinePlayers()) {
+					if (VanishUtils.isVanished(player)) {
+						continue;
 					}
-					UUID uuid = eachplayer.getUniqueId();
+					if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+						continue;
+					}
+					if (player.getOpenInventory() == null) {
+						continue;
+					}
+					if (player.getOpenInventory().getTopInventory() == null) {
+						continue;
+					}
+					if (player.getOpenInventory().getTopInventory().getLocation() == null) {
+						continue;
+					}
+					if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
+						continue;
+					}
+					if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().equals(Material.GRINDSTONE)) {
+						continue;
+					}
 					
-					new BukkitRunnable() {
-						public void run() {
-							if (Bukkit.getPlayer(uuid) == null) {
-								return;
-							}
-							Player player = Bukkit.getPlayer(uuid);
-							if (VanishUtils.isVanished(player)) {
-								return;
-							}
-							if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-								return;
-							}
-							if (player.getOpenInventory() == null) {
-								return;
-							}
-							if (player.getOpenInventory().getTopInventory() == null) {
-								return;
-							}
-							if (player.getOpenInventory().getTopInventory().getLocation() == null) {
-								return;
-							}
-							if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
-								return;
-							}
-							if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().equals(Material.GRINDSTONE)) {
-								return;
-							}
-							
-							InventoryView view = player.getOpenInventory();
-							Block block = view.getTopInventory().getLocation().getBlock();
-							Location loc = block.getLocation();
-							
-							if (!openedGrindstone.containsKey(block)) {
-								HashMap<String, Object> map = new HashMap<String, Object>();
-								map.put("Player", player);
+					InventoryView view = player.getOpenInventory();
+					Block block = view.getTopInventory().getLocation().getBlock();
+					Location loc = block.getLocation();
+					
+					if (!openedGrindstone.containsKey(block)) {
+						HashMap<String, Object> map = new HashMap<String, Object>();
+						map.put("Player", player);
+						map.put("2", "N/A");
+						map.putAll(spawnArmorStands(player, block));
+						openedGrindstone.put(block, map);
+					}
+					
+					HashMap<String, Object> map = openedGrindstone.get(block);
+					
+					if (!map.get("Player").equals(player)) {
+						continue;
+					}
+					ItemStack[] items = new ItemStack[]{view.getItem(0),view.getItem(1)};
+
+					if (view.getItem(2) != null) {
+						ItemStack itemstack = view.getItem(2);
+						if (itemstack.getType().equals(Material.AIR)) {
+							itemstack = null;
+						}
+						Item item = null;
+						if (map.get("2") instanceof String) {
+							if (itemstack != null) {
+								item = new Item(loc.clone().add(0.5, 1.2, 0.5));
+								item.setItemStack(itemstack);
+								item.setVelocity(new Vector(0, 0, 0));
+								item.setPickupDelay(32767);
+								item.setGravity(false);
+								map.put("2", item);
+								PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+								PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+							} else {
 								map.put("2", "N/A");
-								map.putAll(spawnArmorStands(player, block));
-								openedGrindstone.put(block, map);
 							}
-							
-							HashMap<String, Object> map = openedGrindstone.get(block);
-							
-							if (!map.get("Player").equals(player)) {
-								return;
-							}
-							ItemStack[] items = new ItemStack[]{view.getItem(0),view.getItem(1)};
-		
-							if (view.getItem(2) != null) {
-								ItemStack itemstack = view.getItem(2);
-								if (itemstack.getType().equals(Material.AIR)) {
-									itemstack = null;
+						} else {
+							item = (Item) map.get("2");
+							if (itemstack != null) {
+								if (!item.getItemStack().equals(itemstack)) {
+									item.setItemStack(itemstack);
+									PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 								}
-								Item item = null;
-								if (map.get("2") instanceof String) {
-									if (itemstack != null) {
-										item = new Item(loc.clone().add(0.5, 1.2, 0.5));
-										item.setItemStack(itemstack);
-										item.setVelocity(new Vector(0, 0, 0));
-										item.setPickupDelay(32767);
-										item.setGravity(false);
-										map.put("2", item);
-										PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-										PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-									} else {
-										map.put("2", "N/A");
-									}
-								} else {
-									item = (Item) map.get("2");
-									if (itemstack != null) {
-										if (!item.getItemStack().equals(itemstack)) {
-											item.setItemStack(itemstack);
-											PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-										}
-										item.setPickupDelay(32767);
-										item.setGravity(false);
-									} else {
-										map.put("2", "N/A");
-										PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-										item.remove();
-									}
-								}
-							}
-							for (int i = 0; i < 2; i++) {
-								ArmorStand stand = (ArmorStand) map.get(String.valueOf(i));
-								ItemStack item = items[i];
-								if (item.getType().equals(Material.AIR)) {
-									item = null;
-								}
-								if (item != null) {
-									if (item.getType().isBlock() && !standMode(stand).equals("Block")) {
-										toggleStandMode(stand, "Block");
-									} else if (MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Tool")) {
-										toggleStandMode(stand, "Tool");
-									} else if (!item.getType().isBlock() && !MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Item")) {
-										toggleStandMode(stand, "Item");
-									}
-									stand.setItemInMainHand(item);
-									PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-								} else {
-									stand.setItemInMainHand(new ItemStack(Material.AIR));
-									PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-								}
+								item.setPickupDelay(32767);
+								item.setGravity(false);
+							} else {
+								map.put("2", "N/A");
+								PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+								item.remove();
 							}
 						}
-					}.runTaskLater(InteractionVisualizer.plugin, delay);
+					}
+					for (int i = 0; i < 2; i++) {
+						ArmorStand stand = (ArmorStand) map.get(String.valueOf(i));
+						ItemStack item = items[i];
+						if (item.getType().equals(Material.AIR)) {
+							item = null;
+						}
+						if (item != null) {
+							if (item.getType().isBlock() && !standMode(stand).equals("Block")) {
+								toggleStandMode(stand, "Block");
+							} else if (MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Tool")) {
+								toggleStandMode(stand, "Tool");
+							} else if (!item.getType().isBlock() && !MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Item")) {
+								toggleStandMode(stand, "Item");
+							}
+							stand.setItemInMainHand(item);
+							PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+						} else {
+							stand.setItemInMainHand(new ItemStack(Material.AIR));
+							PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+						}
+					}
 				}
+				
 			}
-		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 5).getTaskId();
+		}.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
 	}
 	
 	public static String standMode(ArmorStand stand) {

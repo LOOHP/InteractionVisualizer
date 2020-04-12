@@ -2,7 +2,11 @@ package com.loohp.interactionvisualizer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -12,6 +16,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -53,6 +58,8 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	public static boolean UpdaterEnabled = true;
 	public static int UpdaterTaskID = -1;
+	
+	public static BlockingQueue<Chunk> chunkupdatequeue = new LinkedBlockingQueue<Chunk>(); 
 	
 	@Override
 	public void onEnable() {
@@ -144,6 +151,7 @@ public class InteractionVisualizer extends JavaPlugin {
 			}
 		}
 		
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> chunkQueue(), 100);
 		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "InteractionVisualizer has been enabled!");
 	}
 	
@@ -170,6 +178,51 @@ public class InteractionVisualizer extends JavaPlugin {
 		onlinePlayers.clear();
 		onlinePlayers.addAll(Bukkit.getOnlinePlayers());
 		return onlinePlayers;
+	}
+	
+	public static void chunkQueue() {
+		int next = 1;
+		if (chunkupdatequeue.size() == 0) {
+			return;
+		}
+		try {
+			Chunk chunk = chunkupdatequeue.poll(2, TimeUnit.MILLISECONDS);
+			if (chunk != null) {
+				if (!chunksGoneOver.contains(chunk)) {
+					int delay = 1;
+					int count = 0;
+					int maxper = (int) Math.ceil((double) chunk.getEntities().length / (double) 5);
+					for (Entity eachEntity : chunk.getEntities()) {
+						count++;
+						if (count > maxper) {
+							count = 0;
+							delay++;
+						}
+						UUID uuid = eachEntity.getUniqueId();
+						new BukkitRunnable() {
+							public void run() {
+								if (Bukkit.getEntity(uuid) == null) {
+									return;
+								}
+								Entity entity = Bukkit.getEntity(uuid);
+								if (entity.getScoreboardTags().contains("isInteractionVisualizer")) {
+									LightAPI.deleteLight(entity.getLocation(), LightType.BLOCK, false);
+									for (ChunkInfo info : LightAPI.collectChunks(entity.getLocation(), LightType.BLOCK, 15)) {
+										LightAPI.updateChunk(info, LightType.BLOCK);
+									}
+									entity.remove();
+								}
+							}
+						}.runTaskLater(InteractionVisualizer.plugin, delay);
+					}
+					next = next + delay;
+					chunksGoneOver.add(chunk);
+				}
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> chunkQueue(), next);
 	}
 
 }
