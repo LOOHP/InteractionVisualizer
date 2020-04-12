@@ -1,0 +1,42 @@
+#French Language default enchantment.yml translated by Cry_Legende
+#https://www.spigotmc.org/members/cry_legende.288109/
+#Rename this file to "enchantment.yml" and replace the original "enchantment.yml" to use!
+
+Enchantments:
+    PROTECTION_FIRE: Protection contre le feu
+    DAMAGE_ALL: Tranchant
+    ARROW_FIRE: Flamme
+    WATER_WORKER: Affinité aquatique
+    ARROW_KNOCKBACK: Frappe
+    LOYALTY: Loyauté
+    DEPTH_STRIDER: Agilité aquatique
+    VANISHING_CURSE: Malédiction de disparition
+    DURABILITY: Solidité
+    KNOCKBACK: Recul
+    LUCK: Chance de la mer
+    BINDING_CURSE: Malédiction du lien éternel
+    LOOT_BONUS_BLOCKS: Fortune
+    PROTECTION_ENVIRONMENTAL: Protection
+    DIG_SPEED: Efficacité
+    MENDING: Raccommodage
+    FROST_WALKER: Semelles givrantes
+    LURE: Appât
+    LOOT_BONUS_MOBS: Butin
+    PIERCING: Perforation
+    PROTECTION_EXPLOSIONS: Protection contre les explosions
+    DAMAGE_UNDEAD: Châtiment
+    MULTISHOT: Tir multiple
+    FIRE_ASPECT: Aura de feu
+    CHANNELING: Canalisation
+    SWEEPING_EDGE: Affilage
+    THORNS: Épines
+    DAMAGE_ARTHROPODS: Fléau des arthropodes
+    OXYGEN: Apnée
+    RIPTIDE: Impulsion
+    SILK_TOUCH: Toucher de soie
+    QUICK_CHARGE: Charge rapide
+    PROTECTION_PROJECTILE: Protection contre les projectiles
+    IMPALING: Empalement
+    PROTECTION_FALL: Chute amortie
+    ARROW_DAMAGE: Puissance
+    ARROW_INFINITE: Infinité

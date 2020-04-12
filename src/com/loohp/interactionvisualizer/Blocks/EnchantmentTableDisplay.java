@@ -1,6 +1,7 @@
 package com.loohp.interactionvisualizer.Blocks;
 
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +28,7 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.EnchantmentManager;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Entity.Item;
+import com.loohp.interactionvisualizer.EntityHolder.Item;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
@@ -416,94 +417,111 @@ public class EnchantmentTableDisplay implements Listener {
 		return new BukkitRunnable() {
 			public void run() {
 				
-				for (Player player : InteractionVisualizer.getOnlinePlayers()) {
-					if (VanishUtils.isVanished(player)) {
-						continue;
+				int count = 0;
+				int maxper = (int) Math.ceil((double) InteractionVisualizer.getOnlinePlayers().size() / (double) 5);
+				int delay = 1;
+				for (Player eachplayer : InteractionVisualizer.getOnlinePlayers()) {
+					count++;
+					if (count > maxper) {
+						count = 0;
+						delay++;
 					}
-					if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-						continue;
-					}
-					if (player.getOpenInventory() == null) {
-						continue;
-					}
-					if (player.getOpenInventory().getTopInventory() == null) {
-						continue;
-					}
-					if (player.getOpenInventory().getTopInventory().getLocation() == null) {
-						continue;
-					}
-					if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
-						continue;
-					}
-					if (!InteractionVisualizer.version.contains("legacy")) {
-						if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTING_TABLE")) {
-							continue;
-						}
-					} else {
-						if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTMENT_TABLE")) {
-							continue;
-						}
-					}
+					UUID uuid = eachplayer.getUniqueId();
 					
-					InventoryView view = player.getOpenInventory();
-					Block block = view.getTopInventory().getLocation().getBlock();
-					Location loc = block.getLocation();
-					if (!openedETable.containsKey(block)) {
-						HashMap<String, Object> map = new HashMap<String, Object>();
-						map.put("Player", player);
-						map.put("Item", "N/A");
-						map.put("Lock", false);
-						openedETable.put(block, map);
-					}
-					HashMap<String, Object> map = openedETable.get(block);
-					
-					if (!map.get("Player").equals(player)) {
-						continue;
-					}
-					
-					if (view.getItem(0) != null) {
-						ItemStack itemstack = view.getItem(0);
-						if (itemstack != null) {
-							if (itemstack.getType().equals(Material.AIR)) {
-								itemstack = null;
+					new BukkitRunnable() {
+						public void run() {
+							if (Bukkit.getPlayer(uuid) == null) {
+								return;
 							}
-						}
-						
-						Item item = null;
-						if (map.get("Item") instanceof String) {
-							if (itemstack != null) {
-								item = new Item(loc.clone().add(0.5, 1.3, 0.5));
-								item.setItemStack(itemstack);
-								item.setVelocity(new Vector(0, 0, 0));
-								item.setPickupDelay(32767);
-								item.setGravity(false);
-								map.put("Item", item);
-								PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-								PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+							Player player = Bukkit.getPlayer(uuid);
+							if (VanishUtils.isVanished(player)) {
+								return;
+							}
+							if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+								return;
+							}
+							if (player.getOpenInventory() == null) {
+								return;
+							}
+							if (player.getOpenInventory().getTopInventory() == null) {
+								return;
+							}
+							if (player.getOpenInventory().getTopInventory().getLocation() == null) {
+								return;
+							}
+							if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
+								return;
+							}
+							if (!InteractionVisualizer.version.contains("legacy")) {
+								if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTING_TABLE")) {
+									return;
+								}
 							} else {
-								map.put("Item", "N/A");
+								if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTMENT_TABLE")) {
+									return;
+								}
 							}
-						} else {
-							item = (Item) map.get("Item");
-							if (!item.isLocked()) {
+							
+							InventoryView view = player.getOpenInventory();
+							Block block = view.getTopInventory().getLocation().getBlock();
+							Location loc = block.getLocation();
+							if (!openedETable.containsKey(block)) {
+								HashMap<String, Object> map = new HashMap<String, Object>();
+								map.put("Player", player);
+								map.put("Item", "N/A");
+								map.put("Lock", false);
+								openedETable.put(block, map);
+							}
+							HashMap<String, Object> map = openedETable.get(block);
+							
+							if (!map.get("Player").equals(player)) {
+								return;
+							}
+							
+							if (view.getItem(0) != null) {
+								ItemStack itemstack = view.getItem(0);
 								if (itemstack != null) {
-									if (!item.getItemStack().equals(itemstack)) {
-										item.setItemStack(itemstack);
-										PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+									if (itemstack.getType().equals(Material.AIR)) {
+										itemstack = null;
 									}
-									item.setPickupDelay(32767);
-									item.setGravity(false);
+								}
+								
+								Item item = null;
+								if (map.get("Item") instanceof String) {
+									if (itemstack != null) {
+										item = new Item(loc.clone().add(0.5, 1.3, 0.5));
+										item.setItemStack(itemstack);
+										item.setVelocity(new Vector(0, 0, 0));
+										item.setPickupDelay(32767);
+										item.setGravity(false);
+										map.put("Item", item);
+										PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+										PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+									} else {
+										map.put("Item", "N/A");
+									}
 								} else {
-									map.put("Item", "N/A");
-									PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-									item.remove();
+									item = (Item) map.get("Item");
+									if (!item.isLocked()) {
+										if (itemstack != null) {
+											if (!item.getItemStack().equals(itemstack)) {
+												item.setItemStack(itemstack);
+												PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+											}
+											item.setPickupDelay(32767);
+											item.setGravity(false);
+										} else {
+											map.put("Item", "N/A");
+											PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+											item.remove();
+										}
+									}
 								}
 							}
 						}
-					}
-				}
-				
+					}.runTaskLater(InteractionVisualizer.plugin, delay);
+				}			
 			}
-		}.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
+		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 5).getTaskId();
 	}
 }

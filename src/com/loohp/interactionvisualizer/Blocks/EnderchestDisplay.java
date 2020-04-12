@@ -21,11 +21,10 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Entity.Item;
+import com.loohp.interactionvisualizer.EntityHolder.Item;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.OpenInvUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
@@ -33,7 +32,6 @@ import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class EnderchestDisplay implements Listener {
 	
-	public static Scoreboard scoreboard = InteractionVisualizer.scoreboard;
 	public static ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<Player, List<Item>>();
 	
 	@EventHandler(priority=EventPriority.MONITOR)
@@ -146,14 +144,8 @@ public class EnderchestDisplay implements Listener {
 				}
 				PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
 				item.setItemStack(itemstack);
-				if (isIn == true) {
-					scoreboard.getTeam("ChestIn").addEntry(item.getUniqueId().toString());
-				} else {
-					scoreboard.getTeam("ChestOut").addEntry(item.getUniqueId().toString());
-				}
 				item.setPickupDelay(32767);
 				item.setGravity(true);
-				item.setGlowing(true);
 				PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 				if (!link.containsKey((Player) event.getWhoClicked())) {
 					link.put((Player) event.getWhoClicked(), new ArrayList<Item>());
@@ -234,11 +226,9 @@ public class EnderchestDisplay implements Listener {
 					item.setVelocity(vector);
 					PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
 					item.setItemStack(itemstack);
-					scoreboard.getTeam("ChestIn").addEntry(item.getUniqueId().toString());
 					item.setCustomName(System.currentTimeMillis() + "");
 					item.setPickupDelay(32767);
 					item.setGravity(true);
-					item.setGlowing(true);
 					PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 					if (!link.containsKey((Player) event.getWhoClicked())) {
 						link.put((Player) event.getWhoClicked(), new ArrayList<Item>());

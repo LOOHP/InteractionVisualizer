@@ -52,6 +52,10 @@ Blocks:
   Stonecutter:
     Enabled: true
 
+Entities:
+  Villager: 
+    Enabled: true
+
 #Enable these modules for InteractionVisualizer displays
 #ItemStand represents all displays using armorstands and itemframes
 #ItemDrop represents all displays using dropped items

@@ -79,6 +79,17 @@ public class LangManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        String FrenchLang = "fr_FR.yml";
+        file = new File(LangEnchFolder, FrenchLang);
+        if (file.exists()) {
+        	file.delete();
+        }
+        try (InputStream in = InteractionVisualizer.class.getClassLoader().getResourceAsStream("Lang/Enchantment/" + FrenchLang)) {
+            Files.copy(in, file.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 
 }

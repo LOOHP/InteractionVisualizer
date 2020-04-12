@@ -29,8 +29,8 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Entity.ArmorStand;
-import com.loohp.interactionvisualizer.Entity.Item;
+import com.loohp.interactionvisualizer.EntityHolder.ArmorStand;
+import com.loohp.interactionvisualizer.EntityHolder.Item;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class BrewingStandDisplay implements Listener {

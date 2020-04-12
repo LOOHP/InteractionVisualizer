@@ -2,8 +2,10 @@ package com.loohp.interactionvisualizer.Blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.UUID;
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,8 +25,8 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Entity.ArmorStand;
-import com.loohp.interactionvisualizer.Entity.Item;
+import com.loohp.interactionvisualizer.EntityHolder.ArmorStand;
+import com.loohp.interactionvisualizer.EntityHolder.Item;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
@@ -269,87 +271,104 @@ public class LoomDisplay implements Listener {
 					itr.remove();
 				}
 				
-				for (Player player : InteractionVisualizer.getOnlinePlayers()) {
-					if (VanishUtils.isVanished(player)) {
-						continue;
+				int count = 0;
+				int maxper = (int) Math.ceil((double) InteractionVisualizer.getOnlinePlayers().size() / (double) 5);
+				int delay = 1;
+				for (Player eachplayer : InteractionVisualizer.getOnlinePlayers()) {
+					count++;
+					if (count > maxper) {
+						count = 0;
+						delay++;
 					}
-					if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-						continue;
-					}
-					if (player.getOpenInventory() == null) {
-						continue;
-					}
-					if (player.getOpenInventory().getTopInventory() == null) {
-						continue;
-					}
-					if (player.getOpenInventory().getTopInventory().getLocation() == null) {
-						continue;
-					}
-					if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
-						continue;
-					}
-					if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().equals(Material.LOOM)) {
-						continue;
-					}
+					UUID uuid = eachplayer.getUniqueId();
 					
-					InventoryView view = player.getOpenInventory();
-					Block block = view.getTopInventory().getLocation().getBlock();
-					if (!openedLooms.containsKey(block)) {
-						HashMap<String, Object> map = new HashMap<String, Object>();
-						map.put("Player", player);
-						map.putAll(spawnArmorStands(player, block));
-						openedLooms.put(block, map);
-					}
-					HashMap<String, Object> map = openedLooms.get(block);
-					
-					if (!map.get("Player").equals(player)) {
-						continue;
-					}
-					
-					ItemStack input = view.getItem(0);
-					if (input != null) {
-						if (input.getType().equals(Material.AIR)) {
-							input = null;
+					new BukkitRunnable() {
+						public void run() {
+							if (Bukkit.getPlayer(uuid) == null) {
+								return;
+							}
+							Player player = Bukkit.getPlayer(uuid);
+							if (VanishUtils.isVanished(player)) {
+								return;
+							}
+							if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+								return;
+							}
+							if (player.getOpenInventory() == null) {
+								return;
+							}
+							if (player.getOpenInventory().getTopInventory() == null) {
+								return;
+							}
+							if (player.getOpenInventory().getTopInventory().getLocation() == null) {
+								return;
+							}
+							if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
+								return;
+							}
+							if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().equals(Material.LOOM)) {
+								return;
+							}
+							
+							InventoryView view = player.getOpenInventory();
+							Block block = view.getTopInventory().getLocation().getBlock();
+							if (!openedLooms.containsKey(block)) {
+								HashMap<String, Object> map = new HashMap<String, Object>();
+								map.put("Player", player);
+								map.putAll(spawnArmorStands(player, block));
+								openedLooms.put(block, map);
+							}
+							HashMap<String, Object> map = openedLooms.get(block);
+							
+							if (!map.get("Player").equals(player)) {
+								return;
+							}
+							
+							ItemStack input = view.getItem(0);
+							if (input != null) {
+								if (input.getType().equals(Material.AIR)) {
+									input = null;
+								}
+							}
+							ItemStack output = view.getItem(3);
+							if (output != null) {
+								if (output.getType().equals(Material.AIR)) {
+									output = null;
+								}
+							}
+							
+							ItemStack item = null;
+							if (output == null) {
+								if (input != null) {
+									item = input;
+								}
+							} else {
+								item = output;
+							}
+							
+							ArmorStand stand = (ArmorStand) map.get("Banner");
+							if (item != null) {
+								stand.setHelmet(item);
+							} else {
+								stand.setHelmet(new ItemStack(Material.AIR));
+							}
+							PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							
+							Location loc1 = ((ArmorStand) map.get("Banner")).getLocation();
+							LightAPI.deleteLight(loc1, LightType.BLOCK, false);
+							int light = loc1.getBlock().getRelative(BlockFace.UP).getLightLevel() - 1;
+							if (light < 0) {
+								light = 0;
+							}
+							LightAPI.createLight(loc1, LightType.BLOCK, light, false);
+							for (ChunkInfo info : LightAPI.collectChunks(loc1, LightType.BLOCK, 15)) {
+								LightAPI.updateChunk(info, LightType.BLOCK);
+							}
 						}
-					}
-					ItemStack output = view.getItem(3);
-					if (output != null) {
-						if (output.getType().equals(Material.AIR)) {
-							output = null;
-						}
-					}
-					
-					ItemStack item = null;
-					if (output == null) {
-						if (input != null) {
-							item = input;
-						}
-					} else {
-						item = output;
-					}
-					
-					ArmorStand stand = (ArmorStand) map.get("Banner");
-					if (item != null) {
-						stand.setHelmet(item);
-					} else {
-						stand.setHelmet(new ItemStack(Material.AIR));
-					}
-					PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-					
-					Location loc1 = ((ArmorStand) map.get("Banner")).getLocation();
-					LightAPI.deleteLight(loc1, LightType.BLOCK, false);
-					int light = loc1.getBlock().getRelative(BlockFace.UP).getLightLevel() - 1;
-					if (light < 0) {
-						light = 0;
-					}
-					LightAPI.createLight(loc1, LightType.BLOCK, light, false);
-					for (ChunkInfo info : LightAPI.collectChunks(loc1, LightType.BLOCK, 15)) {
-						LightAPI.updateChunk(info, LightType.BLOCK);
-					}
+					}.runTaskLater(InteractionVisualizer.plugin, delay);
 				}
-				
 			}
-		}.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
+		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 5).getTaskId();
 	}
 	
 	public static HashMap<String, ArmorStand> spawnArmorStands(Player player, Block block) {

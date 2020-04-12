@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Entity;
+package com.loohp.interactionvisualizer.EntityHolder;
 
 import java.util.Optional;
 import java.util.UUID;

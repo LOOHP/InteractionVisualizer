@@ -12,7 +12,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.Scoreboard;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -31,7 +30,6 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	public static Plugin plugin = null;
 	public static ProtocolManager protocolManager;
-	public static Scoreboard scoreboard;
 	public static FileConfiguration config;
 	
 	public static String version = "";
@@ -59,7 +57,6 @@ public class InteractionVisualizer extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		plugin = getServer().getPluginManager().getPlugin("InteractionVisualizer");
-		scoreboard = getServer().getScoreboardManager().getMainScoreboard();
 		
 		protocolManager = ProtocolLibrary.getProtocolManager();
 		
@@ -127,20 +124,6 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		getCommand("interactionvisualizer").setExecutor(new Commands());
 		
-		if (scoreboard.getTeam("ChestIn") == null) {
-			scoreboard.registerNewTeam("ChestIn");			
-		}
-		if (!version.contains("legacy") || version.equals("legacy1.12")) {
-			scoreboard.getTeam("ChestIn").setColor(org.bukkit.ChatColor.GREEN);
-		}
-		
-		if (scoreboard.getTeam("ChestOut") == null) {
-			scoreboard.registerNewTeam("ChestOut");
-		}
-		if (!version.contains("legacy") || version.equals("legacy1.12")) {
-			scoreboard.getTeam("ChestOut").setColor(org.bukkit.ChatColor.RED);
-		}
-		
 		TaskManager.setup();
 		TaskManager.load();
 		
@@ -166,8 +149,6 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		scoreboard.getTeam("ChestIn").unregister();
-		scoreboard.getTeam("ChestOut").unregister();
 		getServer().getConsoleSender().sendMessage(ChatColor.RED + "InteractionVisualizer has been disabled!");
 	}
 	

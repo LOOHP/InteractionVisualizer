@@ -17,9 +17,9 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Entity.ArmorStand;
-import com.loohp.interactionvisualizer.Entity.Item;
-import com.loohp.interactionvisualizer.Entity.ItemFrame;
+import com.loohp.interactionvisualizer.EntityHolder.ArmorStand;
+import com.loohp.interactionvisualizer.EntityHolder.Item;
+import com.loohp.interactionvisualizer.EntityHolder.ItemFrame;
 
 public class PacketSending implements Listener {
 	

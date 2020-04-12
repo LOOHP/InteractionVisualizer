@@ -23,6 +23,7 @@ import com.loohp.interactionvisualizer.Blocks.LoomDisplay;
 import com.loohp.interactionvisualizer.Blocks.SmokerDisplay;
 import com.loohp.interactionvisualizer.Blocks.StonecutterDisplay;
 import com.loohp.interactionvisualizer.Debug.Debug;
+import com.loohp.interactionvisualizer.Entities.VillagerDisplay;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class TaskManager {
@@ -31,6 +32,7 @@ public class TaskManager {
 	public static String version;
 	public static FileConfiguration config = InteractionVisualizer.config;
 	
+	/*
 	public static AnvilDisplay anvil;
 	public static BlastFurnaceDisplay blastfurnace;
 	public static BrewingStandDisplay brewingstand;
@@ -45,10 +47,12 @@ public class TaskManager {
 	public static LoomDisplay loom;
 	public static SmokerDisplay smoker;
 	public static StonecutterDisplay stonecutter;
+	*/
 	
 	public static List<Integer> tasks = new ArrayList<Integer>();
 	
 	public static void setup() {
+		/*
 		anvil = new AnvilDisplay();
 		blastfurnace = new BlastFurnaceDisplay();
 		brewingstand = new BrewingStandDisplay();
@@ -63,6 +67,7 @@ public class TaskManager {
 		loom = new LoomDisplay();
 		smoker = new SmokerDisplay();
 		stonecutter = new StonecutterDisplay();
+		*/
 		version = InteractionVisualizer.version;
 	}
 	
@@ -158,6 +163,10 @@ public class TaskManager {
 		
 		if (config.getBoolean("Blocks.EnderChest.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new EnderchestDisplay(), plugin);
+		}
+		
+		if (config.getBoolean("Entities.Villager.Enabled")) {
+			Bukkit.getPluginManager().registerEvents(new VillagerDisplay(), plugin);
 		}
 	}
 
