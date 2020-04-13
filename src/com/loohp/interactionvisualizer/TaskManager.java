@@ -2,11 +2,15 @@ package com.loohp.interactionvisualizer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.Blocks.AnvilDisplay;
 import com.loohp.interactionvisualizer.Blocks.BlastFurnaceDisplay;
@@ -32,46 +36,43 @@ public class TaskManager {
 	public static String version;
 	public static FileConfiguration config = InteractionVisualizer.config;
 	
-	/*
-	public static AnvilDisplay anvil;
-	public static BlastFurnaceDisplay blastfurnace;
-	public static BrewingStandDisplay brewingstand;
-	public static CartographyTableDisplay cartographytable;
-	public static ChestDisplay chest;
-	public static CraftingTableDisplay craftingtable;
-	public static DoubleChestDisplay doublechest;
-	public static EnchantmentTableDisplay enchantmenttable;
-	public static EnderchestDisplay enderchest;
-	public static FurnaceDisplay furnace;
-	public static GrindstoneDisplay grindstone;
-	public static LoomDisplay loom;
-	public static SmokerDisplay smoker;
-	public static StonecutterDisplay stonecutter;
-	*/
+	public static boolean anvil;
+	public static boolean blastfurnace;
+	public static boolean brewingstand;
+	public static boolean cartographytable;
+	public static boolean chest;
+	public static boolean craftingtable;
+	public static boolean doublechest;
+	public static boolean enchantmenttable;
+	public static boolean enderchest;
+	public static boolean furnace;
+	public static boolean grindstone;
+	public static boolean loom;
+	public static boolean smoker;
+	public static boolean stonecutter;
+	
+	public static boolean villager;
 	
 	public static List<Integer> tasks = new ArrayList<Integer>();
 	
 	public static void setup() {
-		/*
-		anvil = new AnvilDisplay();
-		blastfurnace = new BlastFurnaceDisplay();
-		brewingstand = new BrewingStandDisplay();
-		cartographytable = new CartographyTableDisplay();
-		chest = new ChestDisplay();
-		craftingtable = new CraftingTableDisplay();
-		doublechest = new DoubleChestDisplay();
-		enchantmenttable = new EnchantmentTableDisplay();
-		enderchest = new EnderchestDisplay();
-		furnace = new FurnaceDisplay();
-		grindstone = new GrindstoneDisplay();
-		loom = new LoomDisplay();
-		smoker = new SmokerDisplay();
-		stonecutter = new StonecutterDisplay();
-		*/
+		anvil = false;
+		blastfurnace = false;
+		brewingstand = false;
+		cartographytable = false;
+		chest = false;
+		craftingtable = false;
+		doublechest = false;
+		enchantmenttable = false;
+		enderchest = false;
+		furnace = false;
+		grindstone = false;
+		loom = false;
+		smoker = false;
+		stonecutter = false;
+		villager = false;
 		version = InteractionVisualizer.version;
-	}
-	
-	public static void load() {
+		
 		HandlerList.unregisterAll(plugin);
 		for (int taskid : tasks) {
 			Bukkit.getScheduler().cancelTask(taskid);
@@ -85,6 +86,7 @@ public class TaskManager {
 		if (config.getBoolean("Blocks.CraftingTable.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new CraftingTableDisplay(), plugin);
 			CraftingTableDisplay.run();
+			craftingtable = true;
 		}
 		
 		if (config.getBoolean("Blocks.Loom.Enabled") &&
@@ -92,11 +94,12 @@ public class TaskManager {
 				) {
 			Bukkit.getPluginManager().registerEvents(new LoomDisplay(), plugin);
 			tasks.add(LoomDisplay.run());
+			loom = true;
 		}
 		
 		if (config.getBoolean("Blocks.EnchantmentTable.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new EnchantmentTableDisplay(), plugin);
-			tasks.add(EnchantmentTableDisplay.run());
+			enchantmenttable = true;
 		}
 		
 		if (config.getBoolean("Blocks.CartographyTable.Enabled") &&
@@ -104,18 +107,19 @@ public class TaskManager {
 				) {
 			Bukkit.getPluginManager().registerEvents(new CartographyTableDisplay(), plugin);
 			tasks.add(CartographyTableDisplay.run());
+			cartographytable = true;
 		}
 		
 		if (config.getBoolean("Blocks.Anvil.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new AnvilDisplay(), plugin);
-			tasks.add(AnvilDisplay.run());
+			anvil = true;
 		}
 		
 		if (config.getBoolean("Blocks.Grindstone.Enabled") &&
 				   (version.equals("1.14") || version.equals("1.15"))
 				) {
 			Bukkit.getPluginManager().registerEvents(new GrindstoneDisplay(), plugin);
-			tasks.add(GrindstoneDisplay.run());
+			grindstone = true;
 		}
 		
 		if (config.getBoolean("Blocks.Stonecutter.Enabled") &&
@@ -123,26 +127,31 @@ public class TaskManager {
 				) {
 			Bukkit.getPluginManager().registerEvents(new StonecutterDisplay(), plugin);
 			tasks.add(StonecutterDisplay.run());
+			stonecutter = true;
 		}
 		
 		if (config.getBoolean("Blocks.BrewingStand.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new BrewingStandDisplay(), plugin);
 			tasks.add(BrewingStandDisplay.run());
 			tasks.add(BrewingStandDisplay.gc());
+			brewingstand = true;
 		}
 		
 		if (config.getBoolean("Blocks.Chest.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new ChestDisplay(), plugin);
+			chest = true;
 		}
 		
 		if (config.getBoolean("Blocks.DoubleChest.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new DoubleChestDisplay(), plugin);
+			doublechest = true;
 		}
 		
 		if (config.getBoolean("Blocks.Furnace.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new FurnaceDisplay(), plugin);
 			tasks.add(FurnaceDisplay.run());
 			tasks.add(FurnaceDisplay.gc());
+			furnace = true;
 		}
 		
 		if (config.getBoolean("Blocks.BlastFurnace.Enabled") &&
@@ -151,6 +160,7 @@ public class TaskManager {
 			Bukkit.getPluginManager().registerEvents(new BlastFurnaceDisplay(), plugin);
 			tasks.add(BlastFurnaceDisplay.run());
 			tasks.add(BlastFurnaceDisplay.gc());
+			blastfurnace = true;
 		}
 		
 		if (config.getBoolean("Blocks.Smoker.Enabled") &&
@@ -159,15 +169,146 @@ public class TaskManager {
 			Bukkit.getPluginManager().registerEvents(new SmokerDisplay(), plugin);
 			tasks.add(SmokerDisplay.run());
 			tasks.add(SmokerDisplay.gc());
+			smoker = true;
 		}
 		
 		if (config.getBoolean("Blocks.EnderChest.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new EnderchestDisplay(), plugin);
+			enderchest = true;
 		}
 		
 		if (config.getBoolean("Entities.Villager.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new VillagerDisplay(), plugin);
+			villager = true;
 		}
+		
+		tasks.add(run());
+	}
+	
+	public static int run() {
+		return new BukkitRunnable() {
+			public void run() {
+				int count = 0;
+				int maxper = (int) Math.ceil((double) Bukkit.getOnlinePlayers().size() / (double) 5);
+				int delay = 1;
+				for (Player eachPlayer : Bukkit.getOnlinePlayers()) {
+					count++;
+					if (count > maxper) {
+						count = 0;
+						delay++;
+					}
+					UUID uuid = eachPlayer.getUniqueId();
+					new BukkitRunnable() {
+						public void run() {
+							if (Bukkit.getPlayer(uuid) == null) {
+								return;
+							}
+							Player player = Bukkit.getPlayer(uuid);
+							
+							if (player.getOpenInventory() == null) {
+								return;
+							}
+							if (player.getOpenInventory().getTopInventory() == null) {
+								return;
+							}
+							
+							Inventory inv = player.getOpenInventory().getTopInventory();
+							
+							switch (inv.getType()) {
+							case ANVIL:
+								if (anvil) {
+									AnvilDisplay.process(player);
+								}
+								return;
+							case BARREL:
+								//
+								return;
+							case BEACON:
+								//
+								return;
+							case BLAST_FURNACE:
+								//
+								return;
+							case BREWING:
+								//
+								return;
+							case CARTOGRAPHY:
+								if (cartographytable) {
+									CartographyTableDisplay.process(player);
+								}
+								return;
+							case CHEST:
+								//
+								return;
+							case CRAFTING:
+								//
+								return;
+							case CREATIVE:
+								//
+								return;
+							case DISPENSER:
+								//
+								return;
+							case DROPPER:
+								//
+								return;
+							case ENCHANTING:
+								if (enchantmenttable) {
+									EnchantmentTableDisplay.process(player);
+								}
+								return;
+							case ENDER_CHEST:
+								//
+								return;
+							case FURNACE:
+								//
+								return;
+							case GRINDSTONE:
+								if (grindstone) {
+									GrindstoneDisplay.process(player);
+								}
+								return;
+							case HOPPER:
+								//
+								return;
+							case LECTERN:
+								//
+								return;
+							case LOOM:
+								if (loom) {
+									LoomDisplay.process(player);
+								}
+								return;
+							case MERCHANT:
+								//
+								return;
+							case PLAYER:
+								//
+								return;
+							case SHULKER_BOX:
+								//
+								return;
+							case SMOKER:
+								//
+								return;
+							case STONECUTTER:
+								if (stonecutter) {
+									StonecutterDisplay.process(player);
+								}
+								return;
+							case WORKBENCH:
+								if (craftingtable) {
+									CraftingTableDisplay.process(player);
+								}
+								return;
+							default:
+								return;							
+							}							
+						}
+					}.runTaskLater(plugin, delay);
+				}
+			}
+		}.runTaskTimer(plugin, 0, 6).getTaskId();
 	}
 
 }

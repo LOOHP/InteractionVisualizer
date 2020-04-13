@@ -207,9 +207,6 @@ public class AnvilDisplay implements Listener {
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().contains("ANVIL")) {
-			return;
-		}
 		
 		Block block = event.getView().getTopInventory().getLocation().getBlock();
 		
@@ -235,116 +232,108 @@ public class AnvilDisplay implements Listener {
 		openedAnvil.remove(block);
 	}
 	
-	public static int run() {		
-		return new BukkitRunnable() {
-			public void run() {
-				
-				for (Player player : InteractionVisualizer.getOnlinePlayers()) {
-					if (VanishUtils.isVanished(player)) {
-						continue;
-					}
-					if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-						continue;
-					}
-					if (player.getOpenInventory() == null) {
-						continue;
-					}
-					if (player.getOpenInventory().getTopInventory() == null) {
-						continue;
-					}
-					if (player.getOpenInventory().getTopInventory().getLocation() == null) {
-						continue;
-					}
-					if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
-						continue;
-					}
-					if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().contains("ANVIL")) {
-						continue;
-					}
-					
-					InventoryView view = player.getOpenInventory();
-					Block block = view.getTopInventory().getLocation().getBlock();
-					Location loc = block.getLocation();
-					
-					if (!openedAnvil.containsKey(block)) {
-						HashMap<String, Object> map = new HashMap<String, Object>();
-						map.put("Player", player);
-						map.put("2", "N/A");
-						map.putAll(spawnArmorStands(player, block));
-						openedAnvil.put(block, map);
-					}
-					
-					HashMap<String, Object> map = openedAnvil.get(block);
-					
-					if (!map.get("Player").equals(player)) {
-						continue;
-					}
-					ItemStack[] items = new ItemStack[]{view.getItem(0),view.getItem(1)};
+	public static void process(Player player) {		
+		if (VanishUtils.isVanished(player)) {
+			return;
+		}
+		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+			return;
+		}
+		if (player.getOpenInventory() == null) {
+			return;
+		}
+		if (player.getOpenInventory().getTopInventory() == null) {
+			return;
+		}
+		if (player.getOpenInventory().getTopInventory().getLocation() == null) {
+			return;
+		}
+		if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
+			return;
+		}
+		if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().contains("ANVIL")) {
+			return;
+		}
+		
+		InventoryView view = player.getOpenInventory();
+		Block block = view.getTopInventory().getLocation().getBlock();
+		Location loc = block.getLocation();
+		
+		if (!openedAnvil.containsKey(block)) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("Player", player);
+			map.put("2", "N/A");
+			map.putAll(spawnArmorStands(player, block));
+			openedAnvil.put(block, map);
+		}
+		
+		HashMap<String, Object> map = openedAnvil.get(block);
+		
+		if (!map.get("Player").equals(player)) {
+			return;
+		}
+		ItemStack[] items = new ItemStack[]{view.getItem(0),view.getItem(1)};
 
-					if (view.getItem(2) != null) {
-						ItemStack itemstack = view.getItem(2);
-						if (itemstack.getType().equals(Material.AIR)) {
-							itemstack = null;
-						}
-						Item item = null;
-						if (map.get("2") instanceof String) {
-							if (itemstack != null) {
-								item = new Item(loc.clone().add(0.5, 1.2, 0.5));
-								item.setItemStack(itemstack);
-								item.setVelocity(new Vector(0, 0, 0));
-								item.setPickupDelay(32767);
-								item.setGravity(false);
-								item.setCustomName(itemstack.getItemMeta().getDisplayName());
-								item.setCustomNameVisible(true);
-								map.put("2", item);
-								PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-								PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-							} else {
-								map.put("2", "N/A");
-							}
-						} else {
-							item = (Item) map.get("2");
-							if (itemstack != null) {
-								if (!item.getItemStack().equals(itemstack)) {
-									item.setItemStack(itemstack);
-									item.setCustomName(itemstack.getItemMeta().getDisplayName());
-									item.setCustomNameVisible(true);
-									PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-								}
-								item.setPickupDelay(32767);
-								item.setGravity(false);
-							} else {
-								map.put("2", "N/A");
-								PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-								item.remove();
-							}
-						}
-					}
-					for (int i = 0; i < 2; i++) {
-						ArmorStand stand = (ArmorStand) map.get(String.valueOf(i));
-						ItemStack item = items[i];
-						if (item.getType().equals(Material.AIR)) {
-							item = null;
-						}
-						if (item != null) {
-							if (item.getType().isBlock() && !standMode(stand).equals("Block")) {
-								toggleStandMode(stand, "Block");
-							} else if (MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Tool")) {
-								toggleStandMode(stand, "Tool");
-							} else if (!item.getType().isBlock() && !MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Item")) {
-								toggleStandMode(stand, "Item");
-							}
-							stand.setItemInMainHand(item);
-							PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-						} else {
-							stand.setItemInMainHand(new ItemStack(Material.AIR));
-							PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-						}
-					}
-				}
-				
+		if (view.getItem(2) != null) {
+			ItemStack itemstack = view.getItem(2);
+			if (itemstack.getType().equals(Material.AIR)) {
+				itemstack = null;
 			}
-		}.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
+			Item item = null;
+			if (map.get("2") instanceof String) {
+				if (itemstack != null) {
+					item = new Item(loc.clone().add(0.5, 1.2, 0.5));
+					item.setItemStack(itemstack);
+					item.setVelocity(new Vector(0, 0, 0));
+					item.setPickupDelay(32767);
+					item.setGravity(false);
+					item.setCustomName(itemstack.getItemMeta().getDisplayName());
+					item.setCustomNameVisible(true);
+					map.put("2", item);
+					PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+					PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				} else {
+					map.put("2", "N/A");
+				}
+			} else {
+				item = (Item) map.get("2");
+				if (itemstack != null) {
+					if (!item.getItemStack().equals(itemstack)) {
+						item.setItemStack(itemstack);
+						item.setCustomName(itemstack.getItemMeta().getDisplayName());
+						item.setCustomNameVisible(true);
+						PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+					}
+					item.setPickupDelay(32767);
+					item.setGravity(false);
+				} else {
+					map.put("2", "N/A");
+					PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+					item.remove();
+				}
+			}
+		}
+		for (int i = 0; i < 2; i++) {
+			ArmorStand stand = (ArmorStand) map.get(String.valueOf(i));
+			ItemStack item = items[i];
+			if (item.getType().equals(Material.AIR)) {
+				item = null;
+			}
+			if (item != null) {
+				if (item.getType().isBlock() && !standMode(stand).equals("Block")) {
+					toggleStandMode(stand, "Block");
+				} else if (MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Tool")) {
+					toggleStandMode(stand, "Tool");
+				} else if (!item.getType().isBlock() && !MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Item")) {
+					toggleStandMode(stand, "Item");
+				}
+				stand.setItemInMainHand(item);
+				PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			} else {
+				stand.setItemInMainHand(new ItemStack(Material.AIR));
+				PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			}
+		}
 	}
 	
 	public static String standMode(ArmorStand stand) {

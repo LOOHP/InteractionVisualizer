@@ -133,7 +133,6 @@ public class InteractionVisualizer extends JavaPlugin {
 		getCommand("interactionvisualizer").setExecutor(new Commands());
 		
 		TaskManager.setup();
-		TaskManager.load();
 		
 		Charts.registerCharts(metrics);
 		

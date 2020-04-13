@@ -30,7 +30,7 @@ import com.loohp.interactionvisualizer.Utils.VanishUtils;
 public class CartographyTableDisplay implements Listener {
 	
 	public static HashMap<Block, HashMap<String, Object>> openedCTable = new HashMap<Block, HashMap<String, Object>>();
-	
+	public static HashMap<Player, Block> playermap = new HashMap<Player, Block>();
 
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseCartographyTable(InventoryClickEvent event) {
@@ -85,21 +85,11 @@ public class CartographyTableDisplay implements Listener {
 	
 	@EventHandler
 	public void onCloseCartographyTable(InventoryCloseEvent event) {
-		Player player = (Player) event.getPlayer();
-		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-			return;
-		}
-		if (event.getView().getTopInventory() == null) {
-			return;
-		}
-		if (!(event.getView().getTopInventory() instanceof CartographyInventory)) {
-			return;
-		}
-		if (!player.getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.CARTOGRAPHY_TABLE)) {
+		if (!playermap.containsKey((Player) event.getPlayer())) {
 			return;
 		}
 		
-		Block block = player.getTargetBlockExact(7, FluidCollisionMode.NEVER);
+		Block block = playermap.get((Player) event.getPlayer());
 		
 		if (!openedCTable.containsKey(block)) {
 			return;
@@ -116,6 +106,7 @@ public class CartographyTableDisplay implements Listener {
 			entity.remove();
 		}
 		openedCTable.remove(block);
+		playermap.remove((Player) event.getPlayer());
 	}
 	
 	public static int run() {		
@@ -146,94 +137,96 @@ public class CartographyTableDisplay implements Listener {
 						entity.remove();
 					}
 					itr.remove();
-				}
-				
-				for (Player player : InteractionVisualizer.getOnlinePlayers()) {
-					if (VanishUtils.isVanished(player)) {
-						continue;
-					}
-					if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-						continue;
-					}
-					if (player.getOpenInventory() == null) {
-						continue;
-					}
-					if (player.getOpenInventory().getTopInventory() == null) {
-						continue;
-					}
-					if (!(player.getOpenInventory().getTopInventory() instanceof CartographyInventory)) {
-						continue;
-					}
-					if (!player.getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.CARTOGRAPHY_TABLE)) {
-						continue;
-					}
-					
-					InventoryView view = player.getOpenInventory();
-					Block block = player.getTargetBlockExact(7, FluidCollisionMode.NEVER);
-					if (!openedCTable.containsKey(block)) {
-						HashMap<String, Object> map = new HashMap<String, Object>();
-						map.put("Player", player);
-						map.put("Item", "N/A");
-						openedCTable.put(block, map);
-					}
-					HashMap<String, Object> map = openedCTable.get(block);
-					
-					if (!map.get("Player").equals(player)) {
-						continue;
-					}
-				
-					ItemStack input = view.getItem(0);
-					if (input != null) {
-						if (input.getType().equals(Material.AIR)) {
-							input = null;
-						}
-					}
-					ItemStack output = view.getItem(2);
-					if (output != null) {
-						if (output.getType().equals(Material.AIR)) {
-							output = null;
-						}
-					}
-					
-					ItemStack itemstack = null;
-					if (output == null) {
-						if (input != null) {
-							itemstack = input;
-						}
-					} else {
-						itemstack = output;
-					}
-						
-					ItemFrame item = null;
-					if (!block.getRelative(BlockFace.UP).getType().isSolid()) {
-						if (map.get("Item") instanceof String) {
-							if (itemstack != null) {
-								item = new ItemFrame(block.getRelative(BlockFace.UP).getLocation());
-								item.setItem(itemstack);
-								item.setFacingDirection(BlockFace.UP);
-								map.put("Item", item);
-								PacketSending.sendItemFrameSpawn(InteractionVisualizer.itemStand, item);
-								PacketSending.updateItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
-							} else {
-								map.put("Item", "N/A");
-							}
-						} else {
-							item = (ItemFrame) map.get("Item");
-							if (itemstack != null) {
-								if (!item.getItem().equals(itemstack)) {
-									item.setItem(itemstack);
-									PacketSending.updateItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
-								}
-							} else {
-								map.put("Item", "N/A");
-								PacketSending.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
-								item.remove();
-							}
-						}
-					}
-				}
-				
+				}								
 			}
 		}.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
+	}
+	
+	public static void process(Player player) {
+		if (VanishUtils.isVanished(player)) {
+			return;
+		}
+		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+			return;
+		}
+		if (player.getOpenInventory() == null) {
+			return;
+		}
+		if (player.getOpenInventory().getTopInventory() == null) {
+			return;
+		}
+		if (!(player.getOpenInventory().getTopInventory() instanceof CartographyInventory)) {
+			return;
+		}
+		if (!player.getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.CARTOGRAPHY_TABLE)) {
+			return;
+		}
+		
+		InventoryView view = player.getOpenInventory();
+		Block block = player.getTargetBlockExact(7, FluidCollisionMode.NEVER);
+		
+		playermap.put(player, block);
+		
+		if (!openedCTable.containsKey(block)) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("Player", player);
+			map.put("Item", "N/A");
+			openedCTable.put(block, map);
+		}
+		HashMap<String, Object> map = openedCTable.get(block);
+		
+		if (!map.get("Player").equals(player)) {
+			return;
+		}
+	
+		ItemStack input = view.getItem(0);
+		if (input != null) {
+			if (input.getType().equals(Material.AIR)) {
+				input = null;
+			}
+		}
+		ItemStack output = view.getItem(2);
+		if (output != null) {
+			if (output.getType().equals(Material.AIR)) {
+				output = null;
+			}
+		}
+		
+		ItemStack itemstack = null;
+		if (output == null) {
+			if (input != null) {
+				itemstack = input;
+			}
+		} else {
+			itemstack = output;
+		}
+			
+		ItemFrame item = null;
+		if (!block.getRelative(BlockFace.UP).getType().isSolid()) {
+			if (map.get("Item") instanceof String) {
+				if (itemstack != null) {
+					item = new ItemFrame(block.getRelative(BlockFace.UP).getLocation());
+					item.setItem(itemstack);
+					item.setFacingDirection(BlockFace.UP);
+					map.put("Item", item);
+					PacketSending.sendItemFrameSpawn(InteractionVisualizer.itemStand, item);
+					PacketSending.updateItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
+				} else {
+					map.put("Item", "N/A");
+				}
+			} else {
+				item = (ItemFrame) map.get("Item");
+				if (itemstack != null) {
+					if (!item.getItem().equals(itemstack)) {
+						item.setItem(itemstack);
+						PacketSending.updateItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
+					}
+				} else {
+					map.put("Item", "N/A");
+					PacketSending.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
+					item.remove();
+				}
+			}
+		}
 	}
 }

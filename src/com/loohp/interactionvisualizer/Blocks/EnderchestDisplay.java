@@ -267,9 +267,6 @@ public class EnderchestDisplay implements Listener {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getType().equals(InventoryType.ENDER_CHEST)) {
-			return;
-		}
 		
 		if (!link.containsKey((Player) event.getPlayer())) {
 			return;

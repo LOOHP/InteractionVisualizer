@@ -36,7 +36,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 				InteractionVisualizer.plugin.reloadConfig();
 				InteractionVisualizer.loadConfig();
 				EnchantmentManager.reloadConfig();
-				TaskManager.load();
+				TaskManager.setup();
 				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Reload")));
 			} else {
 				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.NoPermission")));
