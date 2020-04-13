@@ -23,6 +23,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.Metrics.Charts;
 import com.loohp.interactionvisualizer.Metrics.Metrics;
+import com.loohp.interactionvisualizer.PlaceholderAPI.PlaceholderAPI;
 import com.loohp.interactionvisualizer.Updater.Updater;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 
@@ -135,6 +136,10 @@ public class InteractionVisualizer extends JavaPlugin {
 		TaskManager.load();
 		
 		Charts.registerCharts(metrics);
+		
+		if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+			new PlaceholderAPI().register();
+		}
 		
 		for (World world : Bukkit.getWorlds()) {
 			for (Chunk chunk : world.getLoadedChunks()) {

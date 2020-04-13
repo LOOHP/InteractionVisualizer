@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -274,6 +275,36 @@ public class Database {
 			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
 			return newvalue;
 		}
+	}
+	
+	public static HashMap<String, Boolean> getPlayerInfo(UUID uuid) {
+		HashMap<String, Boolean> map = new HashMap<String, Boolean>();
+		synchronized (syncdb) {
+			open();
+			try {
+				PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE UUID=?");
+				statement.setString(1, uuid.toString());
+				ResultSet results = statement.executeQuery();
+				results.next();
+				
+				map.put("itemstand", results.getBoolean("ITEMSTAND"));
+				map.put("itemdrop", results.getBoolean("ITEMDROP"));
+				map.put("hologram", results.getBoolean("HOLOGRAM"));				
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return map;
+	}
+	
+	public static HashMap<String, Boolean> getPlayerInfo(Player player) {
+		return getPlayerInfo(player.getUniqueId());
 	}
 	
 	public static void loadPlayer(Player player) {

@@ -261,16 +261,20 @@ public class EnderchestDisplay implements Listener {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation() == null) {
+		if (event.getPlayer().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
+		if (event.getView().getTopInventory() == null) {
+			return;
+		}
+		if (!event.getView().getTopInventory().getType().equals(InventoryType.ENDER_CHEST)) {
 			return;
 		}
 		
 		if (!link.containsKey((Player) event.getPlayer())) {
 			return;
 		}
+		
 		List<Item> list = link.get((Player) event.getPlayer());
 		Iterator<Item> itr = list.iterator();
 		while (itr.hasNext()) {
