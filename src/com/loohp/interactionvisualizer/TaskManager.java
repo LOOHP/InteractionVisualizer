@@ -182,7 +182,9 @@ public class TaskManager {
 			enderchest = true;
 		}
 		
-		if (config.getBoolean("Blocks.ShulkerBox.Enabled")) {
+		if (config.getBoolean("Blocks.ShulkerBox.Enabled") &&
+				   (!version.contains("OLD"))
+				) {
 			Bukkit.getPluginManager().registerEvents(new ShulkerBoxDisplay(), plugin);
 			shulkerbox = true;
 		}

@@ -3,6 +3,7 @@ package com.loohp.interactionvisualizer.Blocks;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.GameMode;
@@ -23,6 +24,7 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.EntityHolder.Item;
+import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.OpenInvUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
@@ -119,6 +121,31 @@ public class ShulkerBoxDisplay implements Listener {
 			}
 		}
 		
+		if (event.isShiftClick()) {
+			if (isIn) {
+				if (!InventoryUtils.stillHaveSpace(event.getView().getTopInventory(), event.getView().getItem(event.getRawSlot()).getType())) {
+					return;
+				}
+			} else {
+				if (!InventoryUtils.stillHaveSpace(event.getWhoClicked().getInventory(), event.getView().getItem(event.getRawSlot()).getType())) {
+					return;
+				}
+			}
+		}
+		if (event.getCursor() != null) {
+			if (!event.getCursor().getType().equals(Material.AIR)) {
+				if (event.getCurrentItem() != null) {
+					if (!event.getCurrentItem().getType().equals(Material.AIR)) {
+						if (event.getCurrentItem().getType().equals(event.getCursor().getType())) {
+							if (event.getCurrentItem().getAmount() >= event.getCurrentItem().getType().getMaxStackSize()) {
+								return;
+							}
+						}
+					}
+				}
+			}
+		}
+		
 		if (isMove == true) {
 			PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 			if (itemstack != null) {
@@ -183,6 +210,29 @@ public class ShulkerBoxDisplay implements Listener {
 			return;
 		}
 		if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().contains("SHULKER_BOX")) {
+			return;
+		}
+		
+		boolean ok = false;
+		for (Entry<Integer, ItemStack> entry : event.getNewItems().entrySet()) {
+			ItemStack item = event.getView().getItem(entry.getKey());
+			if (item == null) {
+				ok = true;
+				break;
+			}
+			if (item.getType().equals(Material.AIR)) {
+				ok = true;
+				break;
+			}
+			if (!item.getType().equals(entry.getValue().getType())) {
+				continue;
+			}
+			if (item.getAmount() < item.getType().getMaxStackSize()) {
+				ok = true;
+				break;
+			}
+		}
+		if (!ok) {
 			return;
 		}
 		
