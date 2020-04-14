@@ -1,6 +1,7 @@
 package com.loohp.interactionvisualizer.Blocks;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,6 +19,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -33,19 +35,20 @@ import com.loohp.interactionvisualizer.Utils.VanishUtils;
 public class EnderchestDisplay implements Listener {
 	
 	public static ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<Player, List<Item>>();
+	public static HashMap<Player, Block> playermap = new HashMap<Player, Block>();
 	
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onUseChest(InventoryClickEvent event) {
+	public void onOpenEnderChest(InventoryOpenEvent event) {
 		if (event.isCancelled()) {
 			return;
 		}
-		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
+		if (VanishUtils.isVanished((Player) event.getPlayer())) {
 			return;
 		}
-		if (OpenInvUtils.isSlientChest((Player) event.getWhoClicked())) {
+		if (OpenInvUtils.isSlientChest((Player) event.getPlayer())) {
 			return;
 		}
-		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+		if (event.getPlayer().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
 		if (event.getView().getTopInventory() == null) {
@@ -55,21 +58,43 @@ public class EnderchestDisplay implements Listener {
 			return;
 		}
 		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
-			if (!event.getWhoClicked().getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.ENDER_CHEST)) {
+			if (event.getPlayer().getTargetBlockExact(7, FluidCollisionMode.NEVER) != null) {
+				if (!event.getPlayer().getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.ENDER_CHEST)) {
+					return;
+				}
+			} else {
 				return;
 			}
 		} else {
-			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().equals(Material.ENDER_CHEST)) {
+			if (event.getPlayer().getTargetBlock(MaterialUtils.getNonSolidSet(), 7) != null) {
+				if (!event.getPlayer().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().equals(Material.ENDER_CHEST)) {
+					return;
+				}
+			} else {
 				return;
 			}
 		}
 		
 		Block block = null;
 		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
-			block = event.getWhoClicked().getTargetBlockExact(7, FluidCollisionMode.NEVER);
+			block = event.getPlayer().getTargetBlockExact(7, FluidCollisionMode.NEVER);
 		} else {
-			block = event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7);
+			block = event.getPlayer().getTargetBlock(MaterialUtils.getNonSolidSet(), 7);
 		}
+		
+		playermap.put((Player) event.getPlayer(), block);
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onUseChest(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		if (!playermap.containsKey((Player) event.getWhoClicked())) {
+			return;
+		}
+		
+		Block block = playermap.get((Player) event.getWhoClicked());
 		Location loc = block.getLocation();
 		
 		boolean isIn = true;
@@ -171,7 +196,7 @@ public class EnderchestDisplay implements Listener {
 						list.remove(item);
 						item.remove();
 					}
-				}.runTaskLater(InteractionVisualizer.plugin, 40);
+				}.runTaskLater(InteractionVisualizer.plugin, 20);
 			}						
 		}
 	}
@@ -181,31 +206,11 @@ public class EnderchestDisplay implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+		if (!playermap.containsKey((Player) event.getWhoClicked())) {
 			return;
-		}
-		if (event.getView().getTopInventory() == null) {
-			return;
-		}
-		if (!event.getView().getTopInventory().getType().equals(InventoryType.ENDER_CHEST)) {
-			return;
-		}
-		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
-			if (!event.getWhoClicked().getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.ENDER_CHEST)) {
-				return;
-			}
-		} else {
-			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().equals(Material.ENDER_CHEST)) {
-				return;
-			}
 		}
 		
-		Block block = null;
-		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
-			block = event.getWhoClicked().getTargetBlockExact(7, FluidCollisionMode.NEVER);
-		} else {
-			block = event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7);
-		}
+		Block block = playermap.get((Player) event.getWhoClicked());
 		Location loc = block.getLocation();
 		
 		for (int slot : event.getRawSlots()) {
@@ -249,7 +254,7 @@ public class EnderchestDisplay implements Listener {
 							list.remove(item);
 							item.remove();
 						}
-					}.runTaskLater(InteractionVisualizer.plugin, 40);
+					}.runTaskLater(InteractionVisualizer.plugin, 20);
 				}
 				break;
 			}
@@ -258,13 +263,7 @@ public class EnderchestDisplay implements Listener {
 	
 	@EventHandler
 	public void onCloseChest(InventoryCloseEvent event) {
-		if (event.getView().getTopInventory() == null) {
-			return;
-		}
-		if (event.getPlayer().getGameMode().equals(GameMode.SPECTATOR)) {
-			return;
-		}
-		if (event.getView().getTopInventory() == null) {
+		if (!playermap.containsKey((Player) event.getPlayer())) {
 			return;
 		}
 		

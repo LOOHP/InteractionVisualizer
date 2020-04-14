@@ -272,7 +272,6 @@ public class ChestDisplay implements Listener {
 		while (itr.hasNext()) {
 			Item item = itr.next();
 			PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-			item.remove();
 		}
 		
 		link.remove((Player) event.getPlayer());

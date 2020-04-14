@@ -24,6 +24,7 @@ import com.loohp.interactionvisualizer.Blocks.EnderchestDisplay;
 import com.loohp.interactionvisualizer.Blocks.FurnaceDisplay;
 import com.loohp.interactionvisualizer.Blocks.GrindstoneDisplay;
 import com.loohp.interactionvisualizer.Blocks.LoomDisplay;
+import com.loohp.interactionvisualizer.Blocks.ShulkerBoxDisplay;
 import com.loohp.interactionvisualizer.Blocks.SmokerDisplay;
 import com.loohp.interactionvisualizer.Blocks.StonecutterDisplay;
 import com.loohp.interactionvisualizer.Debug.Debug;
@@ -50,6 +51,7 @@ public class TaskManager {
 	public static boolean loom;
 	public static boolean smoker;
 	public static boolean stonecutter;
+	public static boolean shulkerbox;
 	
 	public static boolean villager;
 	
@@ -70,7 +72,10 @@ public class TaskManager {
 		loom = false;
 		smoker = false;
 		stonecutter = false;
+		shulkerbox = false;
+		
 		villager = false;
+		
 		version = InteractionVisualizer.version;
 		
 		HandlerList.unregisterAll(plugin);
@@ -177,12 +182,18 @@ public class TaskManager {
 			enderchest = true;
 		}
 		
+		if (config.getBoolean("Blocks.ShulkerBox.Enabled")) {
+			Bukkit.getPluginManager().registerEvents(new ShulkerBoxDisplay(), plugin);
+			shulkerbox = true;
+		}
+		
 		if (config.getBoolean("Entities.Villager.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new VillagerDisplay(), plugin);
 			villager = true;
 		}
 		
 		tasks.add(run());
+		tasks.add(LightManager.run());
 	}
 	
 	public static int run() {

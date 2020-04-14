@@ -2,7 +2,6 @@ package com.loohp.interactionvisualizer.Blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map.Entry;
 
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -26,16 +25,13 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.LightManager;
 import com.loohp.interactionvisualizer.EntityHolder.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolder.Item;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
-
-import ru.beykerykt.lightapi.LightAPI;
-import ru.beykerykt.lightapi.LightType;
-import ru.beykerykt.lightapi.chunks.ChunkInfo;
 
 public class CraftingTableDisplay implements Listener {
 	
@@ -48,9 +44,6 @@ public class CraftingTableDisplay implements Listener {
 			return;
 		}
 		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
-			return;
-		}
-		if (event.isCancelled()) {
 			return;
 		}
 		if (event.getRawSlot() != 0) {
@@ -75,51 +68,11 @@ public class CraftingTableDisplay implements Listener {
 			}
 		}
 		
-		if (event.getView().getTopInventory() == null) {
+		if (!playermap.containsKey((Player) event.getWhoClicked())) {
 			return;
-		}
-		if (event.getView().getTopInventory().getLocation() == null) {
-			return;
-		}
-		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
-			return;
-		}
-		if (!InteractionVisualizer.version.contains("legacy")) {
-			if (!InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
-				if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
-					return;
-				}
-			} else {
-				if (!(event.getView().getTopInventory() instanceof CraftingInventory)) {
-					return;
-				}
-				if (((CraftingInventory) event.getView().getTopInventory()).getMatrix().length != 9) {
-					return;
-				}
-				if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
-					return;
-				}
-			}
-		} else {
-			if (!(event.getView().getTopInventory() instanceof CraftingInventory)) {
-				return;
-			}
-			if (((CraftingInventory) event.getView().getTopInventory()).getMatrix().length != 9) {
-				return;
-			}
-			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
-				return;
-			}
 		}
 		
-		Block blockTemp = null;
-		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
-			blockTemp = event.getView().getTopInventory().getLocation().getBlock();
-		} else {
-			blockTemp = event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7);
-		}
-		
-		Block block = blockTemp;
+		Block block = playermap.get((Player) event.getWhoClicked());
 		
 		if (!openedBenches.containsKey(block)) {
 			return;
@@ -224,44 +177,8 @@ public class CraftingTableDisplay implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+		if (!playermap.containsKey((Player) event.getWhoClicked())) {
 			return;
-		}
-		if (event.getView().getTopInventory() == null) {
-			return;
-		}
-		if (event.getView().getTopInventory().getLocation() == null) {
-			return;
-		}
-		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
-			return;
-		}
-		if (!InteractionVisualizer.version.contains("legacy")) {
-			if (!InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
-				if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
-					return;
-				}
-			} else {
-				if (!(event.getView().getTopInventory() instanceof CraftingInventory)) {
-					return;
-				}
-				if (((CraftingInventory) event.getView().getTopInventory()).getMatrix().length != 9) {
-					return;
-				}
-				if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
-					return;
-				}
-			}
-		} else {
-			if (!(event.getView().getTopInventory() instanceof CraftingInventory)) {
-				return;
-			}
-			if (((CraftingInventory) event.getView().getTopInventory()).getMatrix().length != 9) {
-				return;
-			}
-			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
-				return;
-			}
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 9) {
@@ -274,44 +191,8 @@ public class CraftingTableDisplay implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+		if (!playermap.containsKey((Player) event.getWhoClicked())) {
 			return;
-		}
-		if (event.getView().getTopInventory() == null) {
-			return;
-		}
-		if (event.getView().getTopInventory().getLocation() == null) {
-			return;
-		}
-		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
-			return;
-		}
-		if (!InteractionVisualizer.version.contains("legacy")) {
-			if (!InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
-				if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
-					return;
-				}
-			} else {
-				if (!(event.getView().getTopInventory() instanceof CraftingInventory)) {
-					return;
-				}
-				if (((CraftingInventory) event.getView().getTopInventory()).getMatrix().length != 9) {
-					return;
-				}
-				if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
-					return;
-				}
-			}
-		} else {
-			if (!(event.getView().getTopInventory() instanceof CraftingInventory)) {
-				return;
-			}
-			if (((CraftingInventory) event.getView().getTopInventory()).getMatrix().length != 9) {
-				return;
-			}
-			if (!event.getWhoClicked().getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
-				return;
-			}
 		}
 		
 		for (int slot : event.getRawSlots()) {
@@ -345,15 +226,14 @@ public class CraftingTableDisplay implements Listener {
 				if (entity instanceof Item) {
 					PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
 				} else if (entity instanceof ArmorStand) {
+					if (((ArmorStand) entity).isLocked() == false) {
+						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
+					}
 					int finalI = i;
 					new BukkitRunnable() {
 						public void run() {
-							PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
 							if (finalI == 5) {
-								LightAPI.deleteLight(((ArmorStand) entity).getLocation(), LightType.BLOCK, false);
-								for (ChunkInfo info : LightAPI.collectChunks(((ArmorStand) entity).getLocation(), LightType.BLOCK, 15)) {
-									LightAPI.updateChunk(info, LightType.BLOCK);
-								}
+								LightManager.deleteLight(((ArmorStand) entity).getLocation());
 							}
 						}
 					}.runTaskLater(InteractionVisualizer.plugin, 20);
@@ -368,55 +248,67 @@ public class CraftingTableDisplay implements Listener {
 		return new BukkitRunnable() {
 			public void run() {
 				
-				Iterator<Entry<Block, HashMap<String, Object>>> itr = openedBenches.entrySet().iterator();
+				Iterator<Block> itr = openedBenches.keySet().iterator();
+				int count = 0;
+				int maxper = (int) Math.ceil((double) openedBenches.size() / (double) 5);
+				int delay = 1;
 				while (itr.hasNext()) {
-					Entry<Block, HashMap<String, Object>> entry = itr.next();
-					HashMap<String, Object> map = entry.getValue();
-
-					Player player = (Player) map.get("Player");
-					if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
-						if (player.getOpenInventory() != null) {
-							if (player.getOpenInventory().getTopInventory() != null) {
-								if (!InteractionVisualizer.version.contains("legacy")) {
-									if (!InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
-										if (player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
-											continue;
-										}
-									} else {
-										if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
-											if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length == 9) {
-												continue;
-											}
-										}											
-									}
-								} else {
-									if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
-										if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length == 9) {
-											continue;
-										}
-									}								
-								}														
-							}
-						}
+					count++;
+					if (count > maxper) {
+						count = 0;
+						delay++;
 					}
-					
-					for (int i = 0; i <= 9; i++) {
-						if (!(map.get(String.valueOf(i)) instanceof String)) {
-							Object entity = map.get(String.valueOf(i));
-							if (i == 5) {
-								LightAPI.deleteLight(((ArmorStand) entity).getLocation(), LightType.BLOCK, false);
-								for (ChunkInfo info : LightAPI.collectChunks(((ArmorStand) entity).getLocation(), LightType.BLOCK, 15)) {
-									LightAPI.updateChunk(info, LightType.BLOCK);
+					Block block = itr.next();					
+					new BukkitRunnable() {
+						public void run() {
+							if (!openedBenches.containsKey(block)) {
+								return;
+							}
+							HashMap<String, Object> map = openedBenches.get(block);
+
+							Player player = (Player) map.get("Player");
+							if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
+								if (player.getOpenInventory() != null) {
+									if (player.getOpenInventory().getTopInventory() != null) {
+										if (!InteractionVisualizer.version.contains("legacy")) {
+											if (!InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+												if (player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
+													return;
+												}
+											} else {
+												if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
+													if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length == 9) {
+														return;
+													}
+												}											
+											}
+										} else {
+											if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
+												if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length == 9) {
+													return;
+												}
+											}								
+										}														
+									}
 								}
 							}
-							if (entity instanceof Item) {
-								PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
-							} else if (entity instanceof ArmorStand) {
-								PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
+							
+							for (int i = 0; i <= 9; i++) {
+								if (!(map.get(String.valueOf(i)) instanceof String)) {
+									Object entity = map.get(String.valueOf(i));
+									if (i == 5) {
+										LightManager.deleteLight(((ArmorStand) entity).getLocation());
+									}
+									if (entity instanceof Item) {
+										PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
+									} else if (entity instanceof ArmorStand) {
+										PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
+									}
+								}
 							}
+							openedBenches.remove(block);
 						}
-					}
-					itr.remove();
+					}.runTaskLater(InteractionVisualizer.plugin, delay);
 				}
 			}
 		}.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
@@ -426,25 +318,37 @@ public class CraftingTableDisplay implements Listener {
 		if (VanishUtils.isVanished(player)) {
 			return;
 		}
-		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-			return;
-		}
-		if (player.getOpenInventory() == null) {
-			return;
-		}
-		if (player.getOpenInventory().getTopInventory() == null) {
-			return;
-		}
-		if (player.getOpenInventory().getTopInventory().getLocation() == null) {
-			return;
-		}
-		if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
-			return;
-		}
-		if (!InteractionVisualizer.version.contains("legacy")) {
-			if (!InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
-				if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
-					return;
+		if (!playermap.containsKey(player)) {
+			if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+				return;
+			}
+			if (player.getOpenInventory() == null) {
+				return;
+			}
+			if (player.getOpenInventory().getTopInventory() == null) {
+				return;
+			}
+			if (player.getOpenInventory().getTopInventory().getLocation() == null) {
+				return;
+			}
+			if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
+				return;
+			}
+			if (!InteractionVisualizer.version.contains("legacy")) {
+				if (!InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+					if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
+						return;
+					}
+				} else {
+					if (!(player.getOpenInventory().getTopInventory() instanceof CraftingInventory)) {
+						return;
+					}
+					if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length != 9) {
+						return;
+					}
+					if (!player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
+						return;
+					}
 				}
 			} else {
 				if (!(player.getOpenInventory().getTopInventory() instanceof CraftingInventory)) {
@@ -453,32 +357,23 @@ public class CraftingTableDisplay implements Listener {
 				if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length != 9) {
 					return;
 				}
-				if (!player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
+				if (!player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
 					return;
 				}
 			}
-		} else {
-			if (!(player.getOpenInventory().getTopInventory() instanceof CraftingInventory)) {
-				return;
+			Block block = null;
+			InventoryView view = player.getOpenInventory();
+			if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+				block = view.getTopInventory().getLocation().getBlock();
+			} else {
+				block = player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7);
 			}
-			if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length != 9) {
-				return;
-			}
-			if (!player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
-				return;
-			}
+			playermap.put(player, block);
 		}
 		
 		InventoryView view = player.getOpenInventory();
-		Block block = null;
-		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
-			block = view.getTopInventory().getLocation().getBlock();
-		} else {
-			block = player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7);
-		}
+		Block block = playermap.get(player);
 		Location loc = block.getLocation();
-		
-		playermap.put(player, block);
 		
 		if (!openedBenches.containsKey(block)) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
@@ -552,15 +447,12 @@ public class CraftingTableDisplay implements Listener {
 			}
 		}
 		Location loc1 = ((ArmorStand) map.get("5")).getLocation();
-		LightAPI.deleteLight(loc1, LightType.BLOCK, false);
+		LightManager.deleteLight(loc1);
 		int light = loc1.getBlock().getRelative(BlockFace.UP).getLightLevel() - 1;
 		if (light < 0) {
 			light = 0;
 		}
-		LightAPI.createLight(loc1, LightType.BLOCK, light, false);
-		for (ChunkInfo info : LightAPI.collectChunks(loc1, LightType.BLOCK, 15)) {
-			LightAPI.updateChunk(info, LightType.BLOCK);
-		}
+		LightManager.createLight(loc1, light);
 	}
 	
 	public static String standMode(ArmorStand stand) {

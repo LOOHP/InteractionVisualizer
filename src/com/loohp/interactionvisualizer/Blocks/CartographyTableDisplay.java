@@ -2,7 +2,6 @@ package com.loohp.interactionvisualizer.Blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map.Entry;
 
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.GameMode;
@@ -37,17 +36,7 @@ public class CartographyTableDisplay implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		Player player = (Player) event.getWhoClicked();
-		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-			return;
-		}
-		if (event.getView().getTopInventory() == null) {
-			return;
-		}
-		if (!(event.getView().getTopInventory() instanceof CartographyInventory)) {
-			return;
-		}
-		if (!player.getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.CARTOGRAPHY_TABLE)) {
+		if (!playermap.containsKey((Player) event.getWhoClicked())) {
 			return;
 		}
 		
@@ -61,17 +50,7 @@ public class CartographyTableDisplay implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		Player player = (Player) event.getWhoClicked();
-		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-			return;
-		}
-		if (event.getView().getTopInventory() == null) {
-			return;
-		}
-		if (!(event.getView().getTopInventory() instanceof CartographyInventory)) {
-			return;
-		}
-		if (!player.getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.CARTOGRAPHY_TABLE)) {
+		if (!playermap.containsKey((Player) event.getWhoClicked())) {
 			return;
 		}
 		
@@ -113,59 +92,75 @@ public class CartographyTableDisplay implements Listener {
 		return new BukkitRunnable() {
 			public void run() {
 				
-				Iterator<Entry<Block, HashMap<String, Object>>> itr = openedCTable.entrySet().iterator();
+				Iterator<Block> itr = openedCTable.keySet().iterator();
+				int count = 0;
+				int maxper = (int) Math.ceil((double) openedCTable.size() / (double) 5);
+				int delay = 1;
 				while (itr.hasNext()) {
-					Entry<Block, HashMap<String, Object>> entry = itr.next();
-					Block block = entry.getKey();
-					HashMap<String, Object> map = entry.getValue();
-					if (block.getType().equals(Material.CARTOGRAPHY_TABLE)) {
-						Player player = (Player) map.get("Player");
-						if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
-							if (player.getOpenInventory() != null) {
-								if (player.getOpenInventory().getTopInventory() != null) {
-									if (player.getOpenInventory().getTopInventory() instanceof CartographyInventory) {
-										continue;
+					count++;
+					if (count > maxper) {
+						count = 0;
+						delay++;
+					}
+					Block block = itr.next();					
+					new BukkitRunnable() {
+						public void run() {
+							if (!openedCTable.containsKey(block)) {
+								return;
+							}
+							HashMap<String, Object> map = openedCTable.get(block);
+							if (block.getType().equals(Material.CARTOGRAPHY_TABLE)) {
+								Player player = (Player) map.get("Player");
+								if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
+									if (player.getOpenInventory() != null) {
+										if (player.getOpenInventory().getTopInventory() != null) {
+											if (player.getOpenInventory().getTopInventory() instanceof CartographyInventory) {
+												return;
+											}
+										}
 									}
 								}
 							}
+							
+							if (map.get("Item") instanceof ItemFrame) {
+								Entity entity = (Entity) map.get("Item");
+								PacketSending.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), (ItemFrame) entity);
+							}
+							openedCTable.remove(block);
 						}
-					}
-					
-					if (map.get("Item") instanceof ItemFrame) {
-						Entity entity = (Entity) map.get("Item");
-						PacketSending.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), (ItemFrame) entity);
-						entity.remove();
-					}
-					itr.remove();
+					}.runTaskLater(InteractionVisualizer.plugin, delay);
 				}								
 			}
-		}.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
+		}.runTaskTimer(InteractionVisualizer.plugin, 0, 6).getTaskId();
 	}
 	
 	public static void process(Player player) {
 		if (VanishUtils.isVanished(player)) {
 			return;
 		}
-		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-			return;
-		}
-		if (player.getOpenInventory() == null) {
-			return;
-		}
-		if (player.getOpenInventory().getTopInventory() == null) {
-			return;
-		}
-		if (!(player.getOpenInventory().getTopInventory() instanceof CartographyInventory)) {
-			return;
-		}
-		if (!player.getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.CARTOGRAPHY_TABLE)) {
-			return;
+		if (!playermap.containsKey(player)) {
+			if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+				return;
+			}
+			if (player.getOpenInventory() == null) {
+				return;
+			}
+			if (player.getOpenInventory().getTopInventory() == null) {
+				return;
+			}
+			if (!(player.getOpenInventory().getTopInventory() instanceof CartographyInventory)) {
+				return;
+			}
+			if (!player.getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.CARTOGRAPHY_TABLE)) {
+				return;
+			}
+			
+			Block block = player.getTargetBlockExact(7, FluidCollisionMode.NEVER);
+			playermap.put(player, block);
 		}
 		
 		InventoryView view = player.getOpenInventory();
-		Block block = player.getTargetBlockExact(7, FluidCollisionMode.NEVER);
-		
-		playermap.put(player, block);
+		Block block = playermap.get(player);
 		
 		if (!openedCTable.containsKey(block)) {
 			HashMap<String, Object> map = new HashMap<String, Object>();

@@ -51,6 +51,8 @@ Blocks:
     Enabled: true
   Stonecutter:
     Enabled: true
+  ShulkerBox:
+    Enabled: true
 
 Entities:
   Villager: 
