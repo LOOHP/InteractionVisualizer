@@ -155,7 +155,7 @@ public class Item {
 	}
 	
 	public WrappedDataWatcher getWrappedDataWatcher() {
-		org.bukkit.entity.Item itemEntity = (org.bukkit.entity.Item) EntityCreator.create(location, EntityType.DROPPED_ITEM);
+		org.bukkit.entity.Item itemEntity = (org.bukkit.entity.Item) EntityCreator.create(new Location(location.getWorld(), 0, 0, 0), EntityType.DROPPED_ITEM);
 		itemEntity.setItemStack(item);
 		itemEntity.setPickupDelay(pickupDelay);
 		itemEntity.setGlowing(isGlowing);

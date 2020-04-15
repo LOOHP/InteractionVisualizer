@@ -330,5 +330,6 @@ public class EnderchestDisplay implements Listener {
 		}
 		
 		link.remove((Player) event.getPlayer());
+		playermap.remove((Player) event.getPlayer());
 	}
 }

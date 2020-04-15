@@ -1,6 +1,5 @@
 package com.loohp.interactionvisualizer.EntityHolder;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.Location;
@@ -9,10 +8,8 @@ import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Utils.EntityCreator;
 
 public class ItemFrame {
@@ -22,7 +19,6 @@ public class ItemFrame {
 	Location location;
 	ItemStack item;
 	BlockFace facing;
-	Optional<org.bukkit.entity.ItemFrame> snapshotEntity = Optional.empty();
 	
 	public ItemFrame(Location location) {
 		this.id = (int) (Math.random() * Integer.MAX_VALUE);
@@ -64,45 +60,45 @@ public class ItemFrame {
 	}
 	
 	public BlockFace getAttachedFace() {
-		org.bukkit.entity.ItemFrame itemframe = null;
-		if (snapshotEntity.isPresent()) {
-			itemframe = snapshotEntity.get();
-		} else {
-			itemframe = (org.bukkit.entity.ItemFrame) EntityCreator.create(location, EntityType.ITEM_FRAME);
-			snapshotEntity = Optional.of(itemframe);
-		}
-		itemframe.setItem(item, false);
-		itemframe.setFacingDirection(facing);
-		new BukkitRunnable() {
-			public void run() {
-				if (snapshotEntity.isPresent()) {
-					snapshotEntity.get().remove();
-					snapshotEntity = Optional.empty();
-				}
-			}
-		}.runTaskLater(InteractionVisualizer.plugin, 1);
-		return itemframe.getAttachedFace();
+		return facing;
 	}
 	
-	public Location getRealLocation() {
-		org.bukkit.entity.ItemFrame itemframe = null;
-		if (snapshotEntity.isPresent()) {
-			itemframe = snapshotEntity.get();
-		} else {
-			itemframe = (org.bukkit.entity.ItemFrame) EntityCreator.create(location, EntityType.ITEM_FRAME);
-			snapshotEntity = Optional.of(itemframe);
+	public float getYaw() {
+		switch (facing) {
+		case DOWN:
+			return 0.0F;
+		case EAST:
+			return -90.0F;
+		case NORTH:
+			return 180.0F;
+		case SOUTH:
+			return 0.0F;
+		case UP:
+			return 0.0F;
+		case WEST:
+			return 90.0F;
+		default:
+			return 0.0F;	
 		}
-		itemframe.setItem(item, false);
-		itemframe.setFacingDirection(facing);
-		new BukkitRunnable() {
-			public void run() {
-				if (snapshotEntity.isPresent()) {
-					snapshotEntity.get().remove();
-					snapshotEntity = Optional.empty();
-				}
-			}
-		}.runTaskLater(InteractionVisualizer.plugin, 1);
-		return itemframe.getLocation();
+	}
+	
+	public float getPitch() {
+		switch (facing) {
+		case DOWN:
+			return 90.0F;
+		case EAST:
+			return 0.0F;
+		case NORTH:
+			return 0.0F;
+		case SOUTH:
+			return 0.0F;
+		case UP:
+			return -90.0F;
+		case WEST:
+			return 0.0F;
+		default:
+			return 0.0F;	
+		}
 	}
 	
 	public void setItem(ItemStack item) {
@@ -129,23 +125,10 @@ public class ItemFrame {
 	}
 	
 	public WrappedDataWatcher getWrappedDataWatcher() {
-		org.bukkit.entity.ItemFrame itemframe = null;
-		if (snapshotEntity.isPresent()) {
-			itemframe = snapshotEntity.get();
-		} else {
-			itemframe = (org.bukkit.entity.ItemFrame) EntityCreator.create(location, EntityType.ITEM_FRAME);
-			snapshotEntity = Optional.of(itemframe);
-		}
+		org.bukkit.entity.ItemFrame itemframe = (org.bukkit.entity.ItemFrame) EntityCreator.create(new Location(location.getWorld(), 0, 0, 0), EntityType.ITEM_FRAME);
 		itemframe.setItem(item, false);
 		itemframe.setFacingDirection(facing);
-		new BukkitRunnable() {
-			public void run() {
-				if (snapshotEntity.isPresent()) {
-					snapshotEntity.get().remove();
-					snapshotEntity = Optional.empty();
-				}
-			}
-		}.runTaskLater(InteractionVisualizer.plugin, 1);
+		itemframe.remove();
 		return WrappedDataWatcher.getEntityWatcher(itemframe);
 	}
 	

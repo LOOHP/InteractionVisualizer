@@ -21,7 +21,7 @@ public class EntityCreator {
 
     public static Entity createRaw(Location location, EntityType entityType) {
     	try {
-        	if (!entityType.equals(EntityType.DROPPED_ITEM)) {
+        	if (!entityType.equals(EntityType.DROPPED_ITEM) && !entityType.equals(EntityType.ITEM_FRAME)) {
 	            // We get the craftworld class with nms so it can be used in multiple versions
 	            Class<?> craftWorldClass = getNMSClass("org.bukkit.craftbukkit.", "CraftWorld");
 	
@@ -38,7 +38,7 @@ public class EntityCreator {
 	            // finally we run the getBukkitEntity method in the entity class to get a usable object
 	            return (Entity) entity.getClass().getMethod("getBukkitEntity").invoke(entity);
             
-        	} else {       		
+        	} else if (entityType.equals(EntityType.DROPPED_ITEM)) {       		
         		Class<?> craftWorldClass = getNMSClass("org.bukkit.craftbukkit.", "CraftWorld");
         		
 	            Object craftWorldObject = craftWorldClass.cast(location.getWorld());
@@ -58,7 +58,29 @@ public class EntityCreator {
                 Object entity = nmsEntityItemConstructor.newInstance(craftWorldObject.getClass().getMethod("getHandle").invoke(craftWorldObject), location.getX(), location.getY(), location.getZ(), craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(dummyitem, dummyitem));
                 
                 return (Entity) entity.getClass().getMethod("getBukkitEntity").invoke(entity);
-        	}        	
+        	} else if (entityType.equals(EntityType.ITEM_FRAME)) {
+        		Class<?> craftWorldClass = getNMSClass("org.bukkit.craftbukkit.", "CraftWorld");
+        		
+	            Object craftWorldObject = craftWorldClass.cast(location.getWorld());
+	            
+                Class<?> nmsEntityItemFrameClass = getNMSClass("net.minecraft.server.", "EntityItemFrame");           
+                
+                Class<?> nmsWorldClass = getNMSClass("net.minecraft.server.", "World");
+                
+                Class<?> nmsBlockPositionClass = getNMSClass("net.minecraft.server.", "BlockPosition");
+                
+                Constructor<?> nmsBlockPostionConstructor = nmsBlockPositionClass.getConstructor(int.class, int.class, int.class);
+                
+                Object nmsBlockPostion = nmsBlockPostionConstructor.newInstance(location.getBlockX(), location.getBlockY(), location.getBlockZ());
+                
+                Class<?> nmsEnumDirectionClass = getNMSClass("net.minecraft.server.", "EnumDirection");
+                
+                Constructor<?> nmsEntityItemFrameConstructor = nmsEntityItemFrameClass.getConstructor(nmsWorldClass, nmsBlockPositionClass, nmsEnumDirectionClass);
+                
+                Object entity = nmsEntityItemFrameConstructor.newInstance(craftWorldObject.getClass().getMethod("getHandle").invoke(craftWorldObject), nmsBlockPostion, nmsEnumDirectionClass.getEnumConstants()[0]);
+                
+                return (Entity) entity.getClass().getMethod("getBukkitEntity").invoke(entity);
+        	}
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException | IllegalArgumentException exception) {
             exception.printStackTrace();
         }

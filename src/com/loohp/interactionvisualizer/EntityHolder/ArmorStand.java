@@ -220,7 +220,7 @@ public class ArmorStand {
 	}
 	
 	public WrappedDataWatcher getWrappedDataWatcher() {
-		org.bukkit.entity.ArmorStand stand = (org.bukkit.entity.ArmorStand) EntityCreator.create(location, EntityType.ARMOR_STAND);
+		org.bukkit.entity.ArmorStand stand = (org.bukkit.entity.ArmorStand) EntityCreator.create(new Location(location.getWorld(), 0, 0, 0), EntityType.ARMOR_STAND);
 		stand.setArms(hasArms);
 		stand.setBasePlate(hasBasePlate);
 		stand.setMarker(isMarker);

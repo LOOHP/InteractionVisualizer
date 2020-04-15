@@ -375,9 +375,9 @@ public class PacketSending implements Listener {
             //Velocity z
             .write(3, 0)
             //Pitch
-            .write(4, (int) (entity.getRealLocation().getPitch() * 256.0F / 360.0F))
+            .write(4, (int) (entity.getPitch() * 256.0F / 360.0F))
             //Yaw
-            .write(5, (int) (entity.getRealLocation().getYaw() * 256.0F / 360.0F));
+            .write(5, (int) (entity.getYaw() * 256.0F / 360.0F));
 
         if (InteractionVisualizer.version.equals("1.13") || InteractionVisualizer.version.equals("1.13.1") || InteractionVisualizer.version.contains("legacy")) {
             packet.getIntegers().write(6, 33);
