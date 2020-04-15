@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -194,134 +195,132 @@ public class TaskManager {
 			villager = true;
 		}
 		
-		tasks.add(run());
+		run();
 		tasks.add(LightManager.run());
 	}
 	
-	public static int run() {
-		return new BukkitRunnable() {
-			public void run() {
-				int count = 0;
-				int maxper = (int) Math.ceil((double) Bukkit.getOnlinePlayers().size() / (double) 5);
-				int delay = 1;
-				for (Player eachPlayer : Bukkit.getOnlinePlayers()) {
-					count++;
-					if (count > maxper) {
-						count = 0;
-						delay++;
-					}
-					UUID uuid = eachPlayer.getUniqueId();
-					new BukkitRunnable() {
-						public void run() {
-							if (Bukkit.getPlayer(uuid) == null) {
-								return;
-							}
-							Player player = Bukkit.getPlayer(uuid);
-							
-							if (player.getOpenInventory() == null) {
-								return;
-							}
-							if (player.getOpenInventory().getTopInventory() == null) {
-								return;
-							}
-							
-							Inventory inv = player.getOpenInventory().getTopInventory();
-							
-							switch (inv.getType()) {
-							case ANVIL:
-								if (anvil) {
-									AnvilDisplay.process(player);
-								}
-								return;
-							case BARREL:
-								//
-								return;
-							case BEACON:
-								//
-								return;
-							case BLAST_FURNACE:
-								//
-								return;
-							case BREWING:
-								//
-								return;
-							case CARTOGRAPHY:
-								if (cartographytable) {
-									CartographyTableDisplay.process(player);
-								}
-								return;
-							case CHEST:
-								//
-								return;
-							case CRAFTING:
-								//
-								return;
-							case CREATIVE:
-								//
-								return;
-							case DISPENSER:
-								//
-								return;
-							case DROPPER:
-								//
-								return;
-							case ENCHANTING:
-								if (enchantmenttable) {
-									EnchantmentTableDisplay.process(player);
-								}
-								return;
-							case ENDER_CHEST:
-								//
-								return;
-							case FURNACE:
-								//
-								return;
-							case GRINDSTONE:
-								if (grindstone) {
-									GrindstoneDisplay.process(player);
-								}
-								return;
-							case HOPPER:
-								//
-								return;
-							case LECTERN:
-								//
-								return;
-							case LOOM:
-								if (loom) {
-									LoomDisplay.process(player);
-								}
-								return;
-							case MERCHANT:
-								//
-								return;
-							case PLAYER:
-								//
-								return;
-							case SHULKER_BOX:
-								//
-								return;
-							case SMOKER:
-								//
-								return;
-							case STONECUTTER:
-								if (stonecutter) {
-									StonecutterDisplay.process(player);
-								}
-								return;
-							case WORKBENCH:
-								if (craftingtable) {
-									CraftingTableDisplay.process(player);
-								}
-								return;
-							default:
-								return;							
-							}							
-						}
-					}.runTaskLater(plugin, delay);
-				}
+	public static void run() {
+		int next = 1;
+		int count = 0;
+		int size = Bukkit.getOnlinePlayers().size();
+		int maxper = (int) Math.ceil((double) size / (double) 5);
+		if (maxper > 10) {
+			maxper = 10;
+		}
+		int delay = 1;
+		for (Player eachPlayer : Bukkit.getOnlinePlayers()) {
+			if (eachPlayer.getOpenInventory().getType().equals(InventoryType.CRAFTING) || eachPlayer.getOpenInventory().getType().equals(InventoryType.CREATIVE)) {
+				continue;
 			}
-		}.runTaskTimer(plugin, 0, 6).getTaskId();
+			count++;
+			if (count > maxper) {
+				count = 0;
+				delay++;
+			}
+			UUID uuid = eachPlayer.getUniqueId();
+			new BukkitRunnable() {
+				public void run() {
+					if (Bukkit.getPlayer(uuid) == null) {
+						return;
+					}
+					Player player = Bukkit.getPlayer(uuid);
+					Inventory inv = player.getOpenInventory().getTopInventory();
+					
+					switch (inv.getType()) {
+					case ANVIL:
+						if (anvil) {
+							AnvilDisplay.process(player);
+						}
+						return;
+					case BARREL:
+						//
+						return;
+					case BEACON:
+						//
+						return;
+					case BLAST_FURNACE:
+						//
+						return;
+					case BREWING:
+						//
+						return;
+					case CARTOGRAPHY:
+						if (cartographytable) {
+							CartographyTableDisplay.process(player);
+						}
+						return;
+					case CHEST:
+						//
+						return;
+					case CRAFTING:
+						//
+						return;
+					case CREATIVE:
+						//
+						return;
+					case DISPENSER:
+						//
+						return;
+					case DROPPER:
+						//
+						return;
+					case ENCHANTING:
+						if (enchantmenttable) {
+							EnchantmentTableDisplay.process(player);
+						}
+						return;
+					case ENDER_CHEST:
+						//
+						return;
+					case FURNACE:
+						//
+						return;
+					case GRINDSTONE:
+						if (grindstone) {
+							GrindstoneDisplay.process(player);
+						}
+						return;
+					case HOPPER:
+						//
+						return;
+					case LECTERN:
+						//
+						return;
+					case LOOM:
+						if (loom) {
+							LoomDisplay.process(player);
+						}
+						return;
+					case MERCHANT:
+						//
+						return;
+					case PLAYER:
+						//
+						return;
+					case SHULKER_BOX:
+						//
+						return;
+					case SMOKER:
+						//
+						return;
+					case STONECUTTER:
+						if (stonecutter) {
+							StonecutterDisplay.process(player);
+						}
+						return;
+					case WORKBENCH:
+						if (craftingtable) {
+							CraftingTableDisplay.process(player);
+						}
+						return;
+					default:
+						return;							
+					}							
+				}
+			}.runTaskLater(plugin, delay);
+		}
+		next = next + delay;
+		Bukkit.getScheduler().runTaskLater(plugin, () -> run(), next);
 	}
 
 }

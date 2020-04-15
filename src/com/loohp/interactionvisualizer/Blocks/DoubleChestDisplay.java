@@ -57,7 +57,11 @@ public class DoubleChestDisplay implements Listener {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation() == null) {
+		try {
+			if (event.getView().getTopInventory().getLocation() == null) {
+				return;
+			}
+		} catch (Exception e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
@@ -239,7 +243,11 @@ public class DoubleChestDisplay implements Listener {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation() == null) {
+		try {
+			if (event.getView().getTopInventory().getLocation() == null) {
+				return;
+			}
+		} catch (Exception e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
@@ -356,7 +364,11 @@ public class DoubleChestDisplay implements Listener {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation() == null) {
+		try {
+			if (event.getView().getTopInventory().getLocation() == null) {
+				return;
+			}
+		} catch (Exception e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {

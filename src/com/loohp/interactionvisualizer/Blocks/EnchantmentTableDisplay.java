@@ -38,6 +38,7 @@ import net.md_5.bungee.api.ChatColor;
 public class EnchantmentTableDisplay implements Listener {
 	
 	public static HashMap<Block, HashMap<String, Object>> openedETable = new HashMap<Block, HashMap<String, Object>>();
+	public static HashMap<Player, Block> playermap = new HashMap<Player, Block>();
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onEnchant(EnchantItemEvent event) {
@@ -168,26 +169,11 @@ public class EnchantmentTableDisplay implements Listener {
 			}
 		}
 		
-		if (event.getView().getTopInventory() == null) {
+		if (!playermap.containsKey((Player) event.getWhoClicked())) {
 			return;
-		}
-		if (event.getView().getTopInventory().getLocation() == null) {
-			return;
-		}
-		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
-			return;
-		}
-		if (!InteractionVisualizer.version.contains("legacy")) {
-			if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTING_TABLE")) {
-				return;
-			}
-		} else {
-			if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTMENT_TABLE")) {
-				return;
-			}
 		}
 		
-		Block block = event.getView().getTopInventory().getLocation().getBlock();
+		Block block = playermap.get((Player) event.getWhoClicked());
 		
 		if (!openedETable.containsKey(block)) {
 			return;
@@ -245,26 +231,8 @@ public class EnchantmentTableDisplay implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+		if (!playermap.containsKey((Player) event.getWhoClicked())) {
 			return;
-		}
-		if (event.getView().getTopInventory() == null) {
-			return;
-		}
-		if (event.getView().getTopInventory().getLocation() == null) {
-			return;
-		}
-		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
-			return;
-		}
-		if (!InteractionVisualizer.version.contains("legacy")) {
-			if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTING_TABLE")) {
-				return;
-			}
-		} else {
-			if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTMENT_TABLE")) {
-				return;
-			}
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 1) {
@@ -277,26 +245,8 @@ public class EnchantmentTableDisplay implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+		if (!playermap.containsKey((Player) event.getWhoClicked())) {
 			return;
-		}
-		if (event.getView().getTopInventory() == null) {
-			return;
-		}
-		if (event.getView().getTopInventory().getLocation() == null) {
-			return;
-		}
-		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
-			return;
-		}
-		if (!InteractionVisualizer.version.contains("legacy")) {
-			if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTING_TABLE")) {
-				return;
-			}
-		} else {
-			if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTMENT_TABLE")) {
-				return;
-			}
 		}
 		
 		for (int slot : event.getRawSlots()) {
@@ -309,17 +259,11 @@ public class EnchantmentTableDisplay implements Listener {
 	
 	@EventHandler
 	public void onCloseEnchantmentTable(InventoryCloseEvent event) {
-		if (event.getView().getTopInventory() == null) {
-			return;
-		}
-		if (event.getView().getTopInventory().getLocation() == null) {
-			return;
-		}
-		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
+		if (!playermap.containsKey((Player) event.getPlayer())) {
 			return;
 		}
 		
-		Block block = event.getView().getTopInventory().getLocation().getBlock();
+		Block block = playermap.get((Player) event.getPlayer());
 		
 		if (!openedETable.containsKey(block)) {
 			return;
@@ -395,6 +339,7 @@ public class EnchantmentTableDisplay implements Listener {
 					try {TimeUnit.MILLISECONDS.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
 				}
 				Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> openedETable.remove(block));
+				Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> playermap.remove((Player) event.getPlayer()));
 			}
 		}.runTaskAsynchronously(InteractionVisualizer.plugin);
 	}
@@ -403,33 +348,32 @@ public class EnchantmentTableDisplay implements Listener {
 		if (VanishUtils.isVanished(player)) {
 			return;
 		}
-		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-			return;
-		}
-		if (player.getOpenInventory() == null) {
-			return;
-		}
-		if (player.getOpenInventory().getTopInventory() == null) {
-			return;
-		}
-		if (player.getOpenInventory().getTopInventory().getLocation() == null) {
-			return;
-		}
-		if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
-			return;
-		}
-		if (!InteractionVisualizer.version.contains("legacy")) {
-			if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTING_TABLE")) {
+		if (!playermap.containsKey(player)) {
+			if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 				return;
 			}
-		} else {
-			if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTMENT_TABLE")) {
+			if (player.getOpenInventory().getTopInventory().getLocation() == null) {
 				return;
 			}
+			if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
+				return;
+			}
+			if (!InteractionVisualizer.version.contains("legacy")) {
+				if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTING_TABLE")) {
+					return;
+				}
+			} else {
+				if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTMENT_TABLE")) {
+					return;
+				}
+			}
+			InventoryView view = player.getOpenInventory();
+			Block block = view.getTopInventory().getLocation().getBlock();
+			playermap.put(player, block);
 		}
 		
 		InventoryView view = player.getOpenInventory();
-		Block block = view.getTopInventory().getLocation().getBlock();
+		Block block = playermap.get(player);
 		Location loc = block.getLocation();
 		if (!openedETable.containsKey(block)) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
@@ -439,6 +383,10 @@ public class EnchantmentTableDisplay implements Listener {
 			openedETable.put(block, map);
 		}
 		HashMap<String, Object> map = openedETable.get(block);
+		
+		if ((boolean) map.get("Lock")) {
+			return;
+		}
 		
 		if (!map.get("Player").equals(player)) {
 			return;

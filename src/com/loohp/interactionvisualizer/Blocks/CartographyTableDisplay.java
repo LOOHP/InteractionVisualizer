@@ -142,12 +142,6 @@ public class CartographyTableDisplay implements Listener {
 			if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 				return;
 			}
-			if (player.getOpenInventory() == null) {
-				return;
-			}
-			if (player.getOpenInventory().getTopInventory() == null) {
-				return;
-			}
 			if (!(player.getOpenInventory().getTopInventory() instanceof CartographyInventory)) {
 				return;
 			}

@@ -34,7 +34,7 @@ public class ShulkerBoxDisplay implements Listener {
 	public static ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<Player, List<Item>>();
 	
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onUseChest(InventoryClickEvent event) {
+	public void onUseShulkerbox(InventoryClickEvent event) {
 		if (event.isCancelled()) {
 			return;
 		}
@@ -50,7 +50,11 @@ public class ShulkerBoxDisplay implements Listener {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation() == null) {
+		try {
+			if (event.getView().getTopInventory().getLocation() == null) {
+				return;
+			}
+		} catch (Exception e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
@@ -193,7 +197,7 @@ public class ShulkerBoxDisplay implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onDragChest(InventoryDragEvent event) {
+	public void onDragShulkerbox(InventoryDragEvent event) {
 		if (event.isCancelled()) {
 			return;
 		}
@@ -203,7 +207,11 @@ public class ShulkerBoxDisplay implements Listener {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation() == null) {
+		try {
+			if (event.getView().getTopInventory().getLocation() == null) {
+				return;
+			}
+		} catch (Exception e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
@@ -288,11 +296,15 @@ public class ShulkerBoxDisplay implements Listener {
 	}
 	
 	@EventHandler
-	public void onCloseChest(InventoryCloseEvent event) {
+	public void onCloseShulkerbox(InventoryCloseEvent event) {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation() == null) {
+		try {
+			if (event.getView().getTopInventory().getLocation() == null) {
+				return;
+			}
+		} catch (Exception e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {

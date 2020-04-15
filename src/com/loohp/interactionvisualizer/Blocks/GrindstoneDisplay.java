@@ -66,7 +66,11 @@ public class GrindstoneDisplay implements Listener {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation() == null) {
+		try {
+			if (event.getView().getTopInventory().getLocation() == null) {
+				return;
+			}
+		} catch (Exception e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
@@ -152,7 +156,11 @@ public class GrindstoneDisplay implements Listener {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation() == null) {
+		try {
+			if (event.getView().getTopInventory().getLocation() == null) {
+				return;
+			}
+		} catch (Exception e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
@@ -178,7 +186,11 @@ public class GrindstoneDisplay implements Listener {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation() == null) {
+		try {
+			if (event.getView().getTopInventory().getLocation() == null) {
+				return;
+			}
+		} catch (Exception e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
@@ -201,7 +213,11 @@ public class GrindstoneDisplay implements Listener {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (event.getView().getTopInventory().getLocation() == null) {
+		try {
+			if (event.getView().getTopInventory().getLocation() == null) {
+				return;
+			}
+		} catch (Exception e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
@@ -237,12 +253,6 @@ public class GrindstoneDisplay implements Listener {
 			return;
 		}
 		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-			return;
-		}
-		if (player.getOpenInventory() == null) {
-			return;
-		}
-		if (player.getOpenInventory().getTopInventory() == null) {
 			return;
 		}
 		if (player.getOpenInventory().getTopInventory().getLocation() == null) {

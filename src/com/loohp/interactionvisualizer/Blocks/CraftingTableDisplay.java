@@ -322,12 +322,6 @@ public class CraftingTableDisplay implements Listener {
 			if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 				return;
 			}
-			if (player.getOpenInventory() == null) {
-				return;
-			}
-			if (player.getOpenInventory().getTopInventory() == null) {
-				return;
-			}
 			if (player.getOpenInventory().getTopInventory().getLocation() == null) {
 				return;
 			}
@@ -388,7 +382,17 @@ public class CraftingTableDisplay implements Listener {
 		if (!map.get("Player").equals(player)) {
 			return;
 		}
-		ItemStack[] items = new ItemStack[]{view.getItem(1),view.getItem(2),view.getItem(3),view.getItem(4),view.getItem(5),view.getItem(6),view.getItem(7),view.getItem(8),view.getItem(9)};
+		ItemStack[] items = new ItemStack[]{
+			view.getItem(1),
+			view.getItem(2),
+			view.getItem(3),
+			view.getItem(4),
+			view.getItem(5),
+			view.getItem(6),
+			view.getItem(7),
+			view.getItem(8),
+			view.getItem(9)
+		};
 
 		if (view.getItem(0) != null) {
 			ItemStack itemstack = view.getItem(0);
