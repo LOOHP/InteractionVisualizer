@@ -1,11 +1,13 @@
 package com.loohp.interactionvisualizer.Manager;
 
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -18,8 +20,8 @@ import ru.beykerykt.lightapi.chunks.ChunkInfo;
 
 public class LightManager {
 	
-	public static HashMap<Location, Integer> lights = new HashMap<Location, Integer>();
-	public static Queue<Location> deletequeue = new LinkedList<Location>();
+	public static ConcurrentHashMap<Location, Integer> lights = new ConcurrentHashMap<Location, Integer>();
+	public static ConcurrentLinkedQueue<Location> deletequeue = new ConcurrentLinkedQueue<Location>();
 	
 	public static void createLight(Location location, int lightlevel) {
 		lights.put(location, lightlevel);
@@ -28,6 +30,21 @@ public class LightManager {
 	public static void deleteLight(Location location) {
 		lights.remove(location);
 		deletequeue.add(location);
+	}
+	
+	public static int gc() {
+		return new BukkitRunnable() {
+			public void run() {
+				Iterator<Entry<Location, Integer>> itr = lights.entrySet().iterator();
+				while (itr.hasNext()) {
+					Entry<Location, Integer> entry = itr.next();
+					if (deletequeue.contains(entry.getKey())) {
+						deletequeue.removeIf(each -> each.equals(entry.getKey()));
+						itr.remove();
+					}
+				}
+			}
+		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 3).getTaskId();
 	}
 	
 	public static int run() {
@@ -52,7 +69,6 @@ public class LightManager {
 				while (!infos.isEmpty()) {
 					ChunkInfo info = infos.poll();
 					LightAPI.updateChunk(info, LightType.BLOCK);
-
 				}
 			}
 		}.runTaskTimer(InteractionVisualizer.plugin, 0, 10).getTaskId();
