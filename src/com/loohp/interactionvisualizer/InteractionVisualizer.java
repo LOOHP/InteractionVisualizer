@@ -17,6 +17,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.loohp.interactionvisualizer.Database.Database;
+import com.loohp.interactionvisualizer.Manager.EffectManager;
+import com.loohp.interactionvisualizer.Manager.EnchantmentManager;
+import com.loohp.interactionvisualizer.Manager.LangManager;
+import com.loohp.interactionvisualizer.Manager.TaskManager;
 import com.loohp.interactionvisualizer.Metrics.Charts;
 import com.loohp.interactionvisualizer.Metrics.Metrics;
 import com.loohp.interactionvisualizer.PlaceholderAPI.PlaceholderAPI;
@@ -58,15 +62,19 @@ public class InteractionVisualizer extends JavaPlugin {
 		protocolManager = ProtocolLibrary.getProtocolManager();
 		
 		if (getServer().getPluginManager().getPlugin("OpenInv") != null) {
+			hookMessage("OpenInv");
 			openinv = true;
 		}
-		if (getServer().getPluginManager().isPluginEnabled("SuperVanish") || getServer().getPluginManager().isPluginEnabled("PremiumVanish")) {
+		if (getServer().getPluginManager().getPlugin("SuperVanish") != null || getServer().getPluginManager().getPlugin("PremiumVanish") != null) {
+			hookMessage("SuperVanish/PremiumVanish");
 			vanish = true;
 		}
 		if (getServer().getPluginManager().getPlugin("CMI") != null) {
+			hookMessage("CMI");
 			cmi = true;
 		}
 		if (getServer().getPluginManager().getPlugin("Essentials") != null) {
+			hookMessage("Essentials");
 			ess3 = true;
 		}
 		
@@ -117,6 +125,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		loadConfig();
 		
 		EnchantmentManager.setup();
+		EffectManager.setup();
 		Database.setup();
 		
 		MaterialUtils.setup();
@@ -167,6 +176,10 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	private static void unsupportedMessage() {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "This version of minecraft is unsupported!");
+	}
+	
+	private static void hookMessage(String pluginName) {
+		Bukkit.getConsoleSender().sendMessage(ChatColor.LIGHT_PURPLE + "[InteractionVisualizer] InteractionVisualizer has hooked into " + pluginName + "!");
 	}
 	
 }

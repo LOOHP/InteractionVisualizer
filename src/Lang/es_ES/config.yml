@@ -1,6 +1,6 @@
 #Spanish Language default config translated by Itaquito
 #https://www.spigotmc.org/members/itaquito.138085/
-#Rename this file to "config.yml" and replace the original "config.yml" to use!
+#Replace the original "config.yml" to use!
 
 Database:
 #Player data storage type, MYSQL or SQLITE
@@ -28,6 +28,8 @@ Messages:
 #Habilita InteractionVisualizer para estos bloques
 Blocks:
   Anvil:
+    Enabled: true
+  Beacon:
     Enabled: true
   BlastFurnace:
     Enabled: true

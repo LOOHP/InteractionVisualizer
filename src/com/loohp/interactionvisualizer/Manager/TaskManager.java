@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer;
+package com.loohp.interactionvisualizer.Manager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Blocks.AnvilDisplay;
+import com.loohp.interactionvisualizer.Blocks.BeaconDisplay;
 import com.loohp.interactionvisualizer.Blocks.BlastFurnaceDisplay;
 import com.loohp.interactionvisualizer.Blocks.BrewingStandDisplay;
 import com.loohp.interactionvisualizer.Blocks.CartographyTableDisplay;
@@ -39,6 +41,7 @@ public class TaskManager {
 	public static FileConfiguration config = InteractionVisualizer.config;
 	
 	public static boolean anvil;
+	public static boolean beacon;
 	public static boolean blastfurnace;
 	public static boolean brewingstand;
 	public static boolean cartographytable;
@@ -60,6 +63,7 @@ public class TaskManager {
 	
 	public static void setup() {
 		anvil = false;
+		beacon = false;
 		blastfurnace = false;
 		brewingstand = false;
 		cartographytable = false;
@@ -190,12 +194,21 @@ public class TaskManager {
 			shulkerbox = true;
 		}
 		
+		if (config.getBoolean("Blocks.Beacon.Enabled")) {
+			Bukkit.getPluginManager().registerEvents(new BeaconDisplay(), plugin);
+			tasks.add(BeaconDisplay.run());
+			tasks.add(BeaconDisplay.gc());
+			beacon = true;
+		}
+		
 		if (config.getBoolean("Entities.Villager.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new VillagerDisplay(), plugin);
 			villager = true;
 		}
 		
 		run();
+		TileEntityManager.run();
+		PlayerRangeManager.run();
 		tasks.add(LightManager.run());
 	}
 	

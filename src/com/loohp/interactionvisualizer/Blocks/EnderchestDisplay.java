@@ -88,7 +88,7 @@ public class EnderchestDisplay implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onUseChest(InventoryClickEvent event) {
+	public void onUseEnderChest(InventoryClickEvent event) {
 		if (event.isCancelled()) {
 			return;
 		}
@@ -229,7 +229,7 @@ public class EnderchestDisplay implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onDragChest(InventoryDragEvent event) {
+	public void onDragEnderChest(InventoryDragEvent event) {
 		if (event.isCancelled()) {
 			return;
 		}
@@ -312,7 +312,7 @@ public class EnderchestDisplay implements Listener {
 	}
 	
 	@EventHandler
-	public void onCloseChest(InventoryCloseEvent event) {
+	public void onCloseEnderChest(InventoryCloseEvent event) {
 		if (!playermap.containsKey((Player) event.getPlayer())) {
 			return;
 		}

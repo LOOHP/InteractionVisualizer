@@ -1,6 +1,6 @@
 #Chinese (Simplified) Language default config translated by StarYunmeng
 #https://www.spigotmc.org/members/staryunmeng.589461/
-#Rename this file to "config.yml" and replace the original "config.yml" to use!
+#Replace the original "config.yml" to use!
 
 Database:
   #数据库储存类型 MYSQL 或 SQLITE
@@ -24,6 +24,8 @@ Messages:
 #方块动画启动设置设置成false便可以关闭动画
 Blocks:
   Anvil:
+    Enabled: true
+  Beacon:
     Enabled: true
   BlastFurnace:
     Enabled: true

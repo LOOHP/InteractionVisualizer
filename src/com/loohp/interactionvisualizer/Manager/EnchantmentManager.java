@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer;
+package com.loohp.interactionvisualizer.Manager;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,8 @@ import java.nio.file.Files;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+
+import com.loohp.interactionvisualizer.InteractionVisualizer;
 
 import net.md_5.bungee.api.ChatColor;
 

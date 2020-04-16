@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer;
+package com.loohp.interactionvisualizer.Manager;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +9,8 @@ import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.loohp.interactionvisualizer.InteractionVisualizer;
 
 import ru.beykerykt.lightapi.LightAPI;
 import ru.beykerykt.lightapi.LightType;

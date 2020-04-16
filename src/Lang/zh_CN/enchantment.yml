@@ -1,6 +1,6 @@
 #Chinese (Simplified) Language default enchantment.yml translated by BackWheel
 #https://github.com/BackWheel
-#Rename this file to "enchantment.yml" and replace the original "enchantment.yml" to use!
+#Replace the original "enchantment.yml" to use!
 
 Enchantments:
   PROTECTION_FIRE: 火焰保护

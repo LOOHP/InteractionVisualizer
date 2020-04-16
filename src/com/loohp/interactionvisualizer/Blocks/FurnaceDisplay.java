@@ -1,23 +1,18 @@
 package com.loohp.interactionvisualizer.Blocks;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -34,6 +29,8 @@ import org.bukkit.util.Vector;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.EntityHolder.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolder.Item;
+import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
+import com.loohp.interactionvisualizer.Manager.TileEntityManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.LegacyFacingUtils;
 import com.loohp.interactionvisualizer.Utils.PacketSending;
@@ -283,15 +280,13 @@ public class FurnaceDisplay implements Listener {
 			public void run() {
 				new BukkitRunnable() {
 					public void run() {
-						for (Player player : InteractionVisualizer.getOnlinePlayers()) {
-							List<Block> list = nearbyFurnace(player.getLocation());
-							for (Block block : list) {
-								if (!furnaceMap.containsKey(block)) {
-									HashMap<String, Object> map = new HashMap<String, Object>();
-									map.put("Item", "N/A");
-									map.putAll(spawnArmorStands(block));
-									furnaceMap.put(block, map);
-								}
+						List<Block> list = nearbyFurnace();
+						for (Block block : list) {
+							if (!furnaceMap.containsKey(block)) {
+								HashMap<String, Object> map = new HashMap<String, Object>();
+								map.put("Item", "N/A");
+								map.putAll(spawnArmorStands(block));
+								furnaceMap.put(block, map);
 							}
 						}
 					}
@@ -438,59 +433,12 @@ public class FurnaceDisplay implements Listener {
 		return false;
 	}
 	
-	public static List<Block> nearbyFurnace(Location loc) {
-		List<Chunk> chunks = new ArrayList<Chunk>();
-		List<Block> blocks = new ArrayList<Block>();
-		
-		World world = loc.getWorld();
-		int chunkX = loc.getChunk().getX();
-		int chunkZ = loc.getChunk().getZ();
-		
-		chunks.add(world.getChunkAt(chunkX + 1, chunkZ + 1));
-		chunks.add(world.getChunkAt(chunkX + 1, chunkZ));
-		chunks.add(world.getChunkAt(chunkX + 1, chunkZ - 1));
-		chunks.add(world.getChunkAt(chunkX, chunkZ + 1));
-		chunks.add(world.getChunkAt(chunkX, chunkZ));
-		chunks.add(world.getChunkAt(chunkX, chunkZ - 1));
-		chunks.add(world.getChunkAt(chunkX - 1, chunkZ + 1));
-		chunks.add(world.getChunkAt(chunkX - 1, chunkZ));
-		chunks.add(world.getChunkAt(chunkX - 1, chunkZ - 1));
-		
-		for (Chunk chunk : chunks) {
-			for (BlockState state : chunk.getTileEntities()) {
-				if (isFurnace(state.getBlock().getType())) {
-					blocks.add(state.getBlock());
-				}
-			}
-		}
-		return blocks;
+	public static List<Block> nearbyFurnace() {
+		return TileEntityManager.getTileEntites("furnace");
 	}
 	
 	public static boolean isActive(Location loc) {
-		List<Chunk> chunks = new ArrayList<Chunk>();
-		
-		World world = loc.getWorld();
-		int chunkX = loc.getChunk().getX();
-		int chunkZ = loc.getChunk().getZ();
-		
-		chunks.add(world.getChunkAt(chunkX + 1, chunkZ + 1));
-		chunks.add(world.getChunkAt(chunkX + 1, chunkZ));
-		chunks.add(world.getChunkAt(chunkX + 1, chunkZ - 1));
-		chunks.add(world.getChunkAt(chunkX, chunkZ + 1));
-		chunks.add(world.getChunkAt(chunkX, chunkZ));
-		chunks.add(world.getChunkAt(chunkX, chunkZ - 1));
-		chunks.add(world.getChunkAt(chunkX - 1, chunkZ + 1));
-		chunks.add(world.getChunkAt(chunkX - 1, chunkZ));
-		chunks.add(world.getChunkAt(chunkX - 1, chunkZ - 1));
-		
-		for (Chunk chunk : chunks) {
-			for (Entity entity : chunk.getEntities()) {
-				if (entity instanceof Player) {
-					return true;
-				}
-			}
-		}
-		return false;
+		return PlayerRangeManager.hasPlayerNearby(loc);
 	}
 	
 	public static HashMap<String, ArmorStand> spawnArmorStands(Block block) {

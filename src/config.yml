@@ -23,6 +23,8 @@ Messages:
 Blocks:
   Anvil:
     Enabled: true
+  Beacon:
+    Enabled: true
   BlastFurnace:
     Enabled: true
   BrewingStand:

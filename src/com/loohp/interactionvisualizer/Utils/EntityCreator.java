@@ -21,24 +21,7 @@ public class EntityCreator {
 
     public static Entity createRaw(Location location, EntityType entityType) {
     	try {
-        	if (!entityType.equals(EntityType.DROPPED_ITEM) && !entityType.equals(EntityType.ITEM_FRAME)) {
-	            // We get the craftworld class with nms so it can be used in multiple versions
-	            Class<?> craftWorldClass = getNMSClass("org.bukkit.craftbukkit.", "CraftWorld");
-	
-	            // Cast the bukkit world to the craftworld
-	            Object craftWorldObject = craftWorldClass.cast(location.getWorld());
-	
-	            // Create variable with the method that creates the entity
-	            // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/src/main/java/org/bukkit/craftbukkit/CraftWorld.java#896
-	            Method createEntityMethod = craftWorldObject.getClass().getMethod("createEntity", Location.class, Class.class);
-	
-	            // Attempt to invoke the method that creates the entity itself. This returns a net.minecraft.server entity
-	            Object entity = createEntityMethod.invoke(craftWorldObject, location, entityType.getEntityClass());
-	
-	            // finally we run the getBukkitEntity method in the entity class to get a usable object
-	            return (Entity) entity.getClass().getMethod("getBukkitEntity").invoke(entity);
-            
-        	} else if (entityType.equals(EntityType.DROPPED_ITEM)) {       		
+        	if (entityType.equals(EntityType.DROPPED_ITEM)) {       		
         		Class<?> craftWorldClass = getNMSClass("org.bukkit.craftbukkit.", "CraftWorld");
         		
 	            Object craftWorldObject = craftWorldClass.cast(location.getWorld());
@@ -80,9 +63,25 @@ public class EntityCreator {
                 Object entity = nmsEntityItemFrameConstructor.newInstance(craftWorldObject.getClass().getMethod("getHandle").invoke(craftWorldObject), nmsBlockPostion, nmsEnumDirectionClass.getEnumConstants()[0]);
                 
                 return (Entity) entity.getClass().getMethod("getBukkitEntity").invoke(entity);
+        	} else {
+        		// We get the craftworld class with nms so it can be used in multiple versions
+	            Class<?> craftWorldClass = getNMSClass("org.bukkit.craftbukkit.", "CraftWorld");
+	
+	            // Cast the bukkit world to the craftworld
+	            Object craftWorldObject = craftWorldClass.cast(location.getWorld());
+	
+	            // Create variable with the method that creates the entity
+	            // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/src/main/java/org/bukkit/craftbukkit/CraftWorld.java#896
+	            Method createEntityMethod = craftWorldObject.getClass().getMethod("createEntity", Location.class, Class.class);
+	
+	            // Attempt to invoke the method that creates the entity itself. This returns a net.minecraft.server entity
+	            Object entity = createEntityMethod.invoke(craftWorldObject, location, entityType.getEntityClass());
+	
+	            // finally we run the getBukkitEntity method in the entity class to get a usable object
+	            return (Entity) entity.getClass().getMethod("getBukkitEntity").invoke(entity);
         	}
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException | IllegalArgumentException exception) {
-            exception.printStackTrace();
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException | IllegalArgumentException e) {
+            e.printStackTrace();
         }
 
         // If something went wrong we just return null
@@ -91,7 +90,7 @@ public class EntityCreator {
 
     private static Class<?> getNMSClass(String prefix, String nmsClassString) throws ClassNotFoundException {
         // Getting the version by splitting the package
-       String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
+        String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
 
         // Combining the prefix + version + nmsClassString for the full class path
         String name = prefix + version + nmsClassString;
