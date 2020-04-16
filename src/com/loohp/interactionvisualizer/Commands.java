@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.Database.Database;
+import com.loohp.interactionvisualizer.Manager.CustomBlockDataManager;
+import com.loohp.interactionvisualizer.Manager.EffectManager;
 import com.loohp.interactionvisualizer.Manager.EnchantmentManager;
 import com.loohp.interactionvisualizer.Manager.TaskManager;
 import com.loohp.interactionvisualizer.Updater.Updater;
@@ -38,6 +40,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 				InteractionVisualizer.plugin.reloadConfig();
 				InteractionVisualizer.loadConfig();
 				EnchantmentManager.reloadConfig();
+				EffectManager.reloadConfig();
+				CustomBlockDataManager.setup();
 				TaskManager.setup();
 				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Reload")));
 			} else {

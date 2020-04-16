@@ -23,6 +23,17 @@ public class Charts {
 	        }
 	    }));
 		
+		metrics.addCustomChart(new Metrics.SimplePie("beacon_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (config.getBoolean("Blocks.Beacon.Enabled") == true) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
 		metrics.addCustomChart(new Metrics.SimplePie("blastfurnace_enabled", new Callable<String>() {
 	        @Override
 	        public String call() throws Exception {
@@ -160,6 +171,17 @@ public class Charts {
 	        public String call() throws Exception {
 	        	String string = "Disabled";
 	        	if (config.getBoolean("Blocks.Stonecutter.Enabled") == true) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
+		metrics.addCustomChart(new Metrics.SimplePie("villager_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (config.getBoolean("Entities.Villager.Enabled") == true) {
 	        		string = "Enabled";
 	        	}
 	            return string;

@@ -22,6 +22,7 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.EntityHolder.ArmorStand;
+import com.loohp.interactionvisualizer.Manager.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.Manager.EffectManager;
 import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
 import com.loohp.interactionvisualizer.Manager.TileEntityManager;
@@ -76,6 +77,7 @@ public class BeaconDisplay implements Listener {
 			PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 		}
 		beaconMap.remove(block);
+		CustomBlockDataManager.removeBlock(CustomBlockDataManager.locKey(block.getLocation()));
 	}
 	
 	public static int gc() {
@@ -113,6 +115,7 @@ public class BeaconDisplay implements Listener {
 									stand.remove();
 								}
 								beaconMap.remove(block);
+								CustomBlockDataManager.removeBlock(CustomBlockDataManager.locKey(block.getLocation()));
 								return;
 							}
 							boolean active = false;
@@ -138,6 +141,7 @@ public class BeaconDisplay implements Listener {
 									stand.remove();
 								}
 								beaconMap.remove(block);
+								CustomBlockDataManager.removeBlock(CustomBlockDataManager.locKey(block.getLocation()));
 								return;
 							}
 						}
@@ -157,11 +161,27 @@ public class BeaconDisplay implements Listener {
 							if (!beaconMap.containsKey(block)) {
 								HashMap<String, Object> map = new HashMap<String, Object>();
 								map.put("Item", "N/A");
-								float[] dir = new float[]{0.0F, 0.0F};
-								if (placemap.containsKey(block)) {
-									dir = placemap.remove(block);
+								boolean done = false;
+								HashMap<String, Object> datamap = CustomBlockDataManager.getBlock(CustomBlockDataManager.locKey(block.getLocation()));
+								if (datamap != null) {
+									try {
+										String data = (String) datamap.get("Directional");
+										BlockFace face = BlockFace.valueOf(data);
+										map.putAll(spawnArmorStands(block, face));
+										done = true;
+									} catch (Exception e) {
+										done = false;
+									}
 								}
-								map.putAll(spawnArmorStands(block, dir));
+								if (!done) {
+									float[] dir = placemap.containsKey(block) ? placemap.remove(block) : new float[]{0.0F, 0.0F};
+									BlockFace face = getCardinalFacing(dir);
+									map.putAll(spawnArmorStands(block, face));
+									HashMap<String, Object> savemap = (datamap != null) ? datamap : new HashMap<String, Object>();
+									savemap.put("Directional", face);
+									savemap.put("BlockType", block.getType().toString().toUpperCase());
+									CustomBlockDataManager.setBlock(CustomBlockDataManager.locKey(block.getLocation()), savemap);
+								}
 								beaconMap.put(block, map);
 							}
 						}
@@ -256,11 +276,11 @@ public class BeaconDisplay implements Listener {
 		return PlayerRangeManager.hasPlayerNearby(loc);
 	}
 	
-	public static HashMap<String, ArmorStand> spawnArmorStands(Block block, float[] dir) {
+	public static HashMap<String, ArmorStand> spawnArmorStands(Block block, BlockFace face) {
 		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location origin = block.getLocation();	
 					
-		Location target = block.getRelative(getCardinalFacing(dir)).getLocation();
+		Location target = block.getRelative(face).getLocation();
 		Vector direction = target.toVector().subtract(origin.toVector()).multiply(0.7);
 		
 		Location loc = block.getLocation().clone().add(direction).add(0.5, 0.25, 0.5);

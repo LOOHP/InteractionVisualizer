@@ -17,10 +17,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.loohp.interactionvisualizer.Database.Database;
+import com.loohp.interactionvisualizer.Manager.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.Manager.EffectManager;
 import com.loohp.interactionvisualizer.Manager.EnchantmentManager;
 import com.loohp.interactionvisualizer.Manager.LangManager;
+import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
 import com.loohp.interactionvisualizer.Manager.TaskManager;
+import com.loohp.interactionvisualizer.Manager.TileEntityManager;
 import com.loohp.interactionvisualizer.Metrics.Charts;
 import com.loohp.interactionvisualizer.Metrics.Metrics;
 import com.loohp.interactionvisualizer.PlaceholderAPI.PlaceholderAPI;
@@ -127,6 +130,11 @@ public class InteractionVisualizer extends JavaPlugin {
 		EnchantmentManager.setup();
 		EffectManager.setup();
 		Database.setup();
+		CustomBlockDataManager.setup();
+		TaskManager.run();
+		TileEntityManager.run();
+		PlayerRangeManager.run();
+		CustomBlockDataManager.intervalSaveToFile();
 		
 		MaterialUtils.setup();
 		
@@ -153,6 +161,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
+		CustomBlockDataManager.save();
 		getServer().getConsoleSender().sendMessage(ChatColor.RED + "InteractionVisualizer has been disabled!");
 	}
 	

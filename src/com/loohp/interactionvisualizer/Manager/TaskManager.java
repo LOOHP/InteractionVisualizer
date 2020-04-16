@@ -206,9 +206,6 @@ public class TaskManager {
 			villager = true;
 		}
 		
-		run();
-		TileEntityManager.run();
-		PlayerRangeManager.run();
 		tasks.add(LightManager.run());
 	}
 	
