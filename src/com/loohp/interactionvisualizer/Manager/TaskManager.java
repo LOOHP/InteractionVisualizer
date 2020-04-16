@@ -207,7 +207,6 @@ public class TaskManager {
 		}
 		
 		tasks.add(LightManager.run());
-		tasks.add(LightManager.gc());
 	}
 	
 	public static void run() {
