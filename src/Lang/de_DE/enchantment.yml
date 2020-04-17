@@ -1,0 +1,42 @@
+# German Language default "enchantment.yml" translated by Nachtalb
+# https://nachtalb.io/
+# Ersetzte das originale "enchantment.yml" zum benutzten!
+
+Enchantments:
+  PROTECTION_FIRE: Feuerschutz
+  DAMAGE_ALL: Schärfe
+  ARROW_FIRE: Flamme
+  WATER_WORKER: Wasseraffinität
+  ARROW_KNOCKBACK: Schlag
+  LOYALTY: Treue
+  DEPTH_STRIDER: Wasserläufer
+  VANISHING_CURSE: Fluch des Verschwindens
+  DURABILITY: Haltbarkeit
+  KNOCKBACK: Rückstoss
+  LUCK: Glück des Meeres
+  BINDING_CURSE: Fluch der Bindung
+  LOOT_BONUS_BLOCKS: Glück
+  PROTECTION_ENVIRONMENTAL: Schutz
+  DIG_SPEED: Effizienz
+  MENDING: Reparatur
+  FROST_WALKER: Eisläufer
+  LURE: Köder
+  LOOT_BONUS_MOBS: Plünderung
+  PIERCING: Durchschuss
+  PROTECTION_EXPLOSIONS: Explosionsschutz
+  DAMAGE_UNDEAD: Bann
+  MULTISHOT: Mehrfachschuss
+  FIRE_ASPECT: Verbrennung
+  CHANNELING: Entladung
+  SWEEPING_EDGE: Schwungkraft
+  THORNS: Dornen
+  DAMAGE_ARTHROPODS: Nemesis der Gliederfüsser
+  OXYGEN: Atmung
+  RIPTIDE: Sog
+  SILK_TOUCH: Behusamkeit
+  QUICK_CHARGE: Schnellladen
+  PROTECTION_PROJECTILE: Schusssicher
+  IMPALING: Harpune
+  PROTECTION_FALL: Federfall
+  ARROW_DAMAGE: Stärke
+  ARROW_INFINITE: Unendlichkeit

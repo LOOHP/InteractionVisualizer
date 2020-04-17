@@ -1,0 +1,78 @@
+# German Language default "config.yml" translated by Nachtalb
+# https://nachtalb.io/
+# Ersetzte das originale "config.yml" zum benutzten!
+
+Database:
+  # Spieler-Datenbanktyp MYSQL oder SQLITE
+  Type: SQLITE
+  MYSQL:
+    Host: localhost
+    Port: 3306
+    Database: InteractionVisualizer
+    Username: mysql
+    Password: password
+
+Messages:
+  NoPermission: "&cDu hast keine Berechtigung diesen Befehl auszuführen!"
+  Reload: "&aInteractionVisualizer erfolgreich neu geladen!"
+  Toggle:
+    Usage: "&cBenutzung: /interactionvisualizer toggle <itemstand/itemdrop/hologram>"
+    Modes: "&cWechsle Modi: itemstand, itemdrop, hologram"
+    Console: "&cBitte gib einen Spieler an: /interactionvisualizer toggle <Modus> [Spieler]"
+    ToggleOn: "&%s eingeschaltet"
+    ToggleOff: "&e%s ausgeschaltet"
+    PlayerNotFound: "&cDer Spieler ist nicht online!"
+
+# Aktiviere InteractionVisualizer für diese Blöcke
+Blocks:
+  Anvil:
+    Enabled: true
+  Beacon:
+    Enabled: true
+  BlastFurnace:
+    Enabled: true
+  BrewingStand:
+    Enabled: true
+  CartographyTable:
+    Enabled: true
+  Chest:
+    Enabled: true
+  CraftingTable:
+    Enabled: true
+  DoubleChest:
+    Enabled: true
+  EnchantmentTable:
+    Enabled: true
+  EnderChest:
+    Enabled: true
+  Furnace:
+    Enabled: true
+  Grindstone:
+    Enabled: true
+  Loom:
+    Enabled: true
+  Smoker:
+    Enabled: true
+  Stonecutter:
+    Enabled: true
+  ShulkerBox:
+    Enabled: true
+
+Entities:
+  Villager:
+    Enabled: true
+
+# Aktiviere diese Anzeigemodule
+# ItemStand sind alle Anzeigen mit einem Rüstungsständer und Rahmen
+# ItemDrop sind alle Anzeigen mit fallen gelassenen Gegenstände
+# Hologram sind alle Holographische anzeigen
+Modules:
+  ItemStand:
+    Enabled: true
+  ItemDrop:
+    Enabled: true
+  Hologram:
+    Enabled: true
+
+Options:
+  Updater: true

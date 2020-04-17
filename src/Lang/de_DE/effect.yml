@@ -1,0 +1,37 @@
+# German Language default "effect.yml" translated by Nachtalb
+# https://nachtalb.io/
+# Ersetzte das originale "effect.yml" zum benutzten!
+
+Effects:
+  ABSORPTION: Absorption
+  BAD_OMEN: Böses Omen
+  BLINDNESS: Blindheit
+  CONDUIT_POWER: Meereskraft
+  CONFUSION: Übelkeit
+  DAMAGE_RESISTANCE: Resistenz
+  DOLPHINS_GRACE: Gunst des Delfins
+  FAST_DIGGING: Eile
+  FIRE_RESISTANCE: Feuer Resistenz
+  GLOWING: Leuchten
+  HARM: Direktschaden
+  HEAL: Direktheilung
+  HEALTH_BOOST: Extraenergie
+  HERO_OF_THE_VILLAGE: Held des Dorfes
+  HUNGER: Hunger
+  INCREASE_DAMAGE: Stärke
+  INVISIBILITY: Unsichtbarkeit
+  JUMP: Sprungkraft
+  LEVITATION: Schwebekraft
+  LUCK: Glück
+  NIGHT_VISION: Nachtsicht
+  POISON: Vergiftung
+  REGENERATION: Regeneration
+  SATURATION: Sättigung
+  SLOW: Langsamkeit
+  SLOW_DIGGING: Abbaulähmung
+  SLOW_FALLING: Sanfter Fall
+  SPEED: Schnelligkeit
+  UNLUCK: Pech
+  WATER_BREATHING: Unterwasseratem
+  WEAKNESS: Schwäche
+  WITHER: Ausdörrung
