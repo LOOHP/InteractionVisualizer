@@ -1,5 +1,5 @@
 Database:
-  #Player data storage type, MYSQL or SQLITE
+  # Player data storage type, MYSQL or SQLITE
   Type: SQLITE
   MYSQL:
     Host: localhost
@@ -19,7 +19,7 @@ Messages:
     ToggleOff: "&eToggled %s off"
     PlayerNotFound: "&cThe player is not online!"
 
-#Enable InteractionVisualizer for these blocks
+# Enable InteractionVisualizer for these blocks
 Blocks:
   Anvil:
     Enabled: true
@@ -55,13 +55,13 @@ Blocks:
     Enabled: true
 
 Entities:
-  Villager: 
+  Villager:
     Enabled: true
 
-#Enable these modules for InteractionVisualizer displays
-#ItemStand represents all displays using armorstands and itemframes
-#ItemDrop represents all displays using dropped items
-#Hologram represents all holograpgic displays using armorstands
+# Enable these modules for InteractionVisualizer displays
+# ItemStand represents all displays using armorstands and itemframes
+# ItemDrop represents all displays using dropped items
+# Hologram represents all holograpgic displays using armorstands
 Modules:
   ItemStand:
     Enabled: true
@@ -72,4 +72,3 @@ Modules:
 
 Options:
   Updater: true
-  
