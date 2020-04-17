@@ -1,0 +1,37 @@
+#This is the default effect.yml in Russian by imDaniX
+#https://www.spigotmc.org/members/imdanix.99979/
+#Replace the original "effect.yml" to use!
+
+Effects:
+  ABSORPTION: Поглощение
+  BAD_OMEN: Дурное знамение
+  BLINDNESS: Слепота
+  CONDUIT_POWER: Сила источника
+  CONFUSION: Тошнота
+  DAMAGE_RESISTANCE: Сопротивление
+  DOLPHINS_GRACE: Грация дельфина
+  FAST_DIGGING: Спешка
+  FIRE_RESISTANCE: Огнестойкость
+  GLOWING: Свечение
+  HARM: Моментальный урон
+  HEAL: Исцеление
+  HEALTH_BOOST: Прилив здоровья
+  HERO_OF_THE_VILLAGE: Герой деревни
+  HUNGER: Голод
+  INCREASE_DAMAGE: Сила
+  INVISIBILITY: Невидимость
+  JUMP: Прыгучесть
+  LEVITATION: Левитация
+  LUCK: Удача
+  NIGHT_VISION: Ночное зрение
+  POISON: Отравление
+  REGENERATION: Регенерация
+  SATURATION: Насыщенность
+  SLOW: Медлительность
+  SLOW_DIGGING: Утомление
+  SLOW_FALLING: Плавное падение
+  SPEED: Скорость
+  UNLUCK: Невезение
+  WATER_BREATHING: Водное дыхание
+  WEAKNESS: Слабость
+  WITHER: Иссушение

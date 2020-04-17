@@ -1,0 +1,42 @@
+#This is the default enchantment.yml in Russian by imDaniX
+#https://www.spigotmc.org/members/imdanix.99979/
+#Replace the original "enchantment.yml" to use!
+
+Enchantments:
+    PROTECTION_FIRE: Огнеупорность
+    DAMAGE_ALL: Острота
+    ARROW_FIRE: Горящая стрела
+    WATER_WORKER: Подводник
+    ARROW_KNOCKBACK: Откидывание
+    LOYALTY: Верность
+    DEPTH_STRIDER: Подводная ходьба
+    VANISHING_CURSE: Проклятие утраты
+    DURABILITY: Нерушимость
+    KNOCKBACK: Отдача
+    LUCK: Везучий рыбак
+    BINDING_CURSE: Проклятие несъёмности
+    LOOT_BONUS_BLOCKS: Удача
+    PROTECTION_ENVIRONMENTAL: Защита
+    DIG_SPEED: Эффективность
+    MENDING: Починка
+    FROST_WALKER: Ледоход
+    LURE: Приманка
+    LOOT_BONUS_MOBS: Добыча
+    PIERCING: Пронзающая стрела
+    PROTECTION_EXPLOSIONS: Взрывоустойчивость
+    DAMAGE_UNDEAD: Небесная кара
+    MULTISHOT: Тройной выстрел
+    FIRE_ASPECT: Заговор огня
+    CHANNELING: Громовержец
+    SWEEPING_EDGE: Разящий клинок
+    THORNS: Шипы
+    DAMAGE_ARTHROPODS: Бич членистоногих
+    OXYGEN: Подводное дыхание
+    RIPTIDE: Тягун
+    SILK_TOUCH: Шёлковое касание
+    QUICK_CHARGE: Быстрая перезарядка
+    PROTECTION_PROJECTILE: Защита от снарядов
+    IMPALING: Пронзатель
+    PROTECTION_FALL: Невесомость
+    ARROW_DAMAGE: Сила
+    ARROW_INFINITE: Бесконечность

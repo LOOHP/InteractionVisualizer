@@ -96,15 +96,15 @@ public class TileEntityManager {
 				for (BlockState state : chunk.getTileEntities()) {
 					Block block = state.getBlock();
 					Material type = block.getType();
-					if (type.equals(Material.BLAST_FURNACE)) {
+					if (type.toString().toUpperCase().equals("BLAST_FURNACE")) {
 						upcomming.get("blastfurnace").add(block);
-					} else if (type.equals(Material.BREWING_STAND)) {
+					} else if (type.toString().toUpperCase().equals("BREWING_STAND")) {
 						upcomming.get("brewingstand").add(block);
 					} else if (FurnaceDisplay.isFurnace(type)) {
 						upcomming.get("furnace").add(block);
-					} else if (type.equals(Material.SMOKER)) {
+					} else if (type.toString().toUpperCase().equals("SMOKER")) {
 						upcomming.get("smoker").add(block);
-					} else if (type.equals(Material.BEACON)) {
+					} else if (type.toString().toUpperCase().equals("BEACON")) {
 						upcomming.get("beacon").add(block);
 					}
 				}

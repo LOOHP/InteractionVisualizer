@@ -1,0 +1,79 @@
+#This is the default config in Russian by imDaniX
+#https://www.spigotmc.org/members/imdanix.99979/
+#Replace the original "config.yml" to use!
+
+Database:
+  #Тип хранилища данных игроков, MYSQL или SQLITE
+  Type: SQLITE
+  MYSQL:
+    Host: localhost
+    Port: 3306
+    Database: InteractionVisualizer
+    Username: mysql
+    Password: password
+
+Messages:
+  NoPermission: "&cУ вас недостаточно прав для использования этой команды!"
+  Reload: "&aInteractionVisualizer успешно перезагружен!"
+  Toggle:
+    Usage: "&cИспользование: /interactionvisualizer toggle <itemstand/itemdrop/hologram>"
+    Modes: "&cПереключение режимов: itemstand, itemdrop, hologram"
+    Console: "&cПожалуйста, укажите никнейм игрока: /interactionvisualizer toggle <режим> [игрок]"
+    ToggleOn: "&aВключено у %s"
+    ToggleOff: "&eОтключено у %s"
+    PlayerNotFound: "&cЭтот игрок не онлайн!"
+
+#Включение InteractionVisualizer для следующих блоков
+Blocks:
+  Anvil:
+    Enabled: true
+  Beacon:
+    Enabled: true
+  BlastFurnace:
+    Enabled: true
+  BrewingStand:
+    Enabled: true
+  CartographyTable:
+    Enabled: true
+  Chest:
+    Enabled: true
+  CraftingTable:
+    Enabled: true
+  DoubleChest:
+    Enabled: true
+  EnchantmentTable:
+    Enabled: true
+  EnderChest:
+    Enabled: true
+  Furnace:
+    Enabled: true
+  Grindstone:
+    Enabled: true
+  Loom:
+    Enabled: true
+  Smoker:
+    Enabled: true
+  Stonecutter:
+    Enabled: true
+  ShulkerBox:
+    Enabled: true
+
+Entities:
+  Villager: 
+    Enabled: true
+
+#Включите эти модули для отображения InteractionVisualizer
+#ItemStand отвечает за отображения с использованием стоек для брони и рамок
+#ItemDrop отвечает за отображения с использованием выброшенных предметов
+#Hologram отвечает за голограммы с использованием стоек для брони
+Modules:
+  ItemStand:
+    Enabled: true
+  ItemDrop:
+    Enabled: true
+  Hologram:
+    Enabled: true
+
+Options:
+  Updater: true
+  
