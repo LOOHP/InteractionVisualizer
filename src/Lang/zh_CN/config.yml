@@ -1,9 +1,9 @@
-#Chinese (Simplified) Language default config translated by StarYunmeng
-#https://www.spigotmc.org/members/staryunmeng.589461/
-#Replace the original "config.yml" to use!
+# Chinese (Simplified) Language default config translated by StarYunmeng
+# https://www.spigotmc.org/members/staryunmeng.589461/
+# Replace the original "config.yml" to use!
 
 Database:
-  #数据库储存类型 MYSQL 或 SQLITE
+  # 数据库储存类型 MYSQL 或 SQLITE
   Type: SQLITE
   MYSQL:
     Host: localhost
@@ -21,7 +21,8 @@ Messages:
     ToggleOn: "&a切换 %s 开启"
     ToggleOff: "&e切换 %s 关闭"
     PlayerNotFound: "&c玩家不在线"
-#方块动画启动设置设置成false便可以关闭动画
+
+# 方块动画启动设置设置成false便可以关闭动画
 Blocks:
   Anvil:
     Enabled: true
@@ -57,13 +58,13 @@ Blocks:
     Enabled: true
 
 Entities:
-  Villager: 
+  Villager:
     Enabled: true
 
-#Enable these modules for InteractionVisualizer displays
-#ItemStand represents all displays using armorstands and itemframes
-#ItemDrop represents all displays using dropped items
-#Hologram represents all holograpgic displays using armorstands
+# Enable these modules for InteractionVisualizer displays
+# ItemStand represents all displays using armorstands and itemframes
+# ItemDrop represents all displays using dropped items
+# Hologram represents all holograpgic displays using armorstands
 Modules:
   ItemStand:
     Enabled: true
@@ -72,6 +73,6 @@ Modules:
   Hologram:
     Enabled: true
 
-#中国网络限制更新功能建议关闭
+# 中国网络限制更新功能建议关闭
 Options:
-  Updater: false
+  Updater: true

@@ -1,9 +1,9 @@
-#This is the default config in Russian by imDaniX
-#https://www.spigotmc.org/members/imdanix.99979/
-#Replace the original "config.yml" to use!
+# This is the default config in Russian by imDaniX
+# https://www.spigotmc.org/members/imdanix.99979/
+# Replace the original "config.yml" to use!
 
 Database:
-  #Тип хранилища данных игроков, MYSQL или SQLITE
+  # Тип хранилища данных игроков, MYSQL или SQLITE
   Type: SQLITE
   MYSQL:
     Host: localhost
@@ -23,7 +23,7 @@ Messages:
     ToggleOff: "&eОтключено у %s"
     PlayerNotFound: "&cЭтот игрок не онлайн!"
 
-#Включение InteractionVisualizer для следующих блоков
+# Включение InteractionVisualizer для следующих блоков
 Blocks:
   Anvil:
     Enabled: true
@@ -59,13 +59,13 @@ Blocks:
     Enabled: true
 
 Entities:
-  Villager: 
+  Villager:
     Enabled: true
 
-#Включите эти модули для отображения InteractionVisualizer
-#ItemStand отвечает за отображения с использованием стоек для брони и рамок
-#ItemDrop отвечает за отображения с использованием выброшенных предметов
-#Hologram отвечает за голограммы с использованием стоек для брони
+# Включите эти модули для отображения InteractionVisualizer
+# ItemStand отвечает за отображения с использованием стоек для брони и рамок
+# ItemDrop отвечает за отображения с использованием выброшенных предметов
+# Hologram отвечает за голограммы с использованием стоек для брони
 Modules:
   ItemStand:
     Enabled: true
@@ -76,4 +76,3 @@ Modules:
 
 Options:
   Updater: true
-  

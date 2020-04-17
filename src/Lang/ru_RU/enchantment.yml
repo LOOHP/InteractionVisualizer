@@ -1,6 +1,6 @@
-#This is the default enchantment.yml in Russian by imDaniX
-#https://www.spigotmc.org/members/imdanix.99979/
-#Replace the original "enchantment.yml" to use!
+# This is the default enchantment.yml in Russian by imDaniX
+# https://www.spigotmc.org/members/imdanix.99979/
+# Replace the original "enchantment.yml" to use!
 
 Enchantments:
     PROTECTION_FIRE: Огнеупорность

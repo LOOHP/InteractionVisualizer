@@ -1,10 +1,10 @@
-#Spanish Language default config translated by Itaquito
-#https://www.spigotmc.org/members/itaquito.138085/
-#Replace the original "config.yml" to use!
+# Spanish Language default config translated by Itaquito
+# https://www.spigotmc.org/members/itaquito.138085/
+# Replace the original "config.yml" to use!
 
 Database:
-#Player data storage type, MYSQL or SQLITE
-#Información de jugadores almacenada en MYSQL o SQLITE
+# Player data storage type, MYSQL or SQLITE
+# Información de jugadores almacenada en MYSQL o SQLITE
   Type: SQLITE
   MYSQL:
     Host: localhost
@@ -24,8 +24,8 @@ Messages:
     ToggleOff: "&e%s se deshabilitó"
     PlayerNotFound: "&c¡El jugador no esta en línea!"
 
-#Enable InteractionVisualizer for these blocks
-#Habilita InteractionVisualizer para estos bloques
+# Enable InteractionVisualizer for these blocks
+# Habilita InteractionVisualizer para estos bloques
 Blocks:
   Anvil:
     Enabled: true
@@ -61,20 +61,20 @@ Blocks:
     Enabled: true
 
 Entities:
-  Villager: 
+  Villager:
     Enabled: true
 
-#Enable these modules for InteractionVisualizer displays
-#ItemStand represents all displays using armorstands and itemframes
-#ItemDrop represents all displays using dropped items
-#Hologram represents all holograpgic displays using armorstands
-#Habilita estos módulos para los displays de InteractionVisualizer
-#ItemStand representa todos los displays que usan armorstands y itemframes
-#ItemDrop representa todos los displays usando items en el suelo
-#Hologram representa todolos los display holográficos usando armorstands
+# Habilita estos módulos para los displays de InteractionVisualizer
+# ItemStand representa todos los displays que usan armorstands y itemframes
+# ItemDrop representa todos los displays usando items en el suelo
+# Hologram representa todolos los display holográficos usando armorstands
 Modules:
   ItemStand:
     Enabled: true
   ItemDrop:
     Enabled: true
   Hologram:
+    Enabled: true
+
+Options:
+  Updater: true

@@ -1,6 +1,6 @@
-#French Language default enchantment.yml translated by Cry_Legende
-#https://www.spigotmc.org/members/cry_legende.288109/
-#Replace the original "enchantment.yml" to use!
+# French Language default enchantment.yml translated by Cry_Legende
+# https://www.spigotmc.org/members/cry_legende.288109/
+# Replace the original "enchantment.yml" to use!
 
 Enchantments:
     PROTECTION_FIRE: Protection contre le feu
