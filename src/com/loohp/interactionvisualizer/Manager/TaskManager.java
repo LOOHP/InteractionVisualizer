@@ -224,6 +224,7 @@ public class TaskManager {
 		}
 		
 		tasks.add(LightManager.run());
+		tasks.add(PacketManager.run());
 	}
 	
 	public static void run() {

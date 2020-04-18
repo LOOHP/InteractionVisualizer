@@ -2,14 +2,18 @@ package com.loohp.interactionvisualizer.Manager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
@@ -25,8 +29,115 @@ public class PacketManager implements Listener {
 	
 	private static ProtocolManager protocolManager = InteractionVisualizer.protocolManager;
 	private static String version = InteractionVisualizer.version;
+	private static List<String> exemptBlocks = InteractionVisualizer.exemptBlocks;
 	
 	public static ConcurrentHashMap<Object, List<Player>> active = new ConcurrentHashMap<Object, List<Player>>();
+	public static ConcurrentHashMap<Object, Boolean> loaded = new ConcurrentHashMap<Object, Boolean>();
+	
+	public static int run() {
+		return new BukkitRunnable() {
+			public void run() {
+				Iterator<Entry<Object, Boolean>> itr = loaded.entrySet().iterator();
+				int delay = (int) Math.floor(1900.0 / (double) loaded.size());
+				while (itr.hasNext()) {
+					Entry<Object, Boolean> entry = itr.next();
+					Object entity = entry.getKey();
+					if (entry.getKey() instanceof ArmorStand) {
+						ArmorStand stand = (ArmorStand) entity;
+						if (entry.getValue()) {
+							Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+								if (isOccluding(stand.getLocation().getBlock().getType())) {
+									removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand, false);
+									loaded.put(entity, false);
+								}
+							});
+						} else {
+							Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+								if (!isOccluding(stand.getLocation().getBlock().getType())) {
+									sendArmorStandSpawn(active.get(entity), stand);
+									updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									loaded.put(entity, true);
+								}
+							});
+						}
+					} else if (entry.getKey() instanceof Item) {
+						Item item = (Item) entity;
+						if (entry.getValue()) {
+							Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+								if (isOccluding(item.getLocation().getBlock().getType())) {
+									removeItem(InteractionVisualizer.getOnlinePlayers(), item, false);
+									loaded.put(entity, false);
+								}
+							});
+						} else {
+							Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+								if (!isOccluding(item.getLocation().getBlock().getType())) {
+									sendItemSpawn(active.get(entity), item);
+									updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+									loaded.put(entity, true);
+								}
+							});
+						}
+					} else if (entry.getKey() instanceof ItemFrame) {
+						ItemFrame frame = (ItemFrame) entity;
+						if (entry.getValue()) {
+							Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+								if (isOccluding(frame.getLocation().getBlock().getType())) {
+									removeItemFrame(InteractionVisualizer.getOnlinePlayers(), frame, false);
+									loaded.put(entity, false);
+								}
+							});
+						} else {
+							Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+								if (!isOccluding(frame.getLocation().getBlock().getType())) {
+									sendItemFrameSpawn(active.get(entity), frame);
+									updateItemFrame(InteractionVisualizer.getOnlinePlayers(), frame);
+									loaded.put(entity, true);
+								}
+							});
+						}
+					}
+					try {
+						TimeUnit.MILLISECONDS.sleep(delay);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 40).getTaskId();
+	}
+	
+	private static boolean isOccluding(Material material) {
+		if (exemptBlocks.contains(material.toString().toUpperCase())) {
+			return false;
+		}
+		return material.isOccluding();
+	}
+	
+	/*
+	public static void sendLightUpdate(List<Player> players, Location location, int lightLevel, int subchunkbitmask, List<byte[]> bytearray) {
+		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.LIGHT_UPDATE);
+		int chunkX = (int) Math.floor((double) location.getBlockX() / 16.0);
+		int chunkZ = (int) Math.floor((double) location.getBlockZ() / 16.0);
+		
+		packet.getIntegers().write(0, chunkX);
+		packet.getIntegers().write(1, chunkZ);
+		packet.getIntegers().write(2, 0);
+		packet.getIntegers().write(3, subchunkbitmask);
+		packet.getIntegers().write(4, 0);
+		packet.getIntegers().write(5, ~subchunkbitmask);
+		packet.getModifier().write(6, new ArrayList<byte[]>());
+		packet.getModifier().write(7, bytearray);
+		
+		try {
+        	for (Player player : players) {
+				protocolManager.sendServerPacket(player, packet);
+			}
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+	}
+	*/
 	
 	public static void sendHandMovement(List<Player> players, Player entity) {
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ANIMATION);
@@ -43,8 +154,10 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void sendArmorStandSpawn(List<Player> players, ArmorStand entity) {
-		active.put(entity, players);
-		//loaded.put(entity, true);
+		if (!active.containsKey(entity)) {
+			active.put(entity, players);
+			loaded.put(entity, true);
+		}
 		
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
 
@@ -201,8 +314,11 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void sendItemSpawn(List<Player> players, Item entity) {
-		active.put(entity, players);
-		//loaded.put(entity, true);
+		if (!active.containsKey(entity)) {
+			active.put(entity, players);
+			loaded.put(entity, true);
+		}
+		
 		if (entity.getItemStack().getType().equals(Material.AIR)) {
 			return;
 		}
@@ -334,7 +450,7 @@ public class PacketManager implements Listener {
 		}
 		if (removeFromActive) {
 			active.remove(entity);
-			//loaded.remove(entity);
+			loaded.remove(entity);
 		}
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 		packet.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
@@ -352,8 +468,10 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void sendItemFrameSpawn(List<Player> players, ItemFrame entity) {
-		active.put(entity, players);
-		//loaded.put(entity, true);
+		if (!active.containsKey(entity)) {
+			active.put(entity, players);
+			loaded.put(entity, true);
+		}
 		
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
 
@@ -445,7 +563,7 @@ public class PacketManager implements Listener {
 	public static void removeItemFrame(List<Player> players, ItemFrame entity, boolean removeFromActive) {
 		if (removeFromActive) {
 			active.remove(entity);
-			//loaded.remove(entity);
+			loaded.remove(entity);
 		}
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 		packet.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
@@ -462,9 +580,9 @@ public class PacketManager implements Listener {
 		removeItemFrame(players, entity, true);
 	}
 	
-	@SuppressWarnings("serial")
 	public static void removeAll(Player theplayer) {
-		List<Player> player = new ArrayList<Player>(){{add(theplayer);}};
+		List<Player> player = new ArrayList<Player>();
+		player.add(theplayer);
 		for (Entry<Object, List<Player>> entry : active.entrySet()) {
 			Object entity = entry.getKey();
 			if (entity instanceof ArmorStand) {
@@ -479,23 +597,25 @@ public class PacketManager implements Listener {
 		}
 	}
 	
-	@SuppressWarnings("serial")
 	public static void sendPlayerPackets(Player theplayer) {
-		List<Player> player = new ArrayList<Player>(){{add(theplayer);}};
+		List<Player> player = new ArrayList<Player>();
+		player.add(theplayer);
 		for (Entry<Object, List<Player>> entry : active.entrySet()) {
 			Object entity = entry.getKey();
 			if (entry.getValue().contains(theplayer)) {
-				if (entity instanceof ArmorStand) {
-					sendArmorStandSpawn(player, (ArmorStand) entity);
-					updateArmorStand(player, (ArmorStand) entity);
-				}
-				if (entity instanceof Item) {
-					sendItemSpawn(player, (Item) entity);
-					updateItem(player, (Item) entity);
-				}
-				if (entity instanceof ItemFrame) {
-					sendItemFrameSpawn(player, (ItemFrame) entity);
-					updateItemFrame(player, (ItemFrame) entity);
+				if (loaded.get(entity)) {
+					if (entity instanceof ArmorStand) {
+						sendArmorStandSpawn(player, (ArmorStand) entity);
+						updateArmorStand(player, (ArmorStand) entity);
+					}
+					if (entity instanceof Item) {
+						sendItemSpawn(player, (Item) entity);
+						updateItem(player, (Item) entity);
+					}
+					if (entity instanceof ItemFrame) {
+						sendItemFrameSpawn(player, (ItemFrame) entity);
+						updateItemFrame(player, (ItemFrame) entity);
+					}
 				}
 			}
 		}

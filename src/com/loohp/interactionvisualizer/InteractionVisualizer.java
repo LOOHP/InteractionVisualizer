@@ -19,8 +19,8 @@ import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.Manager.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.Manager.EffectManager;
 import com.loohp.interactionvisualizer.Manager.EnchantmentManager;
-import com.loohp.interactionvisualizer.Manager.MusicManager;
 import com.loohp.interactionvisualizer.Manager.LangManager;
+import com.loohp.interactionvisualizer.Manager.MusicManager;
 import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
 import com.loohp.interactionvisualizer.Manager.TaskManager;
 import com.loohp.interactionvisualizer.Manager.TileEntityManager;
@@ -48,6 +48,8 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static List<Player> itemStand = new CopyOnWriteArrayList<Player>();
 	public static List<Player> itemDrop = new CopyOnWriteArrayList<Player>();
 	public static List<Player> holograms = new CopyOnWriteArrayList<Player>();
+	
+	public static List<String> exemptBlocks = new ArrayList<String>();
 	
 	public static boolean itemStandEnabled = true;
 	public static boolean itemDropEnabled = true;
@@ -78,7 +80,6 @@ public class InteractionVisualizer extends JavaPlugin {
 			hookMessage("Essentials");
 			ess3 = true;
 		}
-		
 		LangManager.generate();
 		
 		int pluginId = 7024;
@@ -154,6 +155,10 @@ public class InteractionVisualizer extends JavaPlugin {
 				}
 			}
 		}
+		
+		exemptBlocks.add("CRAFTING_TABLE");
+		exemptBlocks.add("WORKBENCH");
+		exemptBlocks.add("LOOM");
 		
 		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "InteractionVisualizer has been enabled!");
 	}
