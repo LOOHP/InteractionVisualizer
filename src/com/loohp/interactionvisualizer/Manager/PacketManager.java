@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Utils;
+package com.loohp.interactionvisualizer.Manager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -17,14 +17,14 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.EntityHolder.ArmorStand;
-import com.loohp.interactionvisualizer.EntityHolder.Item;
-import com.loohp.interactionvisualizer.EntityHolder.ItemFrame;
+import com.loohp.interactionvisualizer.Holder.ArmorStand;
+import com.loohp.interactionvisualizer.Holder.Item;
+import com.loohp.interactionvisualizer.Holder.ItemFrame;
 
-public class PacketSending implements Listener {
+public class PacketManager implements Listener {
 	
-	public static ProtocolManager protocolManager = InteractionVisualizer.protocolManager;
-	public static String version = InteractionVisualizer.version;
+	private static ProtocolManager protocolManager = InteractionVisualizer.protocolManager;
+	private static String version = InteractionVisualizer.version;
 	
 	public static ConcurrentHashMap<Object, List<Player>> active = new ConcurrentHashMap<Object, List<Player>>();
 	
@@ -43,9 +43,9 @@ public class PacketSending implements Listener {
 	}
 	
 	public static void sendArmorStandSpawn(List<Player> players, ArmorStand entity) {
-		if (!active.containsKey(entity)) {
-			active.put(entity, players);
-		}
+		active.put(entity, players);
+		//loaded.put(entity, true);
+		
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
 
 		packet.getIntegers().write(0, entity.getEntityId());
@@ -182,9 +182,8 @@ public class PacketSending implements Listener {
 	
 	public static void removeArmorStand(List<Player> players, ArmorStand entity, boolean removeFromActive) {
 		if (removeFromActive) {
-			if (active.containsKey(entity)) {
-				active.remove(entity);
-			}
+			active.remove(entity);
+			active.remove(entity);
 		}
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 		packet.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
@@ -202,9 +201,8 @@ public class PacketSending implements Listener {
 	}
 	
 	public static void sendItemSpawn(List<Player> players, Item entity) {
-		if (!active.containsKey(entity)) {
-			active.put(entity, players);
-		}
+		active.put(entity, players);
+		//loaded.put(entity, true);
 		if (entity.getItemStack().getType().equals(Material.AIR)) {
 			return;
 		}
@@ -335,9 +333,8 @@ public class PacketSending implements Listener {
 			return;
 		}
 		if (removeFromActive) {
-			if (active.containsKey(entity)) {
-				active.remove(entity);
-			}
+			active.remove(entity);
+			//loaded.remove(entity);
 		}
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 		packet.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
@@ -355,9 +352,9 @@ public class PacketSending implements Listener {
 	}
 	
 	public static void sendItemFrameSpawn(List<Player> players, ItemFrame entity) {
-		if (!active.containsKey(entity)) {
-			active.put(entity, players);
-		}
+		active.put(entity, players);
+		//loaded.put(entity, true);
+		
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
 
         //Location
@@ -447,9 +444,8 @@ public class PacketSending implements Listener {
 	
 	public static void removeItemFrame(List<Player> players, ItemFrame entity, boolean removeFromActive) {
 		if (removeFromActive) {
-			if (active.containsKey(entity)) {
-				active.remove(entity);
-			}
+			active.remove(entity);
+			//loaded.remove(entity);
 		}
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 		packet.getIntegerArrays().write(0, new int[]{entity.getEntityId()});

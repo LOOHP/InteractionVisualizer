@@ -25,12 +25,12 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.EntityHolder.ArmorStand;
-import com.loohp.interactionvisualizer.EntityHolder.Item;
+import com.loohp.interactionvisualizer.Holder.ArmorStand;
+import com.loohp.interactionvisualizer.Holder.Item;
 import com.loohp.interactionvisualizer.Manager.LightManager;
+import com.loohp.interactionvisualizer.Manager.PacketManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
-import com.loohp.interactionvisualizer.Utils.PacketSending;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class CraftingTableDisplay implements Listener {
@@ -126,15 +126,15 @@ public class CraftingTableDisplay implements Listener {
 		slot8.teleport(slot8.getLocation().add(vector.clone().multiply(0.2)));
 		slot9.teleport(slot9.getLocation().add(rotateVectorAroundY(vector.clone(), -45).multiply(0.2828)));
 		
-		PacketSending.updateArmorStand(InteractionVisualizer.itemStand, slot1);
-		PacketSending.updateArmorStand(InteractionVisualizer.itemStand, slot2);
-		PacketSending.updateArmorStand(InteractionVisualizer.itemStand, slot3);
-		PacketSending.updateArmorStand(InteractionVisualizer.itemStand, slot4);
-		PacketSending.updateArmorStand(InteractionVisualizer.itemStand, slot5);
-		PacketSending.updateArmorStand(InteractionVisualizer.itemStand, slot6);
-		PacketSending.updateArmorStand(InteractionVisualizer.itemStand, slot7);
-		PacketSending.updateArmorStand(InteractionVisualizer.itemStand, slot8);
-		PacketSending.updateArmorStand(InteractionVisualizer.itemStand, slot9);
+		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot1);
+		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot2);
+		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot3);
+		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot4);
+		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot5);
+		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot6);
+		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot7);
+		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot8);
+		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot9);
 		
 		new BukkitRunnable() {
 			public void run() {
@@ -152,20 +152,20 @@ public class CraftingTableDisplay implements Listener {
 				item.setVelocity(pickup);
 				item.setGravity(true);
 				item.setPickupDelay(32767);
-				PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 				
 				new BukkitRunnable() {
 					public void run() {
-						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot1);
-						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot2);
-						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot3);
-						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot4);
-						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot5);
-						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot6);
-						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot7);
-						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot8);
-						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot9);
-						PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot1);
+						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot2);
+						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot3);
+						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot4);
+						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot5);
+						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot6);
+						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot7);
+						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot8);
+						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot9);
+						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 					}
 				}.runTaskLater(InteractionVisualizer.plugin, 8);
 			}
@@ -182,7 +182,7 @@ public class CraftingTableDisplay implements Listener {
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 9) {
-			PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 		}
 	}
 	
@@ -197,7 +197,7 @@ public class CraftingTableDisplay implements Listener {
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 9) {
-				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				break;
 			}
 		}
@@ -224,10 +224,10 @@ public class CraftingTableDisplay implements Listener {
 			if (!(map.get(String.valueOf(i)) instanceof String)) {
 				Object entity = map.get(String.valueOf(i));
 				if (entity instanceof Item) {
-					PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
+					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
 				} else if (entity instanceof ArmorStand) {
 					if (((ArmorStand) entity).isLocked() == false) {
-						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
+						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
 					}
 					int finalI = i;
 					new BukkitRunnable() {
@@ -300,9 +300,9 @@ public class CraftingTableDisplay implements Listener {
 										LightManager.deleteLight(((ArmorStand) entity).getLocation());
 									}
 									if (entity instanceof Item) {
-										PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
+										PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
 									} else if (entity instanceof ArmorStand) {
-										PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
+										PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
 									}
 								}
 							}
@@ -408,8 +408,8 @@ public class CraftingTableDisplay implements Listener {
 					item.setPickupDelay(32767);
 					item.setGravity(false);
 					map.put("0", item);
-					PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-					PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+					PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 				} else {
 					map.put("0", "N/A");
 				}
@@ -418,13 +418,13 @@ public class CraftingTableDisplay implements Listener {
 				if (itemstack != null) {
 					if (!item.getItemStack().equals(itemstack)) {
 						item.setItemStack(itemstack);
-						PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+						PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 					}
 					item.setPickupDelay(32767);
 					item.setGravity(false);
 				} else {
 					map.put("0", "N/A");
-					PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 					item.remove();
 				}
 			}
@@ -444,10 +444,10 @@ public class CraftingTableDisplay implements Listener {
 					toggleStandMode(stand, "Item");
 				}
 				stand.setItemInMainHand(item);
-				PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 			} else {
 				stand.setItemInMainHand(new ItemStack(Material.AIR));
-				PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 			}
 		}
 		Location loc1 = ((ArmorStand) map.get("5")).getLocation();
@@ -538,15 +538,15 @@ public class CraftingTableDisplay implements Listener {
 		map.put("9", slot9);
 		center.remove();
 		
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot1);
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot2);
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot3);
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot4);
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot5);
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot6);
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot7);
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot8);
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot9);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot2);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot3);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot4);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot5);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot6);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot7);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot8);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot9);
 		
 		return map;
 	}

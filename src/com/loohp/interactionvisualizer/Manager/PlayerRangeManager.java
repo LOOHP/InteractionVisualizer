@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -20,8 +19,9 @@ public class PlayerRangeManager {
 	private static Set<int[]> upcomming = new HashSet<int[]>();
 	
 	public static boolean hasPlayerNearby(Location location) {
-		Chunk chunk = location.getChunk();
-		int[] array = new int[]{chunk.getX(), chunk.getZ()};
+		int x = (int) Math.floor((double) location.getBlockX() / 16.0);
+		int z = (int) Math.floor((double) location.getBlockZ() / 16.0);
+		int[] array = new int[]{x, z};
 		if (current.stream().anyMatch(each -> Arrays.equals(each, array))) {
 			return true;
 		}

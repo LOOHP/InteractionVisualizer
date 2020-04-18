@@ -24,9 +24,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.EntityHolder.Item;
+import com.loohp.interactionvisualizer.Holder.Item;
+import com.loohp.interactionvisualizer.Manager.PacketManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
-import com.loohp.interactionvisualizer.Utils.PacketSending;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class StonecutterDisplay implements Listener {
@@ -98,11 +98,11 @@ public class StonecutterDisplay implements Listener {
 		item.setVelocity(pickup);
 		item.setGravity(true);
 		item.setPickupDelay(32767);
-		PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+		PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 		
 		new BukkitRunnable() {
 			public void run() {
-				PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 			}
 		}.runTaskLater(InteractionVisualizer.plugin, 8);
 	}
@@ -117,7 +117,7 @@ public class StonecutterDisplay implements Listener {
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 1) {
-			PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 		}
 	}
 	
@@ -132,7 +132,7 @@ public class StonecutterDisplay implements Listener {
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 1) {
-				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				break;
 			}
 		}
@@ -157,7 +157,7 @@ public class StonecutterDisplay implements Listener {
 		
 		if (map.get("Item") instanceof Item) {
 			Item entity = (Item) map.get("Item");
-			PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), entity);
+			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), entity);
 			entity.remove();
 		}
 		openedStonecutter.remove(block);
@@ -200,7 +200,7 @@ public class StonecutterDisplay implements Listener {
 							
 							if (map.get("Item") instanceof Item) {
 								Item entity = (Item) map.get("Item");
-								PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
+								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
 							}
 							openedStonecutter.remove(block);
 						}
@@ -290,8 +290,8 @@ public class StonecutterDisplay implements Listener {
 				item.setPickupDelay(32767);
 				item.setGravity(false);
 				map.put("Item", item);
-				PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-				PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 			} else {
 				map.put("Item", "N/A");
 			}
@@ -300,13 +300,13 @@ public class StonecutterDisplay implements Listener {
 			if (itemstack != null) {
 				if (!item.getItemStack().equals(itemstack)) {
 					item.setItemStack(itemstack);
-					PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 				}
 				item.setPickupDelay(32767);
 				item.setGravity(false);
 			} else {
 				map.put("Item", "N/A");
-				PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 				item.remove();
 			}
 		}

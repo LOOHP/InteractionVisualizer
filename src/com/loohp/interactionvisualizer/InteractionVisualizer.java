@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,6 +19,7 @@ import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.Manager.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.Manager.EffectManager;
 import com.loohp.interactionvisualizer.Manager.EnchantmentManager;
+import com.loohp.interactionvisualizer.Manager.MusicManager;
 import com.loohp.interactionvisualizer.Manager.LangManager;
 import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
 import com.loohp.interactionvisualizer.Manager.TaskManager;
@@ -44,8 +44,6 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static boolean vanish = false;
 	public static boolean cmi = false;
 	public static boolean ess3 = false;
-	
-	public static List<Chunk> chunksGoneOver = new ArrayList<Chunk>();
 	
 	public static List<Player> itemStand = new CopyOnWriteArrayList<Player>();
 	public static List<Player> itemDrop = new CopyOnWriteArrayList<Player>();
@@ -129,6 +127,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		EnchantmentManager.setup();
 		EffectManager.setup();
+		MusicManager.setup();
 		Database.setup();
 		CustomBlockDataManager.setup();
 		TaskManager.run();

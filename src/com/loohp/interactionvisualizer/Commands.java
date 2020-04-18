@@ -9,19 +9,22 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.Manager.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.Manager.EffectManager;
 import com.loohp.interactionvisualizer.Manager.EnchantmentManager;
+import com.loohp.interactionvisualizer.Manager.PacketManager;
 import com.loohp.interactionvisualizer.Manager.TaskManager;
 import com.loohp.interactionvisualizer.Updater.Updater;
-import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 import net.md_5.bungee.api.ChatColor;
 
 public class Commands implements CommandExecutor, TabCompleter {
+	
+	private static Plugin plugin = InteractionVisualizer.plugin;
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -31,21 +34,21 @@ public class Commands implements CommandExecutor, TabCompleter {
 		
 		if (args.length == 0) {
 			sender.sendMessage(ChatColor.AQUA + "InteractionVisualizer written by LOOHP!");
-			sender.sendMessage(ChatColor.GOLD + "You are running InteractionVisualizer version: " + InteractionVisualizer.plugin.getDescription().getVersion());
+			sender.sendMessage(ChatColor.GOLD + "You are running InteractionVisualizer version: " + plugin.getDescription().getVersion());
 			return true;
 		}
 		
 		if (args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("interactionvisualizer.reload")) {
-				InteractionVisualizer.plugin.reloadConfig();
+				plugin.reloadConfig();
 				InteractionVisualizer.loadConfig();
 				EnchantmentManager.reloadConfig();
 				EffectManager.reloadConfig();
 				CustomBlockDataManager.setup();
 				TaskManager.setup();
-				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Reload")));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Reload")));
 			} else {
-				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.NoPermission")));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
 			}
 			return true;
 		}
@@ -54,13 +57,13 @@ public class Commands implements CommandExecutor, TabCompleter {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
 				if (player.hasPermission("interactionvisualizer.refresh")) {
-					PacketSending.removeAll(player);
-					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
+					PacketManager.removeAll(player);
+					Bukkit.getScheduler().runTaskLater(plugin, () -> PacketManager.sendPlayerPackets(player), 10);
 				} else {
-					sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.NoPermission")));
+					sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
 				}
 			} else {
-				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.Console")));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Console")));
 			}
 			return true;
 		}
@@ -68,7 +71,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		if (args[0].equalsIgnoreCase("update")) {
 			if (sender.hasPermission("interactionvisualizer.update")) {
 				sender.sendMessage(ChatColor.AQUA + "[InteractionVisualizer] InteractionVisualizer written by LOOHP!");
-				sender.sendMessage(ChatColor.GOLD + "[InteractionVisualizer] You are running InteractionVisualizer version: " + InteractionVisualizer.plugin.getDescription().getVersion());
+				sender.sendMessage(ChatColor.GOLD + "[InteractionVisualizer] You are running InteractionVisualizer version: " + plugin.getDescription().getVersion());
 				new BukkitRunnable() {
 					public void run() {
 						String version = Updater.checkUpdate();
@@ -78,9 +81,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 							Updater.sendUpdateMessage(version);
 						}
 					}
-				}.runTaskAsynchronously(InteractionVisualizer.plugin);
+				}.runTaskAsynchronously(plugin);
 			} else {
-				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.NoPermission")));
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
 			}
 			return true;
 		}
@@ -89,7 +92,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			if (sender.hasPermission("interactionvisualizer.toggle")) {
 				if (args.length == 2) {
 					if (!(sender instanceof Player)) {
-						sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.Console")));
+						sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Console")));
 						return true;
 					}
 					Player player = (Player) sender;
@@ -98,44 +101,44 @@ public class Commands implements CommandExecutor, TabCompleter {
 							switch (args[1].toLowerCase()) {
 							case "itemstand":
 								if (Database.toggleItemStand(player)) {
-									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
 								} else {
-									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
 								}
 								break;
 							case "itemdrop":
 								if (Database.toggleItemDrop(player)) {
-									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
 								} else {
-									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
 								}
 								break;
 							case "hologram":
 								if (Database.toggleHologram(player)) {
-									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
 								} else {
-									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
 								}
 								break;
 							default:
-								sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.Modes")));
+								sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Modes")));
 							}
 						}
-					}.runTaskAsynchronously(InteractionVisualizer.plugin);
+					}.runTaskAsynchronously(plugin);
 					return true;
 				} else if (args.length == 3) {
 					if (sender instanceof Player) {
 						if (Bukkit.getPlayer(args[2]) != null) {
 							if (!Bukkit.getPlayer(args[2]).equals((Player) sender)) {
 								if (!sender.hasPermission("interactionvisualizer.toggle.others")) {
-									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.NoPermission")));
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
 									return true;
 								}
 							}
 						}
 					}
 					if (Bukkit.getPlayer(args[2]) == null) {
-						sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.PlayerNotFound")));
+						sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.PlayerNotFound")));
 						return true;
 					}
 					Player player = Bukkit.getPlayer(args[2]);
@@ -144,37 +147,37 @@ public class Commands implements CommandExecutor, TabCompleter {
 							switch (args[1].toLowerCase()) {
 							case "itemstand":
 								if (Database.toggleItemStand(player)) {
-									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
 								} else {
-									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
 								}
 								break;
 							case "itemdrop":
 								if (Database.toggleItemDrop(player)) {
-									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
 								} else {
-									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
 								}
 								break;
 							case "hologram":
 								if (Database.toggleHologram(player)) {
-									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.ToggleOn").replace("%s", args[1].toUpperCase())));
 								} else {
-									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
+									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.ToggleOff").replace("%s", args[1].toUpperCase())));
 								}
 								break;
 							default:
-								sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.Modes")));
+								sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Modes")));
 							}
 						}
-					}.runTaskAsynchronously(InteractionVisualizer.plugin);
+					}.runTaskAsynchronously(plugin);
 					return true;
 				} else {
-					sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.Toggle.Usage")));
+					sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Usage")));
 				}				
 				return true;
 			}
-			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Messages.NoPermission")));
+			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
 			return true;
 		}
 		

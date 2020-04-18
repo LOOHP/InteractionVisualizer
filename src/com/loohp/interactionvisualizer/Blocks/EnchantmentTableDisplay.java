@@ -26,10 +26,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.EntityHolder.Item;
+import com.loohp.interactionvisualizer.Holder.Item;
 import com.loohp.interactionvisualizer.Manager.EnchantmentManager;
+import com.loohp.interactionvisualizer.Manager.PacketManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
-import com.loohp.interactionvisualizer.Utils.PacketSending;
 import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
@@ -88,8 +88,8 @@ public class EnchantmentTableDisplay implements Listener {
 		item.setItemStack(itemstack);
 		item.setLocked(true);
 		item.setVelocity(new Vector(0.0, 0.05, 0.0));
-		PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-		PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+		PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+		PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 		for (Player each : InteractionVisualizer.itemDrop) {
 			each.spawnParticle(Particle.PORTAL, loc.clone().add(0.5, 2.6, 0.5), 75);
 		}
@@ -98,7 +98,7 @@ public class EnchantmentTableDisplay implements Listener {
 			public void run() {
 				item.teleport(loc.clone().add(0.5, 2.3, 0.5));
 				item.setVelocity(new Vector(0, 0, 0));
-				PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 			}
 		}.runTaskLater(InteractionVisualizer.plugin, 20);
 		
@@ -116,7 +116,7 @@ public class EnchantmentTableDisplay implements Listener {
 				String enchantmentName = EnchantmentManager.getEnchConfig().getString("Enchantments." + ench.getName());
 				item.setCustomName(ChatColor.AQUA + enchantmentName + " " + RomanNumberUtils.toRoman(level));
 				item.setCustomNameVisible(true);
-				PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 			}
 		}.runTaskLater(InteractionVisualizer.plugin, 40);
 		
@@ -125,7 +125,7 @@ public class EnchantmentTableDisplay implements Listener {
 				item.setCustomName("");
 				item.setCustomNameVisible(false);
 				item.setGravity(true);
-				PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 			}
 		}.runTaskLater(InteractionVisualizer.plugin, 80);
 		
@@ -133,7 +133,7 @@ public class EnchantmentTableDisplay implements Listener {
 			public void run() {
 				item.teleport(loc.clone().add(0.5, 1.3, 0.5));
 				item.setGravity(false);
-				PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 				item.setLocked(false);
 			}
 		}.runTaskLater(InteractionVisualizer.plugin, 88);
@@ -212,11 +212,11 @@ public class EnchantmentTableDisplay implements Listener {
 						item.setVelocity(pickup);
 						item.setGravity(true);
 						item.setPickupDelay(32767);
-						PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+						PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 						
 						new BukkitRunnable() {
 							public void run() {
-								PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 								openedETable.remove(block);
 							}
 						}.runTaskLater(InteractionVisualizer.plugin, 8);
@@ -236,7 +236,7 @@ public class EnchantmentTableDisplay implements Listener {
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 1) {
-			PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 		}
 	}
 	
@@ -251,7 +251,7 @@ public class EnchantmentTableDisplay implements Listener {
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 1) {
-				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				break;
 			}
 		}
@@ -306,11 +306,11 @@ public class EnchantmentTableDisplay implements Listener {
 								item.setVelocity(pickup);
 								item.setGravity(true);
 								item.setPickupDelay(32767);
-								PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+								PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 								
 								new BukkitRunnable() {
 									public void run() {
-										PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+										PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 										map.put("Item", "N/A");
 									}
 								}.runTaskLater(InteractionVisualizer.plugin, 8);
@@ -328,7 +328,7 @@ public class EnchantmentTableDisplay implements Listener {
 					while (entity.isLocked()) {
 						try {TimeUnit.MILLISECONDS.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
 					}
-					Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), entity));
+					Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), entity));
 					map.put("Item", "N/A");
 				}
 			}.runTaskAsynchronously(InteractionVisualizer.plugin);
@@ -409,8 +409,8 @@ public class EnchantmentTableDisplay implements Listener {
 					item.setPickupDelay(32767);
 					item.setGravity(false);
 					map.put("Item", item);
-					PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-					PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+					PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 				} else {
 					map.put("Item", "N/A");
 				}
@@ -420,13 +420,13 @@ public class EnchantmentTableDisplay implements Listener {
 					if (itemstack != null) {
 						if (!item.getItemStack().equals(itemstack)) {
 							item.setItemStack(itemstack);
-							PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+							PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 						}
 						item.setPickupDelay(32767);
 						item.setGravity(false);
 					} else {
 						map.put("Item", "N/A");
-						PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 						item.remove();
 					}
 				}

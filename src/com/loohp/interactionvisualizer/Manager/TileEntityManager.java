@@ -38,6 +38,7 @@ public class TileEntityManager {
 		upcomming.put("furnace", new ArrayList<Block>());
 		upcomming.put("smoker", new ArrayList<Block>());
 		upcomming.put("beacon", new ArrayList<Block>());
+		upcomming.put("jukebox", new ArrayList<Block>());
 		chunks.clear();
 		int next = 2 + getAllChunks();
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -106,6 +107,8 @@ public class TileEntityManager {
 						upcomming.get("smoker").add(block);
 					} else if (type.toString().toUpperCase().equals("BEACON")) {
 						upcomming.get("beacon").add(block);
+					} else if (type.toString().toUpperCase().equals("JUKEBOX")) {
+						upcomming.get("jukebox").add(block);
 					}
 				}
 			}, delay);

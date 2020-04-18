@@ -24,11 +24,11 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.EntityHolder.ArmorStand;
-import com.loohp.interactionvisualizer.EntityHolder.Item;
+import com.loohp.interactionvisualizer.Holder.ArmorStand;
+import com.loohp.interactionvisualizer.Holder.Item;
+import com.loohp.interactionvisualizer.Manager.PacketManager;
 import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
 import com.loohp.interactionvisualizer.Manager.TileEntityManager;
-import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class BrewingStandDisplay implements Listener {
 	
@@ -61,7 +61,7 @@ public class BrewingStandDisplay implements Listener {
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 4) {
-			PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 		}
 	}
 	
@@ -92,7 +92,7 @@ public class BrewingStandDisplay implements Listener {
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 4) {
-				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				break;
 			}
 		}
@@ -111,11 +111,11 @@ public class BrewingStandDisplay implements Listener {
 		HashMap<String, Object> map = brewstand.get(block);
 		if (map.get("Item") instanceof Item) {
 			Item item = (Item) map.get("Item");
-			PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 		}
 		if (map.get("Stand") instanceof ArmorStand) {
 			ArmorStand stand = (ArmorStand) map.get("Stand");
-			PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 		}
 		brewstand.remove(block);
 	}
@@ -137,36 +137,35 @@ public class BrewingStandDisplay implements Listener {
 					new BukkitRunnable() {
 						public void run() {
 							Block block = entry.getKey();
-							if (!block.getType().equals(Material.BREWING_STAND)) {
-								HashMap<String, Object> map = entry.getValue();
-								if (map.get("Item") instanceof Item) {
-									Item item = (Item) map.get("Item");
-									PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-									item.remove();
-								}
-								if (map.get("Stand") instanceof ArmorStand) {
-									ArmorStand stand = (ArmorStand) map.get("Stand");
-									PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-									stand.remove();
-								}
-								brewstand.remove(block);
-								return;
-							}
 							boolean active = false;
 							if (isActive(block.getLocation())) {
 								active = true;
-								return;
 							}
 							if (active == false) {
 								HashMap<String, Object> map = entry.getValue();
 								if (map.get("Item") instanceof Item) {
 									Item item = (Item) map.get("Item");
-									PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+									PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 									item.remove();
 								}
 								if (map.get("Stand") instanceof ArmorStand) {
 									ArmorStand stand = (ArmorStand) map.get("Stand");
-									PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									stand.remove();
+								}
+								brewstand.remove(block);
+								return;
+							}
+							if (!block.getType().equals(Material.BREWING_STAND)) {
+								HashMap<String, Object> map = entry.getValue();
+								if (map.get("Item") instanceof Item) {
+									Item item = (Item) map.get("Item");
+									PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+									item.remove();
+								}
+								if (map.get("Stand") instanceof ArmorStand) {
+									ArmorStand stand = (ArmorStand) map.get("Stand");
+									PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 									stand.remove();
 								}
 								brewstand.remove(block);
@@ -186,7 +185,7 @@ public class BrewingStandDisplay implements Listener {
 					public void run() {
 						List<Block> list = nearbyBrewingStand();
 						for (Block block : list) {
-							if (!brewstand.containsKey(block)) {
+							if (!brewstand.containsKey(block) && block.getType().equals(Material.BREWING_STAND)) {
 								HashMap<String, Object> map = new HashMap<String, Object>();
 								map.put("Item", "N/A");
 								map.putAll(spawnArmorStands(block));
@@ -211,6 +210,9 @@ public class BrewingStandDisplay implements Listener {
 					new BukkitRunnable() {
 						public void run() {
 							Block block = entry.getKey();
+							if (!isActive(block.getLocation())) {
+								return;
+							}
 							if (!block.getType().equals(Material.BREWING_STAND)) {
 								return;
 							}
@@ -233,8 +235,8 @@ public class BrewingStandDisplay implements Listener {
 									item.setPickupDelay(32767);
 									item.setGravity(false);
 									entry.getValue().put("Item", item);
-									PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-									PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+									PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+									PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 								} else {
 									entry.getValue().put("Item", "N/A");
 								}
@@ -243,13 +245,13 @@ public class BrewingStandDisplay implements Listener {
 								if (itemstack != null) {
 									if (!item.getItemStack().equals(itemstack)) {
 										item.setItemStack(itemstack);
-										PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+										PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 									}
 									item.setPickupDelay(32767);
 									item.setGravity(false);
 								} else {
 									entry.getValue().put("Item", "N/A");
-									PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+									PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 									item.remove();
 								}
 							}
@@ -259,11 +261,11 @@ public class BrewingStandDisplay implements Listener {
 								if (hasPotion(brewingstand)) {
 									stand.setCustomNameVisible(true);
 									stand.setCustomName("§c\u2b1b");
-									PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 								} else {
 									stand.setCustomNameVisible(false);
 									stand.setCustomName("");
-									PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 								}
 							} else {					
 								ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
@@ -288,11 +290,11 @@ public class BrewingStandDisplay implements Listener {
 									}
 									stand.setCustomNameVisible(true);
 									stand.setCustomName(symbol);
-									PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 								} else {
 									stand.setCustomNameVisible(false);
 									stand.setCustomName("");
-									PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 								}
 							}
 						}
@@ -338,7 +340,7 @@ public class BrewingStandDisplay implements Listener {
 		
 		map.put("Stand", slot1);
 		
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.holograms, slot1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.holograms, slot1);
 		
 		return map;
 	}

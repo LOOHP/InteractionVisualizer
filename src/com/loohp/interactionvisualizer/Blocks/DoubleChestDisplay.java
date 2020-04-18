@@ -29,11 +29,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.EntityHolder.Item;
+import com.loohp.interactionvisualizer.Holder.Item;
+import com.loohp.interactionvisualizer.Manager.PacketManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.LegacyFacingUtils;
 import com.loohp.interactionvisualizer.Utils.OpenInvUtils;
-import com.loohp.interactionvisualizer.Utils.PacketSending;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class DoubleChestDisplay implements Listener {
@@ -186,7 +186,7 @@ public class DoubleChestDisplay implements Listener {
 		}
 		
 		if (isMove == true) {
-			PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 			if (itemstack != null) {
 				Item item = new Item(loc.clone().add(0.5, 1, 0.5));
 				Vector offset = new Vector(0.0, 0.15, 0.0);
@@ -197,11 +197,11 @@ public class DoubleChestDisplay implements Listener {
 					vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().toVector()).multiply(0.15).add(offset);
 					item.setVelocity(vector);
 				}
-				PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
 				item.setItemStack(itemstack);
 				item.setPickupDelay(32767);
 				item.setGravity(true);
-				PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 				if (!link.containsKey((Player) event.getWhoClicked())) {
 					link.put((Player) event.getWhoClicked(), new ArrayList<Item>());
 				}
@@ -218,12 +218,12 @@ public class DoubleChestDisplay implements Listener {
 						}
 						item.setVelocity(new Vector(0.0, 0.0, 0.0));
 						item.setGravity(false);
-						PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+						PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 					}
 				}.runTaskLater(InteractionVisualizer.plugin, 8);
 				new BukkitRunnable() {
 					public void run() {
-						PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 						list.remove(item);
 						item.remove();
 					}
@@ -312,7 +312,7 @@ public class DoubleChestDisplay implements Listener {
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 53) {
-				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				
 				ItemStack itemstack = event.getOldCursor();
 				if (itemstack != null) {
@@ -326,12 +326,12 @@ public class DoubleChestDisplay implements Listener {
 					Vector offset = new Vector(0.0, 0.15, 0.0);
 					Vector vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().toVector()).multiply(0.15).add(offset);
 					item.setVelocity(vector);
-					PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
 					item.setItemStack(itemstack);
 					item.setCustomName(System.currentTimeMillis() + "");
 					item.setPickupDelay(32767);
 					item.setGravity(true);
-					PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 					if (!link.containsKey((Player) event.getWhoClicked())) {
 						link.put((Player) event.getWhoClicked(), new ArrayList<Item>());
 					}
@@ -343,12 +343,12 @@ public class DoubleChestDisplay implements Listener {
 							item.teleport(finalLoc.clone().add(0.5, 1, 0.5));
 							item.setVelocity(new Vector(0.0, 0.0, 0.0));
 							item.setGravity(false);
-							PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+							PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 						}
 					}.runTaskLater(InteractionVisualizer.plugin, 8);
 					new BukkitRunnable() {
 						public void run() {
-							PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 							list.remove(item);
 							item.remove();
 						}
@@ -382,7 +382,7 @@ public class DoubleChestDisplay implements Listener {
 		Iterator<Item> itr = list.iterator();
 		while (itr.hasNext()) {
 			Item item = itr.next();
-			PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 		}
 		
 		link.remove((Player) event.getPlayer());

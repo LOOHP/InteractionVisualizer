@@ -22,11 +22,11 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.EntityHolder.ArmorStand;
-import com.loohp.interactionvisualizer.EntityHolder.Item;
+import com.loohp.interactionvisualizer.Holder.ArmorStand;
+import com.loohp.interactionvisualizer.Holder.Item;
+import com.loohp.interactionvisualizer.Manager.PacketManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
-import com.loohp.interactionvisualizer.Utils.PacketSending;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class AnvilDisplay implements Listener {
@@ -113,8 +113,8 @@ public class AnvilDisplay implements Listener {
 		slot0.teleport(slot0.getLocation().add(rotateVectorAroundY(vector.clone(), 90).multiply(0.1)));		
 		slot1.teleport(slot1.getLocation().add(rotateVectorAroundY(vector.clone(), -90).multiply(0.1)));
 		
-		PacketSending.updateArmorStand(InteractionVisualizer.itemStand, slot0);
-		PacketSending.updateArmorStand(InteractionVisualizer.itemStand, slot1);
+		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot0);
+		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot1);
 		
 		new BukkitRunnable() {
 			public void run() {
@@ -132,13 +132,13 @@ public class AnvilDisplay implements Listener {
 				item.setVelocity(pickup);
 				item.setGravity(true);
 				item.setPickupDelay(32767);
-				PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 				
 				new BukkitRunnable() {
 					public void run() {
-						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot0);
-						PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot1);
-						PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot0);
+						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot1);
+						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 					}
 				}.runTaskLater(InteractionVisualizer.plugin, 8);
 			}
@@ -171,7 +171,7 @@ public class AnvilDisplay implements Listener {
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 2) {
-			PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 		}
 	}
 	
@@ -202,7 +202,7 @@ public class AnvilDisplay implements Listener {
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 2) {
-				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				break;
 			}
 		}
@@ -239,9 +239,9 @@ public class AnvilDisplay implements Listener {
 			if (!(map.get(String.valueOf(i)) instanceof String)) {
 				Object entity = map.get(String.valueOf(i));
 				if (entity instanceof Item) {
-					PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
+					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
 				} else if (entity instanceof ArmorStand) {
-					PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
+					PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
 				}
 			}
 		}
@@ -300,8 +300,8 @@ public class AnvilDisplay implements Listener {
 					item.setCustomName(itemstack.getItemMeta().getDisplayName());
 					item.setCustomNameVisible(true);
 					map.put("2", item);
-					PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-					PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+					PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 				} else {
 					map.put("2", "N/A");
 				}
@@ -312,13 +312,13 @@ public class AnvilDisplay implements Listener {
 						item.setItemStack(itemstack);
 						item.setCustomName(itemstack.getItemMeta().getDisplayName());
 						item.setCustomNameVisible(true);
-						PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+						PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 					}
 					item.setPickupDelay(32767);
 					item.setGravity(false);
 				} else {
 					map.put("2", "N/A");
-					PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 					item.remove();
 				}
 			}
@@ -338,10 +338,10 @@ public class AnvilDisplay implements Listener {
 					toggleStandMode(stand, "Item");
 				}
 				stand.setItemInMainHand(item);
-				PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 			} else {
 				stand.setItemInMainHand(new ItemStack(Material.AIR));
-				PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 			}
 		}
 	}
@@ -407,8 +407,8 @@ public class AnvilDisplay implements Listener {
 		center.remove();
 		middle.remove();
 		
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot0);
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot0);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot1);
 		
 		return map;
 	}

@@ -26,13 +26,14 @@ import com.loohp.interactionvisualizer.Blocks.EnchantmentTableDisplay;
 import com.loohp.interactionvisualizer.Blocks.EnderchestDisplay;
 import com.loohp.interactionvisualizer.Blocks.FurnaceDisplay;
 import com.loohp.interactionvisualizer.Blocks.GrindstoneDisplay;
+import com.loohp.interactionvisualizer.Blocks.JukeBoxDisplay;
 import com.loohp.interactionvisualizer.Blocks.LoomDisplay;
+import com.loohp.interactionvisualizer.Blocks.NoteBlockDisplay;
 import com.loohp.interactionvisualizer.Blocks.ShulkerBoxDisplay;
 import com.loohp.interactionvisualizer.Blocks.SmokerDisplay;
 import com.loohp.interactionvisualizer.Blocks.StonecutterDisplay;
 import com.loohp.interactionvisualizer.Debug.Debug;
 import com.loohp.interactionvisualizer.Entities.VillagerDisplay;
-import com.loohp.interactionvisualizer.Utils.PacketSending;
 
 public class TaskManager {
 	
@@ -52,7 +53,9 @@ public class TaskManager {
 	public static boolean enderchest;
 	public static boolean furnace;
 	public static boolean grindstone;
+	public static boolean jukebox;
 	public static boolean loom;
+	public static boolean noteblock;
 	public static boolean smoker;
 	public static boolean stonecutter;
 	public static boolean shulkerbox;
@@ -74,7 +77,9 @@ public class TaskManager {
 		enderchest = false;
 		furnace = false;
 		grindstone = false;
+		jukebox = false;
 		loom = false;
+		noteblock = false;
 		smoker = false;
 		stonecutter = false;
 		shulkerbox = false;
@@ -91,7 +96,7 @@ public class TaskManager {
 		
 		Bukkit.getPluginManager().registerEvents(new Debug(), plugin);
 		Bukkit.getPluginManager().registerEvents(new com.loohp.interactionvisualizer.Listeners.Events(), plugin);
-		Bukkit.getPluginManager().registerEvents(new PacketSending(), plugin);
+		Bukkit.getPluginManager().registerEvents(new PacketManager(), plugin);
 		
 		if (config.getBoolean("Blocks.CraftingTable.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new CraftingTableDisplay(), plugin);
@@ -199,6 +204,18 @@ public class TaskManager {
 			tasks.add(BeaconDisplay.run());
 			tasks.add(BeaconDisplay.gc());
 			beacon = true;
+		}
+		
+		if (config.getBoolean("Blocks.NoteBlock.Enabled")) {
+			Bukkit.getPluginManager().registerEvents(new NoteBlockDisplay(), plugin);
+			tasks.add(NoteBlockDisplay.run());
+			noteblock = true;
+		}
+		
+		if (config.getBoolean("Blocks.JukeBox.Enabled")) {
+			Bukkit.getPluginManager().registerEvents(new JukeBoxDisplay(), plugin);
+			tasks.add(JukeBoxDisplay.run());
+			jukebox = true;
 		}
 		
 		if (config.getBoolean("Entities.Villager.Enabled")) {

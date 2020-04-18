@@ -14,9 +14,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.EntityHolder.Item;
+import com.loohp.interactionvisualizer.Holder.Item;
+import com.loohp.interactionvisualizer.Manager.PacketManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
-import com.loohp.interactionvisualizer.Utils.PacketSending;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class VillagerDisplay implements Listener {
@@ -80,10 +80,10 @@ public class VillagerDisplay implements Listener {
 			in.setItemStack(item0);
 			in.setGravity(true);
 			in.setVelocity(vector);
-			PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, in);
-			PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), in);
+			PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, in);
+			PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), in);
 			
-			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), in), 14);
+			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), in), 14);
 		}
 		
 		ItemStack item1final = item1;
@@ -95,10 +95,10 @@ public class VillagerDisplay implements Listener {
 					in.setItemStack(item1final);
 					in.setGravity(true);
 					in.setVelocity(vector);
-					PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, in);
-					PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), in);
+					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, in);
+					PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), in);
 					
-					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), in), 14);
+					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), in), 14);
 				}
 			}
 		}.runTaskLater(InteractionVisualizer.plugin, 8);
@@ -110,10 +110,10 @@ public class VillagerDisplay implements Listener {
 				out.setItemStack(item2);
 				out.setGravity(true);
 				out.setVelocity(vector);
-				PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, out);
-				PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), out);
+				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, out);
+				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), out);
 				
-				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), out), 12);
+				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), out), 12);
 			}
 		}.runTaskLater(InteractionVisualizer.plugin, 40);
 	}

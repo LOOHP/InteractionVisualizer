@@ -27,13 +27,13 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.EntityHolder.ArmorStand;
-import com.loohp.interactionvisualizer.EntityHolder.Item;
+import com.loohp.interactionvisualizer.Holder.ArmorStand;
+import com.loohp.interactionvisualizer.Holder.Item;
+import com.loohp.interactionvisualizer.Manager.PacketManager;
 import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
 import com.loohp.interactionvisualizer.Manager.TileEntityManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.LegacyFacingUtils;
-import com.loohp.interactionvisualizer.Utils.PacketSending;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class FurnaceDisplay implements Listener {
@@ -123,11 +123,11 @@ public class FurnaceDisplay implements Listener {
 		item.setVelocity(pickup);
 		item.setGravity(true);
 		item.setPickupDelay(32767);
-		PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+		PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 		
 		new BukkitRunnable() {
 			public void run() {
-				PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 			}
 		}.runTaskLater(InteractionVisualizer.plugin, 8);
 	}
@@ -158,7 +158,7 @@ public class FurnaceDisplay implements Listener {
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 2) {
-			PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 		}
 	}
 	
@@ -189,7 +189,7 @@ public class FurnaceDisplay implements Listener {
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 2) {
-				PacketSending.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
 				break;
 			}
 		}
@@ -207,11 +207,11 @@ public class FurnaceDisplay implements Listener {
 		HashMap<String, Object> map = furnaceMap.get(block);
 		if (map.get("Item") instanceof Item) {
 			Item item = (Item) map.get("Item");
-			PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 		}
 		if (map.get("Stand") instanceof ArmorStand) {
 			ArmorStand stand = (ArmorStand) map.get("Stand");
-			PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 		}
 		furnaceMap.remove(block);
 	}
@@ -233,36 +233,35 @@ public class FurnaceDisplay implements Listener {
 					new BukkitRunnable() {
 						public void run() {
 							Block block = entry.getKey();
-							if (!isFurnace(block.getType())) {
-								HashMap<String, Object> map = entry.getValue();
-								if (map.get("Item") instanceof Item) {
-									Item item = (Item) map.get("Item");
-									PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-									item.remove();
-								}
-								if (map.get("Stand") instanceof ArmorStand) {
-									ArmorStand stand = (ArmorStand) map.get("Stand");
-									PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-									stand.remove();
-								}
-								furnaceMap.remove(block);
-								return;
-							}
 							boolean active = false;
 							if (isActive(block.getLocation())) {
 								active = true;
-								return;
 							}
 							if (active == false) {
 								HashMap<String, Object> map = entry.getValue();
 								if (map.get("Item") instanceof Item) {
 									Item item = (Item) map.get("Item");
-									PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+									PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 									item.remove();
 								}
 								if (map.get("Stand") instanceof ArmorStand) {
 									ArmorStand stand = (ArmorStand) map.get("Stand");
-									PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									stand.remove();
+								}
+								furnaceMap.remove(block);
+								return;
+							}
+							if (!isFurnace(block.getType())) {
+								HashMap<String, Object> map = entry.getValue();
+								if (map.get("Item") instanceof Item) {
+									Item item = (Item) map.get("Item");
+									PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+									item.remove();
+								}
+								if (map.get("Stand") instanceof ArmorStand) {
+									ArmorStand stand = (ArmorStand) map.get("Stand");
+									PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 									stand.remove();
 								}
 								furnaceMap.remove(block);
@@ -282,7 +281,7 @@ public class FurnaceDisplay implements Listener {
 					public void run() {
 						List<Block> list = nearbyFurnace();
 						for (Block block : list) {
-							if (!furnaceMap.containsKey(block)) {
+							if (!furnaceMap.containsKey(block) && isFurnace(block.getType())) {
 								HashMap<String, Object> map = new HashMap<String, Object>();
 								map.put("Item", "N/A");
 								map.putAll(spawnArmorStands(block));
@@ -307,6 +306,9 @@ public class FurnaceDisplay implements Listener {
 					new BukkitRunnable() {
 						public void run() {
 							Block block = entry.getKey();
+							if (!isActive(block.getLocation())) {
+								return;
+							}
 							if (!isFurnace(block.getType())) {
 								return;
 							}
@@ -338,8 +340,8 @@ public class FurnaceDisplay implements Listener {
 									item.setPickupDelay(32767);
 									item.setGravity(false);
 									entry.getValue().put("Item", item);
-									PacketSending.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-									PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+									PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+									PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 								} else {
 									entry.getValue().put("Item", "N/A");
 								}
@@ -348,13 +350,13 @@ public class FurnaceDisplay implements Listener {
 								if (itemstack != null) {
 									if (!item.getItemStack().equals(itemstack)) {
 										item.setItemStack(itemstack);
-										PacketSending.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+										PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 									}
 									item.setPickupDelay(32767);
 									item.setGravity(false);
 								} else {
 									entry.getValue().put("Item", "N/A");
-									PacketSending.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+									PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 									item.remove();
 								}
 							}
@@ -391,17 +393,17 @@ public class FurnaceDisplay implements Listener {
 									}
 									stand.setCustomNameVisible(true);
 									stand.setCustomName(symbol);
-									PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 								} else {
 									stand.setCustomNameVisible(false);
 									stand.setCustomName("");
-									PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 								}
 							} else {					
 								ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
 								stand.setCustomNameVisible(false);
 								stand.setCustomName("");
-								PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 							}
 						}
 					}.runTaskLater(InteractionVisualizer.plugin, delay);
@@ -461,7 +463,7 @@ public class FurnaceDisplay implements Listener {
 		
 		map.put("Stand", slot1);
 		
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.holograms, slot1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.holograms, slot1);
 		
 		return map;
 	}

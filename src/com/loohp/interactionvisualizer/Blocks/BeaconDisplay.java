@@ -21,12 +21,12 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.EntityHolder.ArmorStand;
+import com.loohp.interactionvisualizer.Holder.ArmorStand;
 import com.loohp.interactionvisualizer.Manager.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.Manager.EffectManager;
+import com.loohp.interactionvisualizer.Manager.PacketManager;
 import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
 import com.loohp.interactionvisualizer.Manager.TileEntityManager;
-import com.loohp.interactionvisualizer.Utils.PacketSending;
 import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -66,15 +66,15 @@ public class BeaconDisplay implements Listener {
 		HashMap<String, Object> map = beaconMap.get(block);
 		if (map.get("1") instanceof ArmorStand) {
 			ArmorStand stand = (ArmorStand) map.get("1");
-			PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 		}
 		if (map.get("2") instanceof ArmorStand) {
 			ArmorStand stand = (ArmorStand) map.get("2");
-			PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 		}
 		if (map.get("3") instanceof ArmorStand) {
 			ArmorStand stand = (ArmorStand) map.get("3");
-			PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 		}
 		beaconMap.remove(block);
 		CustomBlockDataManager.removeBlock(CustomBlockDataManager.locKey(block.getLocation()));
@@ -97,47 +97,46 @@ public class BeaconDisplay implements Listener {
 					new BukkitRunnable() {
 						public void run() {
 							Block block = entry.getKey();
-							if (!block.getType().equals(Material.BEACON)) {
+							boolean active = false;
+							if (isActive(block.getLocation())) {
+								active = true;
+							}
+							if (active == false) {
 								HashMap<String, Object> map = entry.getValue();
 								if (map.get("1") instanceof ArmorStand) {
 									ArmorStand stand = (ArmorStand) map.get("1");
-									PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 									stand.remove();
 								}
 								if (map.get("2") instanceof ArmorStand) {
 									ArmorStand stand = (ArmorStand) map.get("2");
-									PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 									stand.remove();
 								}
 								if (map.get("3") instanceof ArmorStand) {
 									ArmorStand stand = (ArmorStand) map.get("3");
-									PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 									stand.remove();
 								}
 								beaconMap.remove(block);
 								CustomBlockDataManager.removeBlock(CustomBlockDataManager.locKey(block.getLocation()));
 								return;
 							}
-							boolean active = false;
-							if (isActive(block.getLocation())) {
-								active = true;
-								return;
-							}
-							if (active == false) {
+							if (!block.getType().equals(Material.BEACON)) {
 								HashMap<String, Object> map = entry.getValue();
 								if (map.get("1") instanceof ArmorStand) {
 									ArmorStand stand = (ArmorStand) map.get("1");
-									PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 									stand.remove();
 								}
 								if (map.get("2") instanceof ArmorStand) {
 									ArmorStand stand = (ArmorStand) map.get("2");
-									PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 									stand.remove();
 								}
 								if (map.get("3") instanceof ArmorStand) {
 									ArmorStand stand = (ArmorStand) map.get("3");
-									PacketSending.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+									PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 									stand.remove();
 								}
 								beaconMap.remove(block);
@@ -158,7 +157,7 @@ public class BeaconDisplay implements Listener {
 					public void run() {
 						List<Block> list = nearbyBeacon();
 						for (Block block : list) {
-							if (!beaconMap.containsKey(block)) {
+							if (!beaconMap.containsKey(block) && block.getType().equals(Material.BEACON)) {
 								HashMap<String, Object> map = new HashMap<String, Object>();
 								map.put("Item", "N/A");
 								boolean done = false;
@@ -203,6 +202,9 @@ public class BeaconDisplay implements Listener {
 					new BukkitRunnable() {
 						public void run() {
 							Block block = entry.getKey();
+							if (!isActive(block.getLocation())) {
+								return;
+							}
 							if (!block.getType().equals(Material.BEACON)) {
 								return;
 							}
@@ -218,18 +220,18 @@ public class BeaconDisplay implements Listener {
 							if (!line1.getCustomName().equals(one)) {
 								line1.setCustomName(one);
 								line1.setCustomNameVisible(true);
-								PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line1);
+								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line1);
 							}
 							if (beacon.getTier() == 0) {
 								if (!line2.getCustomName().equals("")) {
 									line2.setCustomName("");
 									line2.setCustomNameVisible(false);
-									PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2);
+									PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2);
 								}
 								if (!line3.getCustomName().equals("")) {
 									line3.setCustomName("");
 									line3.setCustomNameVisible(false);
-									PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3);
+									PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3);
 								}
 							} else {
 								if (beacon.getPrimaryEffect() != null) {
@@ -237,13 +239,13 @@ public class BeaconDisplay implements Listener {
 									if (!line2.getCustomName().equals(two)) {
 										line2.setCustomName(two);
 										line2.setCustomNameVisible(true);
-										PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2);
+										PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2);
 									}
 								} else {
 									if (!line2.getCustomName().equals("")) {
 										line2.setCustomName("");
 										line2.setCustomNameVisible(false);
-										PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2);
+										PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2);
 									}
 								}
 								if (beacon.getSecondaryEffect() != null) {
@@ -251,13 +253,13 @@ public class BeaconDisplay implements Listener {
 									if (!line3.getCustomName().equals(three)) {
 										line3.setCustomName(three);
 										line3.setCustomNameVisible(true);
-										PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3);
+										PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3);
 									}
 								} else {
 									if (!line3.getCustomName().equals("")) {
 										line3.setCustomName("");
 										line3.setCustomNameVisible(false);
-										PacketSending.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3);
+										PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3);
 									}
 								}
 							}
@@ -295,9 +297,9 @@ public class BeaconDisplay implements Listener {
 		map.put("2", line2);
 		map.put("3", line3);
 		
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.holograms, line1);
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.holograms, line2);
-		PacketSending.sendArmorStandSpawn(InteractionVisualizer.holograms, line3);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.holograms, line1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.holograms, line2);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizer.holograms, line3);
 		
 		return map;
 	}

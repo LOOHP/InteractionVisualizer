@@ -45,7 +45,11 @@ Blocks:
     Enabled: true
   Grindstone:
     Enabled: true
+  JukeBox:
+    Enabled: true
   Loom:
+    Enabled: true
+  NoteBlock:
     Enabled: true
   Smoker:
     Enabled: true

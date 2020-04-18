@@ -15,7 +15,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Utils.PacketSending;
+import com.loohp.interactionvisualizer.Manager.PacketManager;
 
 public class Database {
 	
@@ -73,20 +73,20 @@ public class Database {
 
         try {
 			if (getConnection() != null && !getConnection().isClosed()) {
-				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "MYSQL Failed to connect! [getConnection() != null && !getConnection().isClosed()]");
+				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] MYSQL Failed to connect! [getConnection() != null && !getConnection().isClosed()]");
 				return;
 			}
 			Class.forName("com.mysql.jdbc.Driver");
 			setConnection(DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password));
 			
 			if (echo == true) {
-				Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "MYSQL CONNECTED");
+				Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] MYSQL CONNECTED");
 			}
 		} catch (SQLException e) {
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "MYSQL Failed to connect! (SQLException)");
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] MYSQL Failed to connect! (SQLException)");
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "MYSQL Failed to connect! (ClassNotFoundException)");
+			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] MYSQL Failed to connect! (ClassNotFoundException)");
 			e.printStackTrace();
 		}
 	}
@@ -96,7 +96,7 @@ public class Database {
 			Class.forName("org.sqlite.JDBC");
 	         connection = DriverManager.getConnection("jdbc:sqlite:plugins/InteractionVisualizer/database.db");
 	         if (echo) {
-	        	 Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Opened Sqlite database successfully");
+	        	 Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] Opened Sqlite database successfully");
 	         }
 
 	         Statement stmt = connection.createStatement();
@@ -109,7 +109,7 @@ public class Database {
 	         stmt.executeUpdate(sql);
 	         stmt.close(); 
 	    } catch (Exception e) {
-	    	Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Unable to connect to sqlite database!!!");
+	    	Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] Unable to connect to sqlite database!!!");
 	    	e.printStackTrace();
 	    	InteractionVisualizer.plugin.getPluginLoader().disablePlugin(InteractionVisualizer.plugin);
 	    }
@@ -147,6 +147,7 @@ public class Database {
     
 	public static boolean playerExists(UUID uuid) {
 		synchronized (syncdb) {
+			boolean exist = false;
 			open();
 			try {
 				PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE UUID=?");
@@ -154,7 +155,7 @@ public class Database {
 	
 				ResultSet results = statement.executeQuery();
 				if (results.next()) {
-					return true;
+					exist = true;
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -164,7 +165,7 @@ public class Database {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			return false;
+			return exist;
 		}
 	}
 
@@ -213,8 +214,8 @@ public class Database {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketSending.removeAll(player));
-			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
+			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeAll(player));
+			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.sendPlayerPackets(player), 10);
 			return newvalue;
 		}
 	}
@@ -242,8 +243,8 @@ public class Database {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketSending.removeAll(player));
-			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
+			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeAll(player));
+			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.sendPlayerPackets(player), 10);
 			return newvalue;
 		}
 	}
@@ -271,8 +272,8 @@ public class Database {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketSending.removeAll(player));
-			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
+			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeAll(player));
+			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.sendPlayerPackets(player), 10);
 			return newvalue;
 		}
 	}
@@ -356,8 +357,8 @@ public class Database {
 				e.printStackTrace();
 			}
 		}
-		Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketSending.removeAll(player));
-		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketSending.sendPlayerPackets(player), 10);
+		Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeAll(player));
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.sendPlayerPackets(player), 10);
 	}
 
 }

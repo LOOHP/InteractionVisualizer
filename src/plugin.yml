@@ -1,6 +1,6 @@
 name: InteractionVisualizer
 author: loohp
-version: 1.9.3
+version: 1.9.4
 main: com.loohp.interactionvisualizer.InteractionVisualizer
 api-version: 1.13
 description: Makes function blocks better
