@@ -281,11 +281,13 @@ public class BlastFurnaceDisplay implements Listener {
 					public void run() {
 						List<Block> list = nearbyBlastFurnace();
 						for (Block block : list) {
-							if (!blastfurnaceMap.containsKey(block) && block.getType().equals(Material.BLAST_FURNACE)) {
-								HashMap<String, Object> map = new HashMap<String, Object>();
-								map.put("Item", "N/A");
-								map.putAll(spawnArmorStands(block));
-								blastfurnaceMap.put(block, map);
+							if (blastfurnaceMap.get(block) == null && isActive(block.getLocation())) {
+								if (block.getType().equals(Material.BLAST_FURNACE)) {
+									HashMap<String, Object> map = new HashMap<String, Object>();
+									map.put("Item", "N/A");
+									map.putAll(spawnArmorStands(block));
+									blastfurnaceMap.put(block, map);
+								}
 							}
 						}
 					}

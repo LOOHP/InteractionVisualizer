@@ -185,11 +185,13 @@ public class BrewingStandDisplay implements Listener {
 					public void run() {
 						List<Block> list = nearbyBrewingStand();
 						for (Block block : list) {
-							if (!brewstand.containsKey(block) && block.getType().equals(Material.BREWING_STAND)) {
-								HashMap<String, Object> map = new HashMap<String, Object>();
-								map.put("Item", "N/A");
-								map.putAll(spawnArmorStands(block));
-								brewstand.put(block, map);
+							if (brewstand.get(block) == null && isActive(block.getLocation())) {
+								if (block.getType().equals(Material.BREWING_STAND)) {
+									HashMap<String, Object> map = new HashMap<String, Object>();
+									map.put("Item", "N/A");
+									map.putAll(spawnArmorStands(block));
+									brewstand.put(block, map);
+								}
 							}
 						}
 					}

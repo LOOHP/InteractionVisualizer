@@ -157,31 +157,33 @@ public class BeaconDisplay implements Listener {
 					public void run() {
 						List<Block> list = nearbyBeacon();
 						for (Block block : list) {
-							if (!beaconMap.containsKey(block) && block.getType().equals(Material.BEACON)) {
-								HashMap<String, Object> map = new HashMap<String, Object>();
-								map.put("Item", "N/A");
-								boolean done = false;
-								HashMap<String, Object> datamap = CustomBlockDataManager.getBlock(CustomBlockDataManager.locKey(block.getLocation()));
-								if (datamap != null) {
-									try {
-										String data = (String) datamap.get("Directional");
-										BlockFace face = BlockFace.valueOf(data);
-										map.putAll(spawnArmorStands(block, face));
-										done = true;
-									} catch (Exception e) {
-										done = false;
+							if (beaconMap.get(block) == null && isActive(block.getLocation())) {
+								if (block.getType().equals(Material.BEACON)) {
+									HashMap<String, Object> map = new HashMap<String, Object>();
+									map.put("Item", "N/A");
+									boolean done = false;
+									HashMap<String, Object> datamap = CustomBlockDataManager.getBlock(CustomBlockDataManager.locKey(block.getLocation()));
+									if (datamap != null) {
+										try {
+											String data = (String) datamap.get("Directional");
+											BlockFace face = BlockFace.valueOf(data);
+											map.putAll(spawnArmorStands(block, face));
+											done = true;
+										} catch (Exception e) {
+											done = false;
+										}
 									}
+									if (!done) {
+										float[] dir = placemap.containsKey(block) ? placemap.remove(block) : new float[]{0.0F, 0.0F};
+										BlockFace face = getCardinalFacing(dir);
+										map.putAll(spawnArmorStands(block, face));
+										HashMap<String, Object> savemap = (datamap != null) ? datamap : new HashMap<String, Object>();
+										savemap.put("Directional", face);
+										savemap.put("BlockType", block.getType().toString().toUpperCase());
+										CustomBlockDataManager.setBlock(CustomBlockDataManager.locKey(block.getLocation()), savemap);
+									}
+									beaconMap.put(block, map);
 								}
-								if (!done) {
-									float[] dir = placemap.containsKey(block) ? placemap.remove(block) : new float[]{0.0F, 0.0F};
-									BlockFace face = getCardinalFacing(dir);
-									map.putAll(spawnArmorStands(block, face));
-									HashMap<String, Object> savemap = (datamap != null) ? datamap : new HashMap<String, Object>();
-									savemap.put("Directional", face);
-									savemap.put("BlockType", block.getType().toString().toUpperCase());
-									CustomBlockDataManager.setBlock(CustomBlockDataManager.locKey(block.getLocation()), savemap);
-								}
-								beaconMap.put(block, map);
 							}
 						}
 					}

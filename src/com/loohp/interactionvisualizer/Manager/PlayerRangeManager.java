@@ -14,13 +14,14 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 public class PlayerRangeManager {
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
-	private static Set<int[]> current = new HashSet<int[]>();
-	private static Set<int[]> upcomming = new HashSet<int[]>();
+	private static Set<Object[]> current = new HashSet<Object[]>();
+	private static Set<Object[]> upcomming = new HashSet<Object[]>();
 	
 	public static boolean hasPlayerNearby(Location location) {
+		String world = location.getWorld().getUID().toString();
 		int x = (int) Math.floor((double) location.getBlockX() / 16.0);
 		int z = (int) Math.floor((double) location.getBlockZ() / 16.0);
-		int[] array = new int[]{x, z};
+		Object[] array = new Object[]{world, x, z};
 		synchronized (current) {
 			if (current.stream().anyMatch(each -> Arrays.equals(each, array))) {
 				return true;
@@ -37,25 +38,26 @@ public class PlayerRangeManager {
 						continue;
 					}
 					Location location = player.getLocation().clone();
+					String world = location.getWorld().getUID().toString();
 					int chunkX = (int) Math.floor((double) location.getBlockX() / 16.0);
 					int chunkZ = (int) Math.floor((double) location.getBlockZ() / 16.0);
 					
-					upcomming.add(new int[]{chunkX + 1, chunkZ + 1});
-					upcomming.add(new int[]{chunkX + 1, chunkZ});
-					upcomming.add(new int[]{chunkX + 1, chunkZ - 1});
-					upcomming.add(new int[]{chunkX, chunkZ + 1});
-					upcomming.add(new int[]{chunkX, chunkZ});
-					upcomming.add(new int[]{chunkX, chunkZ - 1});
-					upcomming.add(new int[]{chunkX - 1, chunkZ + 1});
-					upcomming.add(new int[]{chunkX - 1, chunkZ});
-					upcomming.add(new int[]{chunkX - 1, chunkZ - 1});
+					upcomming.add(new Object[]{world, chunkX + 1, chunkZ + 1});
+					upcomming.add(new Object[]{world, chunkX + 1, chunkZ});
+					upcomming.add(new Object[]{world, chunkX + 1, chunkZ - 1});
+					upcomming.add(new Object[]{world, chunkX, chunkZ + 1});
+					upcomming.add(new Object[]{world, chunkX, chunkZ});
+					upcomming.add(new Object[]{world, chunkX, chunkZ - 1});
+					upcomming.add(new Object[]{world, chunkX - 1, chunkZ + 1});
+					upcomming.add(new Object[]{world, chunkX - 1, chunkZ});
+					upcomming.add(new Object[]{world, chunkX - 1, chunkZ - 1});
 				}
 				synchronized (current) {
 					current = upcomming;
 				}
-				upcomming = new HashSet<int[]>();
+				upcomming = new HashSet<Object[]>();
 			} catch (Exception e) {
-				upcomming = new HashSet<int[]>();
+				upcomming = new HashSet<Object[]>();
 			} finally {
 				Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> run(), 1);
 			}

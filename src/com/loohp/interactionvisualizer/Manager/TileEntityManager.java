@@ -2,11 +2,14 @@ package com.loohp.interactionvisualizer.Manager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -20,7 +23,7 @@ import com.loohp.interactionvisualizer.Blocks.FurnaceDisplay;
 public class TileEntityManager {
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
-	private static List<Chunk> chunks = new ArrayList<Chunk>();
+	private static Set<Object[]> chunks = new HashSet<Object[]>();
 	private static HashMap<String, List<Block>> current = new HashMap<String, List<Block>>();
 	private static HashMap<String, List<Block>> upcomming = new HashMap<String, List<Block>>();
 	
@@ -66,19 +69,20 @@ public class TileEntityManager {
 				if (Bukkit.getPlayer(uuid) == null) {
 					return;
 				}
-				World world = player.getWorld();
-				int chunkX = player.getLocation().getChunk().getX();
-				int chunkZ = player.getLocation().getChunk().getZ();
+				Location location = player.getLocation().clone();
+				String world = location.getWorld().getUID().toString();
+				int chunkX = (int) Math.floor((double) location.getBlockX() / 16.0);
+				int chunkZ = (int) Math.floor((double) location.getBlockZ() / 16.0);
 				
-				chunks.add(world.getChunkAt(chunkX + 1, chunkZ + 1));
-				chunks.add(world.getChunkAt(chunkX + 1, chunkZ));
-				chunks.add(world.getChunkAt(chunkX + 1, chunkZ - 1));
-				chunks.add(world.getChunkAt(chunkX, chunkZ + 1));
-				chunks.add(world.getChunkAt(chunkX, chunkZ));
-				chunks.add(world.getChunkAt(chunkX, chunkZ - 1));
-				chunks.add(world.getChunkAt(chunkX - 1, chunkZ + 1));
-				chunks.add(world.getChunkAt(chunkX - 1, chunkZ));
-				chunks.add(world.getChunkAt(chunkX - 1, chunkZ - 1));
+				chunks.add(new Object[]{world, chunkX + 1, chunkZ + 1});
+				chunks.add(new Object[]{world, chunkX + 1, chunkZ});
+				chunks.add(new Object[]{world, chunkX + 1, chunkZ - 1});
+				chunks.add(new Object[]{world, chunkX, chunkZ + 1});
+				chunks.add(new Object[]{world, chunkX, chunkZ});
+				chunks.add(new Object[]{world, chunkX, chunkZ - 1});
+				chunks.add(new Object[]{world, chunkX - 1, chunkZ + 1});
+				chunks.add(new Object[]{world, chunkX - 1, chunkZ});
+				chunks.add(new Object[]{world, chunkX - 1, chunkZ - 1});
 			}, delay);
 		}
 		return delay;
@@ -87,28 +91,37 @@ public class TileEntityManager {
 	private static int loadTileEntities() {
 		int count = 0;
 		int delay = 1;
-		for (Chunk chunk : chunks) {
+		for (Object[] chunkCoords : chunks) {
 			count++;
 			if (count > 9) {
 				count = 0;
 				delay++;
 			}
 			Bukkit.getScheduler().runTaskLater(plugin, () -> {
-				for (BlockState state : chunk.getTileEntities()) {
-					Block block = state.getBlock();
-					Material type = block.getType();
-					if (type.toString().toUpperCase().equals("BLAST_FURNACE")) {
-						upcomming.get("blastfurnace").add(block);
-					} else if (type.toString().toUpperCase().equals("BREWING_STAND")) {
-						upcomming.get("brewingstand").add(block);
-					} else if (FurnaceDisplay.isFurnace(type)) {
-						upcomming.get("furnace").add(block);
-					} else if (type.toString().toUpperCase().equals("SMOKER")) {
-						upcomming.get("smoker").add(block);
-					} else if (type.toString().toUpperCase().equals("BEACON")) {
-						upcomming.get("beacon").add(block);
-					} else if (type.toString().toUpperCase().equals("JUKEBOX")) {
-						upcomming.get("jukebox").add(block);
+				World world = Bukkit.getWorld(UUID.fromString((String) chunkCoords[0]));
+				if (world == null) {
+					return;
+				}
+				int chunkX = (int) chunkCoords[1];
+				int chunkZ = (int) chunkCoords[2];
+				if (world.isChunkLoaded(chunkX, chunkZ)) {
+					Chunk chunk = world.getChunkAt(chunkX, chunkZ);
+					for (BlockState state : chunk.getTileEntities()) {
+						Block block = state.getBlock();
+						Material type = block.getType();
+						if (type.toString().toUpperCase().equals("BLAST_FURNACE")) {
+							upcomming.get("blastfurnace").add(block);
+						} else if (type.toString().toUpperCase().equals("BREWING_STAND")) {
+							upcomming.get("brewingstand").add(block);
+						} else if (FurnaceDisplay.isFurnace(type)) {
+							upcomming.get("furnace").add(block);
+						} else if (type.toString().toUpperCase().equals("SMOKER")) {
+							upcomming.get("smoker").add(block);
+						} else if (type.toString().toUpperCase().equals("BEACON")) {
+							upcomming.get("beacon").add(block);
+						} else if (type.toString().toUpperCase().equals("JUKEBOX")) {
+							upcomming.get("jukebox").add(block);
+						}
 					}
 				}
 			}, delay);

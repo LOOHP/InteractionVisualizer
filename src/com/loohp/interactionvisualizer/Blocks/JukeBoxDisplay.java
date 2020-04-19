@@ -103,10 +103,12 @@ public class JukeBoxDisplay implements Listener {
 					public void run() {
 						List<Block> list = nearbyJukeBox();
 						for (Block block : list) {
-							if (!jukeboxMap.containsKey(block) && block.getType().equals(Material.JUKEBOX)) {
-								HashMap<String, Object> map = new HashMap<String, Object>();
-								map.put("Item", "N/A");
-								jukeboxMap.put(block, map);
+							if (jukeboxMap.get(block) == null && isActive(block.getLocation())) {
+								if (block.getType().equals(Material.JUKEBOX)) {
+									HashMap<String, Object> map = new HashMap<String, Object>();
+									map.put("Item", "N/A");
+									jukeboxMap.put(block, map);
+								}
 							}
 						}
 					}

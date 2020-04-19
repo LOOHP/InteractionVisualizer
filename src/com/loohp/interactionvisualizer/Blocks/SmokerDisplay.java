@@ -281,11 +281,13 @@ public class SmokerDisplay implements Listener {
 					public void run() {
 						List<Block> list = nearbySmoker();
 						for (Block block : list) {
-							if (!smokerMap.containsKey(block) && block.getType().equals(Material.SMOKER)) {
-								HashMap<String, Object> map = new HashMap<String, Object>();
-								map.put("Item", "N/A");
-								map.putAll(spawnArmorStands(block));
-								smokerMap.put(block, map);
+							if (smokerMap.get(block) == null && isActive(block.getLocation())) {
+								if (block.getType().equals(Material.SMOKER)) {
+									HashMap<String, Object> map = new HashMap<String, Object>();
+									map.put("Item", "N/A");
+									map.putAll(spawnArmorStands(block));
+									smokerMap.put(block, map);
+								}
 							}
 						}
 					}
