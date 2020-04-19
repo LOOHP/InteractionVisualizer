@@ -59,7 +59,9 @@ public class PlayerRangeManager {
 			} catch (Exception e) {
 				upcomming = new HashSet<Object[]>();
 			} finally {
-				Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> run(), 1);
+				if (plugin.isEnabled()) {
+					Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> run(), 1);
+				}
 			}
 		});
 	}
