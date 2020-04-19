@@ -3,7 +3,6 @@ package com.loohp.interactionvisualizer.Manager;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,47 +21,45 @@ public class PlayerRangeManager {
 		int x = (int) Math.floor((double) location.getBlockX() / 16.0);
 		int z = (int) Math.floor((double) location.getBlockZ() / 16.0);
 		int[] array = new int[]{x, z};
-		if (current.stream().anyMatch(each -> Arrays.equals(each, array))) {
-			return true;
+		synchronized (current) {
+			if (current.stream().anyMatch(each -> Arrays.equals(each, array))) {
+				return true;
+			}
 		}
 		return false;
 	}
 	
 	public static void run() {
-		int count = 0;
-		int delay = 1;
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			count++;
-			if (count > 20) {
-				count = 0;
-				delay++;
-			}
-			UUID uuid = player.getUniqueId();
-			Bukkit.getScheduler().runTaskLater(plugin, () -> {
-				if (Bukkit.getPlayer(uuid) == null) {
-					return;
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+			try {
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					if (!player.isOnline()) {
+						continue;
+					}
+					Location location = player.getLocation().clone();
+					int chunkX = (int) Math.floor((double) location.getBlockX() / 16.0);
+					int chunkZ = (int) Math.floor((double) location.getBlockZ() / 16.0);
+					
+					upcomming.add(new int[]{chunkX + 1, chunkZ + 1});
+					upcomming.add(new int[]{chunkX + 1, chunkZ});
+					upcomming.add(new int[]{chunkX + 1, chunkZ - 1});
+					upcomming.add(new int[]{chunkX, chunkZ + 1});
+					upcomming.add(new int[]{chunkX, chunkZ});
+					upcomming.add(new int[]{chunkX, chunkZ - 1});
+					upcomming.add(new int[]{chunkX - 1, chunkZ + 1});
+					upcomming.add(new int[]{chunkX - 1, chunkZ});
+					upcomming.add(new int[]{chunkX - 1, chunkZ - 1});
 				}
-				int chunkX = player.getLocation().getChunk().getX();
-				int chunkZ = player.getLocation().getChunk().getZ();
-				
-				upcomming.add(new int[]{chunkX + 1, chunkZ + 1});
-				upcomming.add(new int[]{chunkX + 1, chunkZ});
-				upcomming.add(new int[]{chunkX + 1, chunkZ - 1});
-				upcomming.add(new int[]{chunkX, chunkZ + 1});
-				upcomming.add(new int[]{chunkX, chunkZ});
-				upcomming.add(new int[]{chunkX, chunkZ - 1});
-				upcomming.add(new int[]{chunkX - 1, chunkZ + 1});
-				upcomming.add(new int[]{chunkX - 1, chunkZ});
-				upcomming.add(new int[]{chunkX - 1, chunkZ - 1});
-			}, delay);
-		}
-		int next = 2 + delay;
-		Bukkit.getScheduler().runTaskLater(plugin, () -> {
-			current = upcomming;
-			upcomming = new HashSet<int[]>();
-			int nextupdate = ((20 - (next + 2)) > 0) ? (20 - (next + 2)) : 1;
-			Bukkit.getScheduler().runTaskLater(plugin, () -> run(), nextupdate);
-		}, next);
+				synchronized (current) {
+					current = upcomming;
+				}
+				upcomming = new HashSet<int[]>();
+			} catch (Exception e) {
+				upcomming = new HashSet<int[]>();
+			} finally {
+				Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> run(), 1);
+			}
+		});
 	}
 
 }

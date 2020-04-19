@@ -46,6 +46,13 @@ public class PacketManager implements Listener {
 						ArmorStand stand = (ArmorStand) entity;
 						if (entry.getValue()) {
 							Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+								if (!PlayerRangeManager.hasPlayerNearby(stand.getLocation())) {
+									return;
+								}
+								List<Player> players = active.get(entity);
+								if (players == null) {
+									return;
+								}
 								if (isOccluding(stand.getLocation().getBlock().getType())) {
 									removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand, false);
 									loaded.put(entity, false);
@@ -53,8 +60,15 @@ public class PacketManager implements Listener {
 							});
 						} else {
 							Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+								if (!PlayerRangeManager.hasPlayerNearby(stand.getLocation())) {
+									return;
+								}
+								List<Player> players = active.get(entity);
+								if (players == null) {
+									return;
+								}
 								if (!isOccluding(stand.getLocation().getBlock().getType())) {
-									sendArmorStandSpawn(active.get(entity), stand);
+									sendArmorStandSpawn(players, stand);
 									updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 									loaded.put(entity, true);
 								}
@@ -64,6 +78,13 @@ public class PacketManager implements Listener {
 						Item item = (Item) entity;
 						if (entry.getValue()) {
 							Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+								if (!PlayerRangeManager.hasPlayerNearby(item.getLocation())) {
+									return;
+								}
+								List<Player> players = active.get(entity);
+								if (players == null) {
+									return;
+								}
 								if (isOccluding(item.getLocation().getBlock().getType())) {
 									removeItem(InteractionVisualizer.getOnlinePlayers(), item, false);
 									loaded.put(entity, false);
@@ -71,8 +92,15 @@ public class PacketManager implements Listener {
 							});
 						} else {
 							Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+								if (!PlayerRangeManager.hasPlayerNearby(item.getLocation())) {
+									return;
+								}
+								List<Player> players = active.get(entity);
+								if (players == null) {
+									return;
+								}
 								if (!isOccluding(item.getLocation().getBlock().getType())) {
-									sendItemSpawn(active.get(entity), item);
+									sendItemSpawn(players, item);
 									updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 									loaded.put(entity, true);
 								}
@@ -82,6 +110,13 @@ public class PacketManager implements Listener {
 						ItemFrame frame = (ItemFrame) entity;
 						if (entry.getValue()) {
 							Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+								if (!PlayerRangeManager.hasPlayerNearby(frame.getLocation())) {
+									return;
+								}
+								List<Player> players = active.get(entity);
+								if (players == null) {
+									return;
+								}
 								if (isOccluding(frame.getLocation().getBlock().getType())) {
 									removeItemFrame(InteractionVisualizer.getOnlinePlayers(), frame, false);
 									loaded.put(entity, false);
@@ -89,8 +124,15 @@ public class PacketManager implements Listener {
 							});
 						} else {
 							Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+								if (!PlayerRangeManager.hasPlayerNearby(frame.getLocation())) {
+									return;
+								}
+								List<Player> players = active.get(entity);
+								if (players == null) {
+									return;
+								}
 								if (!isOccluding(frame.getLocation().getBlock().getType())) {
-									sendItemFrameSpawn(active.get(entity), frame);
+									sendItemFrameSpawn(players, frame);
 									updateItemFrame(InteractionVisualizer.getOnlinePlayers(), frame);
 									loaded.put(entity, true);
 								}

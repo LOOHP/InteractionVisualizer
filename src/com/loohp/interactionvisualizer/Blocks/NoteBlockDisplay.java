@@ -44,6 +44,9 @@ public class NoteBlockDisplay implements Listener {
 		BlockFace face = event.getBlockFace();
 		Location textLocation = getFaceOffset(block, face);
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+			if (!block.getType().equals(Material.NOTE_BLOCK)) {
+				return;
+			}
 			ConcurrentHashMap<String, Object> map = displayingNotes.get(block);
 			ArmorStand stand = map == null ? new ArmorStand(textLocation.clone().add(0.0, -0.3, 0.0)) : (ArmorStand) map.get("Stand");
 			stand.teleport(textLocation.clone().add(0.0, -0.3, 0.0));
