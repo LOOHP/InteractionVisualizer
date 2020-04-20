@@ -46,7 +46,7 @@ public class CustomBlockDataManager {
         	if (!plugin.getDataFolder().exists()) {
         		plugin.getDataFolder().mkdir();
     		}
-    		file = new File(plugin.getDataFolder().getAbsolutePath() + "/blockdata.json");
+    		file = new File(plugin.getDataFolder(), "blockdata.json");
         	if (!file.exists()) {
         	    PrintWriter pw = new PrintWriter(file, "UTF-8");
         	    pw.print("{");
@@ -114,6 +114,7 @@ public class CustomBlockDataManager {
     	for (Entry<String, Object> entry : map.entrySet()) {
     		value.put(entry.getKey(), entry.getValue());
     	}
+    	json.put(key, value);
     }
     
     public static void removeBlock(String key) {

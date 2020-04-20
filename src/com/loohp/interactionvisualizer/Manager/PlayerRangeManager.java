@@ -67,7 +67,7 @@ public class PlayerRangeManager {
 				upcomming = new HashSet<Object[]>();
 			} finally {
 				if (plugin.isEnabled()) {
-					Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> run(), 1);
+					Bukkit.getScheduler().runTaskLater(plugin, () -> run(), 1);
 				}
 			}
 		});

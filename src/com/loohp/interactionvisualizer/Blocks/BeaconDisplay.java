@@ -178,7 +178,7 @@ public class BeaconDisplay implements Listener {
 									BlockFace face = getCardinalFacing(dir);
 									map.putAll(spawnArmorStands(block, face));
 									HashMap<String, Object> savemap = (datamap != null) ? datamap : new HashMap<String, Object>();
-									savemap.put("Directional", face);
+									savemap.put("Directional", face.toString().toUpperCase());
 									savemap.put("BlockType", block.getType().toString().toUpperCase());
 									CustomBlockDataManager.setBlock(CustomBlockDataManager.locKey(block.getLocation()), savemap);
 								}
