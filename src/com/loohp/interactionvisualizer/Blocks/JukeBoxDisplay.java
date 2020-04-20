@@ -15,7 +15,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
@@ -51,136 +50,130 @@ public class JukeBoxDisplay implements Listener {
 	}
 	
 	public static int gc() {
-		return new BukkitRunnable() {
-			public void run() {
-				Iterator<Entry<Block, HashMap<String, Object>>> itr = jukeboxMap.entrySet().iterator();
-				int count = 0;
-				int maxper = (int) Math.ceil((double) jukeboxMap.size() / (double) 600);
-				int delay = 1;
-				while (itr.hasNext()) {
-					count++;
-					if (count > maxper) {
-						count = 0;
-						delay++;
-					}
-					Entry<Block, HashMap<String, Object>> entry = itr.next();
-					new BukkitRunnable() {
-						public void run() {
-							Block block = entry.getKey();
-							boolean active = false;
-							if (isActive(block.getLocation())) {
-								active = true;
-							}
-							if (active == false) {
-								HashMap<String, Object> map = entry.getValue();
-								if (map.get("Item") instanceof Item) {
-									Item item = (Item) map.get("Item");
-									PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-									item.remove();
-								}
-								jukeboxMap.remove(block);
-								return;
-							}
-							if (!block.getType().equals(Material.JUKEBOX)) {
-								HashMap<String, Object> map = entry.getValue();
-								if (map.get("Item") instanceof Item) {
-									Item item = (Item) map.get("Item");
-									PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-									item.remove();
-								}
-								jukeboxMap.remove(block);
-								return;
-							}
-						}
-					}.runTaskLater(InteractionVisualizer.plugin, delay);
+		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+			Iterator<Entry<Block, HashMap<String, Object>>> itr = jukeboxMap.entrySet().iterator();
+			int count = 0;
+			int maxper = (int) Math.ceil((double) jukeboxMap.size() / (double) 600);
+			int delay = 1;
+			while (itr.hasNext()) {
+				count++;
+				if (count > maxper) {
+					count = 0;
+					delay++;
 				}
+				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+					Block block = entry.getKey();
+					boolean active = false;
+					if (isActive(block.getLocation())) {
+						active = true;
+					}
+					if (active == false) {
+						HashMap<String, Object> map = entry.getValue();
+						if (map.get("Item") instanceof Item) {
+							Item item = (Item) map.get("Item");
+							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							item.remove();
+						}
+						jukeboxMap.remove(block);
+						return;
+					}
+					if (!block.getType().equals(Material.JUKEBOX)) {
+						HashMap<String, Object> map = entry.getValue();
+						if (map.get("Item") instanceof Item) {
+							Item item = (Item) map.get("Item");
+							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							item.remove();
+						}
+						jukeboxMap.remove(block);
+						return;
+					}
+				}, delay);
 			}
-		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 600).getTaskId();
+		}, 0, 600).getTaskId();
 	}
 	
 	public static int run() {		
-		return new BukkitRunnable() {
-			public void run() {
-				Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-					List<Block> list = nearbyJukeBox();
-					for (Block block : list) {
-						if (jukeboxMap.get(block) == null && isActive(block.getLocation())) {
-							if (block.getType().equals(Material.JUKEBOX)) {
-								HashMap<String, Object> map = new HashMap<String, Object>();
-								map.put("Item", "N/A");
-								jukeboxMap.put(block, map);
-							}
+		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+				List<Block> list = nearbyJukeBox();
+				for (Block block : list) {
+					if (jukeboxMap.get(block) == null && isActive(block.getLocation())) {
+						if (block.getType().equals(Material.JUKEBOX)) {
+							HashMap<String, Object> map = new HashMap<String, Object>();
+							map.put("Item", "N/A");
+							jukeboxMap.put(block, map);
 						}
 					}
-				});				
+				}
+			});				
+			
+			Iterator<Entry<Block, HashMap<String, Object>>> itr = jukeboxMap.entrySet().iterator();
+			int count = 0;
+			int maxper = (int) Math.ceil((double) jukeboxMap.size() / (double) 20);
+			int delay = 1;
+			while (itr.hasNext()) {
+				Entry<Block, HashMap<String, Object>> entry = itr.next();
 				
-				Iterator<Entry<Block, HashMap<String, Object>>> itr = jukeboxMap.entrySet().iterator();
-				int count = 0;
-				int maxper = (int) Math.ceil((double) jukeboxMap.size() / (double) 20);
-				int delay = 1;
-				while (itr.hasNext()) {
-					Entry<Block, HashMap<String, Object>> entry = itr.next();
-					
-					count++;
-					if (count > maxper) {
-						count = 0;
-						delay++;
+				count++;
+				if (count > maxper) {
+					count = 0;
+					delay++;
+				}
+				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+					Block block = entry.getKey();
+					if (!isActive(block.getLocation())) {
+						return;
 					}
-					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-						Block block = entry.getKey();
-						if (!isActive(block.getLocation())) {
-							return;
+					if (!block.getType().equals(Material.JUKEBOX)) {
+						return;
+					}
+					org.bukkit.block.Jukebox jukebox = (org.bukkit.block.Jukebox) block.getState();
+					
+					ItemStack itemstack = jukebox.getPlaying() == null ? null : (jukebox.getPlaying().equals(Material.AIR) ? null : new ItemStack(jukebox.getPlaying(), 1));
+					
+					Item item = null;
+					if (entry.getValue().get("Item") instanceof String) {
+						if (itemstack != null) {
+							String disc = InteractionVisualizer.version.contains("legacy") ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString().toUpperCase()) : jukebox.getPlaying().toString().toUpperCase();
+							String text = getColor(disc) + MusicManager.getMusicConfig().getString("Discs." + disc);
+							
+							item = new Item(jukebox.getLocation().clone().add(0.5, 1.0, 0.5));
+							item.setItemStack(itemstack);
+							item.setVelocity(new Vector(0, 0, 0));
+							item.setPickupDelay(32767);
+							item.setGravity(false);
+							item.setCustomName(text);
+							item.setCustomNameVisible(true);
+							entry.getValue().put("Item", item);
+							PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+							PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+						} else {
+							entry.getValue().put("Item", "N/A");
 						}
-						if (!block.getType().equals(Material.JUKEBOX)) {
-							return;
-						}
-						org.bukkit.block.Jukebox jukebox = (org.bukkit.block.Jukebox) block.getState();
-						
-						ItemStack itemstack = jukebox.getPlaying() == null ? null : (jukebox.getPlaying().equals(Material.AIR) ? null : new ItemStack(jukebox.getPlaying(), 1));
-						
-						Item item = null;
-						if (entry.getValue().get("Item") instanceof String) {
-							if (itemstack != null) {
+					} else {
+						item = (Item) entry.getValue().get("Item");
+						if (itemstack != null) {
+							if (!item.getItemStack().equals(itemstack)) {
+								item.setItemStack(itemstack);
 								String disc = InteractionVisualizer.version.contains("legacy") ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString().toUpperCase()) : jukebox.getPlaying().toString().toUpperCase();
 								String text = getColor(disc) + MusicManager.getMusicConfig().getString("Discs." + disc);
 								
-								item = new Item(block.getLocation().clone().add(0.5, 1.0, 0.5));
-								item.setItemStack(itemstack);
-								item.setVelocity(new Vector(0, 0, 0));
-								item.setPickupDelay(32767);
-								item.setGravity(false);
 								item.setCustomName(text);
 								item.setCustomNameVisible(true);
-								entry.getValue().put("Item", item);
-								PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
 								PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-							} else {
-								entry.getValue().put("Item", "N/A");
 							}
+							item.setPickupDelay(32767);
+							item.setGravity(false);
 						} else {
-							item = (Item) entry.getValue().get("Item");
-							if (itemstack != null) {
-								if (!item.getItemStack().equals(itemstack)) {
-									item.setItemStack(itemstack);
-									String disc = InteractionVisualizer.version.contains("legacy") ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString().toUpperCase()) : jukebox.getPlaying().toString().toUpperCase();
-									String text = getColor(disc) + MusicManager.getMusicConfig().getString("Discs." + disc);
-									
-									item.setCustomName(text);
-									item.setCustomNameVisible(true);
-									PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-								}
-								item.setPickupDelay(32767);
-								item.setGravity(false);
-							} else {
-								entry.getValue().put("Item", "N/A");
-								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-								item.remove();
-							}
+							entry.getValue().put("Item", "N/A");
+							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							item.remove();
 						}
-					}, delay);
-				}
+					}
+				}, delay);
 			}
-		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 20).getTaskId();		
+		}, 0, 20).getTaskId();		
 	}
 	
 	public static List<Block> nearbyJukeBox() {

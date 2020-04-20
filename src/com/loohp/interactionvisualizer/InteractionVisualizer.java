@@ -21,6 +21,7 @@ import com.loohp.interactionvisualizer.Manager.EffectManager;
 import com.loohp.interactionvisualizer.Manager.EnchantmentManager;
 import com.loohp.interactionvisualizer.Manager.LangManager;
 import com.loohp.interactionvisualizer.Manager.MusicManager;
+import com.loohp.interactionvisualizer.Manager.PacketManager;
 import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
 import com.loohp.interactionvisualizer.Manager.TaskManager;
 import com.loohp.interactionvisualizer.Manager.TileEntityManager;
@@ -28,6 +29,7 @@ import com.loohp.interactionvisualizer.Metrics.Charts;
 import com.loohp.interactionvisualizer.Metrics.Metrics;
 import com.loohp.interactionvisualizer.PlaceholderAPI.PlaceholderAPI;
 import com.loohp.interactionvisualizer.Updater.Updater;
+import com.loohp.interactionvisualizer.Utils.EntityCreator;
 import com.loohp.interactionvisualizer.Utils.LegacyRecordsUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 
@@ -51,6 +53,9 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static List<Player> holograms = new CopyOnWriteArrayList<Player>();
 	
 	public static List<String> exemptBlocks = new ArrayList<String>();
+	
+	public static World defaultworld;
+	public static Location defaultlocation;
 	
 	public static boolean itemStandEnabled = true;
 	public static boolean itemDropEnabled = true;
@@ -82,6 +87,7 @@ public class InteractionVisualizer extends JavaPlugin {
 			ess3 = true;
 		}
 		LangManager.generate();
+		EntityCreator.setup();
 		
 		int pluginId = 7024;
 
@@ -127,6 +133,12 @@ public class InteractionVisualizer extends JavaPlugin {
 		plugin.saveConfig();
 		loadConfig();
 		
+		defaultworld = Bukkit.getWorlds().get(0);
+		defaultlocation = new Location(defaultworld, 0, 0, 0);
+		if (!version.contains("legacy")) {
+			defaultworld.setChunkForceLoaded(0, 0, true);
+		}
+		
 		EnchantmentManager.setup();
 		EffectManager.setup();
 		MusicManager.setup();
@@ -136,6 +148,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		TileEntityManager.run();
 		PlayerRangeManager.run();
 		CustomBlockDataManager.intervalSaveToFile();
+		PacketManager.run();
 		
 		MaterialUtils.setup();
 		

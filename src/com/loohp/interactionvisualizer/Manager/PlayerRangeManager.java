@@ -3,11 +3,9 @@ package com.loohp.interactionvisualizer.Manager;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -26,11 +24,8 @@ public class PlayerRangeManager {
 		Object[] array = new Object[]{world, x, z};
 		synchronized (current) {
 			if (current.stream().anyMatch(each -> Arrays.equals(each, array))) {
-				World bukkitWorld = Bukkit.getWorld(UUID.fromString(world));
-				if (bukkitWorld != null) {
-					if (bukkitWorld.isChunkLoaded(x, z)) {
-						return true;
-					}
+				if (location.getWorld().isChunkLoaded(x, z)) {
+					return true;
 				}
 			}
 		}

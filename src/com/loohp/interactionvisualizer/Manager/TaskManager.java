@@ -34,6 +34,7 @@ import com.loohp.interactionvisualizer.Blocks.SmokerDisplay;
 import com.loohp.interactionvisualizer.Blocks.StonecutterDisplay;
 import com.loohp.interactionvisualizer.Debug.Debug;
 import com.loohp.interactionvisualizer.Entities.VillagerDisplay;
+import com.loohp.interactionvisualizer.Listeners.ChunkEvents;
 
 public class TaskManager {
 	
@@ -97,6 +98,11 @@ public class TaskManager {
 		Bukkit.getPluginManager().registerEvents(new Debug(), plugin);
 		Bukkit.getPluginManager().registerEvents(new com.loohp.interactionvisualizer.Listeners.Events(), plugin);
 		Bukkit.getPluginManager().registerEvents(new PacketManager(), plugin);
+		if (version.contains("legacy")) {
+			ChunkEvents.setup();
+			InteractionVisualizer.defaultworld.getChunkAt(0, 0).load();
+			Bukkit.getPluginManager().registerEvents(new ChunkEvents(), plugin);
+		}
 		
 		if (config.getBoolean("Blocks.CraftingTable.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new CraftingTableDisplay(), plugin);
@@ -224,7 +230,6 @@ public class TaskManager {
 		}
 		
 		tasks.add(LightManager.run());
-		tasks.add(PacketManager.run());
 	}
 	
 	public static void run() {

@@ -10,6 +10,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Utils.EntityCreator;
 
 public class ItemFrame {
@@ -125,8 +126,12 @@ public class ItemFrame {
 	}
 	
 	public WrappedDataWatcher getWrappedDataWatcher() {
-		org.bukkit.entity.ItemFrame itemframe = (org.bukkit.entity.ItemFrame) EntityCreator.create(new Location(location.getWorld(), 0, 0, 0), EntityType.ITEM_FRAME);
-		itemframe.setItem(item, false);
+		org.bukkit.entity.ItemFrame itemframe = (org.bukkit.entity.ItemFrame) EntityCreator.create(InteractionVisualizer.defaultlocation, EntityType.ITEM_FRAME);
+		if (!InteractionVisualizer.version.contains("legacy")) {
+			itemframe.setItem(item, false);
+		} else {
+			itemframe.setItem(item);
+		}
 		itemframe.setFacingDirection(facing);
 		itemframe.remove();
 		return WrappedDataWatcher.getEntityWatcher(itemframe);

@@ -1,8 +1,8 @@
 package com.loohp.interactionvisualizer.Utils;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -13,86 +13,88 @@ import org.bukkit.inventory.ItemStack;
 
 public class EntityCreator {
 	
+	private static Class<?> craftWorldClass;
+	private static Class<?> craftEntityClass;
+	private static Class<?> craftItemStackClass;
+	private static Class<?> nmsEntityClass;
+	private static Class<?> nmsWorldServerClass;
+	private static Class<?> nmsEntityItemClass;
+	private static Class<?> nmsWorldClass;
+	private static Class<?> nmsItemStackClass;
+	private static MethodHandle nmsEntityItemConstructor;
+	private static Class<?> nmsEntityItemFrameClass;
+	private static Class<?> nmsBlockPositionClass;
+	private static MethodHandle nmsBlockPostionConstructor;
+	private static Class<?> nmsEnumDirectionClass;
+	private static MethodHandle nmsEntityItemFrameConstructor;
+	private static MethodHandle createEntityMethod;
+	private static MethodHandle craftWorldGetHandleMethod;
+	private static MethodHandle nmsEntityGetBukkitEntityMethod;
+	private static ItemStack dummyitem;
+	
+	public static void setup() {
+		try {
+			craftWorldClass = getNMSClass("org.bukkit.craftbukkit.", "CraftWorld");
+			craftEntityClass = getNMSClass("org.bukkit.craftbukkit.", "entity.CraftEntity");
+			craftItemStackClass = getNMSClass("org.bukkit.craftbukkit.", "inventory.CraftItemStack");
+			nmsEntityClass = getNMSClass("net.minecraft.server.", "Entity");
+			nmsWorldServerClass = getNMSClass("net.minecraft.server.", "WorldServer");
+			nmsEntityItemClass = getNMSClass("net.minecraft.server.", "EntityItem");
+			nmsWorldClass = getNMSClass("net.minecraft.server.", "World");
+			nmsItemStackClass = getNMSClass("net.minecraft.server.", "ItemStack");
+			nmsEntityItemConstructor = MethodHandles.lookup().findConstructor(nmsEntityItemClass, MethodType.methodType(void.class, nmsWorldClass, double.class, double.class, double.class, nmsItemStackClass));
+			nmsEntityItemFrameClass = getNMSClass("net.minecraft.server.", "EntityItemFrame");
+			nmsBlockPositionClass = getNMSClass("net.minecraft.server.", "BlockPosition");
+			nmsBlockPostionConstructor = MethodHandles.lookup().findConstructor(nmsBlockPositionClass, MethodType.methodType(void.class, int.class, int.class, int.class));
+			nmsEnumDirectionClass = getNMSClass("net.minecraft.server.", "EnumDirection");
+			nmsEntityItemFrameConstructor = MethodHandles.lookup().findConstructor(nmsEntityItemFrameClass, MethodType.methodType(void.class, nmsWorldClass, nmsBlockPositionClass, nmsEnumDirectionClass));
+			createEntityMethod = MethodHandles.lookup().findVirtual(craftWorldClass, "createEntity", MethodType.methodType(nmsEntityClass, Location.class, Class.class));
+			craftWorldGetHandleMethod = MethodHandles.lookup().findVirtual(craftWorldClass, "getHandle", MethodType.methodType(nmsWorldServerClass));
+			nmsEntityGetBukkitEntityMethod = MethodHandles.lookup().findVirtual(nmsEntityClass, "getBukkitEntity", MethodType.methodType(craftEntityClass));
+			dummyitem = new ItemStack(Material.STONE);
+		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static Entity create(Location location, EntityType entityType) {
 		Entity entity = createRaw(location, entityType);
 		entity.addScoreboardTag("isInteractionVisualizer");
 		return entity;
 	}
 
-    public static Entity createRaw(Location location, EntityType entityType) {
+    public static Entity createRaw(Location location, EntityType entityType) throws SecurityException {
     	try {
-        	if (entityType.equals(EntityType.DROPPED_ITEM)) {       		
-        		Class<?> craftWorldClass = getNMSClass("org.bukkit.craftbukkit.", "CraftWorld");
-        		
-	            Object craftWorldObject = craftWorldClass.cast(location.getWorld());
-	            
-	            Class<?> craftItemStackClass = getNMSClass("org.bukkit.craftbukkit.", "inventory.CraftItemStack");
-	            
-                Class<?> nmsEntityItemClass = getNMSClass("net.minecraft.server.", "EntityItem");           
+        	if (entityType.equals(EntityType.DROPPED_ITEM)) {       		       		
+	            Object craftWorldObject = craftWorldClass.cast(location.getWorld());                 
                 
-                Class<?> nmsWorldClass = getNMSClass("net.minecraft.server.", "World");           
+                Object entity = nmsEntityItemConstructor.invoke(craftWorldGetHandleMethod.invoke(craftWorldObject), location.getX(), location.getY(), location.getZ(), craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(dummyitem, dummyitem));
                 
-                Class<?> nmsItemStackClass = getNMSClass("net.minecraft.server.", "ItemStack");           
-                
-                Constructor<?> nmsEntityItemConstructor = nmsEntityItemClass.getConstructor(nmsWorldClass, double.class, double.class, double.class, nmsItemStackClass);
-
-                ItemStack dummyitem = new ItemStack(Material.STONE);
-                
-                Object entity = nmsEntityItemConstructor.newInstance(craftWorldObject.getClass().getMethod("getHandle").invoke(craftWorldObject), location.getX(), location.getY(), location.getZ(), craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(dummyitem, dummyitem));
-                
-                return (Entity) entity.getClass().getMethod("getBukkitEntity").invoke(entity);
+                return (Entity) nmsEntityGetBukkitEntityMethod.invoke(entity);
         	} else if (entityType.equals(EntityType.ITEM_FRAME)) {
-        		Class<?> craftWorldClass = getNMSClass("org.bukkit.craftbukkit.", "CraftWorld");
-        		
-	            Object craftWorldObject = craftWorldClass.cast(location.getWorld());
-	            
-                Class<?> nmsEntityItemFrameClass = getNMSClass("net.minecraft.server.", "EntityItemFrame");           
+	            Object craftWorldObject = craftWorldClass.cast(location.getWorld());         
                 
-                Class<?> nmsWorldClass = getNMSClass("net.minecraft.server.", "World");
+                Object nmsBlockPostion = nmsBlockPostionConstructor.invoke(location.getBlockX(), location.getBlockY(), location.getBlockZ());
                 
-                Class<?> nmsBlockPositionClass = getNMSClass("net.minecraft.server.", "BlockPosition");
+                Object entity = nmsEntityItemFrameConstructor.invoke(craftWorldGetHandleMethod.invoke(craftWorldObject), nmsBlockPostion, nmsEnumDirectionClass.getEnumConstants()[0]);
                 
-                Constructor<?> nmsBlockPostionConstructor = nmsBlockPositionClass.getConstructor(int.class, int.class, int.class);
-                
-                Object nmsBlockPostion = nmsBlockPostionConstructor.newInstance(location.getBlockX(), location.getBlockY(), location.getBlockZ());
-                
-                Class<?> nmsEnumDirectionClass = getNMSClass("net.minecraft.server.", "EnumDirection");
-                
-                Constructor<?> nmsEntityItemFrameConstructor = nmsEntityItemFrameClass.getConstructor(nmsWorldClass, nmsBlockPositionClass, nmsEnumDirectionClass);
-                
-                Object entity = nmsEntityItemFrameConstructor.newInstance(craftWorldObject.getClass().getMethod("getHandle").invoke(craftWorldObject), nmsBlockPostion, nmsEnumDirectionClass.getEnumConstants()[0]);
-                
-                return (Entity) entity.getClass().getMethod("getBukkitEntity").invoke(entity);
+                return (Entity) nmsEntityGetBukkitEntityMethod.invoke(entity);
         	} else {
-        		// We get the craftworld class with nms so it can be used in multiple versions
-	            Class<?> craftWorldClass = getNMSClass("org.bukkit.craftbukkit.", "CraftWorld");
-	
-	            // Cast the bukkit world to the craftworld
 	            Object craftWorldObject = craftWorldClass.cast(location.getWorld());
-	
-	            // Create variable with the method that creates the entity
-	            // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/src/main/java/org/bukkit/craftbukkit/CraftWorld.java#896
-	            Method createEntityMethod = craftWorldObject.getClass().getMethod("createEntity", Location.class, Class.class);
-	
-	            // Attempt to invoke the method that creates the entity itself. This returns a net.minecraft.server entity
+
 	            Object entity = createEntityMethod.invoke(craftWorldObject, location, entityType.getEntityClass());
-	
-	            // finally we run the getBukkitEntity method in the entity class to get a usable object
-	            return (Entity) entity.getClass().getMethod("getBukkitEntity").invoke(entity);
+	            
+	            return (Entity) nmsEntityGetBukkitEntityMethod.invoke(entity);
         	}
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException | InstantiationException | IllegalArgumentException e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
 
-        // If something went wrong we just return null
         return null;
     }
 
     private static Class<?> getNMSClass(String prefix, String nmsClassString) throws ClassNotFoundException {
-        // Getting the version by splitting the package
         String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
-
-        // Combining the prefix + version + nmsClassString for the full class path
         String name = prefix + version + nmsClassString;
         return Class.forName(name);
     }

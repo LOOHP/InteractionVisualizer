@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Utils.EntityCreator;
 
 public class Item {
@@ -155,7 +156,7 @@ public class Item {
 	}
 	
 	public WrappedDataWatcher getWrappedDataWatcher() {
-		org.bukkit.entity.Item itemEntity = (org.bukkit.entity.Item) EntityCreator.create(new Location(location.getWorld(), 0, 0, 0), EntityType.DROPPED_ITEM);
+		org.bukkit.entity.Item itemEntity = (org.bukkit.entity.Item) EntityCreator.create(InteractionVisualizer.defaultlocation, EntityType.DROPPED_ITEM);
 		itemEntity.setItemStack(item);
 		itemEntity.setPickupDelay(pickupDelay);
 		itemEntity.setGlowing(isGlowing);

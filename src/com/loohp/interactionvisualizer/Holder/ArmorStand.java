@@ -11,6 +11,7 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Utils.EntityCreator;
 
 public class ArmorStand {
@@ -220,7 +221,7 @@ public class ArmorStand {
 	}
 	
 	public WrappedDataWatcher getWrappedDataWatcher() {
-		org.bukkit.entity.ArmorStand stand = (org.bukkit.entity.ArmorStand) EntityCreator.create(new Location(location.getWorld(), 0, 0, 0), EntityType.ARMOR_STAND);
+		org.bukkit.entity.ArmorStand stand = (org.bukkit.entity.ArmorStand) EntityCreator.create(InteractionVisualizer.defaultlocation, EntityType.ARMOR_STAND);
 		stand.setArms(hasArms);
 		stand.setBasePlate(hasBasePlate);
 		stand.setMarker(isMarker);

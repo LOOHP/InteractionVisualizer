@@ -10,6 +10,6 @@
 	<classpathentry kind="lib" path="D:/Users/LOOHP/Desktop 2/test/spigot/plugins/PlaceholderAPI-2.10.4.jar"/>
 	<classpathentry kind="lib" path="D:/Users/LOOHP/Desktop 2/test/spigot/plugins/LightAPI-fork-3.4.2.jar"/>
 	<classpathentry kind="lib" path="D:/Users/LOOHP/Desktop 2/test/spigot/1.8/spigot-1.15.2.jar"/>
-	<classpathentry kind="lib" path="D:/Users/LOOHP/Desktop 2/test/spigot/1.8/spigot-1.10-R0.1-SNAPSHOT-latest.jar"/>
+	<classpathentry kind="lib" path="D:/Users/LOOHP/Desktop 2/test/spigot/1.8/spigot-1.11.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

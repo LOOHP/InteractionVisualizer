@@ -45,6 +45,18 @@ public class Events implements Listener {
 	
 	/*
 	@EventHandler
+	public void onLoad(ChunkLoadEvent event) {
+		Bukkit.getOnlinePlayers().stream().collect(Collectors.toList()).get(0).sendMessage("Load " + event.getChunk().getX() + " " + event.getChunk().getZ());
+	}
+	
+	@EventHandler
+	public void onUnload(ChunkUnloadEvent event) {
+		if (event.getChunk().getX() == 62 && event.getChunk().getZ() == 61) {
+			Bukkit.getOnlinePlayers().stream().collect(Collectors.toList()).get(0).sendMessage("Unload " + event.getChunk().getX() + " " + event.getChunk().getZ());
+		}
+	}
+
+	@EventHandler
 	public void onlaodchunk(ChunkLoadEvent event) {
 		Bukkit.getOnlinePlayers().stream().collect(Collectors.toList()).get(0).sendMessage("" + event.getChunk().getX() + " " + event.getChunk().getZ());
 	}

@@ -20,7 +20,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
@@ -122,185 +121,179 @@ public class BrewingStandDisplay implements Listener {
 	}
 	
 	public static int gc() {
-		return new BukkitRunnable() {
-			public void run() {
-				Iterator<Entry<Block, HashMap<String, Object>>> itr = brewstand.entrySet().iterator();
-				int count = 0;
-				int maxper = (int) Math.ceil((double) brewstand.size() / (double) 600);
-				int delay = 1;
-				while (itr.hasNext()) {
-					count++;
-					if (count > maxper) {
-						count = 0;
-						delay++;
-					}
-					Entry<Block, HashMap<String, Object>> entry = itr.next();
-					new BukkitRunnable() {
-						public void run() {
-							Block block = entry.getKey();
-							boolean active = false;
-							if (isActive(block.getLocation())) {
-								active = true;
-							}
-							if (active == false) {
-								HashMap<String, Object> map = entry.getValue();
-								if (map.get("Item") instanceof Item) {
-									Item item = (Item) map.get("Item");
-									PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-									item.remove();
-								}
-								if (map.get("Stand") instanceof ArmorStand) {
-									ArmorStand stand = (ArmorStand) map.get("Stand");
-									PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-									stand.remove();
-								}
-								brewstand.remove(block);
-								return;
-							}
-							if (!block.getType().equals(Material.BREWING_STAND)) {
-								HashMap<String, Object> map = entry.getValue();
-								if (map.get("Item") instanceof Item) {
-									Item item = (Item) map.get("Item");
-									PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-									item.remove();
-								}
-								if (map.get("Stand") instanceof ArmorStand) {
-									ArmorStand stand = (ArmorStand) map.get("Stand");
-									PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-									stand.remove();
-								}
-								brewstand.remove(block);
-								return;
-							}
-						}
-					}.runTaskLater(InteractionVisualizer.plugin, delay);
+		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+			Iterator<Entry<Block, HashMap<String, Object>>> itr = brewstand.entrySet().iterator();
+			int count = 0;
+			int maxper = (int) Math.ceil((double) brewstand.size() / (double) 600);
+			int delay = 1;
+			while (itr.hasNext()) {
+				count++;
+				if (count > maxper) {
+					count = 0;
+					delay++;
 				}
+				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+					Block block = entry.getKey();
+					boolean active = false;
+					if (isActive(block.getLocation())) {
+						active = true;
+					}
+					if (active == false) {
+						HashMap<String, Object> map = entry.getValue();
+						if (map.get("Item") instanceof Item) {
+							Item item = (Item) map.get("Item");
+							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							item.remove();
+						}
+						if (map.get("Stand") instanceof ArmorStand) {
+							ArmorStand stand = (ArmorStand) map.get("Stand");
+							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							stand.remove();
+						}
+						brewstand.remove(block);
+						return;
+					}
+					if (!block.getType().equals(Material.BREWING_STAND)) {
+						HashMap<String, Object> map = entry.getValue();
+						if (map.get("Item") instanceof Item) {
+							Item item = (Item) map.get("Item");
+							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							item.remove();
+						}
+						if (map.get("Stand") instanceof ArmorStand) {
+							ArmorStand stand = (ArmorStand) map.get("Stand");
+							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							stand.remove();
+						}
+						brewstand.remove(block);
+						return;
+					}
+				}, delay);
 			}
-		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 600).getTaskId();
+		}, 0, 600).getTaskId();
 	}
 	
 	public static int run() {		
-		return new BukkitRunnable() {
-			public void run() {
-				Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-					List<Block> list = nearbyBrewingStand();
-					for (Block block : list) {
-						if (brewstand.get(block) == null && isActive(block.getLocation())) {
-							if (block.getType().equals(Material.BREWING_STAND)) {
-								HashMap<String, Object> map = new HashMap<String, Object>();
-								map.put("Item", "N/A");
-								map.putAll(spawnArmorStands(block));
-								brewstand.put(block, map);
-							}
+		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+				List<Block> list = nearbyBrewingStand();
+				for (Block block : list) {
+					if (brewstand.get(block) == null && isActive(block.getLocation())) {
+						if (block.getType().equals(Material.BREWING_STAND)) {
+							HashMap<String, Object> map = new HashMap<String, Object>();
+							map.put("Item", "N/A");
+							map.putAll(spawnArmorStands(block));
+							brewstand.put(block, map);
 						}
 					}
-				});
-				
-				Iterator<Entry<Block, HashMap<String, Object>>> itr = brewstand.entrySet().iterator();
-				int count = 0;
-				int maxper = (int) Math.ceil((double) brewstand.size() / (double) 20);
-				int delay = 1;
-				while (itr.hasNext()) {
-					Entry<Block, HashMap<String, Object>> entry = itr.next();
-					
-					count++;
-					if (count > maxper) {
-						count = 0;
-						delay++;
-					}
-					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-						Block block = entry.getKey();
-						if (!isActive(block.getLocation())) {
-							return;
-						}
-						if (!block.getType().equals(Material.BREWING_STAND)) {
-							return;
-						}
-						org.bukkit.block.BrewingStand brewingstand = (org.bukkit.block.BrewingStand) block.getState();
-						
-						Inventory inv = brewingstand.getInventory();
-						ItemStack itemstack = inv.getItem(3);
-						if (itemstack != null) {
-							if (inv.getItem(3).getType().equals(Material.AIR)) {
-								itemstack = null;
-							}
-						}
-						
-						Item item = null;
-						if (entry.getValue().get("Item") instanceof String) {
-							if (itemstack != null) {
-								item = new Item(block.getLocation().clone().add(0.5, 1.0, 0.5));
-								item.setItemStack(itemstack);
-								item.setVelocity(new Vector(0, 0, 0));
-								item.setPickupDelay(32767);
-								item.setGravity(false);
-								entry.getValue().put("Item", item);
-								PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-								PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-							} else {
-								entry.getValue().put("Item", "N/A");
-							}
-						} else {
-							item = (Item) entry.getValue().get("Item");
-							if (itemstack != null) {
-								if (!item.getItemStack().equals(itemstack)) {
-									item.setItemStack(itemstack);
-									PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-								}
-								item.setPickupDelay(32767);
-								item.setGravity(false);
-							} else {
-								entry.getValue().put("Item", "N/A");
-								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-								item.remove();
-							}
-						}
-	
-						if (brewingstand.getFuelLevel() == 0) {
-							ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
-							if (hasPotion(brewingstand)) {
-								stand.setCustomNameVisible(true);
-								stand.setCustomName("§c\u2b1b");
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							} else {
-								stand.setCustomNameVisible(false);
-								stand.setCustomName("");
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							}
-						} else {					
-							ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
-							if (hasPotion(brewingstand)) {
-								int time = brewingstand.getBrewingTime();					
-								String symbol = "";
-								double percentagescaled = (double) (max - time) / (double) max * 10.0;
-								double i = 1;
-								for (i = 1; i < percentagescaled; i = i + 1) {
-									symbol = symbol + "§6\u258e";
-								}
-								i = i - 1;
-								if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.33) {
-									symbol = symbol + "§7\u258e";
-								} else if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.67) {
-									symbol = symbol + "§7\u258e";
-								} else if ((percentagescaled - i) > 0) {
-									symbol = symbol + "§6\u258e";
-								}
-								for (i = 10 - 1; i >= percentagescaled; i = i - 1) {
-									symbol = symbol + "§7\u258e";
-								}
-								stand.setCustomNameVisible(true);
-								stand.setCustomName(symbol);
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							} else {
-								stand.setCustomNameVisible(false);
-								stand.setCustomName("");
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							}
-						}
-					}, delay);
 				}
+			});
+			
+			Iterator<Entry<Block, HashMap<String, Object>>> itr = brewstand.entrySet().iterator();
+			int count = 0;
+			int maxper = (int) Math.ceil((double) brewstand.size() / (double) 20);
+			int delay = 1;
+			while (itr.hasNext()) {
+				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				
+				count++;
+				if (count > maxper) {
+					count = 0;
+					delay++;
+				}
+				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+					Block block = entry.getKey();
+					if (!isActive(block.getLocation())) {
+						return;
+					}
+					if (!block.getType().equals(Material.BREWING_STAND)) {
+						return;
+					}
+					org.bukkit.block.BrewingStand brewingstand = (org.bukkit.block.BrewingStand) block.getState();
+					
+					Inventory inv = brewingstand.getInventory();
+					ItemStack itemstack = inv.getItem(3);
+					if (itemstack != null) {
+						if (inv.getItem(3).getType().equals(Material.AIR)) {
+							itemstack = null;
+						}
+					}
+					
+					Item item = null;
+					if (entry.getValue().get("Item") instanceof String) {
+						if (itemstack != null) {
+							item = new Item(brewingstand.getLocation().clone().add(0.5, 1.0, 0.5));
+							item.setItemStack(itemstack);
+							item.setVelocity(new Vector(0, 0, 0));
+							item.setPickupDelay(32767);
+							item.setGravity(false);
+							entry.getValue().put("Item", item);
+							PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+							PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+						} else {
+							entry.getValue().put("Item", "N/A");
+						}
+					} else {
+						item = (Item) entry.getValue().get("Item");
+						if (itemstack != null) {
+							if (!item.getItemStack().equals(itemstack)) {
+								item.setItemStack(itemstack);
+								PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+							}
+							item.setPickupDelay(32767);
+							item.setGravity(false);
+						} else {
+							entry.getValue().put("Item", "N/A");
+							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							item.remove();
+						}
+					}
+
+					if (brewingstand.getFuelLevel() == 0) {
+						ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
+						if (hasPotion(brewingstand)) {
+							stand.setCustomNameVisible(true);
+							stand.setCustomName("§c\u2b1b");
+							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+						} else {
+							stand.setCustomNameVisible(false);
+							stand.setCustomName("");
+							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+						}
+					} else {					
+						ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
+						if (hasPotion(brewingstand)) {
+							int time = brewingstand.getBrewingTime();					
+							String symbol = "";
+							double percentagescaled = (double) (max - time) / (double) max * 10.0;
+							double i = 1;
+							for (i = 1; i < percentagescaled; i = i + 1) {
+								symbol = symbol + "§6\u258e";
+							}
+							i = i - 1;
+							if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.33) {
+								symbol = symbol + "§7\u258e";
+							} else if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.67) {
+								symbol = symbol + "§7\u258e";
+							} else if ((percentagescaled - i) > 0) {
+								symbol = symbol + "§6\u258e";
+							}
+							for (i = 10 - 1; i >= percentagescaled; i = i - 1) {
+								symbol = symbol + "§7\u258e";
+							}
+							stand.setCustomNameVisible(true);
+							stand.setCustomName(symbol);
+							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+						} else {
+							stand.setCustomNameVisible(false);
+							stand.setCustomName("");
+							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+						}
+					}
+				}, delay);
 			}
-		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 20).getTaskId();		
+		}, 0, 20).getTaskId();		
 	}
 	
 	public static boolean hasPotion(org.bukkit.block.BrewingStand brewingstand) {

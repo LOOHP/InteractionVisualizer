@@ -218,194 +218,188 @@ public class SmokerDisplay implements Listener {
 	}
 	
 	public static int gc() {
-		return new BukkitRunnable() {
-			public void run() {
-				Iterator<Entry<Block, HashMap<String, Object>>> itr = smokerMap.entrySet().iterator();
-				int count = 0;
-				int maxper = (int) Math.ceil((double) smokerMap.size() / (double) 600);
-				int delay = 1;
-				while (itr.hasNext()) {
-					count++;
-					if (count > maxper) {
-						count = 0;
-						delay++;
-					}
-					Entry<Block, HashMap<String, Object>> entry = itr.next();
-					new BukkitRunnable() {
-						public void run() {
-							Block block = entry.getKey();
-							boolean active = false;
-							if (isActive(block.getLocation())) {
-								active = true;
-							}
-							if (active == false) {
-								HashMap<String, Object> map = entry.getValue();
-								if (map.get("Item") instanceof Item) {
-									Item item = (Item) map.get("Item");
-									PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-									item.remove();
-								}
-								if (map.get("Stand") instanceof ArmorStand) {
-									ArmorStand stand = (ArmorStand) map.get("Stand");
-									PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-									stand.remove();
-								}
-								smokerMap.remove(block);
-								return;
-							}
-							if (!block.getType().equals(Material.SMOKER)) {
-								HashMap<String, Object> map = entry.getValue();
-								if (map.get("Item") instanceof Item) {
-									Item item = (Item) map.get("Item");
-									PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-									item.remove();
-								}
-								if (map.get("Stand") instanceof ArmorStand) {
-									ArmorStand stand = (ArmorStand) map.get("Stand");
-									PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-									stand.remove();
-								}
-								smokerMap.remove(block);
-								return;
-							}
-						}
-					}.runTaskLater(InteractionVisualizer.plugin, delay);
+		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+			Iterator<Entry<Block, HashMap<String, Object>>> itr = smokerMap.entrySet().iterator();
+			int count = 0;
+			int maxper = (int) Math.ceil((double) smokerMap.size() / (double) 600);
+			int delay = 1;
+			while (itr.hasNext()) {
+				count++;
+				if (count > maxper) {
+					count = 0;
+					delay++;
 				}
+				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+					Block block = entry.getKey();
+					boolean active = false;
+					if (isActive(block.getLocation())) {
+						active = true;
+					}
+					if (active == false) {
+						HashMap<String, Object> map = entry.getValue();
+						if (map.get("Item") instanceof Item) {
+							Item item = (Item) map.get("Item");
+							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							item.remove();
+						}
+						if (map.get("Stand") instanceof ArmorStand) {
+							ArmorStand stand = (ArmorStand) map.get("Stand");
+							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							stand.remove();
+						}
+						smokerMap.remove(block);
+						return;
+					}
+					if (!block.getType().equals(Material.SMOKER)) {
+						HashMap<String, Object> map = entry.getValue();
+						if (map.get("Item") instanceof Item) {
+							Item item = (Item) map.get("Item");
+							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							item.remove();
+						}
+						if (map.get("Stand") instanceof ArmorStand) {
+							ArmorStand stand = (ArmorStand) map.get("Stand");
+							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							stand.remove();
+						}
+						smokerMap.remove(block);
+						return;
+					}
+				}, delay);
 			}
-		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 600).getTaskId();
+		}, 0, 600).getTaskId();
 	}
 	
 	public static int run() {		
-		return new BukkitRunnable() {
-			public void run() {
-				Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-					List<Block> list = nearbySmoker();
-					for (Block block : list) {
-						if (smokerMap.get(block) == null && isActive(block.getLocation())) {
-							if (block.getType().equals(Material.SMOKER)) {
-								HashMap<String, Object> map = new HashMap<String, Object>();
-								map.put("Item", "N/A");
-								map.putAll(spawnArmorStands(block));
-								smokerMap.put(block, map);
-							}
+		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+				List<Block> list = nearbySmoker();
+				for (Block block : list) {
+					if (smokerMap.get(block) == null && isActive(block.getLocation())) {
+						if (block.getType().equals(Material.SMOKER)) {
+							HashMap<String, Object> map = new HashMap<String, Object>();
+							map.put("Item", "N/A");
+							map.putAll(spawnArmorStands(block));
+							smokerMap.put(block, map);
 						}
 					}
-				});
+				}
+			});
+			
+			Iterator<Entry<Block, HashMap<String, Object>>> itr = smokerMap.entrySet().iterator();
+			int count = 0;
+			int maxper = (int) Math.ceil((double) smokerMap.size() / (double) 20);
+			int delay = 1;
+			while (itr.hasNext()) {
+				Entry<Block, HashMap<String, Object>> entry = itr.next();
 				
-				Iterator<Entry<Block, HashMap<String, Object>>> itr = smokerMap.entrySet().iterator();
-				int count = 0;
-				int maxper = (int) Math.ceil((double) smokerMap.size() / (double) 20);
-				int delay = 1;
-				while (itr.hasNext()) {
-					Entry<Block, HashMap<String, Object>> entry = itr.next();
-					
-					count++;
-					if (count > maxper) {
-						count = 0;
-						delay++;
+				count++;
+				if (count > maxper) {
+					count = 0;
+					delay++;
+				}
+				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+					Block block = entry.getKey();
+					if (!isActive(block.getLocation())) {
+						return;
 					}
-					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-						Block block = entry.getKey();
-						if (!isActive(block.getLocation())) {
-							return;
+					if (!block.getType().equals(Material.SMOKER)) {
+						return;
+					}
+					org.bukkit.block.Smoker smoker = (org.bukkit.block.Smoker) block.getState();
+					
+					Inventory inv = smoker.getInventory();
+					ItemStack itemstack = inv.getItem(0);
+					if (itemstack != null) {
+						if (itemstack.getType().equals(Material.AIR)) {
+							itemstack = null;
 						}
-						if (!block.getType().equals(Material.SMOKER)) {
-							return;
-						}
-						org.bukkit.block.Smoker smoker = (org.bukkit.block.Smoker) block.getState();
-						
-						Inventory inv = smoker.getInventory();
-						ItemStack itemstack = inv.getItem(0);
+					}
+					
+					if (itemstack == null) {
+						itemstack = inv.getItem(2);
 						if (itemstack != null) {
 							if (itemstack.getType().equals(Material.AIR)) {
 								itemstack = null;
 							}
 						}
-						
-						if (itemstack == null) {
-							itemstack = inv.getItem(2);
-							if (itemstack != null) {
-								if (itemstack.getType().equals(Material.AIR)) {
-									itemstack = null;
-								}
-							}
-						}
-						
-						Item item = null;
-						if (entry.getValue().get("Item") instanceof String) {
-							if (itemstack != null) {
-								item = new Item(block.getLocation().clone().add(0.5, 1.0, 0.5));
-								item.setItemStack(itemstack);
-								item.setVelocity(new Vector(0, 0, 0));
-								item.setPickupDelay(32767);
-								item.setGravity(false);
-								entry.getValue().put("Item", item);
-								PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-								PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-							} else {
-								entry.getValue().put("Item", "N/A");
-							}
+					}
+					
+					Item item = null;
+					if (entry.getValue().get("Item") instanceof String) {
+						if (itemstack != null) {
+							item = new Item(smoker.getLocation().clone().add(0.5, 1.0, 0.5));
+							item.setItemStack(itemstack);
+							item.setVelocity(new Vector(0, 0, 0));
+							item.setPickupDelay(32767);
+							item.setGravity(false);
+							entry.getValue().put("Item", item);
+							PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+							PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 						} else {
-							item = (Item) entry.getValue().get("Item");
-							if (itemstack != null) {
-								if (!item.getItemStack().equals(itemstack)) {
-									item.setItemStack(itemstack);
-									PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-								}
-								item.setPickupDelay(32767);
-								item.setGravity(false);
-							} else {
-								entry.getValue().put("Item", "N/A");
-								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-								item.remove();
-							}
+							entry.getValue().put("Item", "N/A");
 						}
-	
-						if (hasItemToCook(smoker)) {
-							ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
-							if (hasFuel(smoker)) {
-								int time = smoker.getCookTime();
-								int max = smoker.getCookTimeTotal();
-								String symbol = "";
-								double percentagescaled = (double) time / (double) max * 10.0;
-								double i = 1;
-								for (i = 1; i < percentagescaled; i = i + 1) {
-									symbol = symbol + "§e\u258e";
-								}
-								i = i - 1;
-								if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.33) {
-									symbol = symbol + "§7\u258e";
-								} else if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.67) {
-									symbol = symbol + "§7\u258e";
-								} else if ((percentagescaled - i) > 0) {
-									symbol = symbol + "§e\u258e";
-								}
-								for (i = 10 - 1; i >= percentagescaled; i = i - 1) {
-									symbol = symbol + "§7\u258e";
-								}
-								
-								int left = inv.getItem(0).getAmount() - 1;
-								if (left > 0) {
-									symbol = symbol + " §7+" + left;
-								}
-								stand.setCustomNameVisible(true);
-								stand.setCustomName(symbol);
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							} else {
-								stand.setCustomNameVisible(false);
-								stand.setCustomName("");
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+					} else {
+						item = (Item) entry.getValue().get("Item");
+						if (itemstack != null) {
+							if (!item.getItemStack().equals(itemstack)) {
+								item.setItemStack(itemstack);
+								PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 							}
-						} else {					
-							ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
+							item.setPickupDelay(32767);
+							item.setGravity(false);
+						} else {
+							entry.getValue().put("Item", "N/A");
+							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							item.remove();
+						}
+					}
+
+					if (hasItemToCook(smoker)) {
+						ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
+						if (hasFuel(smoker)) {
+							int time = smoker.getCookTime();
+							int max = smoker.getCookTimeTotal();
+							String symbol = "";
+							double percentagescaled = (double) time / (double) max * 10.0;
+							double i = 1;
+							for (i = 1; i < percentagescaled; i = i + 1) {
+								symbol = symbol + "§e\u258e";
+							}
+							i = i - 1;
+							if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.33) {
+								symbol = symbol + "§7\u258e";
+							} else if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.67) {
+								symbol = symbol + "§7\u258e";
+							} else if ((percentagescaled - i) > 0) {
+								symbol = symbol + "§e\u258e";
+							}
+							for (i = 10 - 1; i >= percentagescaled; i = i - 1) {
+								symbol = symbol + "§7\u258e";
+							}
+							
+							int left = inv.getItem(0).getAmount() - 1;
+							if (left > 0) {
+								symbol = symbol + " §7+" + left;
+							}
+							stand.setCustomNameVisible(true);
+							stand.setCustomName(symbol);
+							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+						} else {
 							stand.setCustomNameVisible(false);
 							stand.setCustomName("");
 							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 						}
-					}, delay);
-				}
+					} else {					
+						ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
+						stand.setCustomNameVisible(false);
+						stand.setCustomName("");
+						PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+					}
+				}, delay);
 			}
-		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 20).getTaskId();		
+		}, 0, 20).getTaskId();		
 	}
 	
 	public static boolean hasItemToCook(org.bukkit.block.Smoker smoker) {
