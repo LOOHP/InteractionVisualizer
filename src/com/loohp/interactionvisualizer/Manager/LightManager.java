@@ -34,7 +34,11 @@ public class LightManager {
 	public static int run() {
 		return new BukkitRunnable() {
 			public void run() {
+				boolean changed = false;
 				Set<Location> locations = new HashSet<Location>();
+				if (!deletequeue.isEmpty()) {
+					changed = true;
+				}
 				while (!deletequeue.isEmpty()) {
 					Location location = deletequeue.poll();
 					if (location != null) {
@@ -42,21 +46,26 @@ public class LightManager {
 						locations.add(location);
 					}
 				}
+				if (!lights.isEmpty()) {
+					changed = true;
+				}
 				for (Entry<Location, Integer> entry : lights.entrySet()) {
 					Location location = entry.getKey();
 					int lightlevel = entry.getValue();
 					LightAPI.createLight(location, LightType.BLOCK, lightlevel, false);
 					locations.add(location);
 				}
+				if (changed) {
+					Queue<ChunkInfo> infos = new LinkedList<ChunkInfo>();
+					for (Location location : locations) {
+						infos.addAll(LightAPI.collectChunks(location, LightType.BLOCK, 15));					
+					}
+					while (!infos.isEmpty()) {
+						ChunkInfo info = infos.poll();
+						LightAPI.updateChunk(info, LightType.BLOCK);
+					}
+				}
 				lights.clear();
-				Queue<ChunkInfo> infos = new LinkedList<ChunkInfo>();
-				for (Location location : locations) {
-					infos.addAll(LightAPI.collectChunks(location, LightType.BLOCK, 15));					
-				}
-				while (!infos.isEmpty()) {
-					ChunkInfo info = infos.poll();
-					LightAPI.updateChunk(info, LightType.BLOCK);
-				}
 			}
 		}.runTaskTimer(InteractionVisualizer.plugin, 0, 10).getTaskId();
 	}

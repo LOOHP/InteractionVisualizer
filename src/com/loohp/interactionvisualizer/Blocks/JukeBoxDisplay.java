@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -23,6 +24,7 @@ import com.loohp.interactionvisualizer.Manager.MusicManager;
 import com.loohp.interactionvisualizer.Manager.PacketManager;
 import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
 import com.loohp.interactionvisualizer.Manager.TileEntityManager;
+import com.loohp.interactionvisualizer.Utils.LegacyRecordsUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -99,20 +101,18 @@ public class JukeBoxDisplay implements Listener {
 	public static int run() {		
 		return new BukkitRunnable() {
 			public void run() {
-				new BukkitRunnable() {
-					public void run() {
-						List<Block> list = nearbyJukeBox();
-						for (Block block : list) {
-							if (jukeboxMap.get(block) == null && isActive(block.getLocation())) {
-								if (block.getType().equals(Material.JUKEBOX)) {
-									HashMap<String, Object> map = new HashMap<String, Object>();
-									map.put("Item", "N/A");
-									jukeboxMap.put(block, map);
-								}
+				Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+					List<Block> list = nearbyJukeBox();
+					for (Block block : list) {
+						if (jukeboxMap.get(block) == null && isActive(block.getLocation())) {
+							if (block.getType().equals(Material.JUKEBOX)) {
+								HashMap<String, Object> map = new HashMap<String, Object>();
+								map.put("Item", "N/A");
+								jukeboxMap.put(block, map);
 							}
 						}
 					}
-				}.runTask(InteractionVisualizer.plugin);				
+				});				
 				
 				Iterator<Entry<Block, HashMap<String, Object>>> itr = jukeboxMap.entrySet().iterator();
 				int count = 0;
@@ -126,60 +126,58 @@ public class JukeBoxDisplay implements Listener {
 						count = 0;
 						delay++;
 					}
-					new BukkitRunnable() {
-						public void run() {
-							Block block = entry.getKey();
-							if (!isActive(block.getLocation())) {
-								return;
+					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+						Block block = entry.getKey();
+						if (!isActive(block.getLocation())) {
+							return;
+						}
+						if (!block.getType().equals(Material.JUKEBOX)) {
+							return;
+						}
+						org.bukkit.block.Jukebox jukebox = (org.bukkit.block.Jukebox) block.getState();
+						
+						ItemStack itemstack = jukebox.getPlaying() == null ? null : (jukebox.getPlaying().equals(Material.AIR) ? null : new ItemStack(jukebox.getPlaying(), 1));
+						
+						Item item = null;
+						if (entry.getValue().get("Item") instanceof String) {
+							if (itemstack != null) {
+								String disc = InteractionVisualizer.version.contains("legacy") ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString().toUpperCase()) : jukebox.getPlaying().toString().toUpperCase();
+								String text = getColor(disc) + MusicManager.getMusicConfig().getString("Discs." + disc);
+								
+								item = new Item(block.getLocation().clone().add(0.5, 1.0, 0.5));
+								item.setItemStack(itemstack);
+								item.setVelocity(new Vector(0, 0, 0));
+								item.setPickupDelay(32767);
+								item.setGravity(false);
+								item.setCustomName(text);
+								item.setCustomNameVisible(true);
+								entry.getValue().put("Item", item);
+								PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+								PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+							} else {
+								entry.getValue().put("Item", "N/A");
 							}
-							if (!block.getType().equals(Material.JUKEBOX)) {
-								return;
-							}
-							org.bukkit.block.Jukebox jukebox = (org.bukkit.block.Jukebox) block.getState();
-							
-							ItemStack itemstack = jukebox.getRecord() == null ? null : (jukebox.getRecord().getType().equals(Material.AIR) ? null : jukebox.getRecord());
-							
-							Item item = null;
-							if (entry.getValue().get("Item") instanceof String) {
-								if (itemstack != null) {
-									Material disc = jukebox.getPlaying();
-									String text = getColor(disc) + MusicManager.getMusicConfig().getString("Discs." + disc.toString().toUpperCase());
-									
-									item = new Item(block.getLocation().clone().add(0.5, 1.0, 0.5));
+						} else {
+							item = (Item) entry.getValue().get("Item");
+							if (itemstack != null) {
+								if (!item.getItemStack().equals(itemstack)) {
 									item.setItemStack(itemstack);
-									item.setVelocity(new Vector(0, 0, 0));
-									item.setPickupDelay(32767);
-									item.setGravity(false);
+									String disc = InteractionVisualizer.version.contains("legacy") ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString().toUpperCase()) : jukebox.getPlaying().toString().toUpperCase();
+									String text = getColor(disc) + MusicManager.getMusicConfig().getString("Discs." + disc);
+									
 									item.setCustomName(text);
 									item.setCustomNameVisible(true);
-									entry.getValue().put("Item", item);
-									PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
 									PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-								} else {
-									entry.getValue().put("Item", "N/A");
 								}
+								item.setPickupDelay(32767);
+								item.setGravity(false);
 							} else {
-								item = (Item) entry.getValue().get("Item");
-								if (itemstack != null) {
-									if (!item.getItemStack().equals(itemstack)) {
-										item.setItemStack(itemstack);
-										Material disc = jukebox.getPlaying();
-										String text = getColor(disc) + MusicManager.getMusicConfig().getString("Discs." + disc.toString().toUpperCase());
-										
-										item.setCustomName(text);
-										item.setCustomNameVisible(true);
-										PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-									}
-									item.setPickupDelay(32767);
-									item.setGravity(false);
-								} else {
-									entry.getValue().put("Item", "N/A");
-									PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-									item.remove();
-								}
+								entry.getValue().put("Item", "N/A");
+								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+								item.remove();
 							}
 						}
-					}.runTaskLater(InteractionVisualizer.plugin, delay);
+					}, delay);
 				}
 			}
 		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 20).getTaskId();		
@@ -193,31 +191,31 @@ public class JukeBoxDisplay implements Listener {
 		return PlayerRangeManager.hasPlayerNearby(loc);
 	}
 	
-	public static ChatColor getColor(Material material) {
+	public static ChatColor getColor(String material) {
 		switch (material) {
-		case MUSIC_DISC_11:
+		case "MUSIC_DISC_11":
 			return ChatColor.WHITE;
-		case MUSIC_DISC_13:
+		case "MUSIC_DISC_13":
 			return ChatColor.GOLD;
-		case MUSIC_DISC_BLOCKS:
+		case "MUSIC_DISC_BLOCKS":
 			return ChatColor.RED;
-		case MUSIC_DISC_CAT:
+		case "MUSIC_DISC_CAT":
 			return ChatColor.GREEN;
-		case MUSIC_DISC_CHIRP:
+		case "MUSIC_DISC_CHIRP":
 			return ChatColor.DARK_RED;
-		case MUSIC_DISC_FAR:
+		case "MUSIC_DISC_FAR":
 			return ChatColor.GREEN;
-		case MUSIC_DISC_MALL:
+		case "MUSIC_DISC_MALL":
 			return ChatColor.BLUE;
-		case MUSIC_DISC_MELLOHI:
+		case "MUSIC_DISC_MELLOHI":
 			return ChatColor.LIGHT_PURPLE;
-		case MUSIC_DISC_STAL:
+		case "MUSIC_DISC_STAL":
 			return ChatColor.WHITE;
-		case MUSIC_DISC_STRAD:
+		case "MUSIC_DISC_STRAD":
 			return ChatColor.WHITE;
-		case MUSIC_DISC_WAIT:
+		case "MUSIC_DISC_WAIT":
 			return ChatColor.AQUA;
-		case MUSIC_DISC_WARD:
+		case "MUSIC_DISC_WARD":
 			return ChatColor.DARK_GREEN;
 		default:
 			return ChatColor.WHITE;

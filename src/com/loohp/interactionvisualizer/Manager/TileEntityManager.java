@@ -29,10 +29,7 @@ public class TileEntityManager {
 	
 	public static List<Block> getTileEntites(String type) {
 		List<Block> list = current.get(type);
-		if (list != null) {
-			return list;
-		}
-		return new ArrayList<Block>();
+		return list != null ? list : new ArrayList<Block>();
 	}
 	
 	public static void run() {
@@ -60,7 +57,7 @@ public class TileEntityManager {
 		int delay = 1;
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			count++;
-			if (count > 20) {
+			if (count > 10) {
 				count = 0;
 				delay++;
 			}

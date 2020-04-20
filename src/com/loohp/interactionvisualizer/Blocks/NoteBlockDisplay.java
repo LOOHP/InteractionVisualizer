@@ -57,12 +57,21 @@ public class NoteBlockDisplay implements Listener {
 			map.put("Timeout", System.currentTimeMillis() + 3000);
 			displayingNotes.put(block, map);
 			
-			NoteBlock state = (NoteBlock) block.getBlockData();
-			Tone tone = state.getNote().getTone();
-			String inst = MusicManager.getMusicConfig().getString("Instruments." + state.getInstrument().toString().toUpperCase());
-			String text = ChatColor.GOLD + inst + " " + getColor(tone) + tone.toString().toUpperCase();
-			text = state.getNote().isSharped() ? text + "#" : text;
-			text = state.getNote().getOctave() == 0 ? text : text + " ^";
+			String text = "";
+			if (!InteractionVisualizer.version.contains("legacy")) {
+				NoteBlock state = (NoteBlock) block.getBlockData();
+				Tone tone = state.getNote().getTone();
+				String inst = MusicManager.getMusicConfig().getString("Instruments." + state.getInstrument().toString().toUpperCase());
+				text = ChatColor.GOLD + inst + " " + getColor(tone) + tone.toString().toUpperCase();
+				text = state.getNote().isSharped() ? text + "#" : text;
+				text = state.getNote().getOctave() == 0 ? text : text + " ^";
+			} else {
+				org.bukkit.block.NoteBlock state = (org.bukkit.block.NoteBlock) block.getState();
+				Tone tone = state.getNote().getTone();
+				text = getColor(tone) + tone.toString().toUpperCase();
+				text = state.getNote().isSharped() ? text + "#" : text;
+				text = state.getNote().getOctave() == 0 ? text : text + " ^";
+			}
 			
 			stand.setCustomName(text);
 			

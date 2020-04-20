@@ -3,9 +3,11 @@ package com.loohp.interactionvisualizer.Manager;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -20,11 +22,16 @@ public class PlayerRangeManager {
 	public static boolean hasPlayerNearby(Location location) {
 		String world = location.getWorld().getUID().toString();
 		int x = (int) Math.floor((double) location.getBlockX() / 16.0);
-		int z = (int) Math.floor((double) location.getBlockZ() / 16.0);
+		int z = (int) Math.floor((double) location.getBlockZ() / 16.0);		
 		Object[] array = new Object[]{world, x, z};
 		synchronized (current) {
 			if (current.stream().anyMatch(each -> Arrays.equals(each, array))) {
-				return true;
+				World bukkitWorld = Bukkit.getWorld(UUID.fromString(world));
+				if (bukkitWorld != null) {
+					if (bukkitWorld.isChunkLoaded(x, z)) {
+						return true;
+					}
+				}
 			}
 		}
 		return false;

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -277,21 +278,19 @@ public class FurnaceDisplay implements Listener {
 	public static int run() {		
 		return new BukkitRunnable() {
 			public void run() {
-				new BukkitRunnable() {
-					public void run() {
-						List<Block> list = nearbyFurnace();
-						for (Block block : list) {
-							if (furnaceMap.get(block) == null && isActive(block.getLocation())) {
-								if (isFurnace(block.getType())) {
-									HashMap<String, Object> map = new HashMap<String, Object>();
-									map.put("Item", "N/A");
-									map.putAll(spawnArmorStands(block));
-									furnaceMap.put(block, map);
-								}
+				Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+					List<Block> list = nearbyFurnace();
+					for (Block block : list) {
+						if (furnaceMap.get(block) == null && isActive(block.getLocation())) {
+							if (isFurnace(block.getType())) {
+								HashMap<String, Object> map = new HashMap<String, Object>();
+								map.put("Item", "N/A");
+								map.putAll(spawnArmorStands(block));
+								furnaceMap.put(block, map);
 							}
 						}
 					}
-				}.runTask(InteractionVisualizer.plugin);
+				});
 				
 				Iterator<Entry<Block, HashMap<String, Object>>> itr = furnaceMap.entrySet().iterator();
 				int count = 0;
@@ -305,110 +304,108 @@ public class FurnaceDisplay implements Listener {
 						count = 0;
 						delay++;
 					}
-					new BukkitRunnable() {
-						public void run() {
-							Block block = entry.getKey();
-							if (!isActive(block.getLocation())) {
-								return;
+					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+						Block block = entry.getKey();
+						if (!isActive(block.getLocation())) {
+							return;
+						}
+						if (!isFurnace(block.getType())) {
+							return;
+						}
+						org.bukkit.block.Furnace furnace = (org.bukkit.block.Furnace) block.getState();
+						
+						Inventory inv = furnace.getInventory();
+						ItemStack itemstack = inv.getItem(0);
+						if (itemstack != null) {
+							if (itemstack.getType().equals(Material.AIR)) {
+								itemstack = null;
 							}
-							if (!isFurnace(block.getType())) {
-								return;
-							}
-							org.bukkit.block.Furnace furnace = (org.bukkit.block.Furnace) block.getState();
-							
-							Inventory inv = furnace.getInventory();
-							ItemStack itemstack = inv.getItem(0);
+						}
+						
+						if (itemstack == null) {
+							itemstack = inv.getItem(2);
 							if (itemstack != null) {
 								if (itemstack.getType().equals(Material.AIR)) {
 									itemstack = null;
 								}
 							}
-							
-							if (itemstack == null) {
-								itemstack = inv.getItem(2);
-								if (itemstack != null) {
-									if (itemstack.getType().equals(Material.AIR)) {
-										itemstack = null;
-									}
-								}
-							}
-							
-							Item item = null;
-							if (entry.getValue().get("Item") instanceof String) {
-								if (itemstack != null) {
-									item = new Item(block.getLocation().clone().add(0.5, 1.0, 0.5));
-									item.setItemStack(itemstack);
-									item.setVelocity(new Vector(0, 0, 0));
-									item.setPickupDelay(32767);
-									item.setGravity(false);
-									entry.getValue().put("Item", item);
-									PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-									PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-								} else {
-									entry.getValue().put("Item", "N/A");
-								}
+						}
+						
+						Item item = null;
+						if (entry.getValue().get("Item") instanceof String) {
+							if (itemstack != null) {
+								item = new Item(block.getLocation().clone().add(0.5, 1.0, 0.5));
+								item.setItemStack(itemstack);
+								item.setVelocity(new Vector(0, 0, 0));
+								item.setPickupDelay(32767);
+								item.setGravity(false);
+								entry.getValue().put("Item", item);
+								PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+								PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 							} else {
-								item = (Item) entry.getValue().get("Item");
-								if (itemstack != null) {
-									if (!item.getItemStack().equals(itemstack)) {
-										item.setItemStack(itemstack);
-										PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-									}
-									item.setPickupDelay(32767);
-									item.setGravity(false);
-								} else {
-									entry.getValue().put("Item", "N/A");
-									PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-									item.remove();
-								}
+								entry.getValue().put("Item", "N/A");
 							}
-
-							if (hasItemToCook(furnace)) {
-								ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
-								if (hasFuel(furnace)) {
-									int time = furnace.getCookTime();
-									int max = 10 * 20;
-									if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
-										max = furnace.getCookTimeTotal();
-									}
-									String symbol = "";
-									double percentagescaled = (double) time / (double) max * 10.0;
-									double i = 1;
-									for (i = 1; i < percentagescaled; i = i + 1) {
-										symbol = symbol + "§e\u258e";
-									}
-									i = i - 1;
-									if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.33) {
-										symbol = symbol + "§7\u258e";
-									} else if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.67) {
-										symbol = symbol + "§7\u258e";
-									} else if ((percentagescaled - i) > 0) {
-										symbol = symbol + "§e\u258e";
-									}
-									for (i = 10 - 1; i >= percentagescaled; i = i - 1) {
-										symbol = symbol + "§7\u258e";
-									}
-									
-									int left = inv.getItem(0).getAmount() - 1;
-									if (left > 0) {
-										symbol = symbol + " §7+" + left;
-									}
-									stand.setCustomNameVisible(true);
-									stand.setCustomName(symbol);
-									PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-								} else {
-									stand.setCustomNameVisible(false);
-									stand.setCustomName("");
-									PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+						} else {
+							item = (Item) entry.getValue().get("Item");
+							if (itemstack != null) {
+								if (!item.getItemStack().equals(itemstack)) {
+									item.setItemStack(itemstack);
+									PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 								}
-							} else {					
-								ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
+								item.setPickupDelay(32767);
+								item.setGravity(false);
+							} else {
+								entry.getValue().put("Item", "N/A");
+								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+								item.remove();
+							}
+						}
+
+						if (hasItemToCook(furnace)) {
+							ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
+							if (hasFuel(furnace)) {
+								int time = furnace.getCookTime();
+								int max = 10 * 20;
+								if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+									max = furnace.getCookTimeTotal();
+								}
+								String symbol = "";
+								double percentagescaled = (double) time / (double) max * 10.0;
+								double i = 1;
+								for (i = 1; i < percentagescaled; i = i + 1) {
+									symbol = symbol + "§e\u258e";
+								}
+								i = i - 1;
+								if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.33) {
+									symbol = symbol + "§7\u258e";
+								} else if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.67) {
+									symbol = symbol + "§7\u258e";
+								} else if ((percentagescaled - i) > 0) {
+									symbol = symbol + "§e\u258e";
+								}
+								for (i = 10 - 1; i >= percentagescaled; i = i - 1) {
+									symbol = symbol + "§7\u258e";
+								}
+								
+								int left = inv.getItem(0).getAmount() - 1;
+								if (left > 0) {
+									symbol = symbol + " §7+" + left;
+								}
+								stand.setCustomNameVisible(true);
+								stand.setCustomName(symbol);
+								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							} else {
 								stand.setCustomNameVisible(false);
 								stand.setCustomName("");
 								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 							}
+						} else {					
+							ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
+							stand.setCustomNameVisible(false);
+							stand.setCustomName("");
+							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 						}
-					}.runTaskLater(InteractionVisualizer.plugin, delay);
+					}, delay);
 				}
 			}
 		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 20).getTaskId();		

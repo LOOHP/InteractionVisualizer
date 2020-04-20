@@ -28,6 +28,7 @@ import com.loohp.interactionvisualizer.Metrics.Charts;
 import com.loohp.interactionvisualizer.Metrics.Metrics;
 import com.loohp.interactionvisualizer.PlaceholderAPI.PlaceholderAPI;
 import com.loohp.interactionvisualizer.Updater.Updater;
+import com.loohp.interactionvisualizer.Utils.LegacyRecordsUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -137,6 +138,10 @@ public class InteractionVisualizer extends JavaPlugin {
 		CustomBlockDataManager.intervalSaveToFile();
 		
 		MaterialUtils.setup();
+		
+		if (version.contains("legacy")) {
+			LegacyRecordsUtils.setup();
+		}
 		
 		getCommand("interactionvisualizer").setExecutor(new Commands());
 		

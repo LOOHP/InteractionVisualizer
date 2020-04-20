@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -153,41 +154,39 @@ public class BeaconDisplay implements Listener {
 	public static int run() {		
 		return new BukkitRunnable() {
 			public void run() {
-				new BukkitRunnable() {
-					public void run() {
-						List<Block> list = nearbyBeacon();
-						for (Block block : list) {
-							if (beaconMap.get(block) == null && isActive(block.getLocation())) {
-								if (block.getType().equals(Material.BEACON)) {
-									HashMap<String, Object> map = new HashMap<String, Object>();
-									map.put("Item", "N/A");
-									boolean done = false;
-									HashMap<String, Object> datamap = CustomBlockDataManager.getBlock(CustomBlockDataManager.locKey(block.getLocation()));
-									if (datamap != null) {
-										try {
-											String data = (String) datamap.get("Directional");
-											BlockFace face = BlockFace.valueOf(data);
-											map.putAll(spawnArmorStands(block, face));
-											done = true;
-										} catch (Exception e) {
-											done = false;
-										}
-									}
-									if (!done) {
-										float[] dir = placemap.containsKey(block) ? placemap.remove(block) : new float[]{0.0F, 0.0F};
-										BlockFace face = getCardinalFacing(dir);
+				Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+					List<Block> list = nearbyBeacon();
+					for (Block block : list) {
+						if (beaconMap.get(block) == null && isActive(block.getLocation())) {
+							if (block.getType().equals(Material.BEACON)) {
+								HashMap<String, Object> map = new HashMap<String, Object>();
+								map.put("Item", "N/A");
+								boolean done = false;
+								HashMap<String, Object> datamap = CustomBlockDataManager.getBlock(CustomBlockDataManager.locKey(block.getLocation()));
+								if (datamap != null) {
+									try {
+										String data = (String) datamap.get("Directional");
+										BlockFace face = BlockFace.valueOf(data);
 										map.putAll(spawnArmorStands(block, face));
-										HashMap<String, Object> savemap = (datamap != null) ? datamap : new HashMap<String, Object>();
-										savemap.put("Directional", face);
-										savemap.put("BlockType", block.getType().toString().toUpperCase());
-										CustomBlockDataManager.setBlock(CustomBlockDataManager.locKey(block.getLocation()), savemap);
+										done = true;
+									} catch (Exception e) {
+										done = false;
 									}
-									beaconMap.put(block, map);
 								}
+								if (!done) {
+									float[] dir = placemap.containsKey(block) ? placemap.remove(block) : new float[]{0.0F, 0.0F};
+									BlockFace face = getCardinalFacing(dir);
+									map.putAll(spawnArmorStands(block, face));
+									HashMap<String, Object> savemap = (datamap != null) ? datamap : new HashMap<String, Object>();
+									savemap.put("Directional", face);
+									savemap.put("BlockType", block.getType().toString().toUpperCase());
+									CustomBlockDataManager.setBlock(CustomBlockDataManager.locKey(block.getLocation()), savemap);
+								}
+								beaconMap.put(block, map);
 							}
 						}
 					}
-				}.runTask(InteractionVisualizer.plugin);
+				});
 				
 				Iterator<Entry<Block, HashMap<String, Object>>> itr = beaconMap.entrySet().iterator();
 				int count = 0;
@@ -201,72 +200,70 @@ public class BeaconDisplay implements Listener {
 						count = 0;
 						delay++;
 					}
-					new BukkitRunnable() {
-						public void run() {
-							Block block = entry.getKey();
-							if (!isActive(block.getLocation())) {
-								return;
-							}
-							if (!block.getType().equals(Material.BEACON)) {
-								return;
-							}
-							org.bukkit.block.Beacon beacon = (org.bukkit.block.Beacon) block.getState();
+					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+						Block block = entry.getKey();
+						if (!isActive(block.getLocation())) {
+							return;
+						}
+						if (!block.getType().equals(Material.BEACON)) {
+							return;
+						}
+						org.bukkit.block.Beacon beacon = (org.bukkit.block.Beacon) block.getState();
+						
+						String arrow = "\u27f9";
+						ChatColor color = getBeaconColor(block);
+						ArmorStand line1 = (ArmorStand) entry.getValue().get("1");
+						ArmorStand line2 = (ArmorStand) entry.getValue().get("2");
+						ArmorStand line3 = (ArmorStand) entry.getValue().get("3");
 							
-							String arrow = "\u27f9";
-							ChatColor color = getBeaconColor(block);
-							ArmorStand line1 = (ArmorStand) entry.getValue().get("1");
-							ArmorStand line2 = (ArmorStand) entry.getValue().get("2");
-							ArmorStand line3 = (ArmorStand) entry.getValue().get("3");
-								
-							String one = color + "T" + beacon.getTier() + " " + arrow + " " + getRange(beacon.getTier()) + "m";
-							if (!line1.getCustomName().equals(one)) {
-								line1.setCustomName(one);
-								line1.setCustomNameVisible(true);
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line1);
+						String one = color + "T" + beacon.getTier() + " " + arrow + " " + getRange(beacon.getTier()) + "m";
+						if (!line1.getCustomName().equals(one)) {
+							line1.setCustomName(one);
+							line1.setCustomNameVisible(true);
+							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line1);
+						}
+						if (beacon.getTier() == 0) {
+							if (!line2.getCustomName().equals("")) {
+								line2.setCustomName("");
+								line2.setCustomNameVisible(false);
+								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2);
 							}
-							if (beacon.getTier() == 0) {
+							if (!line3.getCustomName().equals("")) {
+								line3.setCustomName("");
+								line3.setCustomNameVisible(false);
+								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3);
+							}
+						} else {
+							if (beacon.getPrimaryEffect() != null) {
+								String two = color + EffectManager.getEffectConfig().getString("Effects." + beacon.getPrimaryEffect().getType().getName().toUpperCase()) + " " + RomanNumberUtils.toRoman(beacon.getPrimaryEffect().getAmplifier() + 1);
+								if (!line2.getCustomName().equals(two)) {
+									line2.setCustomName(two);
+									line2.setCustomNameVisible(true);
+									PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2);
+								}
+							} else {
 								if (!line2.getCustomName().equals("")) {
 									line2.setCustomName("");
 									line2.setCustomNameVisible(false);
 									PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2);
 								}
+							}
+							if (beacon.getSecondaryEffect() != null) {
+								String three = color + EffectManager.getEffectConfig().getString("Effects." + beacon.getSecondaryEffect().getType().getName().toUpperCase()) + " " + RomanNumberUtils.toRoman(beacon.getSecondaryEffect().getAmplifier() + 1);
+								if (!line3.getCustomName().equals(three)) {
+									line3.setCustomName(three);
+									line3.setCustomNameVisible(true);
+									PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3);
+								}
+							} else {
 								if (!line3.getCustomName().equals("")) {
 									line3.setCustomName("");
 									line3.setCustomNameVisible(false);
 									PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3);
 								}
-							} else {
-								if (beacon.getPrimaryEffect() != null) {
-									String two = color + EffectManager.getEffectConfig().getString("Effects." + beacon.getPrimaryEffect().getType().getName().toUpperCase()) + " " + RomanNumberUtils.toRoman(beacon.getPrimaryEffect().getAmplifier() + 1);
-									if (!line2.getCustomName().equals(two)) {
-										line2.setCustomName(two);
-										line2.setCustomNameVisible(true);
-										PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2);
-									}
-								} else {
-									if (!line2.getCustomName().equals("")) {
-										line2.setCustomName("");
-										line2.setCustomNameVisible(false);
-										PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2);
-									}
-								}
-								if (beacon.getSecondaryEffect() != null) {
-									String three = color + EffectManager.getEffectConfig().getString("Effects." + beacon.getSecondaryEffect().getType().getName().toUpperCase()) + " " + RomanNumberUtils.toRoman(beacon.getSecondaryEffect().getAmplifier() + 1);
-									if (!line3.getCustomName().equals(three)) {
-										line3.setCustomName(three);
-										line3.setCustomNameVisible(true);
-										PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3);
-									}
-								} else {
-									if (!line3.getCustomName().equals("")) {
-										line3.setCustomName("");
-										line3.setCustomNameVisible(false);
-										PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3);
-									}
-								}
 							}
 						}
-					}.runTaskLater(InteractionVisualizer.plugin, delay);
+					}, delay);
 				}
 			}
 		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 0, 20).getTaskId();		
