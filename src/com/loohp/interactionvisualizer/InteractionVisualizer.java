@@ -23,13 +23,15 @@ import com.loohp.interactionvisualizer.Manager.LangManager;
 import com.loohp.interactionvisualizer.Manager.MusicManager;
 import com.loohp.interactionvisualizer.Manager.PacketManager;
 import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
+import com.loohp.interactionvisualizer.Manager.SoundManager;
 import com.loohp.interactionvisualizer.Manager.TaskManager;
 import com.loohp.interactionvisualizer.Manager.TileEntityManager;
 import com.loohp.interactionvisualizer.Metrics.Charts;
 import com.loohp.interactionvisualizer.Metrics.Metrics;
 import com.loohp.interactionvisualizer.PlaceholderAPI.PlaceholderAPI;
+import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.Updater.Updater;
-import com.loohp.interactionvisualizer.Utils.EntityCreator;
+import com.loohp.interactionvisualizer.Utils.LegacyInstrumentUtils;
 import com.loohp.interactionvisualizer.Utils.LegacyRecordsUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 
@@ -42,6 +44,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static FileConfiguration config;
 	
 	public static String version = "";
+	public static int metaversion = 0;
 	
 	public static boolean openinv = false;
 	public static boolean vanish = false;
@@ -86,8 +89,7 @@ public class InteractionVisualizer extends JavaPlugin {
 			hookMessage("Essentials");
 			ess3 = true;
 		}
-		LangManager.generate();
-		EntityCreator.setup();
+		//EntityCreator.setup();
 		
 		int pluginId = 7024;
 
@@ -95,33 +97,40 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		String packageName = getServer().getClass().getPackage().getName();
 		
-		if (packageName.contains("1_15_R1") == true) {
+		if (packageName.contains("1_15_R1")) {
 	    	version = "1.15";
-	    } else if (packageName.contains("1_14_R1") == true) {
+	    	metaversion = 2;
+	    } else if (packageName.contains("1_14_R1")) {
 	    	version = "1.14";
-	    } else if (packageName.contains("1_13_R2") == true) {
+	    	metaversion = 1;
+	    } else if (packageName.contains("1_13_R2")) {
 	    	version = "1.13.1";
-	    } else if (packageName.contains("1_13_R1") == true) {
+	    	metaversion = 1;
+	    } else if (packageName.contains("1_13_R1")) {
 	    	version = "1.13";
-	    } else if (packageName.contains("1_12_R1") == true) {
+	    	metaversion = 1;
+	    } else if (packageName.contains("1_12_R1")) {
 	    	version = "legacy1.12";
-	    } else if (packageName.contains("1_11_R1") == true) {
+	    	metaversion = 0;
+	    } else if (packageName.contains("1_11_R1")) {
 	    	version = "legacy1.11";
-	    } else if (packageName.contains("1_10_R1") == true) {
+	    	metaversion = 0;
+	    } else if (packageName.contains("1_10_R1")) {
 	    	version = "legacy1.10";
-	    } else if (packageName.contains("1_9_R2") == true) {
+	    	unsupportedMessage();
+	    } else if (packageName.contains("1_9_R2")) {
 	    	version = "legacy1.9.4";
 	    	unsupportedMessage();
-	    } else if (packageName.contains("1_9_R1") == true) {
+	    } else if (packageName.contains("1_9_R1")) {
 	    	version = "legacy1.9";
 	    	unsupportedMessage();
-	    } else if (packageName.contains("1_8_R3") == true) {
+	    } else if (packageName.contains("1_8_R3")) {
 	    	version = "OLDlegacy1.8.4";
 	    	unsupportedMessage();
-	    } else if (packageName.contains("1_8_R2") == true) {
+	    } else if (packageName.contains("1_8_R2")) {
 	    	version = "OLDlegacy1.8.3";
 	    	unsupportedMessage();
-	    } else if (packageName.contains("1_8_R1") == true) {
+	    } else if (packageName.contains("1_8_R1")) {
 	    	version = "OLDlegacy1.8";
 	    	unsupportedMessage();
 	    } else {
@@ -133,12 +142,17 @@ public class InteractionVisualizer extends JavaPlugin {
 		plugin.saveConfig();
 		loadConfig();
 		
-		defaultworld = Bukkit.getWorlds().get(0);
+		defaultworld = getServer().getWorlds().get(0);
 		defaultlocation = new Location(defaultworld, 0, 0, 0);
 		if (!version.contains("legacy")) {
 			defaultworld.setChunkForceLoaded(0, 0, true);
 		}
 		
+		if (config.getBoolean("Options.DownloadLanguageFiles")) {
+			getServer().getScheduler().runTaskAsynchronously(this, () -> LangManager.generate());
+		}
+		WatchableCollection.setup();
+		SoundManager.setup();
 		EnchantmentManager.setup();
 		EffectManager.setup();
 		MusicManager.setup();
@@ -154,6 +168,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		if (version.contains("legacy")) {
 			LegacyRecordsUtils.setup();
+			LegacyInstrumentUtils.setup();
 		}
 		
 		getCommand("interactionvisualizer").setExecutor(new Commands());

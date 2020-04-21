@@ -189,7 +189,6 @@ public class ShulkerBoxDisplay implements Listener {
 					public void run() {
 						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 						list.remove(item);
-						item.remove();
 					}
 				}.runTaskLater(InteractionVisualizer.plugin, 20);
 			}						
@@ -286,7 +285,6 @@ public class ShulkerBoxDisplay implements Listener {
 						public void run() {
 							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 							list.remove(item);
-							item.remove();
 						}
 					}.runTaskLater(InteractionVisualizer.plugin, 20);
 				}

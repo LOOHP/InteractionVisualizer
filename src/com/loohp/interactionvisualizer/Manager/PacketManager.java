@@ -23,6 +23,7 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Holder.ArmorStand;
 import com.loohp.interactionvisualizer.Holder.Item;
 import com.loohp.interactionvisualizer.Holder.ItemFrame;
+import com.loohp.interactionvisualizer.Holder.VisualizerEntity;
 
 public class PacketManager implements Listener {
 	
@@ -30,18 +31,18 @@ public class PacketManager implements Listener {
 	private static String version = InteractionVisualizer.version;
 	private static List<String> exemptBlocks = InteractionVisualizer.exemptBlocks;
 	
-	public static ConcurrentHashMap<Object, List<Player>> active = new ConcurrentHashMap<Object, List<Player>>();
-	public static ConcurrentHashMap<Object, Boolean> loaded = new ConcurrentHashMap<Object, Boolean>();
+	public static ConcurrentHashMap<VisualizerEntity, List<Player>> active = new ConcurrentHashMap<VisualizerEntity, List<Player>>();
+	public static ConcurrentHashMap<VisualizerEntity, Boolean> loaded = new ConcurrentHashMap<VisualizerEntity, Boolean>();
 	
 	public static void run() {
 		if (!InteractionVisualizer.plugin.isEnabled()) {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
-			Iterator<Entry<Object, Boolean>> itr = loaded.entrySet().iterator();
+			Iterator<Entry<VisualizerEntity, Boolean>> itr = loaded.entrySet().iterator();
 			while (itr.hasNext()) {
-				Entry<Object, Boolean> entry = itr.next();
-				Object entity = entry.getKey();
+				Entry<VisualizerEntity, Boolean> entry = itr.next();
+				VisualizerEntity entity = entry.getKey();
 				if (entry.getKey() instanceof ArmorStand) {
 					ArmorStand stand = (ArmorStand) entity;
 					if (entry.getValue()) {
@@ -175,21 +176,20 @@ public class PacketManager implements Listener {
 		}
 		return material.isOccluding();
 	}
-	
 	/*
-	public static void sendLightUpdate(List<Player> players, Location location, int lightLevel, int subchunkbitmask, List<byte[]> bytearray) {
+	public static void sendLightUpdate(List<Player> players, Location location, int skysubchunkbitmask, List<byte[]> skybytearray, int blocksubchunkbitmask, List<byte[]> blockbytearray) {
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.LIGHT_UPDATE);
 		int chunkX = (int) Math.floor((double) location.getBlockX() / 16.0);
 		int chunkZ = (int) Math.floor((double) location.getBlockZ() / 16.0);
 		
 		packet.getIntegers().write(0, chunkX);
 		packet.getIntegers().write(1, chunkZ);
-		packet.getIntegers().write(2, 0);
-		packet.getIntegers().write(3, subchunkbitmask);
-		packet.getIntegers().write(4, 0);
-		packet.getIntegers().write(5, ~subchunkbitmask);
-		packet.getModifier().write(6, new ArrayList<byte[]>());
-		packet.getModifier().write(7, bytearray);
+		packet.getIntegers().write(2, skysubchunkbitmask);
+		packet.getIntegers().write(3, blocksubchunkbitmask);
+		packet.getIntegers().write(4, ~skysubchunkbitmask);
+		packet.getIntegers().write(5, ~blocksubchunkbitmask);
+		packet.getModifier().write(6, skybytearray);
+		packet.getModifier().write(7, blockbytearray);
 		
 		try {
         	for (Player player : players) {
@@ -200,15 +200,15 @@ public class PacketManager implements Listener {
 		}
 	}
 	*/
-	
 	public static void sendHandMovement(List<Player> players, Player entity) {
-		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ANIMATION);
-		packet.getModifier().writeDefaults();
-		packet.getIntegers().write(0, entity.getEntityId());
-		packet.getIntegers().write(1, 0);
+		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ANIMATION);
+		packet1.getModifier().writeDefaults();
+		packet1.getIntegers().write(0, entity.getEntityId());
+		packet1.getIntegers().write(1, 0);
+		
 		try {
         	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
+				protocolManager.sendServerPacket(player, packet1);
 			}
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
@@ -221,61 +221,32 @@ public class PacketManager implements Listener {
 			loaded.put(entity, true);
 		}
 		
-		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
-
-		packet.getIntegers().write(0, entity.getEntityId());
+		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
+		packet1.getIntegers().write(0, entity.getEntityId());
 		if (!version.contains("legacy")) {
-			packet.getIntegers().write(1, 1);
+			packet1.getIntegers().write(1, 1);
 		} else {
-			packet.getIntegers().write(1, 30);
+			packet1.getIntegers().write(1, 30);
 		}
-		packet.getIntegers().write(2, 0);
-		packet.getIntegers().write(3, 0);
-		packet.getIntegers().write(4, 0);
+		packet1.getIntegers().write(2, (int) (entity.getVelocity().getX() * 8000));
+		packet1.getIntegers().write(3, (int) (entity.getVelocity().getY() * 8000));
+		packet1.getIntegers().write(4, (int) (entity.getVelocity().getZ() * 8000));		
+		packet1.getDoubles().write(0, entity.getLocation().getX());
+		packet1.getDoubles().write(1, entity.getLocation().getY());
+		packet1.getDoubles().write(2, entity.getLocation().getZ());
+		packet1.getBytes().write(0, (byte)(int) (entity.getLocation().getYaw() * 256.0F / 360.0F)); //Yaw
+		packet1.getBytes().write(1, (byte)(int) (entity.getLocation().getPitch() * 256.0F / 360.0F)); //Pitch
+		packet1.getBytes().write(2, (byte)(int) (entity.getLocation().getYaw() * 256.0F / 360.0F)); //Head
 		
-		packet.getDoubles().write(0, entity.getLocation().getX());
-		packet.getDoubles().write(1, entity.getLocation().getY());
-		packet.getDoubles().write(2, entity.getLocation().getZ());
-
-		packet.getBytes().write(0, (byte)(int) (entity.getLocation().getYaw() * 256.0F / 360.0F)); //Yaw
-		packet.getBytes().write(1, (byte)(int) (entity.getLocation().getPitch() * 256.0F / 360.0F)); //Pitch
-		packet.getBytes().write(2, (byte)(int) (entity.getLocation().getYaw() * 256.0F / 360.0F)); //Head
-		
-		try {
-			for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-		
-		packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_VELOCITY);
-		packet.getIntegers()
-    		//Entity ID
-    		.write(0, entity.getEntityId())
-    		//Velocity x
-            .write(1, (int) (entity.getVelocity().getX() * 8000))
-	        //Velocity y
-	        .write(2, (int) (entity.getVelocity().getY() * 8000))
-	        //Velocity z
-	        .write(3, (int) (entity.getVelocity().getZ() * 8000));
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-
-        packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
-        //Entity ID
-		packet.getIntegers().write(0, entity.getEntityId());
-
+		PacketContainer packet2 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+		packet2.getIntegers().write(0, entity.getEntityId());	
         WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
-        packet.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
+        packet2.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
+        
         try {
         	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
+				protocolManager.sendServerPacket(player, packet1);
+				protocolManager.sendServerPacket(player, packet2);
 			}
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
@@ -283,72 +254,66 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void updateArmorStand(List<Player> players, ArmorStand entity) {
-		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
-        //Entity ID
-		packet.getIntegers().write(0, entity.getEntityId());
-		
+		players = active.get(entity);
+		if (players == null) {
+			return;
+		}
+		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
+        packet1.getIntegers().write(0, entity.getEntityId());
+        packet1.getDoubles().write(0, entity.getLocation().getX());
+		packet1.getDoubles().write(1, entity.getLocation().getY());
+		packet1.getDoubles().write(2, entity.getLocation().getZ());
+		packet1.getBytes().write(0, (byte)(int) (entity.getLocation().getYaw() * 256.0F / 360.0F));
+		packet1.getBytes().write(1, (byte)(int) (entity.getLocation().getPitch() * 256.0F / 360.0F));
+			
+		PacketContainer packet2 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+		packet2.getIntegers().write(0, entity.getEntityId());	
         WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
-        packet.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+        packet2.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
 
-        packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
-		packet.getIntegers().write(0, entity.getEntityId());
-		packet.getItemSlots().write(0, ItemSlot.MAINHAND);
-		packet.getItemModifier().write(0, entity.getItemInMainHand());
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+        PacketContainer packet3 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
+        packet3.getIntegers().write(0, entity.getEntityId());
+        packet3.getItemSlots().write(0, ItemSlot.MAINHAND);
+        packet3.getItemModifier().write(0, entity.getItemInMainHand());
 
-        packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
-		packet.getIntegers().write(0, entity.getEntityId());
-		packet.getItemSlots().write(0, ItemSlot.HEAD);
-		packet.getItemModifier().write(0, entity.getHelmet());
+        PacketContainer packet4 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
+        packet4.getIntegers().write(0, entity.getEntityId());
+        packet4.getItemSlots().write(0, ItemSlot.HEAD);
+        packet4.getItemModifier().write(0, entity.getHelmet());
+		/*
+		PacketContainer packet5 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_VELOCITY);
+		packet5.getIntegers().write(0, entity.getEntityId());
+		packet5.getIntegers().write(1, (int) (entity.getVelocity().getX() * 8000));
+		packet5.getIntegers().write(2, (int) (entity.getVelocity().getY() * 8000));
+		packet5.getIntegers().write(3, (int) (entity.getVelocity().getZ() * 8000));
+		*/
         try {
         	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
+				protocolManager.sendServerPacket(player, packet1);
+				protocolManager.sendServerPacket(player, packet2);
+				protocolManager.sendServerPacket(player, packet3);
+				protocolManager.sendServerPacket(player, packet4);
+				//protocolManager.sendServerPacket(player, packet5);
 			}
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-        
-        packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
-        packet.getIntegers().write(0, entity.getEntityId());
-        packet.getDoubles().write(0, entity.getLocation().getX());
-		packet.getDoubles().write(1, entity.getLocation().getY());
-		packet.getDoubles().write(2, entity.getLocation().getZ());
-		packet.getBytes().write(0, (byte)(int) (entity.getLocation().getYaw() * 256.0F / 360.0F));
-		packet.getBytes().write(1, (byte)(int) (entity.getLocation().getPitch() * 256.0F / 360.0F));
-		try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+	}
+	
+	public static void updateArmorStand(List<Player> players, ArmorStand entity, boolean onlymetadata) {
+		if (!onlymetadata) {
+			updateArmorStand(players, entity);
+			return;
 		}
 		
-		packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_VELOCITY);
-		packet.getIntegers()
-    		//Entity ID
-    		.write(0, entity.getEntityId())
-    		//Velocity x
-            .write(1, (int) (entity.getVelocity().getX() * 8000))
-	        //Velocity y
-	        .write(2, (int) (entity.getVelocity().getY() * 8000))
-	        //Velocity z
-	        .write(3, (int) (entity.getVelocity().getZ() * 8000));
+		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+		packet1.getIntegers().write(0, entity.getEntityId());	
+        WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
+        packet1.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
+        
         try {
         	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
+				protocolManager.sendServerPacket(player, packet1);
 			}
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
@@ -360,11 +325,13 @@ public class PacketManager implements Listener {
 			active.remove(entity);
 			active.remove(entity);
 		}
-		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-		packet.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+		
+		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
+		packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+		
 		try {
 			for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
+				protocolManager.sendServerPacket(player, packet1);
 			}
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
@@ -384,68 +351,29 @@ public class PacketManager implements Listener {
 		if (entity.getItemStack().getType().equals(Material.AIR)) {
 			return;
 		}
-		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
-
-        //Location
-        Location location = entity.getLocation();
-
-        //and add data based on packet class in NMS  (global scope variable)
-        //Reference: https://wiki.vg/Protocol#Spawn_Object
-        packet.getIntegers()
-            //Entity ID
-            .write(0, entity.getEntityId())
-            //Velocity x
-            .write(1, (int) (entity.getVelocity().getX() * 8000))
-	        //Velocity y
-	        .write(2, (int) (entity.getVelocity().getY() * 8000))
-	        //Velocity z
-	        .write(3, (int) (entity.getVelocity().getZ() * 8000))
-            //Pitch
-            .write(4, (int) (entity.getLocation().getPitch() * 256.0F / 360.0F))
-            //Yaw
-            .write(5, (int) (entity.getLocation().getYaw() * 256.0F / 360.0F));
-
+		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
+        packet1.getIntegers().write(0, entity.getEntityId());
+        packet1.getIntegers().write(1, (int) (entity.getVelocity().getX() * 8000));
+        packet1.getIntegers().write(2, (int) (entity.getVelocity().getY() * 8000));
+        packet1.getIntegers().write(3, (int) (entity.getVelocity().getZ() * 8000));
+        packet1.getIntegers().write(4, (int) (entity.getLocation().getPitch() * 256.0F / 360.0F));
+        packet1.getIntegers().write(5, (int) (entity.getLocation().getYaw() * 256.0F / 360.0F));
         if (InteractionVisualizer.version.equals("1.13") || InteractionVisualizer.version.equals("1.13.1") || InteractionVisualizer.version.contains("legacy")) {
-            packet.getIntegers().write(6, 2);
-            //int data to mark
-            packet.getIntegers().write(7, 1);
+            packet1.getIntegers().write(6, 2);
+            packet1.getIntegers().write(7, 1);
         } else {
-            //EntityType
-            packet.getEntityTypeModifier().write(0, entity.getType());
-            //int data to mark
-            packet.getIntegers().write(6, 1);
+            packet1.getEntityTypeModifier().write(0, entity.getType());
+            packet1.getIntegers().write(6, 1);
         }
-        //UUID
-        packet.getUUIDs().write(0, entity.getUniqueId());
-        //Location
-        packet.getDoubles()
-            //X
-            .write(0, location.getX())
-            //Y
-            .write(1, location.getY())
-            //Z
-            .write(2, location.getZ());
-		try {
-			for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+        packet1.getUUIDs().write(0, entity.getUniqueId());
+        Location location = entity.getLocation();
+        packet1.getDoubles().write(0, location.getX());
+        packet1.getDoubles().write(1, location.getY());
+        packet1.getDoubles().write(2, location.getZ());
 		
-		packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_VELOCITY);
-        packet.getIntegers()
-            //Entity ID
-            .write(0, entity.getEntityId())
-            //Velocity x
-            .write(1, (int) (entity.getVelocity().getX() * 8000))
-	        //Velocity y
-	        .write(2, (int) (entity.getVelocity().getY() * 8000))
-	        //Velocity z
-	        .write(3, (int) (entity.getVelocity().getZ() * 8000));
         try {
         	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
+				protocolManager.sendServerPacket(player, packet1);
 			}
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
@@ -453,52 +381,38 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void updateItem(List<Player> players, Item entity) {
+		players = active.get(entity);
+		if (players == null) {
+			return;
+		}
 		if (entity.getItemStack().getType().equals(Material.AIR)) {
 			return;
 		}
-		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
-        //Entity ID
-		packet.getIntegers().write(0, entity.getEntityId());
-
-        //List<DataWatcher$Item> Type are more complex
-        //Create a DataWatcher
+		
+		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+		packet1.getIntegers().write(0, entity.getEntityId());
         WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
-        packet.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+        packet1.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
         
-        packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
-        packet.getIntegers().write(0, entity.getEntityId());
-        packet.getDoubles().write(0, entity.getLocation().getX());
-		packet.getDoubles().write(1, entity.getLocation().getY());
-		packet.getDoubles().write(2, entity.getLocation().getZ());
-		packet.getBytes().write(0, (byte)(int) (entity.getLocation().getYaw() * 256.0F / 360.0F));
-		packet.getBytes().write(1, (byte)(int) (entity.getLocation().getPitch() * 256.0F / 360.0F));
-		try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-        packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_VELOCITY);
-        packet.getIntegers()
-        	//Entity ID
-        	.write(0, entity.getEntityId())
-        	//Velocity x
-	        .write(1, (int) (entity.getVelocity().getX() * 8000))
-	        //Velocity y
-	        .write(2, (int) (entity.getVelocity().getY() * 8000))
-	        //Velocity z
-	        .write(3, (int) (entity.getVelocity().getZ() * 8000));
+        PacketContainer packet2 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
+        packet2.getIntegers().write(0, entity.getEntityId());
+        packet2.getDoubles().write(0, entity.getLocation().getX());
+        packet2.getDoubles().write(1, entity.getLocation().getY());
+        packet2.getDoubles().write(2, entity.getLocation().getZ());
+        packet2.getBytes().write(0, (byte)(int) (entity.getLocation().getYaw() * 256.0F / 360.0F));
+        packet2.getBytes().write(1, (byte)(int) (entity.getLocation().getPitch() * 256.0F / 360.0F));
+		
+		PacketContainer packet3 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_VELOCITY);
+		packet3.getIntegers().write(0, entity.getEntityId());
+		packet3.getIntegers().write(1, (int) (entity.getVelocity().getX() * 8000));
+		packet3.getIntegers().write(2, (int) (entity.getVelocity().getY() * 8000));
+		packet3.getIntegers().write(3, (int) (entity.getVelocity().getZ() * 8000));
+		
         try {
         	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
+				protocolManager.sendServerPacket(player, packet1);
+				protocolManager.sendServerPacket(player, packet2);
+				protocolManager.sendServerPacket(player, packet3);
 			}
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
@@ -513,11 +427,13 @@ public class PacketManager implements Listener {
 			active.remove(entity);
 			loaded.remove(entity);
 		}
-		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-		packet.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+		
+		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
+		packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+		
 		try {
 			for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
+				protocolManager.sendServerPacket(player, packet1);
 			}
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
@@ -534,50 +450,29 @@ public class PacketManager implements Listener {
 			loaded.put(entity, true);
 		}
 		
-		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
-
-        //Location
-        Location location = entity.getLocation();
-
-        //and add data based on packet class in NMS  (global scope variable)
-        //Reference: https://wiki.vg/Protocol#Spawn_Object
-        packet.getIntegers()
-            //Entity ID
-            .write(0, entity.getEntityId())
-            //Velocity x
-            .write(1, 0)
-            //Velocity y
-            .write(2, 0)
-            //Velocity z
-            .write(3, 0)
-            //Pitch
-            .write(4, (int) (entity.getPitch() * 256.0F / 360.0F))
-            //Yaw
-            .write(5, (int) (entity.getYaw() * 256.0F / 360.0F));
-
+		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
+        packet1.getIntegers().write(0, entity.getEntityId());
+        packet1.getIntegers().write(1, 0);
+        packet1.getIntegers().write(2, 0);
+        packet1.getIntegers().write(3, 0);
+        packet1.getIntegers().write(4, (int) (entity.getPitch() * 256.0F / 360.0F));
+        packet1.getIntegers().write(5, (int) (entity.getYaw() * 256.0F / 360.0F));
         if (InteractionVisualizer.version.equals("1.13") || InteractionVisualizer.version.equals("1.13.1") || InteractionVisualizer.version.contains("legacy")) {
-            packet.getIntegers().write(6, 33);
-            //int data to mark
-            packet.getIntegers().write(7, getItemFrameData(entity));
+            packet1.getIntegers().write(6, 33);
+            packet1.getIntegers().write(7, getItemFrameData(entity));
         } else {
-            //EntityType
-            packet.getEntityTypeModifier().write(0, entity.getType());
-            //int data to mark
-            packet.getIntegers().write(6, getItemFrameData(entity));
+            packet1.getEntityTypeModifier().write(0, entity.getType());
+            packet1.getIntegers().write(6, getItemFrameData(entity));
         }
-        //UUID
-        packet.getUUIDs().write(0, entity.getUniqueId());
-        //Location
-        packet.getDoubles()
-            //X
-            .write(0, location.getX())
-            //Y
-            .write(1, location.getY())
-            //Z
-            .write(2, location.getZ());
+        packet1.getUUIDs().write(0, entity.getUniqueId());
+        Location location = entity.getLocation();
+        packet1.getDoubles().write(0, location.getX());
+        packet1.getDoubles().write(1, location.getY());
+        packet1.getDoubles().write(2, location.getZ());
+        
 		try {
 			for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
+				protocolManager.sendServerPacket(player, packet1);
 			}
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
@@ -604,17 +499,19 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void updateItemFrame(List<Player> players, ItemFrame entity) {
-		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
-        //Entity ID
-		packet.getIntegers().write(0, entity.getEntityId());
-
-        //List<DataWatcher$Item> Type are more complex
-        //Create a DataWatcher
+		players = active.get(entity);
+		if (players == null) {
+			return;
+		}
+		
+		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+		packet1.getIntegers().write(0, entity.getEntityId());
         WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
-        packet.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
+        packet1.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
+        
         try {
         	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
+				protocolManager.sendServerPacket(player, packet1);
 			}
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
@@ -626,11 +523,13 @@ public class PacketManager implements Listener {
 			active.remove(entity);
 			loaded.remove(entity);
 		}
-		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-		packet.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+		
+		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
+		packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+		
 		try {
 			for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
+				protocolManager.sendServerPacket(player, packet1);
 			}
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
@@ -644,7 +543,7 @@ public class PacketManager implements Listener {
 	public static void removeAll(Player theplayer) {
 		List<Player> player = new ArrayList<Player>();
 		player.add(theplayer);
-		for (Entry<Object, List<Player>> entry : active.entrySet()) {
+		for (Entry<VisualizerEntity, List<Player>> entry : active.entrySet()) {
 			Object entity = entry.getKey();
 			if (entity instanceof ArmorStand) {
 				removeArmorStand(player, (ArmorStand) entity, false);
@@ -661,8 +560,8 @@ public class PacketManager implements Listener {
 	public static void sendPlayerPackets(Player theplayer) {
 		List<Player> player = new ArrayList<Player>();
 		player.add(theplayer);
-		for (Entry<Object, List<Player>> entry : active.entrySet()) {
-			Object entity = entry.getKey();
+		for (Entry<VisualizerEntity, List<Player>> entry : active.entrySet()) {
+			VisualizerEntity entity = entry.getKey();
 			if (entry.getValue().contains(theplayer)) {
 				if (loaded.get(entity)) {
 					if (entity instanceof ArmorStand) {

@@ -29,6 +29,7 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Holder.Item;
 import com.loohp.interactionvisualizer.Manager.EnchantmentManager;
 import com.loohp.interactionvisualizer.Manager.PacketManager;
+import com.loohp.interactionvisualizer.Manager.SoundManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
@@ -86,6 +87,7 @@ public class EnchantmentTableDisplay implements Listener {
 		}
 		
 		item.setItemStack(itemstack);
+		item.setGravity(false);
 		item.setLocked(true);
 		item.setVelocity(new Vector(0.0, 0.05, 0.0));
 		PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
@@ -118,7 +120,7 @@ public class EnchantmentTableDisplay implements Listener {
 				item.setCustomNameVisible(true);
 				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 			}
-		}.runTaskLater(InteractionVisualizer.plugin, 40);
+		}.runTaskLater(InteractionVisualizer.plugin, 50);
 		
 		new BukkitRunnable() {
 			public void run() {
@@ -127,7 +129,7 @@ public class EnchantmentTableDisplay implements Listener {
 				item.setGravity(true);
 				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 			}
-		}.runTaskLater(InteractionVisualizer.plugin, 80);
+		}.runTaskLater(InteractionVisualizer.plugin, 90);
 		
 		new BukkitRunnable() {
 			public void run() {
@@ -136,7 +138,7 @@ public class EnchantmentTableDisplay implements Listener {
 				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 				item.setLocked(false);
 			}
-		}.runTaskLater(InteractionVisualizer.plugin, 88);
+		}.runTaskLater(InteractionVisualizer.plugin, 98);
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
@@ -216,6 +218,7 @@ public class EnchantmentTableDisplay implements Listener {
 						
 						new BukkitRunnable() {
 							public void run() {
+								SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
 								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 								openedETable.remove(block);
 							}
@@ -310,6 +313,7 @@ public class EnchantmentTableDisplay implements Listener {
 								
 								new BukkitRunnable() {
 									public void run() {
+										SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
 										PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 										map.put("Item", "N/A");
 									}
@@ -322,13 +326,14 @@ public class EnchantmentTableDisplay implements Listener {
 		}
 		
 		if (map.get("Item") instanceof Item) {
-			Item entity = (Item) map.get("Item");
+			Item item = (Item) map.get("Item");
 			new BukkitRunnable() {
 				public void run() {
-					while (entity.isLocked()) {
+					while (item.isLocked()) {
 						try {TimeUnit.MILLISECONDS.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
 					}
-					Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), entity));
+					try {TimeUnit.MILLISECONDS.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+					Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item));
 					map.put("Item", "N/A");
 				}
 			}.runTaskAsynchronously(InteractionVisualizer.plugin);
@@ -422,12 +427,10 @@ public class EnchantmentTableDisplay implements Listener {
 							item.setItemStack(itemstack);
 							PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 						}
-						item.setPickupDelay(32767);
 						item.setGravity(false);
 					} else {
 						map.put("Item", "N/A");
 						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-						item.remove();
 					}
 				}
 			}

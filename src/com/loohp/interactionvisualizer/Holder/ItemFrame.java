@@ -1,63 +1,30 @@
 package com.loohp.interactionvisualizer.Holder;
 
-import java.util.UUID;
-
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Utils.EntityCreator;
+import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 
-public class ItemFrame {
+public class ItemFrame extends VisualizerEntity {
 	
-	int id;
-	UUID uuid;
-	Location location;
 	ItemStack item;
 	BlockFace facing;
+	int framerotation;
 	
 	public ItemFrame(Location location) {
-		this.id = (int) (Math.random() * Integer.MAX_VALUE);
-		this.uuid = UUID.randomUUID();
-		this.location = location;
+		super(location);
 		this.item = new ItemStack(Material.AIR);
 		this.facing = BlockFace.SOUTH;
+		this.framerotation = 0;
 	}
 	
 	public EntityType getType() {
 		return EntityType.ITEM_FRAME;
-	}
-	
-	public void setRotation(float yaw, float pitch) {
-		teleport(location.getWorld(), location.getX(), location.getY(), location.getZ(), yaw, pitch);
-	}
-	
-	public World getWorld() {
-		return location.getWorld();
-	}
-	
-	public void teleport(Location location) {
-		setLocation(location);
-	}
-	
-	public void teleport(World world, double x, double y, double z) {
-		setLocation(new Location(world, x, y, z, location.getYaw(), location.getPitch()));
-	}
-	
-	public void teleport(World world, double x, double y, double z, float yaw, float pitch) {
-		setLocation(new Location(world, x, y, z, yaw, pitch));
-	}
-	
-	public void setLocation(Location location) {
-		this.location = location;
-	}
-	public Location getLocation() {
-		return location;
 	}
 	
 	public BlockFace getAttachedFace() {
@@ -117,28 +84,20 @@ public class ItemFrame {
 		return facing;
 	}
 	
-	public UUID getUniqueId() {
-		return uuid;
+	public void setFrameRotation(int rotation) {
+		if (rotation >= 0 && rotation < 8) {
+			this.framerotation = rotation;
+		} else {
+			Bukkit.getLogger().severe("Item Frame Rotation must be between 0 and 7");
+		}
 	}
 	
-	public int getEntityId() {
-		return id;
+	public int getFrameRotation() {
+		return framerotation;
 	}
 	
 	public WrappedDataWatcher getWrappedDataWatcher() {
-		org.bukkit.entity.ItemFrame itemframe = (org.bukkit.entity.ItemFrame) EntityCreator.create(InteractionVisualizer.defaultlocation, EntityType.ITEM_FRAME);
-		if (!InteractionVisualizer.version.contains("legacy")) {
-			itemframe.setItem(item, false);
-		} else {
-			itemframe.setItem(item);
-		}
-		itemframe.setFacingDirection(facing);
-		itemframe.remove();
-		return WrappedDataWatcher.getEntityWatcher(itemframe);
-	}
-	
-	public void remove() {
-		
+		return WatchableCollection.getWatchableCollection(this);
 	}
 
 }

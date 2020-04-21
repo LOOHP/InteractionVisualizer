@@ -76,4 +76,5 @@ Modules:
 
 Options:
   Updater: true
+  DownloadLanguageFiles: true
   

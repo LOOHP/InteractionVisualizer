@@ -198,7 +198,6 @@ public class ChestDisplay implements Listener {
 					public void run() {
 						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 						list.remove(item);
-						item.remove();
 					}
 				}.runTaskLater(InteractionVisualizer.plugin, 20);
 			}						
@@ -301,7 +300,6 @@ public class ChestDisplay implements Listener {
 						public void run() {
 							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 							list.remove(item);
-							item.remove();
 						}
 					}.runTaskLater(InteractionVisualizer.plugin, 20);
 				}

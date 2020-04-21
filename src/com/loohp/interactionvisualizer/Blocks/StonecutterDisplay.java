@@ -26,6 +26,7 @@ import org.bukkit.util.Vector;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Holder.Item;
 import com.loohp.interactionvisualizer.Manager.PacketManager;
+import com.loohp.interactionvisualizer.Manager.SoundManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
@@ -102,6 +103,7 @@ public class StonecutterDisplay implements Listener {
 		
 		new BukkitRunnable() {
 			public void run() {
+				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
 				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 			}
 		}.runTaskLater(InteractionVisualizer.plugin, 8);
@@ -158,7 +160,6 @@ public class StonecutterDisplay implements Listener {
 		if (map.get("Item") instanceof Item) {
 			Item entity = (Item) map.get("Item");
 			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), entity);
-			entity.remove();
 		}
 		openedStonecutter.remove(block);
 		playermap.remove((Player) event.getPlayer());
@@ -307,7 +308,6 @@ public class StonecutterDisplay implements Listener {
 			} else {
 				map.put("Item", "N/A");
 				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-				item.remove();
 			}
 		}
 	}

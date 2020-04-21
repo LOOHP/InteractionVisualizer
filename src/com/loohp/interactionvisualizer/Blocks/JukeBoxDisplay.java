@@ -73,7 +73,6 @@ public class JukeBoxDisplay implements Listener {
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
 							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-							item.remove();
 						}
 						jukeboxMap.remove(block);
 						return;
@@ -83,7 +82,6 @@ public class JukeBoxDisplay implements Listener {
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
 							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-							item.remove();
 						}
 						jukeboxMap.remove(block);
 						return;
@@ -163,12 +161,9 @@ public class JukeBoxDisplay implements Listener {
 								item.setCustomNameVisible(true);
 								PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 							}
-							item.setPickupDelay(32767);
-							item.setGravity(false);
 						} else {
 							entry.getValue().put("Item", "N/A");
 							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-							item.remove();
 						}
 					}
 				}, delay);

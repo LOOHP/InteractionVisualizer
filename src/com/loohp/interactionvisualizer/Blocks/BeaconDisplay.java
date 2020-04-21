@@ -104,17 +104,14 @@ public class BeaconDisplay implements Listener {
 						if (map.get("1") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("1");
 							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							stand.remove();
 						}
 						if (map.get("2") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("2");
 							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							stand.remove();
 						}
 						if (map.get("3") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("3");
 							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							stand.remove();
 						}
 						beaconMap.remove(block);
 						return;
@@ -124,17 +121,14 @@ public class BeaconDisplay implements Listener {
 						if (map.get("1") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("1");
 							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							stand.remove();
 						}
 						if (map.get("2") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("2");
 							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							stand.remove();
 						}
 						if (map.get("3") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("3");
 							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							stand.remove();
 						}
 						beaconMap.remove(block);
 						CustomBlockDataManager.removeBlock(CustomBlockDataManager.locKey(block.getLocation()));
@@ -213,18 +207,18 @@ public class BeaconDisplay implements Listener {
 					if (!line1.getCustomName().equals(one)) {
 						line1.setCustomName(one);
 						line1.setCustomNameVisible(true);
-						PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line1);
+						PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line1, true);
 					}
 					if (beacon.getTier() == 0) {
 						if (!line2.getCustomName().equals("")) {
 							line2.setCustomName("");
 							line2.setCustomNameVisible(false);
-							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2);
+							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2, true);
 						}
 						if (!line3.getCustomName().equals("")) {
 							line3.setCustomName("");
 							line3.setCustomNameVisible(false);
-							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3);
+							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3, true);
 						}
 					} else {
 						if (beacon.getPrimaryEffect() != null) {
@@ -232,13 +226,13 @@ public class BeaconDisplay implements Listener {
 							if (!line2.getCustomName().equals(two)) {
 								line2.setCustomName(two);
 								line2.setCustomNameVisible(true);
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2);
+								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2, true);
 							}
 						} else {
 							if (!line2.getCustomName().equals("")) {
 								line2.setCustomName("");
 								line2.setCustomNameVisible(false);
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2);
+								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2, true);
 							}
 						}
 						if (beacon.getSecondaryEffect() != null) {
@@ -246,13 +240,13 @@ public class BeaconDisplay implements Listener {
 							if (!line3.getCustomName().equals(three)) {
 								line3.setCustomName(three);
 								line3.setCustomNameVisible(true);
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3);
+								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3, true);
 							}
 						} else {
 							if (!line3.getCustomName().equals("")) {
 								line3.setCustomName("");
 								line3.setCustomNameVisible(false);
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3);
+								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3, true);
 							}
 						}
 					}

@@ -20,6 +20,7 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Holder.ArmorStand;
 import com.loohp.interactionvisualizer.Manager.MusicManager;
 import com.loohp.interactionvisualizer.Manager.PacketManager;
+import com.loohp.interactionvisualizer.Utils.LegacyInstrumentUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -68,7 +69,8 @@ public class NoteBlockDisplay implements Listener {
 			} else {
 				org.bukkit.block.NoteBlock state = (org.bukkit.block.NoteBlock) block.getState();
 				Tone tone = state.getNote().getTone();
-				text = getColor(tone) + tone.toString().toUpperCase();
+				String inst = MusicManager.getMusicConfig().getString("Instruments." + LegacyInstrumentUtils.getInstrumentNameFromLegacy(block.getRelative(BlockFace.DOWN).getType().toString().toUpperCase()));
+				text = ChatColor.GOLD + inst + " " + getColor(tone) + tone.toString().toUpperCase();
 				text = state.getNote().isSharped() ? text + "#" : text;
 				text = state.getNote().getOctave() == 0 ? text : text + " ^";
 			}

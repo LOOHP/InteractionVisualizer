@@ -29,9 +29,12 @@ import com.loohp.interactionvisualizer.Holder.ArmorStand;
 import com.loohp.interactionvisualizer.Holder.Item;
 import com.loohp.interactionvisualizer.Manager.LightManager;
 import com.loohp.interactionvisualizer.Manager.PacketManager;
+import com.loohp.interactionvisualizer.Manager.SoundManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
+
+import ru.beykerykt.lightapi.LightType;
 
 public class CraftingTableDisplay implements Listener {
 	
@@ -156,6 +159,7 @@ public class CraftingTableDisplay implements Listener {
 				
 				new BukkitRunnable() {
 					public void run() {
+						SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
 						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot1);
 						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot2);
 						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot3);
@@ -420,12 +424,9 @@ public class CraftingTableDisplay implements Listener {
 						item.setItemStack(itemstack);
 						PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 					}
-					item.setPickupDelay(32767);
-					item.setGravity(false);
 				} else {
 					map.put("0", "N/A");
 					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-					item.remove();
 				}
 			}
 		}
@@ -436,32 +437,46 @@ public class CraftingTableDisplay implements Listener {
 				item = null;
 			}
 			if (item != null) {
+				boolean changed = true;
 				if (item.getType().isBlock() && !standMode(stand).equals("Block")) {
 					toggleStandMode(stand, "Block");
 				} else if (MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Tool")) {
 					toggleStandMode(stand, "Tool");
 				} else if (!item.getType().isBlock() && !MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Item")) {
 					toggleStandMode(stand, "Item");
+				} else {
+					changed = false;
 				}
-				stand.setItemInMainHand(item);
-				PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				if (!item.getType().equals(stand.getItemInMainHand().getType())) {
+					changed = true;
+					stand.setItemInMainHand(item);
+				}
+				if (changed) {
+					PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				}
 			} else {
-				stand.setItemInMainHand(new ItemStack(Material.AIR));
-				PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				if (!stand.getItemInMainHand().getType().equals(Material.AIR)) {
+					stand.setItemInMainHand(new ItemStack(Material.AIR));
+					PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				}
 			}
 		}
 		Location loc1 = ((ArmorStand) map.get("5")).getLocation();
 		LightManager.deleteLight(loc1);
-		int light = loc1.getBlock().getRelative(BlockFace.UP).getLightLevel() - 1;
-		if (light < 0) {
-			light = 0;
+		int skylight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromSky();
+		int blocklight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromBlocks() - 1;
+		blocklight = blocklight < 0 ? 0 : blocklight;
+		if (skylight > 0) {
+			LightManager.createLight(loc1, skylight, LightType.SKY);
 		}
-		LightManager.createLight(loc1, light);
+		if (blocklight > 0) {
+			LightManager.createLight(loc1, blocklight, LightType.BLOCK);
+		}
 	}
 	
 	public static String standMode(ArmorStand stand) {
 		if (stand.getCustomName().startsWith("IV.CraftingTable.")) {
-			return stand.getCustomName().substring(stand.getCustomName().lastIndexOf("."));
+			return stand.getCustomName().substring(stand.getCustomName().lastIndexOf(".") + 1);
 		}
 		return null;
 	}
@@ -472,21 +487,24 @@ public class CraftingTableDisplay implements Listener {
 				stand.setCustomName("IV.CraftingTable.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
-				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().multiply(-0.09), -90)));
-				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().multiply(-0.12)));
+				stand.teleport(stand.getLocation().add(0.0, -0.084, 0.0));
+				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(-0.102), -90)));
+				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.14)));
+				
 			}
 			if (stand.getCustomName().equals("IV.CraftingTable.Tool")) {
 				stand.setCustomName("IV.CraftingTable.Item");
-				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().multiply(0.3), -90)));
-				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().multiply(0.1)));
+				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(0.3), -90)));
+				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(0.1)));
 				stand.teleport(stand.getLocation().add(0, 0.26, 0));
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 			}
 		}
 		if (mode.equals("Block")) {
 			stand.setCustomName("IV.CraftingTable.Block");
-			stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().multiply(0.12)));
-			stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().multiply(0.09), -90)));
+			stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(0.14)));
+			stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(0.102), -90)));
+			stand.teleport(stand.getLocation().add(0.0, 0.084, 0.0));
 			stand.setRightArmPose(new EulerAngle(357.9, 0.0, 0.0));
 			stand.setRotation(stand.getLocation().getYaw() + 45, stand.getLocation().getPitch());
 		}
@@ -494,8 +512,8 @@ public class CraftingTableDisplay implements Listener {
 			stand.setCustomName("IV.CraftingTable.Tool");
 			stand.setRightArmPose(new EulerAngle(357.99, 0.0, 300.0));
 			stand.teleport(stand.getLocation().add(0, -0.26, 0));
-			stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().multiply(-0.1)));
-			stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().multiply(-0.3), -90)));
+			stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.1)));
+			stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(-0.3), -90)));
 		}
 	}
 	
@@ -536,7 +554,6 @@ public class CraftingTableDisplay implements Listener {
 		map.put("7", slot7);
 		map.put("8", slot8);
 		map.put("9", slot9);
-		center.remove();
 		
 		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot1);
 		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot2);

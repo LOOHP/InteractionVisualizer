@@ -82,7 +82,6 @@ public class CartographyTableDisplay implements Listener {
 		if (map.get("Item") instanceof ItemFrame) {
 			ItemFrame entity = (ItemFrame) map.get("Item");
 			PacketManager.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), entity);
-			entity.remove();
 		}
 		openedCTable.remove(block);
 		playermap.remove((Player) event.getPlayer());
@@ -197,6 +196,7 @@ public class CartographyTableDisplay implements Listener {
 					item = new ItemFrame(block.getRelative(BlockFace.UP).getLocation());
 					item.setItem(itemstack);
 					item.setFacingDirection(BlockFace.UP);
+					item.setSilent(true);
 					map.put("Item", item);
 					PacketManager.sendItemFrameSpawn(InteractionVisualizer.itemStand, item);
 					PacketManager.updateItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
@@ -213,7 +213,6 @@ public class CartographyTableDisplay implements Listener {
 				} else {
 					map.put("Item", "N/A");
 					PacketManager.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
-					item.remove();
 				}
 			}
 		}

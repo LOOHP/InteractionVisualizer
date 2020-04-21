@@ -26,8 +26,11 @@ import com.loohp.interactionvisualizer.Holder.ArmorStand;
 import com.loohp.interactionvisualizer.Holder.Item;
 import com.loohp.interactionvisualizer.Manager.LightManager;
 import com.loohp.interactionvisualizer.Manager.PacketManager;
+import com.loohp.interactionvisualizer.Manager.SoundManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
+
+import ru.beykerykt.lightapi.LightType;
 
 public class LoomDisplay implements Listener {
 	
@@ -116,6 +119,7 @@ public class LoomDisplay implements Listener {
 		PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 		new BukkitRunnable() {
 			public void run() {
+				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
 				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 			}
 		}.runTaskLater(InteractionVisualizer.plugin, 8);
@@ -236,7 +240,6 @@ public class LoomDisplay implements Listener {
 			ArmorStand entity = (ArmorStand) map.get("Banner");
 			LightManager.deleteLight(entity.getLocation());
 			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
-			entity.remove();
 		}
 		openedLooms.remove(block);
 	}
@@ -343,19 +346,28 @@ public class LoomDisplay implements Listener {
 		
 		ArmorStand stand = (ArmorStand) map.get("Banner");
 		if (item != null) {
-			stand.setHelmet(item);
+			if (!item.getType().equals(stand.getHelmet().getType())) {
+				stand.setHelmet(item);
+				PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			}
 		} else {
-			stand.setHelmet(new ItemStack(Material.AIR));
+			if (!stand.getHelmet().getType().equals(Material.AIR)) {
+				stand.setHelmet(new ItemStack(Material.AIR));
+				PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			}
 		}
-		PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
 		
 		Location loc1 = ((ArmorStand) map.get("Banner")).getLocation();
 		LightManager.deleteLight(loc1);
-		int light = loc1.getBlock().getRelative(BlockFace.UP).getLightLevel() - 1;
-		if (light < 0) {
-			light = 0;
+		int skylight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromSky();
+		int blocklight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromBlocks() - 1;
+		blocklight = blocklight < 0 ? 0 : blocklight;
+		if (skylight > 0) {
+			LightManager.createLight(loc1, skylight, LightType.SKY);
 		}
-		LightManager.createLight(loc1, light);
+		if (blocklight > 0) {
+			LightManager.createLight(loc1, blocklight, LightType.BLOCK);
+		}
 	}
 	
 	public static HashMap<String, ArmorStand> spawnArmorStands(Player player, Block block) {

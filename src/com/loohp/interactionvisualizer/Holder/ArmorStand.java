@@ -4,21 +4,15 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Utils.EntityCreator;
+import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 
-public class ArmorStand {
+public class ArmorStand extends VisualizerEntity {
 	
-	int id;
-	UUID uuid;
-	Location location;
 	boolean hasArms;
 	boolean hasBasePlate;
 	boolean isMarker;
@@ -26,7 +20,6 @@ public class ArmorStand {
 	boolean isSmall;
 	boolean isInvulnerable;
 	boolean isVisible;
-	boolean isSilent;
 	EulerAngle rightArmPose;
 	EulerAngle headPose;
 	ItemStack helmet;
@@ -34,12 +27,9 @@ public class ArmorStand {
 	String customName;
 	boolean custonNameVisible;
 	Vector velocity;
-	boolean lock;
 	
-	public ArmorStand(Location location) {
-		this.id = (int) (Math.random() * Integer.MAX_VALUE);
-		this.uuid = UUID.randomUUID();
-		this.location = location;
+	public ArmorStand(Location location, int id, UUID uuid) {
+		super(location, id, uuid);
 		this.hasArms = false;
 		this.hasBasePlate = true;
 		this.isMarker = false;
@@ -47,7 +37,6 @@ public class ArmorStand {
 		this.isSmall = false;
 		this.isInvulnerable = false;
 		this.isVisible = true;
-		this.isSilent = false;
 		this.rightArmPose = new EulerAngle(0.0, 0.0, 0.0);
 		this.headPose = new EulerAngle(0.0, 0.0, 0.0);
 		this.helmet = new ItemStack(Material.AIR);
@@ -55,30 +44,45 @@ public class ArmorStand {
 		this.customName = "";
 		this.custonNameVisible = false;
 		this.velocity = new Vector(0.0, 0.0, 0.0);
-		this.lock = false;
 	}
 	
-	public void setRotation(float yaw, float pitch) {
-		if (lock) {
-			return;
-		}
-		teleport(location.getWorld(), location.getX(), location.getY(), location.getZ(), yaw, pitch);
+	public ArmorStand(Location location) {
+		super(location);
+		this.hasArms = false;
+		this.hasBasePlate = true;
+		this.isMarker = false;
+		this.hasGravity = true;
+		this.isSmall = false;
+		this.isInvulnerable = false;
+		this.isVisible = true;
+		this.rightArmPose = new EulerAngle(0.0, 0.0, 0.0);
+		this.headPose = new EulerAngle(0.0, 0.0, 0.0);
+		this.helmet = new ItemStack(Material.AIR);
+		this.mainhand = new ItemStack(Material.AIR);
+		this.customName = "";
+		this.custonNameVisible = false;
+		this.velocity = new Vector(0.0, 0.0, 0.0);
 	}
 	
-	public World getWorld() {
-		return location.getWorld();
-	}
-	
-	public void teleport(Location location) {
-		setLocation(location);
-	}
-	
-	public void teleport(World world, double x, double y, double z) {
-		setLocation(new Location(world, x, y, z, location.getYaw(), location.getPitch()));
-	}
-	
-	public void teleport(World world, double x, double y, double z, float yaw, float pitch) {
-		setLocation(new Location(world, x, y, z, yaw, pitch));
+	public ArmorStand deepClone() {
+		ArmorStand newstand = new ArmorStand(location, id, uuid);
+		newstand.setSilent(isSilent);
+		newstand.setArms(hasArms);
+		newstand.setBasePlate(hasBasePlate);
+		newstand.setMarker(isMarker);
+		newstand.setGravity(hasGravity);
+		newstand.setSmall(isSmall);
+		newstand.setInvulnerable(isInvulnerable);
+		newstand.setVisible(isVisible);
+		newstand.setRightArmPose(rightArmPose);
+		newstand.setHeadPose(headPose);
+		newstand.setHelmet(helmet);
+		newstand.setItemInMainHand(mainhand);
+		newstand.setCustomName(customName);
+		newstand.setCustomNameVisible(custonNameVisible);
+		newstand.setVelocity(velocity);
+		newstand.setLocked(lock);
+		return newstand;
 	}
 
 	public void setCustomName(String customName) {
@@ -95,25 +99,11 @@ public class ArmorStand {
 		return custonNameVisible;
 	}
 	
-	public void setLocation(Location location) {
-		this.location = location;
-	}
-	public Location getLocation() {
-		return location;
-	}
-	
 	public void setArms(boolean bool) {
 		this.hasArms = bool;
 	}	
 	public boolean hasArms() {
 		return hasArms;
-	}
-	
-	public void setLocked(boolean bool) {
-		this.lock = bool;
-	}	
-	public boolean isLocked() {
-		return lock;
 	}
 
 	public void setBasePlate(boolean bool) {
@@ -156,13 +146,6 @@ public class ArmorStand {
 	}	
 	public boolean isVisible() {
 		return isVisible;
-	}
-
-	public void setSilent(boolean bool) {
-		this.isSilent = bool;
-	}	
-	public boolean isSilent() {
-		return isSilent;
 	}
 
 	public void setRightArmPose(EulerAngle angle) {
@@ -212,36 +195,8 @@ public class ArmorStand {
 		return velocity;
 	}
 	
-	public UUID getUniqueId() {
-		return uuid;
-	}
-	
-	public int getEntityId() {
-		return id;
-	}
-	
 	public WrappedDataWatcher getWrappedDataWatcher() {
-		org.bukkit.entity.ArmorStand stand = (org.bukkit.entity.ArmorStand) EntityCreator.create(InteractionVisualizer.defaultlocation, EntityType.ARMOR_STAND);
-		stand.setArms(hasArms);
-		stand.setBasePlate(hasBasePlate);
-		stand.setMarker(isMarker);
-		stand.setGravity(hasGravity);
-		stand.setSmall(isSmall);
-		stand.setInvulnerable(isInvulnerable);
-		stand.setVisible(isVisible);
-		stand.setSilent(isSilent);
-		stand.setRightArmPose(rightArmPose);
-		stand.setHeadPose(headPose);
-		stand.getEquipment().setHelmet(helmet);
-		stand.getEquipment().setItemInMainHand(mainhand);
-		stand.setCustomName(customName);
-		stand.setCustomNameVisible(custonNameVisible);
-		stand.remove();
-		return WrappedDataWatcher.getEntityWatcher(stand);
-	}
-	
-	public void remove() {
-		
+		return WatchableCollection.getWatchableCollection(this);
 	}
 
 }

@@ -25,6 +25,7 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Holder.ArmorStand;
 import com.loohp.interactionvisualizer.Holder.Item;
 import com.loohp.interactionvisualizer.Manager.PacketManager;
+import com.loohp.interactionvisualizer.Manager.SoundManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
@@ -136,6 +137,7 @@ public class GrindstoneDisplay implements Listener {
 				
 				new BukkitRunnable() {
 					public void run() {
+						SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
 						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot0);
 						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot1);
 						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
@@ -310,12 +312,9 @@ public class GrindstoneDisplay implements Listener {
 						item.setItemStack(itemstack);
 						PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 					}
-					item.setPickupDelay(32767);
-					item.setGravity(false);
 				} else {
 					map.put("2", "N/A");
 					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-					item.remove();
 				}
 			}
 		}
@@ -326,18 +325,28 @@ public class GrindstoneDisplay implements Listener {
 				item = null;
 			}
 			if (item != null) {
+				boolean changed = true;
 				if (item.getType().isBlock() && !standMode(stand).equals("Block")) {
 					toggleStandMode(stand, "Block");
 				} else if (MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Tool")) {
 					toggleStandMode(stand, "Tool");
 				} else if (!item.getType().isBlock() && !MaterialUtils.isTool(item.getType()) && !standMode(stand).equals("Item")) {
 					toggleStandMode(stand, "Item");
+				} else {
+					changed = false;
 				}
-				stand.setItemInMainHand(item);
-				PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				if (!item.getType().equals(stand.getItemInMainHand().getType())) {
+					changed = true;
+					stand.setItemInMainHand(item);
+				}
+				if (changed) {
+					PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				}
 			} else {
-				stand.setItemInMainHand(new ItemStack(Material.AIR));
-				PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				if (!stand.getItemInMainHand().getType().equals(Material.AIR)) {
+					stand.setItemInMainHand(new ItemStack(Material.AIR));
+					PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				}
 			}
 		}
 
@@ -345,7 +354,7 @@ public class GrindstoneDisplay implements Listener {
 	
 	public static String standMode(ArmorStand stand) {
 		if (stand.getCustomName().startsWith("IV.Grindstone.")) {
-			return stand.getCustomName().substring(stand.getCustomName().lastIndexOf("."));
+			return stand.getCustomName().substring(stand.getCustomName().lastIndexOf(".") + 1);
 		}
 		return null;
 	}
@@ -356,6 +365,7 @@ public class GrindstoneDisplay implements Listener {
 				stand.setCustomName("IV.Grindstone.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+				stand.teleport(stand.getLocation().add(0.0, -0.084, 0.0));
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().multiply(-0.09), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().multiply(-0.12)));
 			}
@@ -371,6 +381,7 @@ public class GrindstoneDisplay implements Listener {
 			stand.setCustomName("IV.Grindstone.Block");
 			stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().multiply(0.12)));
 			stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().multiply(0.09), -90)));
+			stand.teleport(stand.getLocation().add(0.0, 0.084, 0.0));
 			stand.setRightArmPose(new EulerAngle(357.9, 0.0, 0.0));
 			stand.setRotation(stand.getLocation().getYaw() + 45, stand.getLocation().getPitch());		
 		}
@@ -401,8 +412,6 @@ public class GrindstoneDisplay implements Listener {
 		
 		map.put("0", slot0);
 		map.put("1", slot1);
-		center.remove();
-		middle.remove();
 		
 		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot0);
 		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot1);

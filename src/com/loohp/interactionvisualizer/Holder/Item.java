@@ -4,20 +4,15 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Utils.EntityCreator;
+import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 
-public class Item {
+public class Item extends VisualizerEntity {
 	
-	int id;
-	UUID uuid;
-	Location location;
 	ItemStack item;
 	boolean hasGravity;
 	boolean isGlowing;
@@ -25,12 +20,9 @@ public class Item {
 	String customName;
 	boolean custonNameVisible;
 	Vector velocity;
-	boolean lock;
 	
-	public Item(Location location) {
-		this.id = (int) (Math.random() * Integer.MAX_VALUE);
-		this.uuid = UUID.randomUUID();
-		this.location = location;
+	public Item(Location location, int id, UUID uuid) {
+		super(location, id, uuid);
 		this.item = new ItemStack(Material.STONE);
 		this.hasGravity = false;
 		this.pickupDelay = 0;
@@ -38,7 +30,31 @@ public class Item {
 		this.custonNameVisible = false;
 		this.isGlowing = false;
 		this.velocity = new Vector(0.0, 0.0, 0.0);
-		this.lock = false;
+	}
+	
+	public Item(Location location) {
+		super(location);
+		this.item = new ItemStack(Material.STONE);
+		this.hasGravity = false;
+		this.pickupDelay = 0;
+		this.customName = "";
+		this.custonNameVisible = false;
+		this.isGlowing = false;
+		this.velocity = new Vector(0.0, 0.0, 0.0);
+	}
+	
+	public Item deepClone() {
+		Item newItem = new Item(location, id, uuid);
+		newItem.setSilent(isSilent);
+		newItem.setGravity(hasGravity);
+		newItem.setGlowing(isGlowing);
+		newItem.setPickupDelay(pickupDelay);
+		newItem.setItemStack(item);
+		newItem.setCustomName(customName);
+		newItem.setCustomNameVisible(custonNameVisible);
+		newItem.setVelocity(velocity);
+		newItem.setLocked(lock);
+		return newItem;
 	}
 	
 	public void setCustomName(String customName) {
@@ -64,33 +80,6 @@ public class Item {
 	
 	public EntityType getType() {
 		return EntityType.DROPPED_ITEM;
-	}
-	
-	public void setRotation(float yaw, float pitch) {
-		teleport(location.getWorld(), location.getX(), location.getY(), location.getZ(), yaw, pitch);
-	}
-	
-	public World getWorld() {
-		return location.getWorld();
-	}
-	
-	public void teleport(Location location) {
-		setLocation(location);
-	}
-	
-	public void teleport(World world, double x, double y, double z) {
-		setLocation(new Location(world, x, y, z, location.getYaw(), location.getPitch()));
-	}
-	
-	public void teleport(World world, double x, double y, double z, float yaw, float pitch) {
-		setLocation(new Location(world, x, y, z, yaw, pitch));
-	}
-	
-	public void setLocation(Location location) {
-		this.location = location;
-	}
-	public Location getLocation() {
-		return location;
 	}
 	
 	public void setItemStack(ItemStack item, boolean force) {
@@ -121,7 +110,7 @@ public class Item {
 		this.hasGravity = bool;
 	}
 	
-	public boolean getGravity() {
+	public boolean hasGravity() {
 		return hasGravity;
 	}
 	
@@ -140,36 +129,8 @@ public class Item {
 		return pickupDelay;
 	}
 	
-	public void setLocked(boolean bool) {
-		this.lock = bool;
-	}	
-	public boolean isLocked() {
-		return lock;
-	}
-	
-	public UUID getUniqueId() {
-		return uuid;
-	}
-	
-	public int getEntityId() {
-		return id;
-	}
-	
 	public WrappedDataWatcher getWrappedDataWatcher() {
-		org.bukkit.entity.Item itemEntity = (org.bukkit.entity.Item) EntityCreator.create(InteractionVisualizer.defaultlocation, EntityType.DROPPED_ITEM);
-		itemEntity.setItemStack(item);
-		itemEntity.setPickupDelay(pickupDelay);
-		itemEntity.setGlowing(isGlowing);
-		itemEntity.setCustomName(customName);
-		itemEntity.setCustomNameVisible(custonNameVisible);
-		itemEntity.setGravity(hasGravity);
-		itemEntity.setVelocity(velocity);
-		itemEntity.remove();
-		return WrappedDataWatcher.getEntityWatcher(itemEntity);
-	}
-	
-	public void remove() {
-		
+		return WatchableCollection.getWatchableCollection(this);
 	}
 
 }

@@ -32,6 +32,7 @@ import com.loohp.interactionvisualizer.Holder.ArmorStand;
 import com.loohp.interactionvisualizer.Holder.Item;
 import com.loohp.interactionvisualizer.Manager.PacketManager;
 import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
+import com.loohp.interactionvisualizer.Manager.SoundManager;
 import com.loohp.interactionvisualizer.Manager.TileEntityManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
@@ -127,6 +128,7 @@ public class SmokerDisplay implements Listener {
 		
 		new BukkitRunnable() {
 			public void run() {
+				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
 				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 			}
 		}.runTaskLater(InteractionVisualizer.plugin, 8);
@@ -241,12 +243,10 @@ public class SmokerDisplay implements Listener {
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
 							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-							item.remove();
 						}
 						if (map.get("Stand") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("Stand");
 							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							stand.remove();
 						}
 						smokerMap.remove(block);
 						return;
@@ -256,12 +256,10 @@ public class SmokerDisplay implements Listener {
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
 							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-							item.remove();
 						}
 						if (map.get("Stand") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("Stand");
 							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							stand.remove();
 						}
 						smokerMap.remove(block);
 						return;
@@ -347,12 +345,9 @@ public class SmokerDisplay implements Listener {
 								item.setItemStack(itemstack);
 								PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
 							}
-							item.setPickupDelay(32767);
-							item.setGravity(false);
 						} else {
 							entry.getValue().put("Item", "N/A");
 							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-							item.remove();
 						}
 					}
 
@@ -383,19 +378,25 @@ public class SmokerDisplay implements Listener {
 							if (left > 0) {
 								symbol = symbol + " §7+" + left;
 							}
-							stand.setCustomNameVisible(true);
-							stand.setCustomName(symbol);
-							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							if (!stand.getCustomName().equals(symbol) || !stand.isCustomNameVisible()) {
+								stand.setCustomNameVisible(true);
+								stand.setCustomName(symbol);
+								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand, true);
+							}
 						} else {
-							stand.setCustomNameVisible(false);
-							stand.setCustomName("");
-							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							if (!stand.getCustomName().equals("") || stand.isCustomNameVisible()) {
+								stand.setCustomNameVisible(false);
+								stand.setCustomName("");
+								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand, true);
+							}
 						}
 					} else {					
 						ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
-						stand.setCustomNameVisible(false);
-						stand.setCustomName("");
-						PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+						if (!stand.getCustomName().equals("") || stand.isCustomNameVisible()) {
+							stand.setCustomNameVisible(false);
+							stand.setCustomName("");
+							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand, true);
+						}
 					}
 				}, delay);
 			}

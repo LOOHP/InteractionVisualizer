@@ -221,7 +221,6 @@ public class EnderchestDisplay implements Listener {
 					public void run() {
 						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 						list.remove(item);
-						item.remove();
 					}
 				}.runTaskLater(InteractionVisualizer.plugin, 20);
 			}						
@@ -302,7 +301,6 @@ public class EnderchestDisplay implements Listener {
 						public void run() {
 							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 							list.remove(item);
-							item.remove();
 						}
 					}.runTaskLater(InteractionVisualizer.plugin, 20);
 				}
@@ -326,7 +324,6 @@ public class EnderchestDisplay implements Listener {
 		while (itr.hasNext()) {
 			Item item = itr.next();
 			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-			item.remove();
 		}
 		
 		link.remove((Player) event.getPlayer());

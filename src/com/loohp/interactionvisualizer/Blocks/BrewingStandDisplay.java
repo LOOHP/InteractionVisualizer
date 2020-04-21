@@ -144,12 +144,10 @@ public class BrewingStandDisplay implements Listener {
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
 							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-							item.remove();
 						}
 						if (map.get("Stand") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("Stand");
 							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							stand.remove();
 						}
 						brewstand.remove(block);
 						return;
@@ -159,12 +157,10 @@ public class BrewingStandDisplay implements Listener {
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
 							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-							item.remove();
 						}
 						if (map.get("Stand") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("Stand");
 							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-							stand.remove();
 						}
 						brewstand.remove(block);
 						return;
@@ -246,7 +242,6 @@ public class BrewingStandDisplay implements Listener {
 						} else {
 							entry.getValue().put("Item", "N/A");
 							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-							item.remove();
 						}
 					}
 
@@ -282,13 +277,17 @@ public class BrewingStandDisplay implements Listener {
 							for (i = 10 - 1; i >= percentagescaled; i = i - 1) {
 								symbol = symbol + "§7\u258e";
 							}
-							stand.setCustomNameVisible(true);
-							stand.setCustomName(symbol);
-							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							if (!stand.getCustomName().equals(symbol) || !stand.isCustomNameVisible()) {
+								stand.setCustomNameVisible(true);
+								stand.setCustomName(symbol);
+								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand, true);
+							}
 						} else {
-							stand.setCustomNameVisible(false);
-							stand.setCustomName("");
-							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							if (!stand.getCustomName().equals("") || stand.isCustomNameVisible()) {
+								stand.setCustomNameVisible(false);
+								stand.setCustomName("");
+								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand, true);
+							}
 						}
 					}
 				}, delay);
