@@ -323,7 +323,7 @@ public class PacketManager implements Listener {
 	public static void removeArmorStand(List<Player> players, ArmorStand entity, boolean removeFromActive) {
 		if (removeFromActive) {
 			active.remove(entity);
-			active.remove(entity);
+			loaded.remove(entity);
 		}
 		
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);

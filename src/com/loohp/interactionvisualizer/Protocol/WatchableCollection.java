@@ -46,7 +46,11 @@ public class WatchableCollection {
 		
 		switch (metaversion) {
 		case 0:
-			watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), stand.getCustomName());
+			if (stand.getCustomName() != null && !stand.getCustomName().equals("")) {
+				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), stand.getCustomName());
+			} else {
+				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), "");
+			}
 			break;
 		case 1:
 		case 2:
@@ -116,7 +120,11 @@ public class WatchableCollection {
 		
 		switch (metaversion) {
 		case 0:
-			watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), item.getCustomName());
+			if (item.getCustomName() != null && !item.getCustomName().equals("")) {
+				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), item.getCustomName());
+			} else {
+				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), "");
+			}
 			break;
 		case 1:
 		case 2:
