@@ -40,6 +40,8 @@ import com.loohp.interactionvisualizer.Utils.VanishUtils;
 public class SmokerDisplay implements Listener {
 	
 	public static ConcurrentHashMap<Block, HashMap<String, Object>> smokerMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
+	private static int checkingPeriod = InteractionVisualizer.smokerChecking;
+	private static int gcPeriod = InteractionVisualizer.gcPeriod;
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onBlastFurnace(InventoryClickEvent event) {
@@ -223,7 +225,7 @@ public class SmokerDisplay implements Listener {
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Iterator<Entry<Block, HashMap<String, Object>>> itr = smokerMap.entrySet().iterator();
 			int count = 0;
-			int maxper = (int) Math.ceil((double) smokerMap.size() / (double) 600);
+			int maxper = (int) Math.ceil((double) smokerMap.size() / (double) gcPeriod);
 			int delay = 1;
 			while (itr.hasNext()) {
 				count++;
@@ -266,7 +268,7 @@ public class SmokerDisplay implements Listener {
 					}
 				}, delay);
 			}
-		}, 0, 600).getTaskId();
+		}, 0, gcPeriod).getTaskId();
 	}
 	
 	public static int run() {		
@@ -287,7 +289,7 @@ public class SmokerDisplay implements Listener {
 			
 			Iterator<Entry<Block, HashMap<String, Object>>> itr = smokerMap.entrySet().iterator();
 			int count = 0;
-			int maxper = (int) Math.ceil((double) smokerMap.size() / (double) 20);
+			int maxper = (int) Math.ceil((double) smokerMap.size() / (double) checkingPeriod);
 			int delay = 1;
 			while (itr.hasNext()) {
 				Entry<Block, HashMap<String, Object>> entry = itr.next();
@@ -400,7 +402,7 @@ public class SmokerDisplay implements Listener {
 					}
 				}, delay);
 			}
-		}, 0, 20).getTaskId();		
+		}, 0, checkingPeriod).getTaskId();		
 	}
 	
 	public static boolean hasItemToCook(org.bukkit.block.Smoker smoker) {

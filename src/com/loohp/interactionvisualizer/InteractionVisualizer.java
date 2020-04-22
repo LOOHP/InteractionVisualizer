@@ -64,6 +64,15 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static boolean itemDropEnabled = true;
 	public static boolean hologramsEnabled = true;
 	
+	public static int furnaceChecking = 20;
+	public static int blastfurnaceChecking = 20;
+	public static int smokerChecking = 20;
+	public static int brewingstandChecking = 20;
+	public static int beaconChecking = 20;
+	public static int jukeboxChecking = 20;
+	
+	public static int gcPeriod = 600;
+	
 	public static boolean UpdaterEnabled = true;
 	public static int UpdaterTaskID = -1;
 	
@@ -206,6 +215,15 @@ public class InteractionVisualizer extends JavaPlugin {
 		itemStandEnabled = config.getBoolean("Modules.ItemStand.Enabled");
 		itemDropEnabled = config.getBoolean("Modules.ItemDrop.Enabled");
 		hologramsEnabled = config.getBoolean("Modules.Hologram.Enabled");
+		
+		furnaceChecking = config.getInt("Blocks.Furnace.CheckingPeriod");
+		blastfurnaceChecking = config.getInt("Blocks.BlastFurnace.CheckingPeriod");
+		smokerChecking = config.getInt("Blocks.Smoker.CheckingPeriod");
+		brewingstandChecking = config.getInt("Blocks.BrewingStand.CheckingPeriod");
+		beaconChecking = config.getInt("Blocks.Beacon.CheckingPeriod");
+		jukeboxChecking = config.getInt("Blocks.JukeBox.CheckingPeriod");
+		
+		gcPeriod = config.getInt("GarbageCollector.Period");
 		
 		if (UpdaterTaskID >= 0) {
 			Bukkit.getScheduler().cancelTask(UpdaterTaskID);

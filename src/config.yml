@@ -19,16 +19,28 @@ Messages:
     ToggleOff: "&eToggled %s off"
     PlayerNotFound: "&cThe player is not online!"
 
+GarbageCollector:
+  #How often should the plugin sweep up and remove tile entity blocks that no longer needs to be tracked
+  #Measured in ticks, 20 ticks = 1 second
+  #Adjust this if your server is unable to handle fast updates
+  Period: 600
+
 #Enable InteractionVisualizer for these blocks
 Blocks:
   Anvil:
     Enabled: true
   Beacon:
     Enabled: true
+    #How often should the plugin check for block updates
+    #Measured in ticks, 20 ticks = 1 second
+    #Adjust this if your server is unable to handle fast updates / can handle faster updates
+    CheckingPeriod: 20
   BlastFurnace:
     Enabled: true
+    CheckingPeriod: 20
   BrewingStand:
     Enabled: true
+    CheckingPeriod: 20
   CartographyTable:
     Enabled: true
   Chest:
@@ -43,16 +55,19 @@ Blocks:
     Enabled: true
   Furnace:
     Enabled: true
+    CheckingPeriod: 20
   Grindstone:
     Enabled: true
   JukeBox:
     Enabled: true
+    CheckingPeriod: 20
   Loom:
     Enabled: true
   NoteBlock:
     Enabled: true
   Smoker:
     Enabled: true
+    CheckingPeriod: 20
   Stonecutter:
     Enabled: true
   ShulkerBox:

@@ -40,6 +40,8 @@ import com.loohp.interactionvisualizer.Utils.VanishUtils;
 public class BlastFurnaceDisplay implements Listener {
 	
 	public static ConcurrentHashMap<Block, HashMap<String, Object>> blastfurnaceMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
+	private static int checkingPeriod = InteractionVisualizer.blastfurnaceChecking;
+	private static int gcPeriod = InteractionVisualizer.gcPeriod;
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onBlastFurnace(InventoryClickEvent event) {
@@ -223,7 +225,7 @@ public class BlastFurnaceDisplay implements Listener {
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Iterator<Entry<Block, HashMap<String, Object>>> itr = blastfurnaceMap.entrySet().iterator();
 			int count = 0;
-			int maxper = (int) Math.ceil((double) blastfurnaceMap.size() / (double) 600);
+			int maxper = (int) Math.ceil((double) blastfurnaceMap.size() / (double) gcPeriod);
 			int delay = 1;
 			while (itr.hasNext()) {
 				count++;
@@ -266,7 +268,7 @@ public class BlastFurnaceDisplay implements Listener {
 					}
 				}, delay);
 			}
-		}, 0, 600).getTaskId();
+		}, 0, gcPeriod).getTaskId();
 	}
 	
 	public static int run() {		
@@ -287,7 +289,7 @@ public class BlastFurnaceDisplay implements Listener {
 			
 			Iterator<Entry<Block, HashMap<String, Object>>> itr = blastfurnaceMap.entrySet().iterator();
 			int count = 0;
-			int maxper = (int) Math.ceil((double) blastfurnaceMap.size() / (double) 20);
+			int maxper = (int) Math.ceil((double) blastfurnaceMap.size() / (double) checkingPeriod);
 			int delay = 1;
 			while (itr.hasNext()) {
 				Entry<Block, HashMap<String, Object>> entry = itr.next();
@@ -400,7 +402,7 @@ public class BlastFurnaceDisplay implements Listener {
 					}
 				}, delay);
 			}
-		}, 0, 20).getTaskId();		
+		}, 0, checkingPeriod).getTaskId();		
 	}
 	
 	public static boolean hasItemToCook(org.bukkit.block.BlastFurnace blastfurnace) {

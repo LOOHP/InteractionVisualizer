@@ -35,6 +35,8 @@ public class BeaconDisplay implements Listener {
 	
 	public static ConcurrentHashMap<Block, HashMap<String, Object>> beaconMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
 	public static ConcurrentHashMap<Block, float[]> placemap = new ConcurrentHashMap<Block, float[]>();
+	private static int checkingPeriod = InteractionVisualizer.beaconChecking;
+	private static int gcPeriod = InteractionVisualizer.gcPeriod;
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlaceBeacon(BlockPlaceEvent event) {
@@ -84,7 +86,7 @@ public class BeaconDisplay implements Listener {
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Iterator<Entry<Block, HashMap<String, Object>>> itr = beaconMap.entrySet().iterator();
 			int count = 0;
-			int maxper = (int) Math.ceil((double) beaconMap.size() / (double) 600);
+			int maxper = (int) Math.ceil((double) beaconMap.size() / (double) gcPeriod);
 			int delay = 1;
 			while (itr.hasNext()) {
 				count++;
@@ -136,7 +138,7 @@ public class BeaconDisplay implements Listener {
 					}
 				}, delay);
 			}
-		}, 0, 600).getTaskId();
+		}, 0, gcPeriod).getTaskId();
 	}
 	
 	public static int run() {		
@@ -177,7 +179,7 @@ public class BeaconDisplay implements Listener {
 			
 			Iterator<Entry<Block, HashMap<String, Object>>> itr = beaconMap.entrySet().iterator();
 			int count = 0;
-			int maxper = (int) Math.ceil((double) beaconMap.size() / (double) 20);
+			int maxper = (int) Math.ceil((double) beaconMap.size() / (double) checkingPeriod);
 			int delay = 1;
 			while (itr.hasNext()) {
 				Entry<Block, HashMap<String, Object>> entry = itr.next();
@@ -252,7 +254,7 @@ public class BeaconDisplay implements Listener {
 					}
 				}, delay);
 			}
-		}, 0, 20).getTaskId();		
+		}, 0, checkingPeriod).getTaskId();		
 	}
 	
 	public static List<Block> nearbyBeacon() {

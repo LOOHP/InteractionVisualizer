@@ -34,6 +34,8 @@ public class BrewingStandDisplay implements Listener {
 	
 	public static ConcurrentHashMap<Block, HashMap<String, Object>> brewstand = new ConcurrentHashMap<Block, HashMap<String, Object>>();
 	public static int max = 20 * 20;
+	private static int checkingPeriod = InteractionVisualizer.brewingstandChecking;
+	private static int gcPeriod = InteractionVisualizer.gcPeriod;
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseBrewingStand(InventoryClickEvent event) {
@@ -124,7 +126,7 @@ public class BrewingStandDisplay implements Listener {
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Iterator<Entry<Block, HashMap<String, Object>>> itr = brewstand.entrySet().iterator();
 			int count = 0;
-			int maxper = (int) Math.ceil((double) brewstand.size() / (double) 600);
+			int maxper = (int) Math.ceil((double) brewstand.size() / (double) gcPeriod);
 			int delay = 1;
 			while (itr.hasNext()) {
 				count++;
@@ -167,7 +169,7 @@ public class BrewingStandDisplay implements Listener {
 					}
 				}, delay);
 			}
-		}, 0, 600).getTaskId();
+		}, 0, gcPeriod).getTaskId();
 	}
 	
 	public static int run() {		
@@ -188,7 +190,7 @@ public class BrewingStandDisplay implements Listener {
 			
 			Iterator<Entry<Block, HashMap<String, Object>>> itr = brewstand.entrySet().iterator();
 			int count = 0;
-			int maxper = (int) Math.ceil((double) brewstand.size() / (double) 20);
+			int maxper = (int) Math.ceil((double) brewstand.size() / (double) checkingPeriod);
 			int delay = 1;
 			while (itr.hasNext()) {
 				Entry<Block, HashMap<String, Object>> entry = itr.next();
@@ -292,7 +294,7 @@ public class BrewingStandDisplay implements Listener {
 					}
 				}, delay);
 			}
-		}, 0, 20).getTaskId();		
+		}, 0, checkingPeriod).getTaskId();		
 	}
 	
 	public static boolean hasPotion(org.bukkit.block.BrewingStand brewingstand) {
