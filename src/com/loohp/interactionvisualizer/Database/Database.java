@@ -73,9 +73,9 @@ public class Database {
 
         try {
 			if (getConnection() != null && !getConnection().isClosed()) {
-				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] MYSQL Failed to connect! [getConnection() != null && !getConnection().isClosed()]");
 				return;
 			}
+			
 			Class.forName("com.mysql.jdbc.Driver");
 			setConnection(DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password));
 			
@@ -94,20 +94,20 @@ public class Database {
 	public static void sqliteSetup(boolean echo) {	   
 		try {
 			Class.forName("org.sqlite.JDBC");
-	         connection = DriverManager.getConnection("jdbc:sqlite:plugins/InteractionVisualizer/database.db");
-	         if (echo) {
-	        	 Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] Opened Sqlite database successfully");
-	         }
+	        connection = DriverManager.getConnection("jdbc:sqlite:plugins/InteractionVisualizer/database.db");
+	        if (echo) {
+	        	Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] Opened Sqlite database successfully");
+	        }
 
-	         Statement stmt = connection.createStatement();
-	         String sql = "CREATE TABLE IF NOT EXISTS " + table + " " +
-	                       "(UUID TEXT PRIMARY KEY, " +
-	                        "NAME TEXT NOT NULL, " + 
-	                        "ITEMSTAND BOOLEAN, " + 
-	                        "ITEMDROP BOOLEAN, " + 
-	                        "HOLOGRAM BOOLEAN);"; 
-	         stmt.executeUpdate(sql);
-	         stmt.close(); 
+	        Statement stmt = connection.createStatement();
+	        String sql = "CREATE TABLE IF NOT EXISTS " + table + " " +
+	                      "(UUID TEXT PRIMARY KEY, " +
+	                       "NAME TEXT NOT NULL, " + 
+	                       "ITEMSTAND BOOLEAN, " + 
+	                       "ITEMDROP BOOLEAN, " + 
+	                       "HOLOGRAM BOOLEAN);"; 
+	        stmt.executeUpdate(sql);
+	        stmt.close(); 
 	    } catch (Exception e) {
 	    	Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] Unable to connect to sqlite database!!!");
 	    	e.printStackTrace();
