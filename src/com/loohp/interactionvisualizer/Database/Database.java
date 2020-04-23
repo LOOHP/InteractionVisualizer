@@ -214,8 +214,7 @@ public class Database {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeAll(player));
-			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.sendPlayerPackets(player), 10);
+			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.reset(player));
 			return newvalue;
 		}
 	}
@@ -243,8 +242,7 @@ public class Database {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeAll(player));
-			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.sendPlayerPackets(player), 10);
+			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.reset(player));
 			return newvalue;
 		}
 	}
@@ -272,8 +270,7 @@ public class Database {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeAll(player));
-			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.sendPlayerPackets(player), 10);
+			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.reset(player));
 			return newvalue;
 		}
 	}
@@ -308,7 +305,7 @@ public class Database {
 		return getPlayerInfo(player.getUniqueId());
 	}
 	
-	public static void loadPlayer(Player player) {
+	public static void loadPlayer(Player player, boolean justJoined) {
 		synchronized (syncdb) {
 			open();
 			try {
@@ -357,8 +354,11 @@ public class Database {
 				e.printStackTrace();
 			}
 		}
-		Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeAll(player));
-		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.sendPlayerPackets(player), 10);
+		if (justJoined) {
+			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.sendPlayerPackets(player));
+		} else {
+			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.reset(player));
+		}
 	}
 
 }

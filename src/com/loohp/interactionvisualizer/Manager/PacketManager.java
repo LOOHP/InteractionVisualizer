@@ -540,45 +540,74 @@ public class PacketManager implements Listener {
 		removeItemFrame(players, entity, true);
 	}
 	
+	public static void reset(Player theplayer) {
+		Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> removeAll(theplayer));
+		int delay = 10 + (int) Math.ceil((double) active.size() / 5.0);
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> sendPlayerPackets(theplayer), delay);
+	}
+	
 	public static void removeAll(Player theplayer) {
-		List<Player> player = new ArrayList<Player>();
-		player.add(theplayer);
-		for (Entry<VisualizerEntity, List<Player>> entry : active.entrySet()) {
-			Object entity = entry.getKey();
-			if (entity instanceof ArmorStand) {
-				removeArmorStand(player, (ArmorStand) entity, false);
+		Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+			List<Player> player = new ArrayList<Player>();
+			player.add(theplayer);
+			int count = 0;
+			int delay = 1;
+			for (Entry<VisualizerEntity, List<Player>> entry : active.entrySet()) {
+				count++;
+				if (count > 5) {
+					delay++;
+					count = 0;
+				}
+				Object entity = entry.getKey();
+				if (entity instanceof ArmorStand) {
+					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> removeArmorStand(player, (ArmorStand) entity, false), delay);
+				}
+				if (entity instanceof Item) {
+					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> removeItem(player, (Item) entity, false), delay);
+				}
+				if (entity instanceof ItemFrame) {
+					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> removeItemFrame(player, (ItemFrame) entity, false), delay);
+				}
 			}
-			if (entity instanceof Item) {
-				removeItem(player, (Item) entity, false);
-			}
-			if (entity instanceof ItemFrame) {
-				removeItemFrame(player, (ItemFrame) entity, false);
-			}
-		}
+		});
 	}
 	
 	public static void sendPlayerPackets(Player theplayer) {
-		List<Player> player = new ArrayList<Player>();
-		player.add(theplayer);
-		for (Entry<VisualizerEntity, List<Player>> entry : active.entrySet()) {
-			VisualizerEntity entity = entry.getKey();
-			if (entry.getValue().contains(theplayer)) {
-				if (loaded.get(entity)) {
-					if (entity instanceof ArmorStand) {
-						sendArmorStandSpawn(player, (ArmorStand) entity);
-						updateArmorStand(player, (ArmorStand) entity);
-					}
-					if (entity instanceof Item) {
-						sendItemSpawn(player, (Item) entity);
-						updateItem(player, (Item) entity);
-					}
-					if (entity instanceof ItemFrame) {
-						sendItemFrameSpawn(player, (ItemFrame) entity);
-						updateItemFrame(player, (ItemFrame) entity);
+		Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+			List<Player> player = new ArrayList<Player>();
+			player.add(theplayer);
+			int count = 0;
+			int delay = 1;
+			for (Entry<VisualizerEntity, List<Player>> entry : active.entrySet()) {
+				VisualizerEntity entity = entry.getKey();
+				if (entry.getValue().contains(theplayer)) {
+					if (loaded.get(entity)) {
+						count++;
+						if (count > 5) {
+							delay++;
+							count = 0;
+						}
+						if (entity instanceof ArmorStand) {
+							Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+							sendArmorStandSpawn(player, (ArmorStand) entity);
+							updateArmorStand(player, (ArmorStand) entity);
+							}, delay);
+						}
+						if (entity instanceof Item) {
+							Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+								sendItemSpawn(player, (Item) entity);
+								updateItem(player, (Item) entity);
+							}, delay);	
+						}
+						if (entity instanceof ItemFrame) {
+							Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+								sendItemFrameSpawn(player, (ItemFrame) entity);
+								updateItemFrame(player, (ItemFrame) entity);
+							}, delay);
+						}
 					}
 				}
 			}
-		}
+		});
 	}
-
 }

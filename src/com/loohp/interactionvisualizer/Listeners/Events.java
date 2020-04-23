@@ -22,7 +22,7 @@ public class Events implements Listener {
 			if (!Database.playerExists(player)) {
 				Database.createPlayer(player);
 			}
-			Database.loadPlayer(player);
+			Database.loadPlayer(player, true);
 		});
 	}
 	

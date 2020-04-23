@@ -57,8 +57,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
 				if (player.hasPermission("interactionvisualizer.refresh")) {
-					PacketManager.removeAll(player);
-					Bukkit.getScheduler().runTaskLater(plugin, () -> PacketManager.sendPlayerPackets(player), 10);
+					Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.reset(player));
 				} else {
 					sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
 				}
