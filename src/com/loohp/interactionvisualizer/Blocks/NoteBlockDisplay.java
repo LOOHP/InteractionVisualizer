@@ -17,9 +17,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Holder.ArmorStand;
-import com.loohp.interactionvisualizer.Manager.MusicManager;
-import com.loohp.interactionvisualizer.Manager.PacketManager;
+import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
+import com.loohp.interactionvisualizer.Managers.MusicManager;
+import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Utils.LegacyInstrumentUtils;
 
 import net.md_5.bungee.api.ChatColor;

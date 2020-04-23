@@ -18,11 +18,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Holder.Item;
-import com.loohp.interactionvisualizer.Manager.MusicManager;
-import com.loohp.interactionvisualizer.Manager.PacketManager;
-import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
-import com.loohp.interactionvisualizer.Manager.TileEntityManager;
+import com.loohp.interactionvisualizer.EntityHolders.Item;
+import com.loohp.interactionvisualizer.Managers.MusicManager;
+import com.loohp.interactionvisualizer.Managers.PacketManager;
+import com.loohp.interactionvisualizer.Managers.PlayerRangeManager;
+import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Utils.LegacyRecordsUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -30,8 +30,8 @@ import net.md_5.bungee.api.ChatColor;
 public class JukeBoxDisplay implements Listener {
 	
 	public static ConcurrentHashMap<Block, HashMap<String, Object>> jukeboxMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
-	private static int checkingPeriod = InteractionVisualizer.jukeboxChecking;
-	private static int gcPeriod = InteractionVisualizer.gcPeriod;
+	private static Integer checkingPeriod = InteractionVisualizer.jukeboxChecking;
+	private static Integer gcPeriod = InteractionVisualizer.gcPeriod;
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onBreakJukeBox(BlockBreakEvent event) {

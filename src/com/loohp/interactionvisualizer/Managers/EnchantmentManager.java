@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Manager;
+package com.loohp.interactionvisualizer.Managers;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class MusicManager {
+public class EnchantmentManager {
 
 	public static FileConfiguration config;
 	public static File file;
@@ -22,14 +22,14 @@ public class MusicManager {
 		if (!InteractionVisualizer.plugin.getDataFolder().exists()) {
 			InteractionVisualizer.plugin.getDataFolder().mkdir();
 		}
-		file = new File(InteractionVisualizer.plugin.getDataFolder(), "music.yml");
+		file = new File(InteractionVisualizer.plugin.getDataFolder(), "enchantment.yml");
 		if (!file.exists()) {
 			try {
-				InputStream in = InteractionVisualizer.plugin.getClass().getClassLoader().getResourceAsStream("music.yml");
+				InputStream in = InteractionVisualizer.plugin.getClass().getClassLoader().getResourceAsStream("enchantment.yml");
 	            Files.copy(in, file.toPath());
-				Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "The music.yml file has been created");
+				Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "The enchantment.yml file has been created");
 			} catch (IOException e) {
-				Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Could not create the music.yml file");
+				Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Could not create the enchantment.yml file");
 			}
 		}
         
@@ -37,7 +37,7 @@ public class MusicManager {
         saveConfig();
 	}
 
-	public static FileConfiguration getMusicConfig() {
+	public static FileConfiguration getEnchConfig() {
 		return config;
 	}
 

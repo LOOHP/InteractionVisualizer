@@ -24,18 +24,18 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Holder.ArmorStand;
-import com.loohp.interactionvisualizer.Holder.Item;
-import com.loohp.interactionvisualizer.Manager.PacketManager;
-import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
-import com.loohp.interactionvisualizer.Manager.TileEntityManager;
+import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
+import com.loohp.interactionvisualizer.EntityHolders.Item;
+import com.loohp.interactionvisualizer.Managers.PacketManager;
+import com.loohp.interactionvisualizer.Managers.PlayerRangeManager;
+import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 
 public class BrewingStandDisplay implements Listener {
 	
 	public static ConcurrentHashMap<Block, HashMap<String, Object>> brewstand = new ConcurrentHashMap<Block, HashMap<String, Object>>();
 	public static int max = 20 * 20;
-	private static int checkingPeriod = InteractionVisualizer.brewingstandChecking;
-	private static int gcPeriod = InteractionVisualizer.gcPeriod;
+	private static Integer checkingPeriod = InteractionVisualizer.brewingstandChecking;
+	private static Integer gcPeriod = InteractionVisualizer.gcPeriod;
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseBrewingStand(InventoryClickEvent event) {

@@ -22,10 +22,10 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Holder.ArmorStand;
-import com.loohp.interactionvisualizer.Holder.Item;
-import com.loohp.interactionvisualizer.Manager.PacketManager;
-import com.loohp.interactionvisualizer.Manager.SoundManager;
+import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
+import com.loohp.interactionvisualizer.EntityHolders.Item;
+import com.loohp.interactionvisualizer.Managers.PacketManager;
+import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;

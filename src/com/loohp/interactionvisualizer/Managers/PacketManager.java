@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Manager;
+package com.loohp.interactionvisualizer.Managers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -20,10 +20,10 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Holder.ArmorStand;
-import com.loohp.interactionvisualizer.Holder.Item;
-import com.loohp.interactionvisualizer.Holder.ItemFrame;
-import com.loohp.interactionvisualizer.Holder.VisualizerEntity;
+import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
+import com.loohp.interactionvisualizer.EntityHolders.Item;
+import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
+import com.loohp.interactionvisualizer.EntityHolders.VisualizerEntity;
 
 public class PacketManager implements Listener {
 	
@@ -45,14 +45,14 @@ public class PacketManager implements Listener {
 				VisualizerEntity entity = entry.getKey();
 				if (entry.getKey() instanceof ArmorStand) {
 					ArmorStand stand = (ArmorStand) entity;
+					if (!PlayerRangeManager.hasPlayerNearby(stand.getLocation())) {
+						continue;
+					}
 					if (entry.getValue()) {
 						if (!InteractionVisualizer.plugin.isEnabled()) {
 							return;
 						}
-						Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-							if (!PlayerRangeManager.hasPlayerNearby(stand.getLocation())) {
-								return;
-							}
+						Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {		
 							List<Player> players = active.get(entity);
 							if (players == null) {
 								return;
@@ -63,9 +63,6 @@ public class PacketManager implements Listener {
 							}
 						});
 					} else {
-						if (!InteractionVisualizer.plugin.isEnabled()) {
-							return;
-						}
 						Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
 							if (!PlayerRangeManager.hasPlayerNearby(stand.getLocation())) {
 								return;
@@ -83,14 +80,14 @@ public class PacketManager implements Listener {
 					}
 				} else if (entry.getKey() instanceof Item) {
 					Item item = (Item) entity;
+					if (!PlayerRangeManager.hasPlayerNearby(item.getLocation())) {
+						continue;
+					}
 					if (entry.getValue()) {
 						if (!InteractionVisualizer.plugin.isEnabled()) {
 							return;
 						}
 						Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-							if (!PlayerRangeManager.hasPlayerNearby(item.getLocation())) {
-								return;
-							}
 							List<Player> players = active.get(entity);
 							if (players == null) {
 								return;
@@ -105,9 +102,6 @@ public class PacketManager implements Listener {
 							return;
 						}
 						Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-							if (!PlayerRangeManager.hasPlayerNearby(item.getLocation())) {
-								return;
-							}
 							List<Player> players = active.get(entity);
 							if (players == null) {
 								return;
@@ -121,14 +115,14 @@ public class PacketManager implements Listener {
 					}
 				} else if (entry.getKey() instanceof ItemFrame) {
 					ItemFrame frame = (ItemFrame) entity;
+					if (!PlayerRangeManager.hasPlayerNearby(frame.getLocation())) {
+						continue;
+					}
 					if (entry.getValue()) {
 						if (!InteractionVisualizer.plugin.isEnabled()) {
 							return;
 						}
 						Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-							if (!PlayerRangeManager.hasPlayerNearby(frame.getLocation())) {
-								return;
-							}
 							List<Player> players = active.get(entity);
 							if (players == null) {
 								return;
@@ -143,9 +137,6 @@ public class PacketManager implements Listener {
 							return;
 						}
 						Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-							if (!PlayerRangeManager.hasPlayerNearby(frame.getLocation())) {
-								return;
-							}
 							List<Player> players = active.get(entity);
 							if (players == null) {
 								return;
@@ -159,7 +150,7 @@ public class PacketManager implements Listener {
 					}
 				}
 				try {
-					TimeUnit.MILLISECONDS.sleep(10);
+					TimeUnit.MILLISECONDS.sleep(5);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

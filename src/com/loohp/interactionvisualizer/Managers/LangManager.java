@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Manager;
+package com.loohp.interactionvisualizer.Managers;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

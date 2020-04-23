@@ -21,12 +21,12 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Holder.ArmorStand;
-import com.loohp.interactionvisualizer.Manager.CustomBlockDataManager;
-import com.loohp.interactionvisualizer.Manager.EffectManager;
-import com.loohp.interactionvisualizer.Manager.PacketManager;
-import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
-import com.loohp.interactionvisualizer.Manager.TileEntityManager;
+import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
+import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
+import com.loohp.interactionvisualizer.Managers.EffectManager;
+import com.loohp.interactionvisualizer.Managers.PacketManager;
+import com.loohp.interactionvisualizer.Managers.PlayerRangeManager;
+import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -35,8 +35,8 @@ public class BeaconDisplay implements Listener {
 	
 	public static ConcurrentHashMap<Block, HashMap<String, Object>> beaconMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
 	public static ConcurrentHashMap<Block, float[]> placemap = new ConcurrentHashMap<Block, float[]>();
-	private static int checkingPeriod = InteractionVisualizer.beaconChecking;
-	private static int gcPeriod = InteractionVisualizer.gcPeriod;
+	private static Integer checkingPeriod = InteractionVisualizer.beaconChecking;
+	private static Integer gcPeriod = InteractionVisualizer.gcPeriod;
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlaceBeacon(BlockPlaceEvent event) {

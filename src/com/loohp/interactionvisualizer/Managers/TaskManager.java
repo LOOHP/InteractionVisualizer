@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Manager;
+package com.loohp.interactionvisualizer.Managers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +63,8 @@ public class TaskManager {
 	
 	public static boolean villager;
 	
+	public static Boolean tileEntities = InteractionVisualizer.tileEntities;
+	
 	public static List<Integer> tasks = new ArrayList<Integer>();
 	
 	public static void setup() {
@@ -86,6 +88,8 @@ public class TaskManager {
 		shulkerbox = false;
 		
 		villager = false;
+		
+		tileEntities = true;
 		
 		version = InteractionVisualizer.version;
 		
@@ -230,6 +234,10 @@ public class TaskManager {
 		}
 		
 		tasks.add(LightManager.run());
+		
+		if (!(beacon || furnace || blastfurnace || smoker || jukebox || brewingstand)) {
+			tileEntities = false;
+		}
 	}
 	
 	public static void run() {

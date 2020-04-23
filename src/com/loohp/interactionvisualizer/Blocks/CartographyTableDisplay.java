@@ -22,8 +22,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Holder.ItemFrame;
-import com.loohp.interactionvisualizer.Manager.PacketManager;
+import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
+import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class CartographyTableDisplay implements Listener {

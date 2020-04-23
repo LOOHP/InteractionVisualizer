@@ -13,11 +13,12 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.Database.Database;
-import com.loohp.interactionvisualizer.Manager.CustomBlockDataManager;
-import com.loohp.interactionvisualizer.Manager.EffectManager;
-import com.loohp.interactionvisualizer.Manager.EnchantmentManager;
-import com.loohp.interactionvisualizer.Manager.PacketManager;
-import com.loohp.interactionvisualizer.Manager.TaskManager;
+import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
+import com.loohp.interactionvisualizer.Managers.EffectManager;
+import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
+import com.loohp.interactionvisualizer.Managers.PacketManager;
+import com.loohp.interactionvisualizer.Managers.TaskManager;
+import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Updater.Updater;
 
 import net.md_5.bungee.api.ChatColor;
@@ -45,6 +46,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 				EnchantmentManager.reloadConfig();
 				EffectManager.reloadConfig();
 				CustomBlockDataManager.setup();
+				TileEntityManager.run();
 				TaskManager.setup();
 				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Reload")));
 			} else {

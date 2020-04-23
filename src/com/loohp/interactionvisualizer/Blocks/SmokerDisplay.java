@@ -28,20 +28,20 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Holder.ArmorStand;
-import com.loohp.interactionvisualizer.Holder.Item;
-import com.loohp.interactionvisualizer.Manager.PacketManager;
-import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
-import com.loohp.interactionvisualizer.Manager.SoundManager;
-import com.loohp.interactionvisualizer.Manager.TileEntityManager;
+import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
+import com.loohp.interactionvisualizer.EntityHolders.Item;
+import com.loohp.interactionvisualizer.Managers.PacketManager;
+import com.loohp.interactionvisualizer.Managers.PlayerRangeManager;
+import com.loohp.interactionvisualizer.Managers.SoundManager;
+import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class SmokerDisplay implements Listener {
 	
 	public static ConcurrentHashMap<Block, HashMap<String, Object>> smokerMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
-	private static int checkingPeriod = InteractionVisualizer.smokerChecking;
-	private static int gcPeriod = InteractionVisualizer.gcPeriod;
+	private static Integer checkingPeriod = InteractionVisualizer.smokerChecking;
+	private static Integer gcPeriod = InteractionVisualizer.gcPeriod;
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onBlastFurnace(InventoryClickEvent event) {

@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 
 public class Charts {
 	
@@ -209,6 +210,22 @@ public class Charts {
 	            return string;
 	        }
 	    }));
+		
+		
+		//----
+		metrics.addCustomChart(new Metrics.SingleLineChart("total_tile_entities_in_range_visualizing", new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+            	int total = 0;
+            	total += TileEntityManager.getTileEntites("blastfurnace").size();
+            	total += TileEntityManager.getTileEntites("brewingstand").size();
+            	total += TileEntityManager.getTileEntites("furnace").size();
+            	total += TileEntityManager.getTileEntites("smoker").size();
+            	total += TileEntityManager.getTileEntites("beacon").size();
+            	total += TileEntityManager.getTileEntites("jukebox").size();
+                return total;
+            }
+        }));
 		
 	}
 

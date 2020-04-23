@@ -13,9 +13,9 @@ import de.myzelyam.api.vanish.VanishAPI;
 
 public class VanishUtils {
 	
-	public static boolean vanishenabled = InteractionVisualizer.vanish;
-	public static boolean cmienabled = InteractionVisualizer.cmi;
-	public static boolean ess3enabled = InteractionVisualizer.ess3;
+	public static Boolean vanishenabled = InteractionVisualizer.vanish;
+	public static Boolean cmienabled = InteractionVisualizer.cmi;
+	public static Boolean ess3enabled = InteractionVisualizer.ess3;
 	
 	public static boolean isVanished(Player player) {
 		if (vanishenabled) {

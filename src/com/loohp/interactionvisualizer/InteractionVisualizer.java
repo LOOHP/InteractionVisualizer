@@ -16,16 +16,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.loohp.interactionvisualizer.Database.Database;
-import com.loohp.interactionvisualizer.Manager.CustomBlockDataManager;
-import com.loohp.interactionvisualizer.Manager.EffectManager;
-import com.loohp.interactionvisualizer.Manager.EnchantmentManager;
-import com.loohp.interactionvisualizer.Manager.LangManager;
-import com.loohp.interactionvisualizer.Manager.MusicManager;
-import com.loohp.interactionvisualizer.Manager.PacketManager;
-import com.loohp.interactionvisualizer.Manager.PlayerRangeManager;
-import com.loohp.interactionvisualizer.Manager.SoundManager;
-import com.loohp.interactionvisualizer.Manager.TaskManager;
-import com.loohp.interactionvisualizer.Manager.TileEntityManager;
+import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
+import com.loohp.interactionvisualizer.Managers.EffectManager;
+import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
+import com.loohp.interactionvisualizer.Managers.LangManager;
+import com.loohp.interactionvisualizer.Managers.MusicManager;
+import com.loohp.interactionvisualizer.Managers.PacketManager;
+import com.loohp.interactionvisualizer.Managers.PlayerRangeManager;
+import com.loohp.interactionvisualizer.Managers.SoundManager;
+import com.loohp.interactionvisualizer.Managers.TaskManager;
+import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Metrics.Charts;
 import com.loohp.interactionvisualizer.Metrics.Metrics;
 import com.loohp.interactionvisualizer.PlaceholderAPI.PlaceholderAPI;
@@ -46,10 +46,10 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static String version = "";
 	public static int metaversion = 0;
 	
-	public static boolean openinv = false;
-	public static boolean vanish = false;
-	public static boolean cmi = false;
-	public static boolean ess3 = false;
+	public static Boolean openinv = false;
+	public static Boolean vanish = false;
+	public static Boolean cmi = false;
+	public static Boolean ess3 = false;
 	
 	public static List<Player> itemStand = new CopyOnWriteArrayList<Player>();
 	public static List<Player> itemDrop = new CopyOnWriteArrayList<Player>();
@@ -64,14 +64,19 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static boolean itemDropEnabled = true;
 	public static boolean hologramsEnabled = true;
 	
-	public static int furnaceChecking = 20;
-	public static int blastfurnaceChecking = 20;
-	public static int smokerChecking = 20;
-	public static int brewingstandChecking = 20;
-	public static int beaconChecking = 20;
-	public static int jukeboxChecking = 20;
+	public static Integer furnaceChecking = 20;
+	public static Integer blastfurnaceChecking = 20;
+	public static Integer smokerChecking = 20;
+	public static Integer brewingstandChecking = 20;
+	public static Integer beaconChecking = 20;
+	public static Integer jukeboxChecking = 20;
 	
-	public static int gcPeriod = 600;
+	public static Integer gcPeriod = 600;
+	
+	public static Integer tileEntityChunkPerTick = 9;
+	public static Integer tileEntityStatePerTick = 20;
+	
+	public static Boolean tileEntities = true;
 	
 	public static boolean UpdaterEnabled = true;
 	public static int UpdaterTaskID = -1;
@@ -108,10 +113,10 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		if (packageName.contains("1_15_R1")) {
 	    	version = "1.15";
-	    	metaversion = 2;
+	    	metaversion = 3;
 	    } else if (packageName.contains("1_14_R1")) {
 	    	version = "1.14";
-	    	metaversion = 1;
+	    	metaversion = 2;
 	    } else if (packageName.contains("1_13_R2")) {
 	    	version = "1.13.1";
 	    	metaversion = 1;
@@ -153,7 +158,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		defaultworld = getServer().getWorlds().get(0);
 		defaultlocation = new Location(defaultworld, 0, 0, 0);
-		if (!version.contains("legacy")) {
+		if (!version.contains("legacy") && !version.equals("1.13") && !version.equals("1.13.1")) {
 			defaultworld.setChunkForceLoaded(0, 0, true);
 		}
 		
@@ -224,6 +229,9 @@ public class InteractionVisualizer extends JavaPlugin {
 		jukeboxChecking = config.getInt("Blocks.JukeBox.CheckingPeriod");
 		
 		gcPeriod = config.getInt("GarbageCollector.Period");
+		
+		tileEntityChunkPerTick = config.getInt("TileEntityUpdate.ChunksPerTick");
+		tileEntityStatePerTick = config.getInt("TileEntityUpdate.StatesPerTick");
 		
 		if (UpdaterTaskID >= 0) {
 			Bukkit.getScheduler().cancelTask(UpdaterTaskID);

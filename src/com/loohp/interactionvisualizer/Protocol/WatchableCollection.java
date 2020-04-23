@@ -9,9 +9,9 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher.Registry;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.Serializer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.WrappedDataWatcherObject;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Holder.ArmorStand;
-import com.loohp.interactionvisualizer.Holder.Item;
-import com.loohp.interactionvisualizer.Holder.ItemFrame;
+import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
+import com.loohp.interactionvisualizer.EntityHolders.Item;
+import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
 
 public class WatchableCollection {
 	
@@ -54,6 +54,7 @@ public class WatchableCollection {
 			break;
 		case 1:
 		case 2:
+		case 3:
 			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromChatMessage(stand.getCustomName())[0].getHandle()));
 			break;
 		}
@@ -74,6 +75,9 @@ public class WatchableCollection {
 			watcher.setObject(new WrappedDataWatcherObject(11, byteSerializer), standbitmask);
 			break;
 		case 2:
+			watcher.setObject(new WrappedDataWatcherObject(13, byteSerializer), standbitmask);
+			break;
+		case 3:
 			watcher.setObject(new WrappedDataWatcherObject(14, byteSerializer), standbitmask);
 			break;
 		}
@@ -89,6 +93,9 @@ public class WatchableCollection {
 			watcher.setObject(new WrappedDataWatcherObject(12, vectorSerializer), headrotation);
 			break;
 		case 2:
+			watcher.setObject(new WrappedDataWatcherObject(14, vectorSerializer), headrotation);
+			break;
+		case 3:
 			watcher.setObject(new WrappedDataWatcherObject(15, vectorSerializer), headrotation);
 			break;
 		}
@@ -104,6 +111,9 @@ public class WatchableCollection {
 			watcher.setObject(new WrappedDataWatcherObject(15, vectorSerializer), rightarmrotation);
 			break;
 		case 2:
+			watcher.setObject(new WrappedDataWatcherObject(17, vectorSerializer), rightarmrotation);
+			break;
+		case 3:
 			watcher.setObject(new WrappedDataWatcherObject(18, vectorSerializer), rightarmrotation);
 			break;
 		}
@@ -128,6 +138,7 @@ public class WatchableCollection {
 			break;
 		case 1:
 		case 2:
+		case 3:
 			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromChatMessage(item.getCustomName())[0].getHandle()));
 			break;
 		}
@@ -142,6 +153,7 @@ public class WatchableCollection {
 			watcher.setObject(new WrappedDataWatcherObject(6, itemSerializer), item.getItemStack());
 			break;
 		case 2:
+		case 3:
 			watcher.setObject(new WrappedDataWatcherObject(7, itemSerializer), item.getItemStack());
 			break;
 		}
@@ -159,6 +171,7 @@ public class WatchableCollection {
 			watcher.setObject(new WrappedDataWatcherObject(7, intSerializer), frame.getFrameRotation());
 			break;
 		case 2:
+		case 3:
 			watcher.setObject(new WrappedDataWatcherObject(7, itemSerializer), frame.getItem());
 			watcher.setObject(new WrappedDataWatcherObject(8, intSerializer), frame.getFrameRotation());
 			break;
