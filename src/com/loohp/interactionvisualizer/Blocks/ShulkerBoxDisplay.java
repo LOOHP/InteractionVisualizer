@@ -166,7 +166,7 @@ public class ShulkerBoxDisplay implements Listener {
 				item.setItemStack(itemstack);
 				item.setPickupDelay(32767);
 				item.setGravity(true);
-				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.updateItem(item);
 				if (!link.containsKey((Player) event.getWhoClicked())) {
 					link.put((Player) event.getWhoClicked(), new ArrayList<Item>());
 				}
@@ -182,7 +182,7 @@ public class ShulkerBoxDisplay implements Listener {
 						}
 						item.setVelocity(new Vector(0.0, 0.0, 0.0));
 						item.setGravity(false);
-						PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+						PacketManager.updateItem(item);
 					}
 				}.runTaskLater(InteractionVisualizer.plugin, 8);
 				new BukkitRunnable() {
@@ -267,7 +267,7 @@ public class ShulkerBoxDisplay implements Listener {
 					item.setCustomName(System.currentTimeMillis() + "");
 					item.setPickupDelay(32767);
 					item.setGravity(true);
-					PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.updateItem(item);
 					if (!link.containsKey((Player) event.getWhoClicked())) {
 						link.put((Player) event.getWhoClicked(), new ArrayList<Item>());
 					}
@@ -278,7 +278,7 @@ public class ShulkerBoxDisplay implements Listener {
 							item.teleport(loc.clone().add(0.5, 0.5, 0.5));
 							item.setVelocity(new Vector(0.0, 0.0, 0.0));
 							item.setGravity(false);
-							PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+							PacketManager.updateItem(item);
 						}
 					}.runTaskLater(InteractionVisualizer.plugin, 8);
 					new BukkitRunnable() {

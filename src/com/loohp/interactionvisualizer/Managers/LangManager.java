@@ -50,6 +50,8 @@ public class LangManager {
 			new File(DataFolder, "InteractionVisualizerLanguages-master").renameTo(new File(DataFolder, "Lang"));
 							
 			removeFolder(TempFolder);
+			
+			Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "[InteractionVisualizer] Sucessfully downloaded the latest Language files!");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

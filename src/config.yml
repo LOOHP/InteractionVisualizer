@@ -28,11 +28,10 @@ GarbageCollector:
 TileEntityUpdate:
   #How fast should the plugin collect changes to tile entities since the last check
   #The plugin will first collect all active chunks (3x3 chunk around every player)
-  #Then load all the tile entities in those chunks
-  #Note that the period is not (ChunksPerTick + StatesPerTick), it is a few ticks longer than that to deal with other things
+  #Then load all the tile entities in those chunks in async
+  #Note that the period is not just ChunksPerTick, it is a few ticks longer than that to deal with other things
   #Adjust this if your server is unable to handle fast updates
-  ChunksPerTick: 9
-  StatesPerTick: 20
+  ChunksPerTick: 4
 
 #Enable InteractionVisualizer for these blocks
 Blocks:

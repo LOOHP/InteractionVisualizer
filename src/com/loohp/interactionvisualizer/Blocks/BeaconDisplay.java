@@ -198,60 +198,61 @@ public class BeaconDisplay implements Listener {
 						return;
 					}
 					org.bukkit.block.Beacon beacon = (org.bukkit.block.Beacon) block.getState();
-					
-					String arrow = "\u27f9";
-					ChatColor color = getBeaconColor(block);
-					ArmorStand line1 = (ArmorStand) entry.getValue().get("1");
-					ArmorStand line2 = (ArmorStand) entry.getValue().get("2");
-					ArmorStand line3 = (ArmorStand) entry.getValue().get("3");
-						
-					String one = color + "T" + beacon.getTier() + " " + arrow + " " + getRange(beacon.getTier()) + "m";
-					if (!line1.getCustomName().equals(one)) {
-						line1.setCustomName(one);
-						line1.setCustomNameVisible(true);
-						PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line1, true);
-					}
-					if (beacon.getTier() == 0) {
-						if (!line2.getCustomName().equals("")) {
-							line2.setCustomName("");
-							line2.setCustomNameVisible(false);
-							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2, true);
+					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+						String arrow = "\u27f9";
+						ChatColor color = getBeaconColor(block);
+						ArmorStand line1 = (ArmorStand) entry.getValue().get("1");
+						ArmorStand line2 = (ArmorStand) entry.getValue().get("2");
+						ArmorStand line3 = (ArmorStand) entry.getValue().get("3");
+							
+						String one = color + "T" + beacon.getTier() + " " + arrow + " " + getRange(beacon.getTier()) + "m";
+						if (!line1.getCustomName().equals(one)) {
+							line1.setCustomName(one);
+							line1.setCustomNameVisible(true);
+							PacketManager.updateArmorStand(line1, true);
 						}
-						if (!line3.getCustomName().equals("")) {
-							line3.setCustomName("");
-							line3.setCustomNameVisible(false);
-							PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3, true);
-						}
-					} else {
-						if (beacon.getPrimaryEffect() != null) {
-							String two = color + EffectManager.getEffectConfig().getString("Effects." + beacon.getPrimaryEffect().getType().getName().toUpperCase()) + " " + RomanNumberUtils.toRoman(beacon.getPrimaryEffect().getAmplifier() + 1);
-							if (!line2.getCustomName().equals(two)) {
-								line2.setCustomName(two);
-								line2.setCustomNameVisible(true);
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2, true);
-							}
-						} else {
+						if (beacon.getTier() == 0) {
 							if (!line2.getCustomName().equals("")) {
 								line2.setCustomName("");
 								line2.setCustomNameVisible(false);
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line2, true);
+								PacketManager.updateArmorStand(line2, true);
 							}
-						}
-						if (beacon.getSecondaryEffect() != null) {
-							String three = color + EffectManager.getEffectConfig().getString("Effects." + beacon.getSecondaryEffect().getType().getName().toUpperCase()) + " " + RomanNumberUtils.toRoman(beacon.getSecondaryEffect().getAmplifier() + 1);
-							if (!line3.getCustomName().equals(three)) {
-								line3.setCustomName(three);
-								line3.setCustomNameVisible(true);
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3, true);
-							}
-						} else {
 							if (!line3.getCustomName().equals("")) {
 								line3.setCustomName("");
 								line3.setCustomNameVisible(false);
-								PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), line3, true);
+								PacketManager.updateArmorStand(line3, true);
+							}
+						} else {
+							if (beacon.getPrimaryEffect() != null) {
+								String two = color + EffectManager.getEffectConfig().getString("Effects." + beacon.getPrimaryEffect().getType().getName().toUpperCase()) + " " + RomanNumberUtils.toRoman(beacon.getPrimaryEffect().getAmplifier() + 1);
+								if (!line2.getCustomName().equals(two)) {
+									line2.setCustomName(two);
+									line2.setCustomNameVisible(true);
+									PacketManager.updateArmorStand(line2, true);
+								}
+							} else {
+								if (!line2.getCustomName().equals("")) {
+									line2.setCustomName("");
+									line2.setCustomNameVisible(false);
+									PacketManager.updateArmorStand(line2, true);
+								}
+							}
+							if (beacon.getSecondaryEffect() != null) {
+								String three = color + EffectManager.getEffectConfig().getString("Effects." + beacon.getSecondaryEffect().getType().getName().toUpperCase()) + " " + RomanNumberUtils.toRoman(beacon.getSecondaryEffect().getAmplifier() + 1);
+								if (!line3.getCustomName().equals(three)) {
+									line3.setCustomName(three);
+									line3.setCustomNameVisible(true);
+									PacketManager.updateArmorStand(line3, true);
+								}
+							} else {
+								if (!line3.getCustomName().equals("")) {
+									line3.setCustomName("");
+									line3.setCustomNameVisible(false);
+									PacketManager.updateArmorStand(line3, true);
+								}
 							}
 						}
-					}
+					});
 				}, delay);
 			}
 		}, 0, checkingPeriod).getTaskId();		

@@ -103,7 +103,7 @@ public class Item extends VisualizerEntity {
 		this.item = item.clone();
 	}
 	public ItemStack getItemStack() {
-		return item;
+		return item.clone();
 	}
 	
 	public void setGravity(boolean bool) {

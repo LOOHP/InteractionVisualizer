@@ -116,7 +116,7 @@ public class LoomDisplay implements Listener {
 		item.setVelocity(pickup);
 		item.setPickupDelay(32767);
 		PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-		PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+		PacketManager.updateItem(item);
 		new BukkitRunnable() {
 			public void run() {
 				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
@@ -227,7 +227,7 @@ public class LoomDisplay implements Listener {
 				item.setVelocity(pickup);
 				item.setPickupDelay(32767);
 				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.updateItem(item);
 				new BukkitRunnable() {
 					public void run() {
 						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
@@ -348,12 +348,12 @@ public class LoomDisplay implements Listener {
 		if (item != null) {
 			if (!item.getType().equals(stand.getHelmet().getType())) {
 				stand.setHelmet(item);
-				PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				PacketManager.updateArmorStand(stand);
 			}
 		} else {
 			if (!stand.getHelmet().getType().equals(Material.AIR)) {
 				stand.setHelmet(new ItemStack(Material.AIR));
-				PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				PacketManager.updateArmorStand(stand);
 			}
 		}
 		

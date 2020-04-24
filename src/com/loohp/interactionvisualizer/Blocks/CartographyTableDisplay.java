@@ -199,7 +199,7 @@ public class CartographyTableDisplay implements Listener {
 					item.setSilent(true);
 					map.put("Item", item);
 					PacketManager.sendItemFrameSpawn(InteractionVisualizer.itemStand, item);
-					PacketManager.updateItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.updateItemFrame(item);
 				} else {
 					map.put("Item", "N/A");
 				}
@@ -208,7 +208,7 @@ public class CartographyTableDisplay implements Listener {
 				if (itemstack != null) {
 					if (!item.getItem().equals(itemstack)) {
 						item.setItem(itemstack);
-						PacketManager.updateItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
+						PacketManager.updateItemFrame(item);
 					}
 				} else {
 					map.put("Item", "N/A");

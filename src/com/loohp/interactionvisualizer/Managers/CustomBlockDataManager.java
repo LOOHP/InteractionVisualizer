@@ -3,11 +3,16 @@ package com.loohp.interactionvisualizer.Managers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,19 +31,22 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class CustomBlockDataManager {
 
 	private static File file;
     private static JSONObject json;
     private static JSONParser parser = new JSONParser();
     private static Plugin plugin = InteractionVisualizer.plugin;
+    private static File BlockDataBackupFolder = new File(InteractionVisualizer.plugin.getDataFolder().getPath() + "/Backup", "blockdata");
     
     public static void intervalSaveToFile() {
     	new BukkitRunnable() {
     		public void run() {
     			save();
     		}
-    	}.runTaskTimerAsynchronously(plugin, 200, 600);
+    	}.runTaskTimerAsynchronously(plugin, 200, 1200);
     }
 
     public static void setup() {
@@ -53,6 +61,18 @@ public class CustomBlockDataManager {
         	    pw.print("}");
         	    pw.flush();
         	    pw.close();
+        	} else {
+        		String fileName = new SimpleDateFormat("yyyy'-'MM'-'dd'_'HH'-'mm'-'ss'_'zzz'_blockdata.json'").format(new Date());
+        		BlockDataBackupFolder.mkdirs();
+                File outputfile = new File(BlockDataBackupFolder, fileName);
+                if (file.exists()) {
+                	file.delete();
+                }
+                try (InputStream in = new FileInputStream(file)) {
+                    Files.copy(in, outputfile.toPath());
+                } catch (IOException e) {
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] Failed to make backup for blockdata.json");
+                }
         	}
         	json = (JSONObject) parser.parse(new InputStreamReader(new FileInputStream(file), "UTF-8"));
         } catch (Exception ex) {

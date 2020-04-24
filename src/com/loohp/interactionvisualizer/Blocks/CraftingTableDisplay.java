@@ -129,15 +129,15 @@ public class CraftingTableDisplay implements Listener {
 		slot8.teleport(slot8.getLocation().add(vector.clone().multiply(0.2)));
 		slot9.teleport(slot9.getLocation().add(rotateVectorAroundY(vector.clone(), -45).multiply(0.2828)));
 		
-		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot1);
-		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot2);
-		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot3);
-		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot4);
-		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot5);
-		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot6);
-		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot7);
-		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot8);
-		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot9);
+		PacketManager.updateArmorStand(slot1);
+		PacketManager.updateArmorStand(slot2);
+		PacketManager.updateArmorStand(slot3);
+		PacketManager.updateArmorStand(slot4);
+		PacketManager.updateArmorStand(slot5);
+		PacketManager.updateArmorStand(slot6);
+		PacketManager.updateArmorStand(slot7);
+		PacketManager.updateArmorStand(slot8);
+		PacketManager.updateArmorStand(slot9);
 		
 		new BukkitRunnable() {
 			public void run() {
@@ -155,7 +155,7 @@ public class CraftingTableDisplay implements Listener {
 				item.setVelocity(pickup);
 				item.setGravity(true);
 				item.setPickupDelay(32767);
-				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.updateItem(item);
 				
 				new BukkitRunnable() {
 					public void run() {
@@ -413,7 +413,7 @@ public class CraftingTableDisplay implements Listener {
 					item.setGravity(false);
 					map.put("0", item);
 					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-					PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.updateItem(item);
 				} else {
 					map.put("0", "N/A");
 				}
@@ -422,7 +422,7 @@ public class CraftingTableDisplay implements Listener {
 				if (itemstack != null) {
 					if (!item.getItemStack().equals(itemstack)) {
 						item.setItemStack(itemstack);
-						PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+						PacketManager.updateItem(item);
 					}
 				} else {
 					map.put("0", "N/A");
@@ -452,12 +452,12 @@ public class CraftingTableDisplay implements Listener {
 					stand.setItemInMainHand(item);
 				}
 				if (changed) {
-					PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+					PacketManager.updateArmorStand(stand);
 				}
 			} else {
 				if (!stand.getItemInMainHand().getType().equals(Material.AIR)) {
 					stand.setItemInMainHand(new ItemStack(Material.AIR));
-					PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+					PacketManager.updateArmorStand(stand);
 				}
 			}
 		}

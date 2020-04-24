@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.block.BlockState;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -17,8 +18,6 @@ import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.Managers.EffectManager;
 import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Managers.TaskManager;
-import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Updater.Updater;
 
 import net.md_5.bungee.api.ChatColor;
@@ -26,6 +25,7 @@ import net.md_5.bungee.api.ChatColor;
 public class Commands implements CommandExecutor, TabCompleter {
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
+	BlockState state;
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -46,8 +46,6 @@ public class Commands implements CommandExecutor, TabCompleter {
 				EnchantmentManager.reloadConfig();
 				EffectManager.reloadConfig();
 				CustomBlockDataManager.setup();
-				TileEntityManager.run();
-				TaskManager.setup();
 				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Reload")));
 			} else {
 				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));

@@ -2,13 +2,9 @@ package com.loohp.interactionvisualizer.Blocks;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -22,23 +18,16 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.EntityHolders.Item;
-import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Managers.SoundManager;
+import com.loohp.interactionvisualizer.ObjectHolders.EnchantmentTableBundle;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
-import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
-
-import net.md_5.bungee.api.ChatColor;
 
 public class EnchantmentTableDisplay implements Listener {
 	
-	public static HashMap<Block, HashMap<String, Object>> openedETable = new HashMap<Block, HashMap<String, Object>>();
+	public static HashMap<Block, EnchantmentTableBundle> openedETable = new HashMap<Block, EnchantmentTableBundle>();
 	public static HashMap<Player, Block> playermap = new HashMap<Player, Block>();
 	
 	@EventHandler(priority=EventPriority.MONITOR)
@@ -50,10 +39,9 @@ public class EnchantmentTableDisplay implements Listener {
 			return;
 		}
 		Block block = event.getEnchantBlock();
-		Location loc = block.getLocation();
 		ItemStack itemstack = new ItemStack(event.getItem().getType());
 		if (itemstack.getType().equals(Material.BOOK)) {
-			itemstack.setType(Material.ENCHANTED_BOOK);
+			itemstack.setType(Material.ENCHANTED_BOOK);	
 		}
 		itemstack.setAmount(event.getItem().getAmount());
 		for (Entry<Enchantment, Integer> entry : event.getEnchantsToAdd().entrySet()) {
@@ -72,73 +60,12 @@ public class EnchantmentTableDisplay implements Listener {
 			return;
 		}
 		
-		HashMap<String, Object> map = openedETable.get(block);
-		if (!map.get("Player").equals(event.getEnchanter())) {
+		EnchantmentTableBundle etb = openedETable.get(block);
+		if (!etb.getEnchanter().equals(event.getEnchanter())) {
 			return;
 		}
 		
-		if (!(map.get("Item") instanceof Item)) {
-			map.put("Item", new Item(loc.clone().add(0.5, 1.3, 0.5)));
-		}
-		Item item = (Item) map.get("Item");
-		
-		if (item.isLocked()) {
-			return;
-		}
-		
-		item.setItemStack(itemstack);
-		item.setGravity(false);
-		item.setLocked(true);
-		item.setVelocity(new Vector(0.0, 0.05, 0.0));
-		PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-		PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-		for (Player each : InteractionVisualizer.itemDrop) {
-			each.spawnParticle(Particle.PORTAL, loc.clone().add(0.5, 2.6, 0.5), 75);
-		}
-		
-		new BukkitRunnable() {
-			public void run() {
-				item.teleport(loc.clone().add(0.5, 2.3, 0.5));
-				item.setVelocity(new Vector(0, 0, 0));
-				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-			}
-		}.runTaskLater(InteractionVisualizer.plugin, 20);
-		
-		new BukkitRunnable() {
-			public void run() {
-				int level = 0;
-				Enchantment ench = null;
-				for (Entry<Enchantment, Integer> entry : event.getEnchantsToAdd().entrySet()) {
-					if (entry.getValue() > level) {
-						level = entry.getValue();
-						ench = entry.getKey();
-					}
-				}
-				@SuppressWarnings("deprecation")
-				String enchantmentName = EnchantmentManager.getEnchConfig().getString("Enchantments." + ench.getName());
-				item.setCustomName(ChatColor.AQUA + enchantmentName + " " + RomanNumberUtils.toRoman(level));
-				item.setCustomNameVisible(true);
-				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-			}
-		}.runTaskLater(InteractionVisualizer.plugin, 50);
-		
-		new BukkitRunnable() {
-			public void run() {
-				item.setCustomName("");
-				item.setCustomNameVisible(false);
-				item.setGravity(true);
-				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-			}
-		}.runTaskLater(InteractionVisualizer.plugin, 90);
-		
-		new BukkitRunnable() {
-			public void run() {
-				item.teleport(loc.clone().add(0.5, 1.3, 0.5));
-				item.setGravity(false);
-				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-				item.setLocked(false);
-			}
-		}.runTaskLater(InteractionVisualizer.plugin, 98);
+		etb.playEnchantAnimation(event.getEnchantsToAdd(), itemstack);
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
@@ -181,52 +108,19 @@ public class EnchantmentTableDisplay implements Listener {
 			return;
 		}
 		
-		HashMap<String, Object> map = openedETable.get(block);
-		
-		ItemStack itemstack = event.getCurrentItem().clone();
-		Location loc = block.getLocation();
-		
-		Player player = (Player) event.getWhoClicked();
-		if (map.get("Item") instanceof String) {
-			map.put("Item", new Item(block.getLocation().clone().add(0.5, 1.2, 0.5)));
-		}
-		Item item = (Item) map.get("Item");
-		
-		if ((boolean) map.get("Lock")) {
+		EnchantmentTableBundle etb = openedETable.get(block);
+		if (!etb.getEnchanter().equals((Player) event.getWhoClicked())) {
 			return;
 		}
-		map.put("Lock", true);
 		
-		new BukkitRunnable() {
-			public void run() {
-				while (item.isLocked()) {
-					try {TimeUnit.MILLISECONDS.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
-				}
-				new BukkitRunnable() {
-					public void run() {
-						map.put("Item", "N/A");
-						
-						item.setItemStack(itemstack);
-						item.setLocked(true);
-						
-						Vector lift = new Vector(0.0, 0.15, 0.0);
-						Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
-						item.setVelocity(pickup);
-						item.setGravity(true);
-						item.setPickupDelay(32767);
-						PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-						
-						new BukkitRunnable() {
-							public void run() {
-								SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
-								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-								openedETable.remove(block);
-							}
-						}.runTaskLater(InteractionVisualizer.plugin, 8);
-					}
-				}.runTask(InteractionVisualizer.plugin);
+		ItemStack itemstack = null;
+		if (event.getView().getItem(0) != null) {
+			if (!event.getView().getItem(0).getType().equals(Material.AIR)) {
+				itemstack = event.getView().getItem(0).clone();
 			}
-		}.runTaskAsynchronously(InteractionVisualizer.plugin);
+		}
+		
+		etb.playPickUpAnimation(itemstack);
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)
@@ -272,81 +166,20 @@ public class EnchantmentTableDisplay implements Listener {
 			return;
 		}
 		
-		HashMap<String, Object> map = openedETable.get(block);
-		if (!map.get("Player").equals((Player) event.getPlayer())) {
+		EnchantmentTableBundle etb = openedETable.get(block);
+		if (!etb.getEnchanter().equals((Player) event.getPlayer())) {
 			return;
 		}
 		
-		if ((boolean) map.get("Lock")) {
-			return;
-		}
-		map.put("Lock", true);
-		
+		ItemStack itemstack = null;
 		if (event.getView().getItem(0) != null) {
 			if (!event.getView().getItem(0).getType().equals(Material.AIR)) {
-				if (!(map.get("Item") instanceof Item)) {
-					map.put("Item", new Item(block.getLocation().clone().add(0.5, 1.2, 0.5)));
-				}
-				Item item = (Item) map.get("Item");
-				ItemStack itemstack = event.getView().getItem(0).clone();
-				Player player = (Player) event.getPlayer();
-				Location loc = event.getView().getTopInventory().getLocation();
-				new BukkitRunnable() {
-					public void run() {
-						while (item.isLocked()) {
-							try {TimeUnit.MILLISECONDS.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
-						}
-						item.setLocked(true);
-						new BukkitRunnable() {
-							public void run() {
-								map.put("Item", "N/A");
-								
-								item.setItemStack(itemstack, true);
-								item.setLocked(true);
-								
-								Vector lift = new Vector(0.0, 0.15, 0.0);
-								Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
-								item.setVelocity(pickup);
-								item.setGravity(true);
-								item.setPickupDelay(32767);
-								PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-								
-								new BukkitRunnable() {
-									public void run() {
-										SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
-										PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-										map.put("Item", "N/A");
-									}
-								}.runTaskLater(InteractionVisualizer.plugin, 8);
-							}
-						}.runTask(InteractionVisualizer.plugin);
-					}
-				}.runTaskAsynchronously(InteractionVisualizer.plugin);
+				itemstack = event.getView().getItem(0).clone();
 			}
 		}
 		
-		if (map.get("Item") instanceof Item) {
-			Item item = (Item) map.get("Item");
-			new BukkitRunnable() {
-				public void run() {
-					while (item.isLocked()) {
-						try {TimeUnit.MILLISECONDS.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
-					}
-					try {TimeUnit.MILLISECONDS.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
-					Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item));
-					map.put("Item", "N/A");
-				}
-			}.runTaskAsynchronously(InteractionVisualizer.plugin);
-		}
-		new BukkitRunnable() {
-			public void run() {
-				while (map.get("Item") instanceof Item) {
-					try {TimeUnit.MILLISECONDS.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
-				}
-				Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> openedETable.remove(block));
-				Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> playermap.remove((Player) event.getPlayer()));
-			}
-		}.runTaskAsynchronously(InteractionVisualizer.plugin);
+		etb.playPickUpAnimationAndRemove(itemstack, openedETable);
+		playermap.remove((Player) event.getPlayer());
 	}
 	
 	public static void process(Player player) {		
@@ -379,21 +212,12 @@ public class EnchantmentTableDisplay implements Listener {
 		
 		InventoryView view = player.getOpenInventory();
 		Block block = playermap.get(player);
-		Location loc = block.getLocation();
 		if (!openedETable.containsKey(block)) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("Player", player);
-			map.put("Item", "N/A");
-			map.put("Lock", false);
-			openedETable.put(block, map);
+			openedETable.put(block, new EnchantmentTableBundle(player, block, InteractionVisualizer.itemDrop));
 		}
-		HashMap<String, Object> map = openedETable.get(block);
+		EnchantmentTableBundle etb = openedETable.get(block);
 		
-		if ((boolean) map.get("Lock")) {
-			return;
-		}
-		
-		if (!map.get("Player").equals(player)) {
+		if (!etb.getEnchanter().equals(player)) {
 			return;
 		}
 		
@@ -405,35 +229,7 @@ public class EnchantmentTableDisplay implements Listener {
 				}
 			}
 			
-			Item item = null;
-			if (map.get("Item") instanceof String) {
-				if (itemstack != null) {
-					item = new Item(loc.clone().add(0.5, 1.3, 0.5));
-					item.setItemStack(itemstack);
-					item.setVelocity(new Vector(0, 0, 0));
-					item.setPickupDelay(32767);
-					item.setGravity(false);
-					map.put("Item", item);
-					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-					PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-				} else {
-					map.put("Item", "N/A");
-				}
-			} else {
-				item = (Item) map.get("Item");
-				if (!item.isLocked()) {
-					if (itemstack != null) {
-						if (!item.getItemStack().equals(itemstack)) {
-							item.setItemStack(itemstack);
-							PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
-						}
-						item.setGravity(false);
-					} else {
-						map.put("Item", "N/A");
-						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-					}
-				}
-			}
+			etb.setItemStack(itemstack);
 		}
 	}
 }

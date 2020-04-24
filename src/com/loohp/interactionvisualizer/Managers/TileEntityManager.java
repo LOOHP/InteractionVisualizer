@@ -1,13 +1,11 @@
 package com.loohp.interactionvisualizer.Managers;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -30,9 +28,6 @@ public class TileEntityManager {
 	private static HashMap<String, List<Block>> upcomming = new HashMap<String, List<Block>>();
 	
 	private static Integer tileEntityChunkPerTick = InteractionVisualizer.tileEntityChunkPerTick;
-	private static Integer tileEntityStatePerTick = InteractionVisualizer.tileEntityStatePerTick;
-	
-	private static Boolean tileEntities = InteractionVisualizer.tileEntities;
 	
 	public static List<Block> getTileEntites(String type) {
 		List<Block> list = current.get(type);
@@ -40,9 +35,6 @@ public class TileEntityManager {
 	}
 	
 	public static void run() {
-		if (!tileEntities) {
-			return;
-		}
 		upcomming.put("blastfurnace", new LinkedList<Block>());
 		upcomming.put("brewingstand", new LinkedList<Block>());
 		upcomming.put("furnace", new LinkedList<Block>());
@@ -70,7 +62,9 @@ public class TileEntityManager {
 			chunks.add(new ChunkPosition(world, chunkX - 1, chunkZ - 1));
 		}
 		
-		Bukkit.getScheduler().runTaskLater(plugin, () -> loadBlockStates(), 1);
+		if (plugin.isEnabled()) {
+			Bukkit.getScheduler().runTaskLater(plugin, () -> loadBlockStates(), 1);
+		}
 	}
 	
 	private static void loadBlockStates() {
@@ -79,27 +73,26 @@ public class TileEntityManager {
 			ChunkPosition chunkpos = chunks.poll();
 			if (chunkpos.isLoaded()) {
 				count++;
-				Chunk chunk = chunkpos.getChunk();
-				states.addAll(Arrays.asList(chunk.getTileEntities()));
+				for (BlockState state : chunkpos.getChunk().getTileEntities()) {
+					states.add(state);
+				}
 			}
 			if (count >= tileEntityChunkPerTick) {
 				break;
 			}
 		}
 		if (chunks.isEmpty()) {
-			Bukkit.getScheduler().runTaskLater(plugin, () -> loadTileEntities(), 1);
+			Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> loadTileEntities());
 		} else {
 			Bukkit.getScheduler().runTaskLater(plugin, () -> loadBlockStates(), 1);
 		}
 	}
 
 	private static void loadTileEntities() {
-		int count = 0;
 		while (!states.isEmpty()) {
 			BlockState state = states.poll();
-			count++;
 			Block block = state.getBlock();
-			Material type = block.getType();
+			Material type = state.getType();
 			if (type.toString().toUpperCase().equals("BLAST_FURNACE")) {
 				upcomming.get("blastfurnace").add(block);
 			} else if (type.toString().toUpperCase().equals("BREWING_STAND")) {
@@ -113,18 +106,13 @@ public class TileEntityManager {
 			} else if (type.toString().toUpperCase().equals("JUKEBOX")) {
 				upcomming.get("jukebox").add(block);
 			}
-			if (count >= tileEntityStatePerTick) {
-				break;
-			}
 		}
-		if (states.isEmpty()) {
+		if (plugin.isEnabled()) {
 			Bukkit.getScheduler().runTaskLater(plugin, () -> {
 				current = upcomming;
 				upcomming = new HashMap<String, List<Block>>();
 				Bukkit.getScheduler().runTaskLater(plugin, () -> run(), 1);
 			}, 1);
-		} else {
-			Bukkit.getScheduler().runTaskLater(plugin, () -> loadTileEntities(), 1);
 		}
 	}
 	

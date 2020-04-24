@@ -99,7 +99,7 @@ public class StonecutterDisplay implements Listener {
 		item.setVelocity(pickup);
 		item.setGravity(true);
 		item.setPickupDelay(32767);
-		PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+		PacketManager.updateItem(item);
 		
 		new BukkitRunnable() {
 			public void run() {
@@ -292,7 +292,7 @@ public class StonecutterDisplay implements Listener {
 				item.setGravity(false);
 				map.put("Item", item);
 				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.updateItem(item);
 			} else {
 				map.put("Item", "N/A");
 			}
@@ -301,7 +301,7 @@ public class StonecutterDisplay implements Listener {
 			if (itemstack != null) {
 				if (!item.getItemStack().equals(itemstack)) {
 					item.setItemStack(itemstack);
-					PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.updateItem(item);
 				}
 				item.setPickupDelay(32767);
 				item.setGravity(false);

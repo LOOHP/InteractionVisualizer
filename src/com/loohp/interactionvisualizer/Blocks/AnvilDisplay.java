@@ -114,8 +114,8 @@ public class AnvilDisplay implements Listener {
 		slot0.teleport(slot0.getLocation().add(rotateVectorAroundY(vector.clone(), 90).multiply(0.1)));		
 		slot1.teleport(slot1.getLocation().add(rotateVectorAroundY(vector.clone(), -90).multiply(0.1)));
 		
-		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot0);
-		PacketManager.updateArmorStand(InteractionVisualizer.itemStand, slot1);
+		PacketManager.updateArmorStand(slot0);
+		PacketManager.updateArmorStand(slot1);
 		
 		new BukkitRunnable() {
 			public void run() {
@@ -133,7 +133,7 @@ public class AnvilDisplay implements Listener {
 				item.setVelocity(pickup);
 				item.setGravity(true);
 				item.setPickupDelay(32767);
-				PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.updateItem(item);
 				
 				new BukkitRunnable() {
 					public void run() {
@@ -303,7 +303,7 @@ public class AnvilDisplay implements Listener {
 					item.setCustomNameVisible(true);
 					map.put("2", item);
 					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-					PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.updateItem(item);
 				} else {
 					map.put("2", "N/A");
 				}
@@ -314,7 +314,7 @@ public class AnvilDisplay implements Listener {
 						item.setItemStack(itemstack);
 						item.setCustomName(itemstack.getItemMeta().getDisplayName());
 						item.setCustomNameVisible(true);
-						PacketManager.updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+						PacketManager.updateItem(item);
 					}
 				} else {
 					map.put("2", "N/A");
@@ -344,12 +344,12 @@ public class AnvilDisplay implements Listener {
 					stand.setItemInMainHand(item);
 				}
 				if (changed) {
-					PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+					PacketManager.updateArmorStand(stand);
 				}
 			} else {
 				if (!stand.getItemInMainHand().getType().equals(Material.AIR)) {
 					stand.setItemInMainHand(new ItemStack(Material.AIR));
-					PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+					PacketManager.updateArmorStand(stand);
 				}
 			}
 		}

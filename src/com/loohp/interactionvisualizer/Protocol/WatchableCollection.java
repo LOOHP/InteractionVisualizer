@@ -143,8 +143,7 @@ public class WatchableCollection {
 			break;
 		}
 		
-			watcher.setObject(new WrappedDataWatcherObject(3, booleanSerializer), item.isCustomNameVisible());
-
+		watcher.setObject(new WrappedDataWatcherObject(3, booleanSerializer), item.isCustomNameVisible());
 		watcher.setObject(new WrappedDataWatcherObject(5, booleanSerializer), !item.hasGravity());
 		
 		switch (metaversion) {

@@ -78,7 +78,7 @@ public class NoteBlockDisplay implements Listener {
 			stand.setCustomName(text);
 			
 			PacketManager.sendArmorStandSpawn(InteractionVisualizer.holograms, stand);
-			PacketManager.updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			PacketManager.updateArmorStand(stand);
 		}, 1);
 	}
 	

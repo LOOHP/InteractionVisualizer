@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
@@ -27,6 +28,7 @@ import com.loohp.interactionvisualizer.EntityHolders.VisualizerEntity;
 
 public class PacketManager implements Listener {
 	
+	private static Plugin plugin = InteractionVisualizer.plugin;
 	private static ProtocolManager protocolManager = InteractionVisualizer.protocolManager;
 	private static String version = InteractionVisualizer.version;
 	private static List<String> exemptBlocks = InteractionVisualizer.exemptBlocks;
@@ -35,10 +37,10 @@ public class PacketManager implements Listener {
 	public static ConcurrentHashMap<VisualizerEntity, Boolean> loaded = new ConcurrentHashMap<VisualizerEntity, Boolean>();
 	
 	public static void run() {
-		if (!InteractionVisualizer.plugin.isEnabled()) {
+		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			Iterator<Entry<VisualizerEntity, Boolean>> itr = loaded.entrySet().iterator();
 			while (itr.hasNext()) {
 				Entry<VisualizerEntity, Boolean> entry = itr.next();
@@ -49,10 +51,10 @@ public class PacketManager implements Listener {
 						continue;
 					}
 					if (entry.getValue()) {
-						if (!InteractionVisualizer.plugin.isEnabled()) {
+						if (!plugin.isEnabled()) {
 							return;
 						}
-						Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {		
+						Bukkit.getScheduler().runTask(plugin, () -> {		
 							List<Player> players = active.get(entity);
 							if (players == null) {
 								return;
@@ -63,7 +65,7 @@ public class PacketManager implements Listener {
 							}
 						});
 					} else {
-						Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+						Bukkit.getScheduler().runTask(plugin, () -> {
 							if (!PlayerRangeManager.hasPlayerNearby(stand.getLocation())) {
 								return;
 							}
@@ -73,7 +75,7 @@ public class PacketManager implements Listener {
 							}
 							if (!isOccluding(stand.getLocation().getBlock().getType())) {
 								sendArmorStandSpawn(players, stand);
-								updateArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+								updateArmorStand(stand);
 								loaded.put(entity, true);
 							}
 						});
@@ -84,10 +86,10 @@ public class PacketManager implements Listener {
 						continue;
 					}
 					if (entry.getValue()) {
-						if (!InteractionVisualizer.plugin.isEnabled()) {
+						if (!plugin.isEnabled()) {
 							return;
 						}
-						Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+						Bukkit.getScheduler().runTask(plugin, () -> {
 							List<Player> players = active.get(entity);
 							if (players == null) {
 								return;
@@ -98,17 +100,17 @@ public class PacketManager implements Listener {
 							}
 						});
 					} else {
-						if (!InteractionVisualizer.plugin.isEnabled()) {
+						if (!plugin.isEnabled()) {
 							return;
 						}
-						Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+						Bukkit.getScheduler().runTask(plugin, () -> {
 							List<Player> players = active.get(entity);
 							if (players == null) {
 								return;
 							}
 							if (!isOccluding(item.getLocation().getBlock().getType())) {
 								sendItemSpawn(players, item);
-								updateItem(InteractionVisualizer.getOnlinePlayers(), item);
+								updateItem(item);
 								loaded.put(entity, true);
 							}
 						});
@@ -119,10 +121,10 @@ public class PacketManager implements Listener {
 						continue;
 					}
 					if (entry.getValue()) {
-						if (!InteractionVisualizer.plugin.isEnabled()) {
+						if (!plugin.isEnabled()) {
 							return;
 						}
-						Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+						Bukkit.getScheduler().runTask(plugin, () -> {
 							List<Player> players = active.get(entity);
 							if (players == null) {
 								return;
@@ -133,17 +135,17 @@ public class PacketManager implements Listener {
 							}
 						});
 					} else {
-						if (!InteractionVisualizer.plugin.isEnabled()) {
+						if (!plugin.isEnabled()) {
 							return;
 						}
-						Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+						Bukkit.getScheduler().runTask(plugin, () -> {
 							List<Player> players = active.get(entity);
 							if (players == null) {
 								return;
 							}
 							if (!isOccluding(frame.getLocation().getBlock().getType())) {
 								sendItemFrameSpawn(players, frame);
-								updateItemFrame(InteractionVisualizer.getOnlinePlayers(), frame);
+								updateItemFrame(frame);
 								loaded.put(entity, true);
 							}
 						});
@@ -155,8 +157,8 @@ public class PacketManager implements Listener {
 					e.printStackTrace();
 				}
 			}
-			if (InteractionVisualizer.plugin.isEnabled()) {
-				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> run(), 1);
+			if (plugin.isEnabled()) {
+				Bukkit.getScheduler().runTaskLater(plugin, () -> run(), 1);
 			}
 		});
 	}
@@ -197,13 +199,18 @@ public class PacketManager implements Listener {
 		packet1.getIntegers().write(0, entity.getEntityId());
 		packet1.getIntegers().write(1, 0);
 		
-		try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+		if (!plugin.isEnabled()) {
+			return;
 		}
+		Bukkit.getScheduler().runTask(plugin, () -> {
+			try {
+	        	for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+				}
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	public static void sendArmorStandSpawn(List<Player> players, ArmorStand entity) {
@@ -234,21 +241,30 @@ public class PacketManager implements Listener {
         WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
         packet2.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
         
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-				protocolManager.sendServerPacket(player, packet2);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+        if (!plugin.isEnabled()) {
+			return;
 		}
+        Bukkit.getScheduler().runTask(plugin, () -> {
+	        try {
+	        	for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+					protocolManager.sendServerPacket(player, packet2);
+				}
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+        });
 	}
 	
-	public static void updateArmorStand(List<Player> players, ArmorStand entity) {
-		players = active.get(entity);
+	public static void updateArmorStand(ArmorStand entity) {
+		List<Player> players = active.get(entity);
 		if (players == null) {
 			return;
 		}
+		updateArmorStand(players, entity);
+	}
+	
+	public static void updateArmorStand(List<Player> players, ArmorStand entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
         packet1.getIntegers().write(0, entity.getEntityId());
         packet1.getDoubles().write(0, entity.getLocation().getX());
@@ -278,22 +294,36 @@ public class PacketManager implements Listener {
 		packet5.getIntegers().write(2, (int) (entity.getVelocity().getY() * 8000));
 		packet5.getIntegers().write(3, (int) (entity.getVelocity().getZ() * 8000));
 		*/
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-				protocolManager.sendServerPacket(player, packet2);
-				protocolManager.sendServerPacket(player, packet3);
-				protocolManager.sendServerPacket(player, packet4);
-				//protocolManager.sendServerPacket(player, packet5);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+        
+        if (!plugin.isEnabled()) {
+			return;
 		}
+        Bukkit.getScheduler().runTask(plugin, () -> {
+	        try {
+	        	for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+					protocolManager.sendServerPacket(player, packet2);
+					protocolManager.sendServerPacket(player, packet3);
+					protocolManager.sendServerPacket(player, packet4);
+					//protocolManager.sendServerPacket(player, packet5);
+				}
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+        });
+	}
+	
+	public static void updateArmorStand(ArmorStand entity, boolean onlymetadata) {
+		List<Player> players = active.get(entity);
+		if (players == null) {
+			return;
+		}
+		updateArmorStand(players, entity, onlymetadata);
 	}
 	
 	public static void updateArmorStand(List<Player> players, ArmorStand entity, boolean onlymetadata) {
 		if (!onlymetadata) {
-			updateArmorStand(players, entity);
+			updateArmorStand(entity);
 			return;
 		}
 		
@@ -302,13 +332,18 @@ public class PacketManager implements Listener {
         WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
         packet1.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
         
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+        if (!plugin.isEnabled()) {
+			return;
 		}
+        Bukkit.getScheduler().runTask(plugin, () -> {
+	        try {
+	        	for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+				}
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+        });
 	}
 	
 	public static void removeArmorStand(List<Player> players, ArmorStand entity, boolean removeFromActive) {
@@ -316,17 +351,22 @@ public class PacketManager implements Listener {
 			active.remove(entity);
 			loaded.remove(entity);
 		}
-		
+
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 		packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
 		
-		try {
-			for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+		if (!plugin.isEnabled()) {
+			return;
 		}
+		Bukkit.getScheduler().runTask(plugin, () -> {
+			try {
+				for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+				}
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	public static void removeArmorStand(List<Player> players, ArmorStand entity) {
@@ -337,11 +377,11 @@ public class PacketManager implements Listener {
 		if (!active.containsKey(entity)) {
 			active.put(entity, players);
 			loaded.put(entity, true);
-		}
-		
+		}	
 		if (entity.getItemStack().getType().equals(Material.AIR)) {
 			return;
 		}
+
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
         packet1.getIntegers().write(0, entity.getEntityId());
         packet1.getIntegers().write(1, (int) (entity.getVelocity().getX() * 8000));
@@ -362,24 +402,33 @@ public class PacketManager implements Listener {
         packet1.getDoubles().write(1, location.getY());
         packet1.getDoubles().write(2, location.getZ());
 		
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+        if (!plugin.isEnabled()) {
+			return;
 		}
+        Bukkit.getScheduler().runTask(plugin, () -> {
+	        try {
+	        	for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+				}
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+        });
 	}
 	
-	public static void updateItem(List<Player> players, Item entity) {
-		players = active.get(entity);
+	public static void updateItem(Item entity) {
+		List<Player> players = active.get(entity);
 		if (players == null) {
 			return;
 		}
+		updateItem(players, entity);
+	}
+	
+	public static void updateItem(List<Player> players, Item entity) {
 		if (entity.getItemStack().getType().equals(Material.AIR)) {
 			return;
 		}
-		
+
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
 		packet1.getIntegers().write(0, entity.getEntityId());
         WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
@@ -399,15 +448,20 @@ public class PacketManager implements Listener {
 		packet3.getIntegers().write(2, (int) (entity.getVelocity().getY() * 8000));
 		packet3.getIntegers().write(3, (int) (entity.getVelocity().getZ() * 8000));
 		
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-				protocolManager.sendServerPacket(player, packet2);
-				protocolManager.sendServerPacket(player, packet3);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+		if (!plugin.isEnabled()) {
+			return;
 		}
+		Bukkit.getScheduler().runTask(plugin, () -> {
+	        try {
+	        	for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+					protocolManager.sendServerPacket(player, packet2);
+					protocolManager.sendServerPacket(player, packet3);
+				}
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	public static void removeItem(List<Player> players, Item entity, boolean removeFromActive) {
@@ -418,17 +472,22 @@ public class PacketManager implements Listener {
 			active.remove(entity);
 			loaded.remove(entity);
 		}
-		
+
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 		packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
 		
-		try {
-			for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+		if (!plugin.isEnabled()) {
+			return;
 		}
+		Bukkit.getScheduler().runTask(plugin, () -> {
+			try {
+				for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+				}
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	public static void removeItem(List<Player> players, Item entity) {
@@ -440,7 +499,7 @@ public class PacketManager implements Listener {
 			active.put(entity, players);
 			loaded.put(entity, true);
 		}
-		
+
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
         packet1.getIntegers().write(0, entity.getEntityId());
         packet1.getIntegers().write(1, 0);
@@ -461,13 +520,18 @@ public class PacketManager implements Listener {
         packet1.getDoubles().write(1, location.getY());
         packet1.getDoubles().write(2, location.getZ());
         
-		try {
-			for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+        if (!plugin.isEnabled()) {
+			return;
 		}
+        Bukkit.getScheduler().runTask(plugin, () -> {
+			try {
+				for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+				}
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+        });
 	}
 	
 	public static int getItemFrameData(ItemFrame frame) {
@@ -489,24 +553,33 @@ public class PacketManager implements Listener {
 		}
 	}
 	
-	public static void updateItemFrame(List<Player> players, ItemFrame entity) {
-		players = active.get(entity);
+	public static void updateItemFrame(ItemFrame entity) {
+		List<Player> players = active.get(entity);
 		if (players == null) {
 			return;
 		}
 		
+		updateItemFrame(players, entity);
+	}
+	
+	public static void updateItemFrame(List<Player> players , ItemFrame entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
 		packet1.getIntegers().write(0, entity.getEntityId());
         WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
         packet1.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
         
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+        if (!plugin.isEnabled()) {
+			return;
 		}
+        Bukkit.getScheduler().runTask(plugin, () -> {
+	        try {
+	        	for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+				}
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+        });
 	}
 	
 	public static void removeItemFrame(List<Player> players, ItemFrame entity, boolean removeFromActive) {
@@ -514,17 +587,22 @@ public class PacketManager implements Listener {
 			active.remove(entity);
 			loaded.remove(entity);
 		}
-		
+
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 		packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
 		
-		try {
-			for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+		if (!plugin.isEnabled()) {
+			return;
 		}
+		Bukkit.getScheduler().runTask(plugin, () -> {
+			try {
+				for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+				}
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	public static void removeItemFrame(List<Player> players, ItemFrame entity) {
@@ -532,13 +610,16 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void reset(Player theplayer) {
-		Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> removeAll(theplayer));
+		Bukkit.getScheduler().runTask(plugin, () -> removeAll(theplayer));
 		int delay = 10 + (int) Math.ceil((double) active.size() / 5.0);
-		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> sendPlayerPackets(theplayer), delay);
+		Bukkit.getScheduler().runTaskLater(plugin, () -> sendPlayerPackets(theplayer), delay);
 	}
 	
 	public static void removeAll(Player theplayer) {
-		Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+		if (!plugin.isEnabled()) {
+			return;
+		}
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			List<Player> player = new ArrayList<Player>();
 			player.add(theplayer);
 			int count = 0;
@@ -549,22 +630,25 @@ public class PacketManager implements Listener {
 					delay++;
 					count = 0;
 				}
-				Object entity = entry.getKey();
+				VisualizerEntity entity = entry.getKey();
 				if (entity instanceof ArmorStand) {
-					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> removeArmorStand(player, (ArmorStand) entity, false), delay);
+					Bukkit.getScheduler().runTaskLater(plugin, () -> removeArmorStand(player, (ArmorStand) entity, false), delay);
 				}
 				if (entity instanceof Item) {
-					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> removeItem(player, (Item) entity, false), delay);
+					Bukkit.getScheduler().runTaskLater(plugin, () -> removeItem(player, (Item) entity, false), delay);
 				}
 				if (entity instanceof ItemFrame) {
-					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> removeItemFrame(player, (ItemFrame) entity, false), delay);
+					Bukkit.getScheduler().runTaskLater(plugin, () -> removeItemFrame(player, (ItemFrame) entity, false), delay);
 				}
 			}
 		});
 	}
 	
 	public static void sendPlayerPackets(Player theplayer) {
-		Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+		if (!plugin.isEnabled()) {
+			return;
+		}
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			List<Player> player = new ArrayList<Player>();
 			player.add(theplayer);
 			int count = 0;
@@ -579,19 +663,19 @@ public class PacketManager implements Listener {
 							count = 0;
 						}
 						if (entity instanceof ArmorStand) {
-							Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+							Bukkit.getScheduler().runTaskLater(plugin, () -> {
 							sendArmorStandSpawn(player, (ArmorStand) entity);
 							updateArmorStand(player, (ArmorStand) entity);
 							}, delay);
 						}
 						if (entity instanceof Item) {
-							Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+							Bukkit.getScheduler().runTaskLater(plugin, () -> {
 								sendItemSpawn(player, (Item) entity);
 								updateItem(player, (Item) entity);
 							}, delay);	
 						}
 						if (entity instanceof ItemFrame) {
-							Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+							Bukkit.getScheduler().runTaskLater(plugin, () -> {
 								sendItemFrameSpawn(player, (ItemFrame) entity);
 								updateItemFrame(player, (ItemFrame) entity);
 							}, delay);

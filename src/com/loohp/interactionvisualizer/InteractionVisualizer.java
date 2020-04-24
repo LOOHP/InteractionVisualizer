@@ -2,6 +2,7 @@ package com.loohp.interactionvisualizer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
@@ -16,6 +17,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.loohp.interactionvisualizer.Database.Database;
+import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
+import com.loohp.interactionvisualizer.EntityHolders.Item;
+import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
+import com.loohp.interactionvisualizer.EntityHolders.VisualizerEntity;
 import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.Managers.EffectManager;
 import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
@@ -74,9 +79,6 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static Integer gcPeriod = 600;
 	
 	public static Integer tileEntityChunkPerTick = 9;
-	public static Integer tileEntityStatePerTick = 20;
-	
-	public static Boolean tileEntities = true;
 	
 	public static boolean UpdaterEnabled = true;
 	public static int UpdaterTaskID = -1;
@@ -208,11 +210,38 @@ public class InteractionVisualizer extends JavaPlugin {
 		exemptBlocks.add("LOOM");
 		
 		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "InteractionVisualizer has been enabled!");
+		
+		Bukkit.getScheduler().runTaskLater(this, () -> {
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+					if (!Database.playerExists(player)) {
+						Database.createPlayer(player);
+					}
+					Database.loadPlayer(player, true);
+				});
+			}
+		}, 100);
 	}
 	
 	@Override
 	public void onDisable() {
 		CustomBlockDataManager.save();
+		
+		if (!Bukkit.getOnlinePlayers().isEmpty()) {
+			for (Entry<VisualizerEntity, List<Player>> entry : PacketManager.active.entrySet()) {
+				VisualizerEntity entity = entry.getKey();
+				if (entity instanceof ArmorStand) {
+					PacketManager.removeArmorStand(getOnlinePlayers(), (ArmorStand) entity);
+				}
+				if (entity instanceof Item) {
+					PacketManager.removeItem(getOnlinePlayers(), (Item) entity);
+				}
+				if (entity instanceof ItemFrame) {
+					PacketManager.removeItemFrame(getOnlinePlayers(), (ItemFrame) entity);
+				}
+			}
+		}
+		
 		getServer().getConsoleSender().sendMessage(ChatColor.RED + "InteractionVisualizer has been disabled!");
 	}
 	
@@ -231,7 +260,6 @@ public class InteractionVisualizer extends JavaPlugin {
 		gcPeriod = config.getInt("GarbageCollector.Period");
 		
 		tileEntityChunkPerTick = config.getInt("TileEntityUpdate.ChunksPerTick");
-		tileEntityStatePerTick = config.getInt("TileEntityUpdate.StatesPerTick");
 		
 		if (UpdaterTaskID >= 0) {
 			Bukkit.getScheduler().cancelTask(UpdaterTaskID);
