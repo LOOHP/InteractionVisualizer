@@ -14,7 +14,7 @@ Plugins built against Spigot usually also work with [Paper](https://papermc.io/)
 ## Dependencies 
 
 - [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)
-- [LightsAPI](https://www.spigotmc.org/resources/lightapi.4510/)
+- [LightsAPI Fork](https://www.spigotmc.org/resources/lightapi-fork.48247/)
 
 ## Soft Dependencies
 
