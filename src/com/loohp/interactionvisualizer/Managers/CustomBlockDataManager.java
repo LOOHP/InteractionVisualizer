@@ -65,9 +65,6 @@ public class CustomBlockDataManager {
         		String fileName = new SimpleDateFormat("yyyy'-'MM'-'dd'_'HH'-'mm'-'ss'_'zzz'_blockdata.json'").format(new Date());
         		BlockDataBackupFolder.mkdirs();
                 File outputfile = new File(BlockDataBackupFolder, fileName);
-                if (file.exists()) {
-                	file.delete();
-                }
                 try (InputStream in = new FileInputStream(file)) {
                     Files.copy(in, outputfile.toPath());
                 } catch (IOException e) {
@@ -101,8 +98,9 @@ public class CustomBlockDataManager {
             writer.close();
 
             return true;
-        } catch (Exception ex) {
-        	ex.printStackTrace();
+        } catch (Exception e) {
+        	Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] Error while saving blockdata.json, retrying..");
+        	setup();
         	return false;
         }
     }
