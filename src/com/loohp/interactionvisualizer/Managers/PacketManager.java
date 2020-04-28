@@ -35,6 +35,7 @@ public class PacketManager implements Listener {
 	
 	public static ConcurrentHashMap<VisualizerEntity, List<Player>> active = new ConcurrentHashMap<VisualizerEntity, List<Player>>();
 	public static ConcurrentHashMap<VisualizerEntity, Boolean> loaded = new ConcurrentHashMap<VisualizerEntity, Boolean>();
+	private static ConcurrentHashMap<VisualizerEntity, Integer> cache = new ConcurrentHashMap<VisualizerEntity, Integer>();
 	
 	public static void run() {
 		if (!plugin.isEnabled()) {
@@ -265,6 +266,19 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void updateArmorStand(List<Player> players, ArmorStand entity) {
+		updateArmorStand(players, entity, false);
+	}
+	
+	public static void updateArmorStand(List<Player> players, ArmorStand entity, boolean bypasscache) {
+		if (!bypasscache) {
+			Integer lastCode = cache.get(entity);
+			if (lastCode != null) {
+				if (lastCode == entity.cacheCode()) {
+					return;
+				}
+			}
+		}
+		
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
         packet1.getIntegers().write(0, entity.getEntityId());
         packet1.getDoubles().write(0, entity.getLocation().getX());
@@ -311,20 +325,30 @@ public class PacketManager implements Listener {
 				e.printStackTrace();
 			}
         });
+        
+        cache.put(entity, entity.cacheCode());
 	}
 	
-	public static void updateArmorStand(ArmorStand entity, boolean onlymetadata) {
+	public static void updateArmorStandOnlyMeta(ArmorStand entity) {
 		List<Player> players = active.get(entity);
 		if (players == null) {
 			return;
 		}
-		updateArmorStand(players, entity, onlymetadata);
+		updateArmorStandOnlyMeta(players, entity);
 	}
 	
-	public static void updateArmorStand(List<Player> players, ArmorStand entity, boolean onlymetadata) {
-		if (!onlymetadata) {
-			updateArmorStand(entity);
-			return;
+	public static void updateArmorStandOnlyMeta(List<Player> players, ArmorStand entity) {
+		updateArmorStandOnlyMeta(players, entity, false);
+	}
+	
+	public static void updateArmorStandOnlyMeta(List<Player> players, ArmorStand entity, boolean bypasscache) {
+		if (!bypasscache) {
+			Integer lastCode = cache.get(entity);
+			if (lastCode != null) {
+				if (lastCode == entity.cacheCode()) {
+					return;
+				}
+			}
 		}
 		
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
@@ -344,12 +368,15 @@ public class PacketManager implements Listener {
 				e.printStackTrace();
 			}
         });
+        
+        cache.put(entity, entity.cacheCode());
 	}
 	
 	public static void removeArmorStand(List<Player> players, ArmorStand entity, boolean removeFromActive) {
 		if (removeFromActive) {
 			active.remove(entity);
 			loaded.remove(entity);
+			cache.remove(entity);
 		}
 
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
@@ -425,6 +452,19 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void updateItem(List<Player> players, Item entity) {
+		updateItem(players, entity, false);
+	}
+	
+	public static void updateItem(List<Player> players, Item entity, boolean bypasscache) {		
+		if (!bypasscache) {
+			Integer lastCode = cache.get(entity);
+			if (lastCode != null) {
+				if (lastCode == entity.cacheCode()) {
+					return;
+				}
+			}
+		}
+		
 		if (entity.getItemStack().getType().equals(Material.AIR)) {
 			return;
 		}
@@ -462,6 +502,8 @@ public class PacketManager implements Listener {
 				e.printStackTrace();
 			}
 		});
+		
+		cache.put(entity, entity.cacheCode());
 	}
 	
 	public static void removeItem(List<Player> players, Item entity, boolean removeFromActive) {
@@ -471,6 +513,7 @@ public class PacketManager implements Listener {
 		if (removeFromActive) {
 			active.remove(entity);
 			loaded.remove(entity);
+			cache.remove(entity);
 		}
 
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
@@ -563,6 +606,18 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void updateItemFrame(List<Player> players , ItemFrame entity) {
+		updateItemFrame(players, entity, false);
+	}
+	
+	public static void updateItemFrame(List<Player> players , ItemFrame entity, boolean bypasscache) {
+		if (!bypasscache) {
+			Integer lastCode = cache.get(entity);
+			if (lastCode != null) {
+				if (lastCode == entity.cacheCode()) {
+					return;
+				}
+			}
+		}
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
 		packet1.getIntegers().write(0, entity.getEntityId());
         WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
@@ -580,12 +635,15 @@ public class PacketManager implements Listener {
 				e.printStackTrace();
 			}
         });
+        
+        cache.put(entity, entity.cacheCode());
 	}
 	
 	public static void removeItemFrame(List<Player> players, ItemFrame entity, boolean removeFromActive) {
 		if (removeFromActive) {
 			active.remove(entity);
 			loaded.remove(entity);
+			cache.remove(entity);
 		}
 
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
@@ -664,20 +722,20 @@ public class PacketManager implements Listener {
 						}
 						if (entity instanceof ArmorStand) {
 							Bukkit.getScheduler().runTaskLater(plugin, () -> {
-							sendArmorStandSpawn(player, (ArmorStand) entity);
-							updateArmorStand(player, (ArmorStand) entity);
+								sendArmorStandSpawn(player, (ArmorStand) entity);
+								updateArmorStand(player, (ArmorStand) entity, true);
 							}, delay);
 						}
 						if (entity instanceof Item) {
 							Bukkit.getScheduler().runTaskLater(plugin, () -> {
 								sendItemSpawn(player, (Item) entity);
-								updateItem(player, (Item) entity);
+								updateItem(player, (Item) entity, true);
 							}, delay);	
 						}
 						if (entity instanceof ItemFrame) {
 							Bukkit.getScheduler().runTaskLater(plugin, () -> {
 								sendItemFrameSpawn(player, (ItemFrame) entity);
-								updateItemFrame(player, (ItemFrame) entity);
+								updateItemFrame(player, (ItemFrame) entity, true);
 							}, delay);
 						}
 					}

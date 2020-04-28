@@ -23,6 +23,16 @@ public class ItemFrame extends VisualizerEntity {
 		this.framerotation = 0;
 	}
 	
+	@Override
+	public int cacheCode() {
+		int prime = 17;
+		int result = super.cacheCode();
+		result = prime * result + ((item == null) ? 0 : item.hashCode());
+		result = prime * result + ((facing == null) ? 0 : facing.hashCode());
+		result = prime * result + framerotation;
+		return result;
+	}
+	
 	public EntityType getType() {
 		return EntityType.ITEM_FRAME;
 	}

@@ -1,5 +1,6 @@
 package com.loohp.interactionvisualizer;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -14,17 +15,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
 import com.loohp.interactionvisualizer.Database.Database;
-import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
-import com.loohp.interactionvisualizer.EntityHolders.Item;
-import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
 import com.loohp.interactionvisualizer.EntityHolders.VisualizerEntity;
 import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.Managers.EffectManager;
 import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
 import com.loohp.interactionvisualizer.Managers.LangManager;
+import com.loohp.interactionvisualizer.Managers.MaterialManager;
 import com.loohp.interactionvisualizer.Managers.MusicManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerRangeManager;
@@ -33,12 +34,11 @@ import com.loohp.interactionvisualizer.Managers.TaskManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Metrics.Charts;
 import com.loohp.interactionvisualizer.Metrics.Metrics;
-import com.loohp.interactionvisualizer.PlaceholderAPI.PlaceholderAPI;
+import com.loohp.interactionvisualizer.PlaceholderAPI.Placeholders;
 import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.Updater.Updater;
 import com.loohp.interactionvisualizer.Utils.LegacyInstrumentUtils;
 import com.loohp.interactionvisualizer.Utils.LegacyRecordsUtils;
-import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -180,7 +180,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		CustomBlockDataManager.intervalSaveToFile();
 		PacketManager.run();
 		
-		MaterialUtils.setup();
+		MaterialManager.setup();
 		
 		if (version.contains("legacy")) {
 			LegacyRecordsUtils.setup();
@@ -194,7 +194,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		Charts.registerCharts(metrics);
 		
 		if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
-			new PlaceholderAPI().register();
+			new Placeholders().register();
 		}
 		
 		for (World world : Bukkit.getWorlds()) {
@@ -209,7 +209,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		exemptBlocks.add("WORKBENCH");
 		exemptBlocks.add("LOOM");
 		
-		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "InteractionVisualizer has been enabled!");
+		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] InteractionVisualizer has been enabled!");
 		
 		Bukkit.getScheduler().runTaskLater(this, () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
@@ -228,21 +228,27 @@ public class InteractionVisualizer extends JavaPlugin {
 		CustomBlockDataManager.save();
 		
 		if (!Bukkit.getOnlinePlayers().isEmpty()) {
+			getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] Plugin reload detected, attempting to despawn all visual entities. If anything went wrong, please restart! (Reloads are always not recommended)");
+			int [] entityIdArray = new int[PacketManager.active.size()];
+			int i = 0;
 			for (Entry<VisualizerEntity, List<Player>> entry : PacketManager.active.entrySet()) {
-				VisualizerEntity entity = entry.getKey();
-				if (entity instanceof ArmorStand) {
-					PacketManager.removeArmorStand(getOnlinePlayers(), (ArmorStand) entity);
+				entityIdArray[i] = entry.getKey().getEntityId();
+				i++;
+			}
+			
+			PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
+			packet1.getIntegerArrays().write(0, entityIdArray);
+			
+			try {
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					protocolManager.sendServerPacket(player, packet1);
 				}
-				if (entity instanceof Item) {
-					PacketManager.removeItem(getOnlinePlayers(), (Item) entity);
-				}
-				if (entity instanceof ItemFrame) {
-					PacketManager.removeItemFrame(getOnlinePlayers(), (ItemFrame) entity);
-				}
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
 			}
 		}
 		
-		getServer().getConsoleSender().sendMessage(ChatColor.RED + "InteractionVisualizer has been disabled!");
+		getServer().getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] InteractionVisualizer has been disabled!");
 	}
 	
 	public static void loadConfig() {

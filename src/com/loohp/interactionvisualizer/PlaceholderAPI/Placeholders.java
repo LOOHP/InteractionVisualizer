@@ -10,7 +10,7 @@ import com.loohp.interactionvisualizer.Database.Database;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
-public class PlaceholderAPI extends PlaceholderExpansion {
+public class Placeholders extends PlaceholderExpansion {
 
 	@Override
 	public String getAuthor() {

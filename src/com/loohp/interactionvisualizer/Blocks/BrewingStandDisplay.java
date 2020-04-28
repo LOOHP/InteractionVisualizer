@@ -283,13 +283,13 @@ public class BrewingStandDisplay implements Listener {
 								if (!stand.getCustomName().equals(symbol) || !stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(true);
 									stand.setCustomName(symbol);
-									PacketManager.updateArmorStand(stand, true);
+									PacketManager.updateArmorStandOnlyMeta(stand);
 								}
 							} else {
 								if (!stand.getCustomName().equals("") || stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(false);
 									stand.setCustomName("");
-									PacketManager.updateArmorStand(stand, true);
+									PacketManager.updateArmorStandOnlyMeta(stand);
 								}
 							}
 						}

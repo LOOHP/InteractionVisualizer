@@ -1,7 +1,5 @@
 package com.loohp.interactionvisualizer.EntityHolders;
 
-import java.util.UUID;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -28,24 +26,6 @@ public class ArmorStand extends VisualizerEntity {
 	boolean custonNameVisible;
 	Vector velocity;
 	
-	public ArmorStand(Location location, int id, UUID uuid) {
-		super(location, id, uuid);
-		this.hasArms = false;
-		this.hasBasePlate = true;
-		this.isMarker = false;
-		this.hasGravity = true;
-		this.isSmall = false;
-		this.isInvulnerable = false;
-		this.isVisible = true;
-		this.rightArmPose = new EulerAngle(0.0, 0.0, 0.0);
-		this.headPose = new EulerAngle(0.0, 0.0, 0.0);
-		this.helmet = new ItemStack(Material.AIR);
-		this.mainhand = new ItemStack(Material.AIR);
-		this.customName = "";
-		this.custonNameVisible = false;
-		this.velocity = new Vector(0.0, 0.0, 0.0);
-	}
-	
 	public ArmorStand(Location location) {
 		super(location);
 		this.hasArms = false;
@@ -64,25 +44,25 @@ public class ArmorStand extends VisualizerEntity {
 		this.velocity = new Vector(0.0, 0.0, 0.0);
 	}
 	
-	public ArmorStand deepClone() {
-		ArmorStand newstand = new ArmorStand(location, id, uuid);
-		newstand.setSilent(isSilent);
-		newstand.setArms(hasArms);
-		newstand.setBasePlate(hasBasePlate);
-		newstand.setMarker(isMarker);
-		newstand.setGravity(hasGravity);
-		newstand.setSmall(isSmall);
-		newstand.setInvulnerable(isInvulnerable);
-		newstand.setVisible(isVisible);
-		newstand.setRightArmPose(rightArmPose);
-		newstand.setHeadPose(headPose);
-		newstand.setHelmet(helmet);
-		newstand.setItemInMainHand(mainhand);
-		newstand.setCustomName(customName);
-		newstand.setCustomNameVisible(custonNameVisible);
-		newstand.setVelocity(velocity);
-		newstand.setLocked(lock);
-		return newstand;
+	@Override
+	public int cacheCode() {
+		int prime = 17;
+		int result = super.cacheCode();
+		result = prime * result + ((hasArms) ? 5351 : 8923);
+		result = prime * result + ((hasBasePlate) ? 2861 : 6607);
+		result = prime * result + ((isMarker) ? 9199 : 3163);
+		result = prime * result + ((hasGravity) ? 6719 : 2753);
+		result = prime * result + ((isSmall) ? 1373 : 3037);
+		result = prime * result + ((isInvulnerable) ? 2111 : 2251);
+		result = prime * result + ((isVisible) ? 6779 : 6679);
+		result = prime * result + ((rightArmPose == null) ? 0 : rightArmPose.hashCode());
+		result = prime * result + ((headPose == null) ? 0 : headPose.hashCode());
+		result = prime * result + ((helmet == null) ? 0 : helmet.hashCode());
+		result = prime * result + ((mainhand == null) ? 0 : mainhand.hashCode());
+		result = prime * result + ((customName == null) ? 0 : customName.hashCode());
+		result = prime * result + ((custonNameVisible) ? 6199 : 8647);
+		result = prime * result + ((velocity == null) ? 0 : velocity.hashCode());
+		return result;
 	}
 
 	public void setCustomName(String customName) {

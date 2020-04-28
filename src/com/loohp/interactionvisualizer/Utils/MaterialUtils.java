@@ -1,81 +1,41 @@
 package com.loohp.interactionvisualizer.Utils;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Material;
 
-import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.Managers.MaterialManager;
 
 public class MaterialUtils {
 	
-	private static String version = InteractionVisualizer.version;
-	private static List<Material> tools = new ArrayList<Material>();
-	private static List<Material> nonSolid = new ArrayList<Material>();
-	
-	public static void setup() {	
-		if (!version.contains("legacy")) {
-			tools.add(Material.valueOf("WOODEN_AXE"));
-			tools.add(Material.valueOf("WOODEN_HOE"));
-			tools.add(Material.valueOf("WOODEN_PICKAXE"));
-			tools.add(Material.valueOf("WOODEN_SHOVEL"));
-			tools.add(Material.valueOf("WOODEN_SWORD"));
-			tools.add(Material.valueOf("STONE_AXE"));
-			tools.add(Material.valueOf("STONE_HOE"));
-			tools.add(Material.valueOf("STONE_PICKAXE"));
-			tools.add(Material.valueOf("STONE_SHOVEL"));
-			tools.add(Material.valueOf("STONE_SWORD"));
-			tools.add(Material.valueOf("IRON_AXE"));
-			tools.add(Material.valueOf("IRON_HOE"));
-			tools.add(Material.valueOf("IRON_PICKAXE"));
-			tools.add(Material.valueOf("IRON_SHOVEL"));
-			tools.add(Material.valueOf("IRON_SWORD"));
-			tools.add(Material.valueOf("GOLDEN_AXE"));
-			tools.add(Material.valueOf("GOLDEN_HOE"));
-			tools.add(Material.valueOf("GOLDEN_PICKAXE"));
-			tools.add(Material.valueOf("GOLDEN_SHOVEL"));
-			tools.add(Material.valueOf("GOLDEN_SWORD"));
-			tools.add(Material.valueOf("DIAMOND_AXE"));
-			tools.add(Material.valueOf("DIAMOND_HOE"));
-			tools.add(Material.valueOf("DIAMOND_PICKAXE"));
-			tools.add(Material.valueOf("DIAMOND_SHOVEL"));
-			tools.add(Material.valueOf("DIAMOND_SWORD"));
-			tools.add(Material.valueOf("BOW"));
-			tools.add(Material.valueOf("FISHING_ROD"));
-			tools.add(Material.valueOf("STICK"));
-			tools.add(Material.valueOf("BLAZE_ROD"));
-		} else {
-			tools.add(Material.valueOf("WOOD_AXE"));
-			tools.add(Material.valueOf("WOOD_HOE"));
-			tools.add(Material.valueOf("WOOD_PICKAXE"));
-			tools.add(Material.valueOf("WOOD_SPADE"));
-			tools.add(Material.valueOf("WOOD_SWORD"));
-			tools.add(Material.valueOf("STONE_AXE"));
-			tools.add(Material.valueOf("STONE_HOE"));
-			tools.add(Material.valueOf("STONE_PICKAXE"));
-			tools.add(Material.valueOf("STONE_SPADE"));
-			tools.add(Material.valueOf("STONE_SWORD"));
-			tools.add(Material.valueOf("IRON_AXE"));
-			tools.add(Material.valueOf("IRON_HOE"));
-			tools.add(Material.valueOf("IRON_PICKAXE"));
-			tools.add(Material.valueOf("IRON_SPADE"));
-			tools.add(Material.valueOf("IRON_SWORD"));
-			tools.add(Material.valueOf("GOLD_AXE"));
-			tools.add(Material.valueOf("GOLD_HOE"));
-			tools.add(Material.valueOf("GOLD_PICKAXE"));
-			tools.add(Material.valueOf("GOLD_SPADE"));
-			tools.add(Material.valueOf("GOLD_SWORD"));
-			tools.add(Material.valueOf("DIAMOND_AXE"));
-			tools.add(Material.valueOf("DIAMOND_HOE"));
-			tools.add(Material.valueOf("DIAMOND_PICKAXE"));
-			tools.add(Material.valueOf("DIAMOND_SPADE"));
-			tools.add(Material.valueOf("DIAMOND_SWORD"));
-			tools.add(Material.valueOf("BOW"));
-			tools.add(Material.valueOf("FISHING_ROD"));
-			tools.add(Material.valueOf("STICK"));
-			tools.add(Material.valueOf("BLAZE_ROD"));
+	private static Set<Material> tools = new HashSet<Material>();
+	private static Set<Material> standing = new HashSet<Material>();
+	private static Set<Material> lowblocks = new HashSet<Material>();
+	private static Set<Material> blockexceptions = new HashSet<Material>();
+	private static Set<Material> nonSolid = new HashSet<Material>();
+
+	public static void setup() {
+		tools.clear();
+		blockexceptions.clear();
+		standing.clear();
+		lowblocks.clear();
+		nonSolid.clear();
+		
+		for (String material : MaterialManager.getMaterialConfig().getStringList("Tools")) {
+			try {tools.add(Material.valueOf(material));} catch (Exception e) {}
+		}
+		
+		for (String material : MaterialManager.getMaterialConfig().getStringList("BlockExceptions")) {
+			try {blockexceptions.add(Material.valueOf(material));} catch (Exception e) {}
+		}
+		
+		for (String material : MaterialManager.getMaterialConfig().getStringList("Standing")) {
+			try {standing.add(Material.valueOf(material));} catch (Exception e) {}
+		}
+		
+		for (String material : MaterialManager.getMaterialConfig().getStringList("LowBlocks")) {
+			try {lowblocks.add(Material.valueOf(material));} catch (Exception e) {}
 		}
 		
 		for (Material material : Material.values()) {
@@ -88,26 +48,27 @@ public class MaterialUtils {
 		}
 	}
 	
-	public static boolean isTool(Material material) {
-		return tools.contains(material);
+	public static String getMaterialType(Material material) {
+		if (tools.contains(material)) {
+			return "Tool";
+		}
+		if (standing.contains(material)) {
+			return "Standing";
+		}
+		if (lowblocks.contains(material)) {
+			return "LowBlock";
+		}
+		if (blockexceptions.contains(material)) {
+			return "Item";
+		}
+		if (material.isBlock()) {
+			return "Block";
+		}
+		return "Item";
 	}
-	
-	public static List<Material> getNonSolidList() {
-		return nonSolid;
-	}
-	
-	public static Set<Material> getNonSolidSet() {
-		return convertListToSet(nonSolid);
-	}
-	
-	public static <T> Set<T> convertListToSet(List<T> list) { 
-        Set<T> set = new HashSet<>(); 
-   
-        for (T t : list) {
-            set.add(t);
-        }
 
-        return set; 
-    } 
+	public static Set<Material> getNonSolidSet() {
+		return nonSolid;
+	} 
 
 }

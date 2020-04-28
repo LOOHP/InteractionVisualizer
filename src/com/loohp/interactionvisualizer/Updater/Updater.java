@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 
@@ -21,17 +20,15 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class Updater {
 	
 	public static void updaterInterval() {
-		InteractionVisualizer.UpdaterTaskID = new BukkitRunnable() {
-			public void run() {
-				int minute = LocalDateTime.now().getMinute();
-				if (minute == 0 || minute == 30) {
-					String version = Updater.checkUpdate();
-					if (!version.equals("latest")) {
-						Updater.sendUpdateMessage(version);
-					}
+		InteractionVisualizer.UpdaterTaskID = Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+			int minute = LocalDateTime.now().getMinute();
+			if (minute == 0 || minute == 30) {
+				String version = Updater.checkUpdate();
+				if (!version.equals("latest")) {
+					Updater.sendUpdateMessage(version);
 				}
 			}
-		}.runTaskTimerAsynchronously(InteractionVisualizer.plugin, 500, 1190).getTaskId();
+		}, 500, 1190).getTaskId();
 	}
 	
 	public static void sendUpdateMessage(String version) {

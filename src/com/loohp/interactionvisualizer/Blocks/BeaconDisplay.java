@@ -209,18 +209,18 @@ public class BeaconDisplay implements Listener {
 						if (!line1.getCustomName().equals(one)) {
 							line1.setCustomName(one);
 							line1.setCustomNameVisible(true);
-							PacketManager.updateArmorStand(line1, true);
+							PacketManager.updateArmorStandOnlyMeta(line1);
 						}
 						if (beacon.getTier() == 0) {
 							if (!line2.getCustomName().equals("")) {
 								line2.setCustomName("");
 								line2.setCustomNameVisible(false);
-								PacketManager.updateArmorStand(line2, true);
+								PacketManager.updateArmorStandOnlyMeta(line2);
 							}
 							if (!line3.getCustomName().equals("")) {
 								line3.setCustomName("");
 								line3.setCustomNameVisible(false);
-								PacketManager.updateArmorStand(line3, true);
+								PacketManager.updateArmorStandOnlyMeta(line3);
 							}
 						} else {
 							if (beacon.getPrimaryEffect() != null) {
@@ -228,13 +228,13 @@ public class BeaconDisplay implements Listener {
 								if (!line2.getCustomName().equals(two)) {
 									line2.setCustomName(two);
 									line2.setCustomNameVisible(true);
-									PacketManager.updateArmorStand(line2, true);
+									PacketManager.updateArmorStandOnlyMeta(line2);
 								}
 							} else {
 								if (!line2.getCustomName().equals("")) {
 									line2.setCustomName("");
 									line2.setCustomNameVisible(false);
-									PacketManager.updateArmorStand(line2, true);
+									PacketManager.updateArmorStandOnlyMeta(line2);
 								}
 							}
 							if (beacon.getSecondaryEffect() != null) {
@@ -242,13 +242,13 @@ public class BeaconDisplay implements Listener {
 								if (!line3.getCustomName().equals(three)) {
 									line3.setCustomName(three);
 									line3.setCustomNameVisible(true);
-									PacketManager.updateArmorStand(line3, true);
+									PacketManager.updateArmorStandOnlyMeta(line3);
 								}
 							} else {
 								if (!line3.getCustomName().equals("")) {
 									line3.setCustomName("");
 									line3.setCustomNameVisible(false);
-									PacketManager.updateArmorStand(line3, true);
+									PacketManager.updateArmorStandOnlyMeta(line3);
 								}
 							}
 						}

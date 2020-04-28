@@ -1,7 +1,5 @@
 package com.loohp.interactionvisualizer.EntityHolders;
 
-import java.util.UUID;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -21,17 +19,6 @@ public class Item extends VisualizerEntity {
 	boolean custonNameVisible;
 	Vector velocity;
 	
-	public Item(Location location, int id, UUID uuid) {
-		super(location, id, uuid);
-		this.item = new ItemStack(Material.STONE);
-		this.hasGravity = false;
-		this.pickupDelay = 0;
-		this.customName = "";
-		this.custonNameVisible = false;
-		this.isGlowing = false;
-		this.velocity = new Vector(0.0, 0.0, 0.0);
-	}
-	
 	public Item(Location location) {
 		super(location);
 		this.item = new ItemStack(Material.STONE);
@@ -43,18 +30,18 @@ public class Item extends VisualizerEntity {
 		this.velocity = new Vector(0.0, 0.0, 0.0);
 	}
 	
-	public Item deepClone() {
-		Item newItem = new Item(location, id, uuid);
-		newItem.setSilent(isSilent);
-		newItem.setGravity(hasGravity);
-		newItem.setGlowing(isGlowing);
-		newItem.setPickupDelay(pickupDelay);
-		newItem.setItemStack(item);
-		newItem.setCustomName(customName);
-		newItem.setCustomNameVisible(custonNameVisible);
-		newItem.setVelocity(velocity);
-		newItem.setLocked(lock);
-		return newItem;
+	@Override
+	public int cacheCode() {
+		int prime = 17;
+		int result = super.cacheCode();
+		result = prime * result + ((hasGravity) ? 5351 : 8923);
+		result = prime * result + pickupDelay;
+		result = prime * result + ((hasGravity) ? 6719 : 2753);
+		result = prime * result + ((item == null) ? 0 : item.hashCode());
+		result = prime * result + ((customName == null) ? 0 : customName.hashCode());
+		result = prime * result + ((custonNameVisible) ? 6199 : 8647);
+		result = prime * result + ((velocity == null) ? 0 : velocity.hashCode());
+		return result;
 	}
 	
 	public void setCustomName(String customName) {

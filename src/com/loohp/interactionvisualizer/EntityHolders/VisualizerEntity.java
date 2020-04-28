@@ -21,12 +21,15 @@ public class VisualizerEntity {
 		this.isSilent = false;
 	}
 	
-	public VisualizerEntity(Location location, int id, UUID uuid) {
-		this.id = id;
-		this.uuid = uuid;
-		this.location = location.clone();
-		this.lock = false;
-		this.isSilent = false;
+	public int cacheCode() {
+		int prime = 17;
+		int result = 1;
+		result = prime * result + id;
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		result = prime * result + ((location == null) ? 0 : location.hashCode());
+		result = prime * result + ((lock) ? 1531 : 4021);
+		result = prime * result + ((isSilent) ? 3301 : 4507);
+		return result;
 	}
 	
 	public void setRotation(float yaw, float pitch) {

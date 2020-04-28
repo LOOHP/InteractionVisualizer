@@ -384,13 +384,13 @@ public class BlastFurnaceDisplay implements Listener {
 								if (!stand.getCustomName().equals(symbol) || !stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(true);
 									stand.setCustomName(symbol);
-									PacketManager.updateArmorStand(stand, true);
+									PacketManager.updateArmorStandOnlyMeta(stand);
 								}
 							} else {
 								if (!stand.getCustomName().equals("") || stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(false);
 									stand.setCustomName("");
-									PacketManager.updateArmorStand(stand, true);
+									PacketManager.updateArmorStandOnlyMeta(stand);
 								}
 							}
 						} else {					
@@ -398,7 +398,7 @@ public class BlastFurnaceDisplay implements Listener {
 							if (!stand.getCustomName().equals("") || stand.isCustomNameVisible()) {
 								stand.setCustomNameVisible(false);
 								stand.setCustomName("");
-								PacketManager.updateArmorStand(stand, true);
+								PacketManager.updateArmorStandOnlyMeta(stand);
 							}
 						}
 					});
