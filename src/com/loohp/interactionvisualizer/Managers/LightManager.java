@@ -6,8 +6,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 
@@ -39,54 +39,55 @@ public class LightManager {
 	}
 	
 	public static int run() {
-		return new BukkitRunnable() {
-			public void run() {
-				boolean changed = false;
-				Set<Location> locations = new HashSet<Location>();
-				if (!deletequeue.isEmpty()) {
-					changed = true;
-				}
-				while (!deletequeue.isEmpty()) {
-					Location location = deletequeue.poll();
-					if (location != null) {
-						LightAPI.deleteLight(location, LightType.SKY, false);
-						LightAPI.deleteLight(location, LightType.BLOCK, false);
-						locations.add(location);
-					}
-				}
-				if (!skylights.isEmpty()) {
-					changed = true;
-				}
-				for (Entry<Location, Integer> entry : skylights.entrySet()) {
-					Location location = entry.getKey();
-					int lightlevel = entry.getValue();
-					LightAPI.createLight(location, LightType.SKY, lightlevel, false);
-					locations.add(location);
-				}
-				if (!blocklights.isEmpty()) {
-					changed = true;
-				}
-				for (Entry<Location, Integer> entry : blocklights.entrySet()) {
-					Location location = entry.getKey();
-					int lightlevel = entry.getValue();
-					LightAPI.createLight(location, LightType.BLOCK, lightlevel, false);
-					locations.add(location);
-				}
-				if (changed) {
-					HashSet<ChunkInfo> infos = new HashSet<ChunkInfo>();
-					for (Location location : locations) {
-						infos.addAll(LightAPI.collectChunks(location, LightType.SKY, 15));
-						infos.addAll(LightAPI.collectChunks(location, LightType.BLOCK, 15));
-					}
-					for (ChunkInfo info : infos) {
-						LightAPI.updateChunk(info, LightType.SKY);
-						LightAPI.updateChunk(info, LightType.BLOCK);
-					}
-				}
-				skylights.clear();
-				blocklights.clear();
+		return Bukkit.getScheduler().runTaskTimer(InteractionVisualizer.plugin, () -> {
+			boolean changed = false;
+			Set<Location> locations = new HashSet<Location>();
+			if (!deletequeue.isEmpty()) {
+				changed = true;
 			}
-		}.runTaskTimer(InteractionVisualizer.plugin, 0, 10).getTaskId();
+			while (!deletequeue.isEmpty()) {
+				Location location = deletequeue.poll();
+				if (location != null) {
+					LightAPI.deleteLight(location, LightType.SKY, false);
+					LightAPI.deleteLight(location, LightType.BLOCK, false);
+					locations.add(location);
+				}
+			}
+			if (!skylights.isEmpty()) {
+				changed = true;
+			}
+			for (Entry<Location, Integer> entry : skylights.entrySet()) {
+				Location location = entry.getKey();
+				int lightlevel = entry.getValue();
+				LightAPI.createLight(location, LightType.SKY, lightlevel, false);
+				locations.add(location);
+			}
+			if (!blocklights.isEmpty()) {
+				changed = true;
+			}
+			for (Entry<Location, Integer> entry : blocklights.entrySet()) {
+				Location location = entry.getKey();
+				int lightlevel = entry.getValue();
+				LightAPI.createLight(location, LightType.BLOCK, lightlevel, false);
+				locations.add(location);
+			}
+			if (changed) {
+				HashSet<ChunkInfo> blockinfos = new HashSet<ChunkInfo>();
+				HashSet<ChunkInfo> skyinfos = new HashSet<ChunkInfo>();
+				for (Location location : locations) {
+					skyinfos.addAll(LightAPI.collectChunks(location, LightType.SKY, 15));
+					blockinfos.addAll(LightAPI.collectChunks(location, LightType.BLOCK, 15));
+				}
+				for (ChunkInfo info : skyinfos) {
+					LightAPI.updateChunk(info, LightType.SKY);
+				}
+				for (ChunkInfo info : blockinfos) {
+					LightAPI.updateChunk(info, LightType.BLOCK);
+				}
+			}
+			skylights.clear();
+			blocklights.clear();
+		}, 0, 10).getTaskId();
 	}
 
 }
