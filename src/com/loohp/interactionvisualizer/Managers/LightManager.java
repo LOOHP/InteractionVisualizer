@@ -80,8 +80,8 @@ public class LightManager {
 				HashSet<ChunkInfo> blockinfos = new HashSet<ChunkInfo>();
 				HashSet<ChunkInfo> skyinfos = new HashSet<ChunkInfo>();
 				for (Location location : locations) {
-					skyinfos.addAll(LightAPI.collectChunks(location, LightType.SKY, 1));
-					blockinfos.addAll(LightAPI.collectChunks(location, LightType.BLOCK, 1));
+					skyinfos.addAll(LightAPI.collectChunks(location, LightType.SKY, 15));
+					blockinfos.addAll(LightAPI.collectChunks(location, LightType.BLOCK, 15));
 				}
 				for (ChunkInfo info : skyinfos) {
 					LightAPI.updateChunk(info, LightType.SKY);
