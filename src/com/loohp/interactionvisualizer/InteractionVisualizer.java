@@ -211,8 +211,10 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] InteractionVisualizer has been enabled!");
 		
-		Bukkit.getScheduler().runTaskLater(this, () -> {
+		Bukkit.getScheduler().runTask(this, () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
+				PacketManager.playerStatus.put(player, new ArrayList<VisualizerEntity>());
+				
 				Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
 					if (!Database.playerExists(player)) {
 						Database.createPlayer(player);
@@ -220,7 +222,7 @@ public class InteractionVisualizer extends JavaPlugin {
 					Database.loadPlayer(player, true);
 				});
 			}
-		}, 100);
+		});
 	}
 	
 	@Override

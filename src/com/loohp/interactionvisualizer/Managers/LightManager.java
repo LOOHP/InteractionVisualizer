@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World.Environment;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 
@@ -48,7 +49,9 @@ public class LightManager {
 			while (!deletequeue.isEmpty()) {
 				Location location = deletequeue.poll();
 				if (location != null) {
-					LightAPI.deleteLight(location, LightType.SKY, false);
+					if (location.getWorld().getEnvironment().equals(Environment.NORMAL)) {
+						LightAPI.deleteLight(location, LightType.SKY, false);
+					}
 					LightAPI.deleteLight(location, LightType.BLOCK, false);
 					locations.add(location);
 				}
@@ -58,9 +61,11 @@ public class LightManager {
 			}
 			for (Entry<Location, Integer> entry : skylights.entrySet()) {
 				Location location = entry.getKey();
-				int lightlevel = entry.getValue();
-				LightAPI.createLight(location, LightType.SKY, lightlevel, false);
-				locations.add(location);
+				if (location.getWorld().getEnvironment().equals(Environment.NORMAL)) {
+					int lightlevel = entry.getValue();
+					LightAPI.createLight(location, LightType.SKY, lightlevel, false);
+					locations.add(location);
+				}
 			}
 			if (!blocklights.isEmpty()) {
 				changed = true;
@@ -75,8 +80,8 @@ public class LightManager {
 				HashSet<ChunkInfo> blockinfos = new HashSet<ChunkInfo>();
 				HashSet<ChunkInfo> skyinfos = new HashSet<ChunkInfo>();
 				for (Location location : locations) {
-					skyinfos.addAll(LightAPI.collectChunks(location, LightType.SKY, 15));
-					blockinfos.addAll(LightAPI.collectChunks(location, LightType.BLOCK, 15));
+					skyinfos.addAll(LightAPI.collectChunks(location, LightType.SKY, 1));
+					blockinfos.addAll(LightAPI.collectChunks(location, LightType.BLOCK, 1));
 				}
 				for (ChunkInfo info : skyinfos) {
 					LightAPI.updateChunk(info, LightType.SKY);

@@ -230,6 +230,7 @@ public class TaskManager {
 		}
 		
 		tasks.add(LightManager.run());
+		tasks.add(PacketManager.update());
 		
 		//if (!(beacon || furnace || blastfurnace || smoker || jukebox || brewingstand)) {
 		//	tileEntities = false;

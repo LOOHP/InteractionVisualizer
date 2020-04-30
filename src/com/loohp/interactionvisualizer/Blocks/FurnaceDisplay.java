@@ -479,14 +479,18 @@ public class FurnaceDisplay implements Listener {
 		stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 	}
 	
-	public static boolean isFurnace(Material material) {
-		if (material.toString().toUpperCase().equals("FURNACE")) {
+	public static boolean isFurnace(String material) {
+		if (material.toUpperCase().equals("FURNACE")) {
 			return true;
 		}
-		if (material.toString().toUpperCase().equals("BURNING_FURNACE")) {
+		if (material.toUpperCase().equals("BURNING_FURNACE")) {
 			return true;
 		}
 		return false;
+	}
+	
+	public static boolean isFurnace(Material material) {
+		return isFurnace(material.toString());
 	}
 
 }

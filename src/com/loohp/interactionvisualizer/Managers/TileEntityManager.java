@@ -1,9 +1,10 @@
 package com.loohp.interactionvisualizer.Managers;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -23,7 +24,9 @@ public class TileEntityManager {
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
 	private static ChunkUpdateQueue chunks = new ChunkUpdateQueue();
-	private static Queue<BlockState> states = new LinkedList<BlockState>();
+	private static List<BlockState> states = Collections.synchronizedList(new LinkedList<BlockState>());
+	private static Integer stateTaskCount = 0;
+	private static Integer stateDoneCount = 0;
 	private static HashMap<String, List<Block>> current = new HashMap<String, List<Block>>();
 	private static HashMap<String, List<Block>> upcomming = new HashMap<String, List<Block>>();
 	
@@ -41,6 +44,8 @@ public class TileEntityManager {
 		upcomming.put("smoker", new LinkedList<Block>());
 		upcomming.put("beacon", new LinkedList<Block>());
 		upcomming.put("jukebox", new LinkedList<Block>());
+		stateTaskCount = 0;
+		stateDoneCount = 0;
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> getAllChunks());
 	}
 	
@@ -73,16 +78,28 @@ public class TileEntityManager {
 			ChunkPosition chunkpos = chunks.poll();
 			if (chunkpos.isLoaded()) {
 				count++;
-				for (BlockState state : chunkpos.getChunk().getTileEntities()) {
-					states.add(state);
-				}
+				stateTaskCount++;
+				BlockState[] stateArray = chunkpos.getChunk().getTileEntities();
+				Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+					for (BlockState state : stateArray) {
+						states.add(state);
+					}
+					synchronized (stateDoneCount) {
+						stateDoneCount++;
+					}
+				});
 			}
 			if (count >= tileEntityChunkPerTick) {
 				break;
 			}
 		}
 		if (chunks.isEmpty()) {
-			Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> loadTileEntities());
+			Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+				while (stateTaskCount > stateDoneCount) {
+					try {TimeUnit.MILLISECONDS.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
+				}
+				loadTileEntities();
+			});
 		} else {
 			Bukkit.getScheduler().runTaskLater(plugin, () -> loadBlockStates(), 1);
 		}
@@ -90,7 +107,7 @@ public class TileEntityManager {
 
 	private static void loadTileEntities() {
 		while (!states.isEmpty()) {
-			BlockState state = states.poll();
+			BlockState state = states.remove(0);
 			Block block = state.getBlock();
 			Material type = state.getType();
 			if (type.toString().toUpperCase().equals("BLAST_FURNACE")) {
