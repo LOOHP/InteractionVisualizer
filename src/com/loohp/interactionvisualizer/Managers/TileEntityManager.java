@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,8 +26,8 @@ public class TileEntityManager {
 	private static Plugin plugin = InteractionVisualizer.plugin;
 	private static ChunkUpdateQueue chunks = new ChunkUpdateQueue();
 	private static List<BlockState> states = Collections.synchronizedList(new LinkedList<BlockState>());
-	private static Integer stateTaskCount = 0;
-	private static Integer stateDoneCount = 0;
+	private static AtomicInteger stateTaskCount = new AtomicInteger();
+	private static AtomicInteger stateDoneCount = new AtomicInteger();
 	private static HashMap<String, List<Block>> current = new HashMap<String, List<Block>>();
 	private static HashMap<String, List<Block>> upcomming = new HashMap<String, List<Block>>();
 	
@@ -44,8 +45,8 @@ public class TileEntityManager {
 		upcomming.put("smoker", new LinkedList<Block>());
 		upcomming.put("beacon", new LinkedList<Block>());
 		upcomming.put("jukebox", new LinkedList<Block>());
-		stateTaskCount = 0;
-		stateDoneCount = 0;
+		stateTaskCount.set(0);
+		stateDoneCount.set(0);
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> getAllChunks());
 	}
 	
@@ -78,15 +79,13 @@ public class TileEntityManager {
 			ChunkPosition chunkpos = chunks.poll();
 			if (chunkpos.isLoaded()) {
 				count++;
-				stateTaskCount++;
 				BlockState[] stateArray = chunkpos.getChunk().getTileEntities();
+				stateTaskCount.incrementAndGet();
 				Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 					for (BlockState state : stateArray) {
 						states.add(state);
 					}
-					synchronized (stateDoneCount) {
-						stateDoneCount++;
-					}
+					stateDoneCount.incrementAndGet();
 				});
 			}
 			if (count >= tileEntityChunkPerTick) {
@@ -95,7 +94,7 @@ public class TileEntityManager {
 		}
 		if (chunks.isEmpty()) {
 			Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-				while (stateTaskCount > stateDoneCount) {
+				while (stateTaskCount.get() > stateDoneCount.get()) {
 					try {TimeUnit.MILLISECONDS.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
 				}
 				loadTileEntities();
