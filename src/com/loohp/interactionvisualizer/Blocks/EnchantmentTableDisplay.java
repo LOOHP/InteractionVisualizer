@@ -65,7 +65,7 @@ public class EnchantmentTableDisplay implements Listener {
 			return;
 		}
 		
-		etb.playEnchantAnimation(event.getEnchantsToAdd(), itemstack);
+		etb.playEnchantAnimation(event.getEnchantsToAdd(), event.getExpLevelCost(), itemstack);
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)

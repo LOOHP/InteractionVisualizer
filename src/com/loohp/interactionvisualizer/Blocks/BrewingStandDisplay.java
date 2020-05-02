@@ -27,7 +27,7 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Managers.PlayerRangeManager;
+import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 
 public class BrewingStandDisplay implements Listener {
@@ -324,7 +324,7 @@ public class BrewingStandDisplay implements Listener {
 	}
 	
 	public static boolean isActive(Location loc) {
-		return PlayerRangeManager.hasPlayerNearby(loc);
+		return PlayerLocationManager.hasPlayerNearby(loc);
 	}
 	
 	public static HashMap<String, ArmorStand> spawnArmorStands(Block block) { //.add(0.68, 0.700781, 0.35)

@@ -1,6 +1,7 @@
 package com.loohp.interactionvisualizer.ObjectHolders;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,6 +20,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
@@ -36,6 +38,7 @@ public class EnchantmentTableBundle {
 	boolean animationPlaying;
 	Player enchanter;
 	List<Player> players;
+	String arrow;
 	
 	public EnchantmentTableBundle(Player enchanter, Block block, List<Player> players) {
 		this.plugin = InteractionVisualizer.plugin;
@@ -45,9 +48,10 @@ public class EnchantmentTableBundle {
 		this.animationPlaying = false;
 		this.players = players;
 		this.enchanter = enchanter;
+		this.arrow = "\u27f9";
 	}
 	
-	public void playEnchantAnimation(Map<Enchantment, Integer> enchantsToAdd, ItemStack itemstack) {		
+	public void playEnchantAnimation(Map<Enchantment, Integer> enchantsToAdd, int expCost, ItemStack itemstack) {		
 		Item item = this.item.get();
 		if (item.isLocked()) {
 			return;
@@ -69,7 +73,7 @@ public class EnchantmentTableBundle {
 		item.setVelocity(new Vector(0.0, 0.05, 0.0));
 		PacketManager.updateItem(item);
 		for (Player each : InteractionVisualizer.itemDrop) {
-			each.spawnParticle(Particle.PORTAL, location.clone().add(0.5, 2.6, 0.5), 75);
+			each.spawnParticle(Particle.PORTAL, location.clone().add(0.5, 2.6, 0.5), 200);
 		}
 		
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -77,26 +81,38 @@ public class EnchantmentTableBundle {
 			item.setVelocity(new Vector(0, 0, 0));
 			PacketManager.updateItem(item);
 		}, 20);
-		
+			
+		List<ArmorStand> stands = new LinkedList<ArmorStand>();
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
-			int level = 0;
-			Enchantment ench = null;
+			Location standloc = item.getLocation().add(0.0, 0.5, 0.0);
 			for (Entry<Enchantment, Integer> entry : enchantsToAdd.entrySet()) {
-				if (entry.getValue() > level) {
-					level = entry.getValue();
-					ench = entry.getKey();
-				}
+				@SuppressWarnings("deprecation")
+				String enchantmentName = EnchantmentManager.getEnchConfig().getString("Enchantments." + entry.getKey().getName());
+				ArmorStand stand = new ArmorStand(standloc);
+				stand.setCustomName(ChatColor.AQUA + enchantmentName + " " + RomanNumberUtils.toRoman(entry.getValue()));
+				stand.setCustomNameVisible(true);
+				setStand(stand);
+				PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemDrop, stand);
+				stands.add(stand);
+				standloc.add(0.0, 0.3, 0.0);
 			}
-			@SuppressWarnings("deprecation")
-			String enchantmentName = EnchantmentManager.getEnchConfig().getString("Enchantments." + ench.getName());
-			item.setCustomName(ChatColor.AQUA + enchantmentName + " " + RomanNumberUtils.toRoman(level));
-			item.setCustomNameVisible(true);
+			
+			ArmorStand stand = new ArmorStand(standloc);
+			String levelStr = EnchantmentManager.getEnchConfig().getString("Translations.LEVEL");
+			stand.setCustomName(ChatColor.GREEN + levelStr + " " + arrow + " " + expCost);
+			stand.setCustomNameVisible(true);
+			setStand(stand);
+			PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemDrop, stand);
+			stands.add(stand);
+			
 			PacketManager.updateItem(item);
 		}, 50);
 		
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
-			item.setCustomName("");
-			item.setCustomNameVisible(false);
+			while (!stands.isEmpty()) {
+				ArmorStand stand = stands.remove(0);
+				PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			}
 			item.setGravity(true);
 			PacketManager.updateItem(item);
 		}, 90);
@@ -211,6 +227,15 @@ public class EnchantmentTableBundle {
 			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item.get());
 			this.item = Optional.empty();
 		}
+	}
+	
+	private void setStand(ArmorStand stand) {
+		stand.setMarker(true);
+		stand.setSmall(true);
+		stand.setVisible(true);
+		stand.setInvulnerable(true);
+		stand.setBasePlate(false);
+		stand.setVisible(false);
 	}
 	
 	public ItemStack getItemStack() {

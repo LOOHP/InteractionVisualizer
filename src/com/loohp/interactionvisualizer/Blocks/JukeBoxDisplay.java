@@ -21,7 +21,7 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.MusicManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Managers.PlayerRangeManager;
+import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Utils.LegacyRecordsUtils;
 
@@ -180,7 +180,7 @@ public class JukeBoxDisplay implements Listener {
 	}
 	
 	public static boolean isActive(Location loc) {
-		return PlayerRangeManager.hasPlayerNearby(loc);
+		return PlayerLocationManager.hasPlayerNearby(loc);
 	}
 	
 	public static ChatColor getColor(String material) {

@@ -19,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
@@ -31,7 +32,7 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Managers.PlayerRangeManager;
+import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
@@ -78,6 +79,11 @@ public class SmokerDisplay implements Listener {
 		
 		if (event.isShiftClick()) {
 			if (!InventoryUtils.stillHaveSpace(event.getWhoClicked().getInventory(), event.getView().getItem(event.getRawSlot()).getType())) {
+				return;
+			}
+		}
+		if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) {
+			if (event.getWhoClicked().getInventory().getItem(event.getHotbarButton()) != null && !event.getWhoClicked().getInventory().getItem(event.getHotbarButton()).getType().equals(Material.AIR)) {
 				return;
 			}
 		}
@@ -435,7 +441,7 @@ public class SmokerDisplay implements Listener {
 	}
 	
 	public static boolean isActive(Location loc) {
-		return PlayerRangeManager.hasPlayerNearby(loc);
+		return PlayerLocationManager.hasPlayerNearby(loc);
 	}
 	
 	public static HashMap<String, ArmorStand> spawnArmorStands(Block block) {

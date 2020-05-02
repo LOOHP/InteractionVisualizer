@@ -35,9 +35,7 @@ public class ServerPacketSender {
 		}
 		Bukkit.getScheduler().runTask(plugin, () -> {
 			try {
-	        	for (Player player : players) {
-					protocolManager.sendServerPacket(player, packet1);
-				}
+				protocolManager.sendServerPacket(entity, packet1);
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();
 			}

@@ -25,7 +25,7 @@ import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.Managers.EffectManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Managers.PlayerRangeManager;
+import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
 
@@ -263,7 +263,7 @@ public class BeaconDisplay implements Listener {
 	}
 	
 	public static boolean isActive(Location loc) {
-		return PlayerRangeManager.hasPlayerNearby(loc);
+		return PlayerLocationManager.hasPlayerNearby(loc);
 	}
 	
 	public static HashMap<String, ArmorStand> spawnArmorStands(Block block, BlockFace face) {

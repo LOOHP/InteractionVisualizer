@@ -23,6 +23,9 @@ import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Updater.Updater;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Commands implements CommandExecutor, TabCompleter {
 	
@@ -35,8 +38,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 		
 		if (args.length == 0) {
-			sender.sendMessage(ChatColor.AQUA + "InteractionVisualizer written by LOOHP!");
-			sender.sendMessage(ChatColor.GOLD + "You are running InteractionVisualizer version: " + plugin.getDescription().getVersion());
+			sender.sendMessage(ChatColor.AQUA + "[InteractionVisualizer] InteractionVisualizer written by LOOHP!");
+			sender.sendMessage(ChatColor.GOLD + "[InteractionVisualizer] Running InteractionVisualizer version: " + plugin.getDescription().getVersion());
 			return true;
 		}
 		
@@ -79,7 +82,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 					if (version.equals("latest")) {
 						sender.sendMessage(ChatColor.GREEN + "[InteractionVisualizer] You are running the latest version!");
 					} else {
-						Updater.sendUpdateMessage(version);
+						Updater.sendUpdateMessage(sender, version);
 					}
 				});
 			} else {
@@ -184,6 +187,15 @@ public class Commands implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
+			return true;
+		}
+		
+		if (args[0].equalsIgnoreCase("ethereal")) {
+			TextComponent text = new TextComponent("She is Imaginary~~");
+			text.setColor(ChatColor.YELLOW);
+			TextComponent bone = new TextComponent("§eNana's Bone\n§7Lost §6In-§dMaginary~~");
+			text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] {bone}));
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 		

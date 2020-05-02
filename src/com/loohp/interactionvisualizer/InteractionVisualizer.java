@@ -2,8 +2,10 @@ package com.loohp.interactionvisualizer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
@@ -18,7 +20,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.EntityHolders.VisualizerEntity;
 import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
@@ -28,7 +33,7 @@ import com.loohp.interactionvisualizer.Managers.LangManager;
 import com.loohp.interactionvisualizer.Managers.MaterialManager;
 import com.loohp.interactionvisualizer.Managers.MusicManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Managers.PlayerRangeManager;
+import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Managers.TaskManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
@@ -81,7 +86,6 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static Integer tileEntityChunkPerTick = 9;
 	
 	public static boolean UpdaterEnabled = true;
-	public static int UpdaterTaskID = -1;
 	
 	@Override
 	public void onEnable() {
@@ -176,9 +180,10 @@ public class InteractionVisualizer extends JavaPlugin {
 		CustomBlockDataManager.setup();
 		TaskManager.run();
 		TileEntityManager.run();
-		PlayerRangeManager.run();
+		PlayerLocationManager.run();
 		CustomBlockDataManager.intervalSaveToFile();
 		PacketManager.run();
+		PlayerLocationManager.updateLocation();
 		
 		MaterialManager.setup();
 		
@@ -213,7 +218,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		Bukkit.getScheduler().runTask(this, () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				PacketManager.playerStatus.put(player, new CopyOnWriteArrayList<VisualizerEntity>());
+				PacketManager.playerStatus.put(player, Collections.newSetFromMap(new ConcurrentHashMap<VisualizerEntity, Boolean>()));
 				
 				Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
 					if (!Database.playerExists(player)) {
@@ -223,6 +228,72 @@ public class InteractionVisualizer extends JavaPlugin {
 				});
 			}
 		});
+		
+		Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
+			if (UpdaterEnabled) {
+				String version = Updater.checkUpdate();
+				if (version.equals("latest")) {
+					Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] You are running the latest version: " + plugin.getDescription().getVersion() + "!");
+				} else {
+					Updater.sendUpdateMessage(Bukkit.getConsoleSender(), version);
+					for (Player player : Bukkit.getOnlinePlayers()) {
+						if (player.hasPermission("interactionvisualizer.update")) {
+							Updater.sendUpdateMessage(player, version);
+						}
+					}
+				}
+			}
+		}, 100);
+		
+		protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.MONITOR, PacketType.Play.Server.SPAWN_ENTITY_LIVING) {
+		    @Override
+		    public void onPacketSending(PacketEvent event) {
+		        if (!event.getPacketType().equals(PacketType.Play.Server.SPAWN_ENTITY_LIVING)) {
+		        	return;
+		        }
+		        
+		        PacketContainer packet = event.getPacket();
+		        if (packet.getIntegers().read(1) != 1) {
+		        	return;
+		        }
+		        
+		        Bukkit.getConsoleSender().sendMessage("Sending ArmorStand Spawn Packet to " + event.getPlayer().getName() + " " + packet.getDoubles().read(0) + " " + packet.getDoubles().read(1) + " " + packet.getDoubles().read(2));
+		    }
+		});
+		/*
+		protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.MONITOR, PacketType.Play.Server.ENTITY_METADATA) {
+		    @Override
+		    public void onPacketSending(PacketEvent event) {
+		        if (!event.getPacketType().equals(PacketType.Play.Server.ENTITY_METADATA)) {
+		        	return;
+		        }
+		        
+		        Bukkit.getConsoleSender().sendMessage("Sending ArmorStand Update Packet to " + event.getPlayer().getName());
+		    }
+		});
+		
+		protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.MONITOR, PacketType.Play.Server.ENTITY_DESTROY) {
+		    @Override
+		    public void onPacketSending(PacketEvent event) {
+		        if (!event.getPacketType().equals(PacketType.Play.Server.ENTITY_DESTROY)) {
+		        	return;
+		        }
+		        
+		        Bukkit.getConsoleSender().sendMessage("Sending ArmorStand Remove Packet to " + event.getPlayer().getName());
+		    }
+		});
+		
+		protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.MONITOR, PacketType.Play.Server.ANIMATION) {
+		    @Override
+		    public void onPacketSending(PacketEvent event) {
+		        if (!event.getPacketType().equals(PacketType.Play.Server.ANIMATION)) {
+		        	return;
+		        }
+		        
+		        Bukkit.getConsoleSender().sendMessage("Sending Animation Packet to " + event.getPlayer().getName());
+		    }
+		});
+		*/
 	}
 	
 	@Override
@@ -269,13 +340,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		tileEntityChunkPerTick = config.getInt("TileEntityUpdate.ChunksPerTick");
 		
-		if (UpdaterTaskID >= 0) {
-			Bukkit.getScheduler().cancelTask(UpdaterTaskID);
-		}
 		UpdaterEnabled = plugin.getConfig().getBoolean("Options.Updater");
-		if (UpdaterEnabled == true) {
-			Updater.updaterInterval();
-		}
 	}
 	
 	public static List<Player> getOnlinePlayers() {

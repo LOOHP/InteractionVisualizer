@@ -3,11 +3,14 @@ package com.loohp.interactionvisualizer.Updater;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.Scanner;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 
@@ -17,32 +20,40 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class Updater {
+public class Updater implements Listener {
 	
-	public static void updaterInterval() {
-		InteractionVisualizer.UpdaterTaskID = Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-			int minute = LocalDateTime.now().getMinute();
-			if (minute == 0 || minute == 30) {
-				String version = Updater.checkUpdate();
-				if (!version.equals("latest")) {
-					Updater.sendUpdateMessage(version);
+	@EventHandler
+	public void onJoin(PlayerJoinEvent event) {
+		Bukkit.getScheduler().runTaskLaterAsynchronously(InteractionVisualizer.plugin, () -> {
+			if (InteractionVisualizer.UpdaterEnabled) {
+				Player player = event.getPlayer();
+				if (player.hasPermission("interactionvisualizer.update")) {
+					String version = Updater.checkUpdate();
+					if (version.equals("latest")) {
+						TextComponent text = new TextComponent(ChatColor.GREEN + "[InteractionVisualizer] You are running the latest version: " + InteractionVisualizer.plugin.getDescription().getVersion() + "!");
+						text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.YELLOW + "Link to SpigotMC resource page!").create()));
+						text.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/resources/77050"));
+						player.spigot().sendMessage(text);
+					} else {
+						Updater.sendUpdateMessage(player, version);
+					}
 				}
 			}
-		}, 500, 1190).getTaskId();
+		}, 100);
 	}
 	
-	public static void sendUpdateMessage(String version) {
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			if (player.hasPermission("interactionvisualizer.update")) {
-				player.sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] A new version is available on SpigotMC: " + version);
-				TextComponent url = new TextComponent(ChatColor.GOLD + "https://www.spigotmc.org/resources/77050");
-				url.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.AQUA + "Click me!").create()));
-				url.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/resources/77050"));
-				player.spigot().sendMessage(url);
-			}
+	public static void sendUpdateMessage(CommandSender sender, String version) {
+		if (sender instanceof Player) {
+			Player player = (Player) sender;
+			player.sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] A new version is available on SpigotMC: " + version);
+			TextComponent url = new TextComponent(ChatColor.GOLD + "https://www.spigotmc.org/resources/77050");
+			url.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.AQUA + "Click me!").create()));
+			url.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/resources/77050"));
+			player.spigot().sendMessage(url);
+		} else {
+			sender.sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] A new version is available on SpigotMC: " + version);
+			sender.sendMessage(ChatColor.GOLD + "Download: https://www.spigotmc.org/resources/77050");
 		}
-		Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] A new version is available on SpigotMC: " + version);
-		Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "Download: https://www.spigotmc.org/resources/77050");
 	}
 
     public static String checkUpdate() {
