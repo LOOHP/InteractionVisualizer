@@ -20,10 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
 import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.EntityHolders.VisualizerEntity;
 import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
@@ -244,7 +241,7 @@ public class InteractionVisualizer extends JavaPlugin {
 				}
 			}
 		}, 100);
-		
+		/*
 		protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.MONITOR, PacketType.Play.Server.SPAWN_ENTITY_LIVING) {
 		    @Override
 		    public void onPacketSending(PacketEvent event) {
@@ -260,7 +257,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		        Bukkit.getConsoleSender().sendMessage("Sending ArmorStand Spawn Packet to " + event.getPlayer().getName() + " " + packet.getDoubles().read(0) + " " + packet.getDoubles().read(1) + " " + packet.getDoubles().read(2));
 		    }
 		});
-		/*
+
 		protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.MONITOR, PacketType.Play.Server.ENTITY_METADATA) {
 		    @Override
 		    public void onPacketSending(PacketEvent event) {
