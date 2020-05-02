@@ -213,7 +213,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		Bukkit.getScheduler().runTask(this, () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				PacketManager.playerStatus.put(player, new ArrayList<VisualizerEntity>());
+				PacketManager.playerStatus.put(player, new CopyOnWriteArrayList<VisualizerEntity>());
 				
 				Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
 					if (!Database.playerExists(player)) {

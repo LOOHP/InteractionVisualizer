@@ -1,8 +1,8 @@
 package com.loohp.interactionvisualizer.Managers;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -42,7 +42,7 @@ public class LightManager {
 	public static int run() {
 		return Bukkit.getScheduler().runTaskTimer(InteractionVisualizer.plugin, () -> {
 			boolean changed = false;
-			Set<Location> locations = new HashSet<Location>();
+			HashMap<Location, Integer> locations = new HashMap<Location, Integer>();
 			if (!deletequeue.isEmpty()) {
 				changed = true;
 			}
@@ -53,7 +53,7 @@ public class LightManager {
 						LightAPI.deleteLight(location, LightType.SKY, false);
 					}
 					LightAPI.deleteLight(location, LightType.BLOCK, false);
-					locations.add(location);
+					locations.put(location, 14);
 				}
 			}
 			if (!skylights.isEmpty()) {
@@ -64,7 +64,7 @@ public class LightManager {
 				if (location.getWorld().getEnvironment().equals(Environment.NORMAL)) {
 					int lightlevel = entry.getValue();
 					LightAPI.createLight(location, LightType.SKY, lightlevel, false);
-					locations.add(location);
+					locations.put(location, lightlevel);
 				}
 			}
 			if (!blocklights.isEmpty()) {
@@ -74,14 +74,14 @@ public class LightManager {
 				Location location = entry.getKey();
 				int lightlevel = entry.getValue();
 				LightAPI.createLight(location, LightType.BLOCK, lightlevel, false);
-				locations.add(location);
+				locations.put(location, lightlevel);
 			}
 			if (changed) {
 				HashSet<ChunkInfo> blockinfos = new HashSet<ChunkInfo>();
 				HashSet<ChunkInfo> skyinfos = new HashSet<ChunkInfo>();
-				for (Location location : locations) {
-					skyinfos.addAll(LightAPI.collectChunks(location, LightType.SKY, 15));
-					blockinfos.addAll(LightAPI.collectChunks(location, LightType.BLOCK, 15));
+				for (Entry<Location, Integer> entry : locations.entrySet()) {
+					skyinfos.addAll(LightAPI.collectChunks(entry.getKey(), LightType.SKY, entry.getValue()));
+					blockinfos.addAll(LightAPI.collectChunks(entry.getKey(), LightType.BLOCK, entry.getValue()));
 				}
 				for (ChunkInfo info : skyinfos) {
 					LightAPI.updateChunk(info, LightType.SKY);

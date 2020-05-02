@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class PacketManager implements Listener {
 	public static ConcurrentHashMap<VisualizerEntity, Boolean> loaded = new ConcurrentHashMap<VisualizerEntity, Boolean>();
 	private static ConcurrentHashMap<VisualizerEntity, Integer> cache = new ConcurrentHashMap<VisualizerEntity, Integer>();
 	
-	public static ConcurrentHashMap<Player, List<VisualizerEntity>> playerStatus = new ConcurrentHashMap<Player, List<VisualizerEntity>>();
+	public static ConcurrentHashMap<Player, CopyOnWriteArrayList<VisualizerEntity>> playerStatus = new ConcurrentHashMap<Player, CopyOnWriteArrayList<VisualizerEntity>>();
 	
 	public static void run() {
 		if (!plugin.isEnabled()) {
@@ -175,6 +176,30 @@ public class PacketManager implements Listener {
 					continue;
 				}
 				
+				List<Player> playerList = new LinkedList<Player>();
+				playerList.add(player);
+				
+				for (VisualizerEntity entity : activeList) {
+					if (entity.getWorld().equals(player.getWorld()) && entity.getLocation().distanceSquared(player.getLocation()) <= 4096) {
+						if (active.containsKey(entity)) {
+							if (loaded.get(entity)) {
+								continue;
+							}
+						}
+						
+						if (entity instanceof ArmorStand) {
+							ArmorStand stand = (ArmorStand) entity;
+							removeArmorStand(playerList, stand, false);
+						} else if (entity instanceof Item) {
+							Item item = (Item) entity;
+							removeItem(playerList, item, false);
+						} else if (entity instanceof ItemFrame) {
+							ItemFrame frame = (ItemFrame) entity;
+							removeItemFrame(playerList, frame, false);
+						}
+					}
+				}
+				
 				for (VisualizerEntity entity : active.keySet()) {
 					if (entity.getWorld().equals(player.getWorld()) && entity.getLocation().distanceSquared(player.getLocation()) <= 4096) {
 						if (activeList.contains(entity)) {
@@ -188,8 +213,6 @@ public class PacketManager implements Listener {
 							continue;
 						}
 						
-						List<Player> playerList = new LinkedList<Player>();
-						playerList.add(player);
 						if (entity instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) entity;
 							sendArmorStandSpawn(playerList, stand);
@@ -335,7 +358,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = players;
+			List<Player> playersInRange = players.stream().filter(each -> (each.getWorld().equals(entity.getWorld())) && (each.getLocation().distanceSquared(entity.getLocation()) <= 4096)).collect(Collectors.toList());
 			ServerPacketSender.removeArmorStand(playersInRange, entity);
 			playersInRange.forEach((each) -> playerStatus.get(each).remove(entity));
 		});
@@ -411,7 +434,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = players;
+			List<Player> playersInRange = players.stream().filter(each -> (each.getWorld().equals(entity.getWorld())) && (each.getLocation().distanceSquared(entity.getLocation()) <= 4096)).collect(Collectors.toList());
 			ServerPacketSender.removeItem(playersInRange, entity);
 			playersInRange.forEach((each) -> playerStatus.get(each).remove(entity));
 		});
@@ -482,7 +505,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = players;
+			List<Player> playersInRange = players.stream().filter(each -> (each.getWorld().equals(entity.getWorld())) && (each.getLocation().distanceSquared(entity.getLocation()) <= 4096)).collect(Collectors.toList());
 			ServerPacketSender.removeItemFrame(playersInRange, entity);
 			playersInRange.forEach((each) -> playerStatus.get(each).remove(entity));
 		});
@@ -499,7 +522,7 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void removeAll(Player theplayer) {
-		playerStatus.put(theplayer, new ArrayList<VisualizerEntity>());
+		playerStatus.put(theplayer, new CopyOnWriteArrayList<VisualizerEntity>());
 		if (!plugin.isEnabled()) {
 			return;
 		}
@@ -529,7 +552,7 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void sendPlayerPackets(Player theplayer) {
-		playerStatus.put(theplayer, new ArrayList<VisualizerEntity>());
+		playerStatus.put(theplayer, new CopyOnWriteArrayList<VisualizerEntity>());
 		if (!plugin.isEnabled()) {
 			return;
 		}
@@ -573,12 +596,12 @@ public class PacketManager implements Listener {
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-		playerStatus.put(event.getPlayer(), new ArrayList<VisualizerEntity>());
+		playerStatus.put(event.getPlayer(), new CopyOnWriteArrayList<VisualizerEntity>());
 	}
 	
 	@EventHandler
 	public void onWorldChange(PlayerChangedWorldEvent event) {
-		playerStatus.put(event.getPlayer(), new ArrayList<VisualizerEntity>());
+		playerStatus.put(event.getPlayer(), new CopyOnWriteArrayList<VisualizerEntity>());
 	}
 	
 	@EventHandler
