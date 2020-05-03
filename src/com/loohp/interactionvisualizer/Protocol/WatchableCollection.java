@@ -16,7 +16,7 @@ import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
 public class WatchableCollection {
 	
 	private static String version = InteractionVisualizer.version;
-	private static int metaversion = InteractionVisualizer.metaversion;
+	private static Integer metaversion = InteractionVisualizer.metaversion;
 	private static Serializer booleanSerializer;
 	private static Serializer stringSerializer;
 	private static Serializer byteSerializer;

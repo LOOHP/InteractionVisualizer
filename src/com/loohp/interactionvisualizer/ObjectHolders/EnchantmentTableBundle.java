@@ -25,6 +25,7 @@ import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
+import com.loohp.interactionvisualizer.Utils.CustomStringUtils;
 import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -51,6 +52,7 @@ public class EnchantmentTableBundle {
 		this.arrow = "\u27f9";
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void playEnchantAnimation(Map<Enchantment, Integer> enchantsToAdd, int expCost, ItemStack itemstack) {		
 		Item item = this.item.get();
 		if (item.isLocked()) {
@@ -83,13 +85,21 @@ public class EnchantmentTableBundle {
 		}, 20);
 			
 		List<ArmorStand> stands = new LinkedList<ArmorStand>();
+		
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
 			Location standloc = item.getLocation().add(0.0, 0.5, 0.0);
 			for (Entry<Enchantment, Integer> entry : enchantsToAdd.entrySet()) {
-				@SuppressWarnings("deprecation")
-				String enchantmentName = EnchantmentManager.getEnchConfig().getString("Enchantments." + entry.getKey().getName());
+				Enchantment ench = entry.getKey();
+				int level = entry.getValue();
+				String str = EnchantmentManager.getEnchConfig().getString("Enchantments." + ench.getName());
+				String enchantmentName = str == null ? CustomStringUtils.capitalize(ench.getName().toLowerCase().replace("_", " ")) : str;
+				if (enchantmentName == null) {
+					continue;
+				}
 				ArmorStand stand = new ArmorStand(standloc);
-				stand.setCustomName(ChatColor.AQUA + enchantmentName + " " + RomanNumberUtils.toRoman(entry.getValue()));
+				String display = ench.getMaxLevel() == 1 && level == 1 ? enchantmentName : enchantmentName + " " + ChatColor.AQUA + RomanNumberUtils.toRoman(entry.getValue());
+				display = ench.isCursed() ? ChatColor.RED + display : ChatColor.AQUA + display;
+				stand.setCustomName(display);
 				stand.setCustomNameVisible(true);
 				setStand(stand);
 				PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemDrop, stand);

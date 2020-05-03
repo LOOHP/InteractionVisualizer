@@ -1,7 +1,7 @@
 package com.loohp.interactionvisualizer;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -205,7 +205,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		List<String> tab = new ArrayList<String>();
+		List<String> tab = new LinkedList<String>();
 		if (!label.equalsIgnoreCase("interactionvisualizer") && !label.equalsIgnoreCase("iv")) {
 			return tab;
 		}

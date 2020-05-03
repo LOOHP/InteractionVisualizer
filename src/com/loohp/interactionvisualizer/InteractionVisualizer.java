@@ -51,7 +51,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static FileConfiguration config;
 	
 	public static String version = "";
-	public static int metaversion = 0;
+	public static Integer metaversion = 0;
 	
 	public static Boolean openinv = false;
 	public static Boolean vanish = false;

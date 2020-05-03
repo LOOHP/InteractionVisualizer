@@ -1,8 +1,9 @@
 package com.loohp.interactionvisualizer.Blocks;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,6 +16,7 @@ import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
@@ -22,6 +24,7 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.ObjectHolders.EnchantmentTableBundle;
+import com.loohp.interactionvisualizer.Utils.CustomMapUtils;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
@@ -39,33 +42,32 @@ public class EnchantmentTableDisplay implements Listener {
 			return;
 		}
 		Block block = event.getEnchantBlock();
-		ItemStack itemstack = new ItemStack(event.getItem().getType());
-		if (itemstack.getType().equals(Material.BOOK)) {
-			itemstack.setType(Material.ENCHANTED_BOOK);	
-		}
-		itemstack.setAmount(event.getItem().getAmount());
-		for (Entry<Enchantment, Integer> entry : event.getEnchantsToAdd().entrySet()) {
-			Enchantment ench = entry.getKey();
-			int level = entry.getValue();
-			if (itemstack.getType().equals(Material.ENCHANTED_BOOK)) {
-				EnchantmentStorageMeta meta = (EnchantmentStorageMeta) itemstack.getItemMeta();
-				meta.addStoredEnchant(ench, level, true);
-				itemstack.setItemMeta(meta);
-			} else {
-				itemstack.addUnsafeEnchantment(ench, level);
+		Player player = event.getEnchanter();
+		
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+			if (!player.getOpenInventory().getTopInventory().getType().equals(InventoryType.ENCHANTING)) {
+				return;
 			}
-		}
-		
-		if (!openedETable.containsKey(block)) {
-			return;
-		}
-		
-		EnchantmentTableBundle etb = openedETable.get(block);
-		if (!etb.getEnchanter().equals(event.getEnchanter())) {
-			return;
-		}
-		
-		etb.playEnchantAnimation(event.getEnchantsToAdd(), event.getExpLevelCost(), itemstack);
+			ItemStack itemstack = player.getOpenInventory().getItem(0).clone();
+			Map<Enchantment, Integer> enchantsAdded = new HashMap<Enchantment, Integer>();
+			if (itemstack.getType().equals(Material.ENCHANTED_BOOK)) {
+				enchantsAdded.putAll(((EnchantmentStorageMeta) itemstack.getItemMeta()).getEnchants());
+			} else {
+				enchantsAdded.putAll(itemstack.getEnchantments());
+			}
+			enchantsAdded = CustomMapUtils.sortMapByValueReverse(enchantsAdded);
+			
+			if (!openedETable.containsKey(block)) {
+				return;
+			}
+			
+			EnchantmentTableBundle etb = openedETable.get(block);
+			if (!etb.getEnchanter().equals(event.getEnchanter())) {
+				return;
+			}
+			
+			etb.playEnchantAnimation(enchantsAdded, event.getExpLevelCost(), itemstack);
+		}, 2);
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
