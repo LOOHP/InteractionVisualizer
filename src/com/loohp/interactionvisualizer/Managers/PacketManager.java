@@ -9,10 +9,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -180,8 +181,9 @@ public class PacketManager implements Listener {
 				List<Player> playerList = new LinkedList<Player>();
 				playerList.add(player);
 				
+				Location playerLocation = PlayerLocationManager.getPlayerLocation(player);
 				for (VisualizerEntity entity : activeList) {
-					if (!entity.getWorld().equals(player.getWorld()) || entity.getLocation().distanceSquared(PlayerLocationManager.getPlayerLocation(player)) > 4096) {
+					if (!entity.getWorld().equals(playerLocation.getWorld()) || entity.getLocation().distanceSquared(playerLocation) > 4096) {
 						if (entity instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) entity;
 							removeArmorStand(playerList, stand, false, true);
@@ -196,7 +198,7 @@ public class PacketManager implements Listener {
 				}
 				
 				for (VisualizerEntity entity : active.keySet()) {
-					if (entity.getWorld().equals(player.getWorld()) && entity.getLocation().distanceSquared(PlayerLocationManager.getPlayerLocation(player)) <= 4096) {
+					if (entity.getWorld().equals(playerLocation.getWorld()) && entity.getLocation().distanceSquared(playerLocation) <= 4096) {
 						if (activeList.contains(entity)) {
 							continue;
 						}
@@ -255,7 +257,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = players.stream().filter(each -> (each.getWorld().equals(entity.getWorld())) && (PlayerLocationManager.getPlayerLocation(each).distanceSquared(entity.getLocation()) <= 4096)).collect(Collectors.toList());
+			List<Player> playersInRange = filterOutOrRange(players, entity);
 			ServerPacketSender.sendHandMovement(playersInRange, entity);
 		});
 	}
@@ -270,7 +272,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = players.stream().filter(each -> (each.getWorld().equals(entity.getWorld())) && (PlayerLocationManager.getPlayerLocation(each).distanceSquared(entity.getLocation()) <= 4096)).collect(Collectors.toList());
+			List<Player> playersInRange = filterOutOrRange(players, entity);
 			ServerPacketSender.spawnArmorStand(playersInRange, entity);
 			playersInRange.forEach((each) -> playerStatus.get(each).add(entity));
 		});
@@ -302,7 +304,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = players.stream().filter(each -> (each.getWorld().equals(entity.getWorld())) && (PlayerLocationManager.getPlayerLocation(each).distanceSquared(entity.getLocation()) <= 4096)).collect(Collectors.toList());
+			List<Player> playersInRange = filterOutOrRange(players, entity);
 			ServerPacketSender.updateArmorStand(playersInRange, entity);
 		});
         
@@ -335,7 +337,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = players.stream().filter(each -> (each.getWorld().equals(entity.getWorld())) && (PlayerLocationManager.getPlayerLocation(each).distanceSquared(entity.getLocation()) <= 4096)).collect(Collectors.toList());
+			List<Player> playersInRange = filterOutOrRange(players, entity);
 			ServerPacketSender.updateArmorStandOnlyMeta(playersInRange, entity);
 		});
         
@@ -353,7 +355,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = bypassFilter ? players : players.stream().filter(each -> (each.getWorld().equals(entity.getWorld())) && (PlayerLocationManager.getPlayerLocation(each).distanceSquared(entity.getLocation()) <= 4096)).collect(Collectors.toList());
+			List<Player> playersInRange = bypassFilter ? players : filterOutOrRange(players, entity);
 			ServerPacketSender.removeArmorStand(playersInRange, entity);
 			playersInRange.forEach((each) -> playerStatus.get(each).remove(entity));
 		});
@@ -376,7 +378,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = players.stream().filter(each -> (each.getWorld().equals(entity.getWorld())) && (PlayerLocationManager.getPlayerLocation(each).distanceSquared(entity.getLocation()) <= 4096)).collect(Collectors.toList());
+			List<Player> playersInRange = filterOutOrRange(players, entity);
 			ServerPacketSender.spawnItem(playersInRange, entity);
 			playersInRange.forEach((each) -> playerStatus.get(each).add(entity));
 		});
@@ -408,7 +410,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = players.stream().filter(each -> (each.getWorld().equals(entity.getWorld())) && (PlayerLocationManager.getPlayerLocation(each).distanceSquared(entity.getLocation()) <= 4096)).collect(Collectors.toList());
+			List<Player> playersInRange = filterOutOrRange(players, entity);
 			ServerPacketSender.updateItem(playersInRange, entity);
 		});
 		
@@ -429,7 +431,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = bypassFilter ? players : players.stream().filter(each -> (each.getWorld().equals(entity.getWorld())) && (PlayerLocationManager.getPlayerLocation(each).distanceSquared(entity.getLocation()) <= 4096)).collect(Collectors.toList());
+			List<Player> playersInRange = bypassFilter ? players : filterOutOrRange(players, entity);
 			ServerPacketSender.removeItem(playersInRange, entity);
 			playersInRange.forEach((each) -> playerStatus.get(each).remove(entity));
 		});
@@ -449,7 +451,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = players.stream().filter(each -> (each.getWorld().equals(entity.getWorld())) && (PlayerLocationManager.getPlayerLocation(each).distanceSquared(entity.getLocation()) <= 4096)).collect(Collectors.toList());
+			List<Player> playersInRange = filterOutOrRange(players, entity);
 			ServerPacketSender.spawnItemFrame(playersInRange, entity);
 			playersInRange.forEach((each) -> playerStatus.get(each).add(entity));
 		});
@@ -482,7 +484,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = players.stream().filter(each -> (each.getWorld().equals(entity.getWorld())) && (PlayerLocationManager.getPlayerLocation(each).distanceSquared(entity.getLocation()) <= 4096)).collect(Collectors.toList());
+			List<Player> playersInRange = filterOutOrRange(players, entity);
 			ServerPacketSender.updateItemFrame(playersInRange, entity);
 		});
         
@@ -500,7 +502,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = bypassFilter ? players : players.stream().filter(each -> (each.getWorld().equals(entity.getWorld())) && (PlayerLocationManager.getPlayerLocation(each).distanceSquared(entity.getLocation()) <= 4096)).collect(Collectors.toList());
+			List<Player> playersInRange = bypassFilter ? players : filterOutOrRange(players, entity);
 			ServerPacketSender.removeItemFrame(playersInRange, entity);
 			playersInRange.forEach((each) -> playerStatus.get(each).remove(entity));
 		});
@@ -508,6 +510,28 @@ public class PacketManager implements Listener {
 	
 	public static void removeItemFrame(List<Player> players, ItemFrame entity) {
 		removeItemFrame(players, entity, true, false);
+	}
+	
+	private static List<Player> filterOutOrRange(List<Player> players, VisualizerEntity entity) {
+		List<Player> playersInRange = new LinkedList<Player>();
+		for (Player player : players) {
+			Location playerLocation = PlayerLocationManager.getPlayerLocation(player);
+			if (playerLocation.getWorld().equals(entity.getWorld()) && (playerLocation.distanceSquared(entity.getLocation()) <= 4096)) {
+				playersInRange.add(player);
+			}
+		}
+		return playersInRange;
+	}
+	
+	private static List<Player> filterOutOrRange(List<Player> players, Entity entity) {
+		List<Player> playersInRange = new LinkedList<Player>();
+		for (Player player : players) {
+			Location playerLocation = PlayerLocationManager.getPlayerLocation(player);
+			if (playerLocation.getWorld().equals(entity.getWorld()) && (playerLocation.distanceSquared(entity.getLocation()) <= 4096)) {
+				playersInRange.add(player);
+			}
+		}
+		return playersInRange;
 	}
 	
 	public static void reset(Player theplayer) {
