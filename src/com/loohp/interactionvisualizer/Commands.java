@@ -24,6 +24,7 @@ import com.loohp.interactionvisualizer.Updater.Updater;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -195,6 +196,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			text.setColor(ChatColor.YELLOW);
 			TextComponent bone = new TextComponent("§eNana's Bone\n§7Lost §6In-§dMaginary~~");
 			text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] {bone}));
+			text.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.instagram.com/narliar/"));
 			sender.spigot().sendMessage(text);
 			return true;
 		}

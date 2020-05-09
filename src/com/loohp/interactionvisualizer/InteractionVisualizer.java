@@ -81,6 +81,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static Integer gcPeriod = 600;
 	
 	public static Integer tileEntityChunkPerTick = 9;
+	public static Boolean loadTileEntitiesAsync = true;
 	
 	public static boolean UpdaterEnabled = true;
 	
@@ -229,9 +230,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
 			if (UpdaterEnabled) {
 				String version = Updater.checkUpdate();
-				if (version.equals("latest")) {
-					Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] You are running the latest version: " + plugin.getDescription().getVersion() + "!");
-				} else {
+				if (!version.equals("latest")) {
 					Updater.sendUpdateMessage(Bukkit.getConsoleSender(), version);
 					for (Player player : Bukkit.getOnlinePlayers()) {
 						if (player.hasPermission("interactionvisualizer.update")) {
@@ -336,6 +335,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		gcPeriod = config.getInt("GarbageCollector.Period");
 		
 		tileEntityChunkPerTick = config.getInt("TileEntityUpdate.ChunksPerTick");
+		loadTileEntitiesAsync = config.getBoolean("TileEntityUpdate.LoadTileEntitiesAsync");
 		
 		UpdaterEnabled = plugin.getConfig().getBoolean("Options.Updater");
 	}

@@ -93,12 +93,21 @@ public class TileEntityManager {
 			}
 		}
 		if (chunks.isEmpty()) {
-			Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-				while (stateTaskCount.get() > stateDoneCount.get()) {
-					try {TimeUnit.MILLISECONDS.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
-				}
-				loadTileEntities();
-			});
+			if (InteractionVisualizer.loadTileEntitiesAsync) {
+				Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+					while (stateTaskCount.get() > stateDoneCount.get()) {
+						try {TimeUnit.MILLISECONDS.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
+					}
+					loadTileEntities();
+				});
+			} else {
+				Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+					while (stateTaskCount.get() > stateDoneCount.get()) {
+						try {TimeUnit.MILLISECONDS.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
+					}
+					Bukkit.getScheduler().runTask(plugin, () -> loadTileEntitiesSynced());
+				});
+			}
 		} else {
 			Bukkit.getScheduler().runTaskLater(plugin, () -> loadBlockStates(), 1);
 		}
@@ -129,6 +138,41 @@ public class TileEntityManager {
 				upcomming = new HashMap<String, List<Block>>();
 				Bukkit.getScheduler().runTaskLater(plugin, () -> run(), 1);
 			}, 1);
+		}
+	}
+	
+	private static void loadTileEntitiesSynced() {
+		int count = 0;
+		while (!states.isEmpty()) {
+			count++;
+			BlockState state = states.remove(0);
+			Block block = state.getBlock();
+			Material type = state.getType();
+			if (type.toString().toUpperCase().equals("BLAST_FURNACE")) {
+				upcomming.get("blastfurnace").add(block);
+			} else if (type.toString().toUpperCase().equals("BREWING_STAND")) {
+				upcomming.get("brewingstand").add(block);
+			} else if (FurnaceDisplay.isFurnace(type)) {
+				upcomming.get("furnace").add(block);
+			} else if (type.toString().toUpperCase().equals("SMOKER")) {
+				upcomming.get("smoker").add(block);
+			} else if (type.toString().toUpperCase().equals("BEACON")) {
+				upcomming.get("beacon").add(block);
+			} else if (type.toString().toUpperCase().equals("JUKEBOX")) {
+				upcomming.get("jukebox").add(block);
+			}
+			if (count > 10) {
+				break;
+			}
+		}
+		if (states.isEmpty()) {
+			Bukkit.getScheduler().runTaskLater(plugin, () -> {
+				current = upcomming;
+				upcomming = new HashMap<String, List<Block>>();
+				Bukkit.getScheduler().runTaskLater(plugin, () -> run(), 1);
+			}, 1);
+		} else {
+			Bukkit.getScheduler().runTaskLater(plugin, () -> loadTileEntitiesSynced(), 1);
 		}
 	}
 	

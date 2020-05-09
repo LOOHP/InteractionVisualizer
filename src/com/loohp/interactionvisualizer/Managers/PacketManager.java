@@ -274,7 +274,12 @@ public class PacketManager implements Listener {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			List<Player> playersInRange = filterOutOrRange(players, entity);
 			ServerPacketSender.spawnArmorStand(playersInRange, entity);
-			playersInRange.forEach((each) -> playerStatus.get(each).add(entity));
+			playersInRange.forEach((each) -> {
+				Set<VisualizerEntity> list = playerStatus.get(each);
+				if (list != null) {
+					list.add(entity);
+				}
+			});
 		});
 	}
 	
@@ -357,7 +362,12 @@ public class PacketManager implements Listener {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			List<Player> playersInRange = bypassFilter ? players : filterOutOrRange(players, entity);
 			ServerPacketSender.removeArmorStand(playersInRange, entity);
-			playersInRange.forEach((each) -> playerStatus.get(each).remove(entity));
+			playersInRange.forEach((each) -> {
+				Set<VisualizerEntity> list = playerStatus.get(each);
+				if (list != null) {
+					list.remove(entity);
+				}
+			});
 		});
 	}
 	
@@ -380,7 +390,12 @@ public class PacketManager implements Listener {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			List<Player> playersInRange = filterOutOrRange(players, entity);
 			ServerPacketSender.spawnItem(playersInRange, entity);
-			playersInRange.forEach((each) -> playerStatus.get(each).add(entity));
+			playersInRange.forEach((each) -> {
+				Set<VisualizerEntity> list = playerStatus.get(each);
+				if (list != null) {
+					list.add(entity);
+				}
+			});
 		});
 	}
 	
@@ -433,7 +448,12 @@ public class PacketManager implements Listener {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			List<Player> playersInRange = bypassFilter ? players : filterOutOrRange(players, entity);
 			ServerPacketSender.removeItem(playersInRange, entity);
-			playersInRange.forEach((each) -> playerStatus.get(each).remove(entity));
+			playersInRange.forEach((each) -> {
+				Set<VisualizerEntity> list = playerStatus.get(each);
+				if (list != null) {
+					list.remove(entity);
+				}
+			});
 		});
 	}
 	
@@ -453,7 +473,12 @@ public class PacketManager implements Listener {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			List<Player> playersInRange = filterOutOrRange(players, entity);
 			ServerPacketSender.spawnItemFrame(playersInRange, entity);
-			playersInRange.forEach((each) -> playerStatus.get(each).add(entity));
+			playersInRange.forEach((each) -> {
+				Set<VisualizerEntity> list = playerStatus.get(each);
+				if (list != null) {
+					list.add(entity);
+				}
+			});
 		});
 	}
 	
@@ -504,7 +529,12 @@ public class PacketManager implements Listener {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			List<Player> playersInRange = bypassFilter ? players : filterOutOrRange(players, entity);
 			ServerPacketSender.removeItemFrame(playersInRange, entity);
-			playersInRange.forEach((each) -> playerStatus.get(each).remove(entity));
+			playersInRange.forEach((each) -> {
+				Set<VisualizerEntity> list = playerStatus.get(each);
+				if (list != null) {
+					list.remove(entity);
+				}
+			});
 		});
 	}
 	
