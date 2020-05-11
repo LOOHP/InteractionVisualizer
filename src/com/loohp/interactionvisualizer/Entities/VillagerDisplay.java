@@ -10,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantInventory;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
@@ -87,35 +86,31 @@ public class VillagerDisplay implements Listener {
 		}
 		
 		ItemStack item1final = item1;
-		new BukkitRunnable() {
-			public void run() {
-				if (item1final != null) {
-					Item in = new Item(player.getEyeLocation());
-					Vector vector = villager.getEyeLocation().add(0.5, -0.5, 0.5).toVector().subtract(player.getEyeLocation().toVector()).multiply(0.12).add(lift);
-					in.setItemStack(item1final);
-					in.setGravity(true);
-					in.setVelocity(vector);
-					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, in);
-					PacketManager.updateItem(in);
-					
-					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), in), 14);
-				}
-			}
-		}.runTaskLater(InteractionVisualizer.plugin, 8);
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+			if (item1final != null) {
+				Item in = new Item(player.getEyeLocation());
+				Vector vector = villager.getEyeLocation().add(0.5, -0.5, 0.5).toVector().subtract(player.getEyeLocation().toVector()).multiply(0.12).add(lift);
+				in.setItemStack(item1final);
+				in.setGravity(true);
+				in.setVelocity(vector);
+				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, in);
+				PacketManager.updateItem(in);
 				
-		new BukkitRunnable() {
-			public void run() {
-				Item out = new Item(villager.getEyeLocation());
-				Vector vector = player.getEyeLocation().add(0.5, -0.5, 0.5).toVector().subtract(villager.getEyeLocation().toVector()).multiply(0.10).add(lift);
-				out.setItemStack(item2);
-				out.setGravity(true);
-				out.setVelocity(vector);
-				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, out);
-				PacketManager.updateItem(out);
-				
-				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), out), 12);
+				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), in), 14);
 			}
-		}.runTaskLater(InteractionVisualizer.plugin, 40);
+		}, 8);
+				
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+			Item out = new Item(villager.getEyeLocation());
+			Vector vector = player.getEyeLocation().add(0.5, -0.5, 0.5).toVector().subtract(villager.getEyeLocation().toVector()).multiply(0.10).add(lift);
+			out.setItemStack(item2);
+			out.setGravity(true);
+			out.setVelocity(vector);
+			PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, out);
+			PacketManager.updateItem(out);
+			
+			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), out), 12);
+		}, 40);
 	}
 
 }

@@ -3,6 +3,7 @@ package com.loohp.interactionvisualizer.Blocks;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -104,31 +105,38 @@ public class LoomDisplay implements Listener {
 			return;
 		}
 		
-		ItemStack itemstack = event.getCurrentItem();
-		Location loc = block.getLocation();
-		
-		HashMap<String, Object> map = openedLooms.get(block);
-		if (!map.get("Player").equals((Player) event.getWhoClicked())) {
-			return;
-		}
-		
+		int slot = event.getRawSlot();
+		ItemStack itemstack = event.getCurrentItem().clone();
+		Location loc = block.getLocation();	
 		Player player = (Player) event.getWhoClicked();
-		Item item = new Item(block.getLocation().clone().add(0.5, 1.5, 0.5));
-		item.setItemStack(itemstack);
-		item.setLocked(true);
-		item.setGravity(true);
-		Vector lift = new Vector(0.0, 0.15, 0.0);
-		Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
-		item.setVelocity(pickup);
-		item.setPickupDelay(32767);
-		PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-		PacketManager.updateItem(item);
-		new BukkitRunnable() {
-			public void run() {
+		
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+			
+			if (player.getOpenInventory().getItem(slot) == null || (itemstack.isSimilar(player.getOpenInventory().getItem(slot)) && itemstack.getAmount() == player.getOpenInventory().getItem(slot).getAmount())) {
+				return;
+			}
+		
+			HashMap<String, Object> map = openedLooms.get(block);
+			if (!map.get("Player").equals((Player) event.getWhoClicked())) {
+				return;
+			}
+			
+			Item item = new Item(block.getLocation().clone().add(0.5, 1.5, 0.5));
+			item.setItemStack(itemstack);
+			item.setLocked(true);
+			item.setGravity(true);
+			Vector lift = new Vector(0.0, 0.15, 0.0);
+			Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
+			item.setVelocity(pickup);
+			item.setPickupDelay(32767);
+			PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+			PacketManager.updateItem(item);
+			
+			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
 				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-			}
-		}.runTaskLater(InteractionVisualizer.plugin, 8);
+			}, 8);
+		}, 1);
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)

@@ -2,6 +2,7 @@ package com.loohp.interactionvisualizer.Blocks;
 
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,7 +19,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
@@ -98,10 +98,11 @@ public class GrindstoneDisplay implements Listener {
 			return;
 		}
 		
-		ItemStack itemstack = event.getCurrentItem();
-		Location loc = block.getLocation();
-		
+		int slot = event.getRawSlot();
+		ItemStack itemstack = event.getCurrentItem().clone();
+		Location loc = block.getLocation();	
 		Player player = (Player) event.getWhoClicked();
+		
 		ArmorStand slot0 = (ArmorStand) map.get("0");
 		ArmorStand slot1 = (ArmorStand) map.get("1");
 		if (map.get("2") instanceof String) {
@@ -109,48 +110,53 @@ public class GrindstoneDisplay implements Listener {
 		}
 		Item item = (Item) map.get("2");
 		
-		openedGrindstone.remove(block);
+		HashMap<String, Object> entry = openedGrindstone.remove(block);
 		
 		slot0.setLocked(true);
 		slot1.setLocked(true);
 		item.setLocked(true);
 		
-		float yaw = getCardinalDirection(player);
-		Vector vector = new Location(slot0.getWorld(), slot0.getLocation().getX(), slot0.getLocation().getY(), slot0.getLocation().getZ(), yaw, 0).getDirection().normalize();
-		slot0.teleport(slot0.getLocation().add(rotateVectorAroundY(vector.clone(), 90).multiply(0.1)));		
-		slot1.teleport(slot1.getLocation().add(rotateVectorAroundY(vector.clone(), -90).multiply(0.1)));
-		
-		PacketManager.updateArmorStand(slot0);
-		PacketManager.updateArmorStand(slot1);
-		
-		new BukkitRunnable() {
-			public void run() {
-				for (Player each : InteractionVisualizer.itemDrop) {
-					each.spawnParticle(Particle.CLOUD, loc.clone().add(0.5, 1.1, 0.5), 10, 0.05, 0.05, 0.05, 0.05);
-				}
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+			
+			if (player.getOpenInventory().getItem(slot) == null || (itemstack.isSimilar(player.getOpenInventory().getItem(slot)) && itemstack.getAmount() == player.getOpenInventory().getItem(slot).getAmount())) {
+				slot0.setLocked(false);
+				slot1.setLocked(false);
+				item.setLocked(false);
+				openedGrindstone.put(block, entry);
+				return;
 			}
-		}.runTaskLater(InteractionVisualizer.plugin, 6);
-		
-		new BukkitRunnable() {
-			public void run() {
-				Vector lift = new Vector(0.0, 0.15, 0.0);
-				Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
-				item.setItemStack(itemstack);
-				item.setVelocity(pickup);
-				item.setGravity(true);
-				item.setPickupDelay(32767);
-				PacketManager.updateItem(item);
-				
-				new BukkitRunnable() {
-					public void run() {
+			
+			float yaw = getCardinalDirection(player);
+			Vector vector = new Location(slot0.getWorld(), slot0.getLocation().getX(), slot0.getLocation().getY(), slot0.getLocation().getZ(), yaw, 0).getDirection().normalize();
+			slot0.teleport(slot0.getLocation().add(rotateVectorAroundY(vector.clone(), 90).multiply(0.1)));		
+			slot1.teleport(slot1.getLocation().add(rotateVectorAroundY(vector.clone(), -90).multiply(0.1)));
+			
+			PacketManager.updateArmorStand(slot0);
+			PacketManager.updateArmorStand(slot1);
+			
+			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+					for (Player each : InteractionVisualizer.itemDrop) {
+						each.spawnParticle(Particle.CLOUD, loc.clone().add(0.5, 1.1, 0.5), 10, 0.05, 0.05, 0.05, 0.05);
+					}
+			}, 6);
+			
+			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+					Vector lift = new Vector(0.0, 0.15, 0.0);
+					Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
+					item.setItemStack(itemstack);
+					item.setVelocity(pickup);
+					item.setGravity(true);
+					item.setPickupDelay(32767);
+					PacketManager.updateItem(item);
+					
+					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 						SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
 						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot0);
 						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot1);
 						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-					}
-				}.runTaskLater(InteractionVisualizer.plugin, 8);
-			}
-		}.runTaskLater(InteractionVisualizer.plugin, 10);
+					}, 8);
+			}, 10);
+		}, 1);
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)

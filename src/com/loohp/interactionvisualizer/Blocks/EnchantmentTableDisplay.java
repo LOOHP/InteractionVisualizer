@@ -115,14 +115,18 @@ public class EnchantmentTableDisplay implements Listener {
 			return;
 		}
 		
-		ItemStack itemstack = null;
-		if (event.getView().getItem(0) != null) {
-			if (!event.getView().getItem(0).getType().equals(Material.AIR)) {
-				itemstack = event.getView().getItem(0).clone();
-			}
-		}
+		ItemStack itemstack = event.getCurrentItem().clone();		
+		int slot = event.getRawSlot();
+		Player player = (Player) event.getWhoClicked();
 		
-		etb.playPickUpAnimation(itemstack);
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+			if (player.getOpenInventory().getItem(slot) == null || (itemstack.isSimilar(player.getOpenInventory().getItem(slot)) && itemstack.getAmount() == player.getOpenInventory().getItem(slot).getAmount())) {
+				return;
+			}
+		
+			etb.playPickUpAnimation(itemstack);
+			
+		}, 1);
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)
@@ -223,15 +227,8 @@ public class EnchantmentTableDisplay implements Listener {
 			return;
 		}
 		
-		if (view.getItem(0) != null) {
-			ItemStack itemstack = view.getItem(0);
-			if (itemstack != null) {
-				if (itemstack.getType().equals(Material.AIR)) {
-					itemstack = null;
-				}
-			}
-			
-			etb.setItemStack(itemstack);
-		}
+		ItemStack itemstack = view.getItem(0) != null && !view.getItem(0).getType().equals(Material.AIR) ? view.getItem(0).clone() : null;
+
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> etb.setItemStack(itemstack), 2);
 	}
 }

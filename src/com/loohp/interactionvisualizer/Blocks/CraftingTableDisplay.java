@@ -3,6 +3,7 @@ package com.loohp.interactionvisualizer.Blocks;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -92,10 +93,11 @@ public class CraftingTableDisplay implements Listener {
 			return;
 		}
 		
-		ItemStack itemstack = event.getCurrentItem();
-		Location loc = block.getLocation();
-		
+		int slot = event.getRawSlot();
+		ItemStack itemstack = event.getCurrentItem().clone();
+		Location loc = block.getLocation();	
 		Player player = (Player) event.getWhoClicked();
+		
 		if (map.get("0") instanceof String) {
 			map.put("0", new Item(block.getLocation().clone().add(0.5, 1.2, 0.5)));
 		}
@@ -110,7 +112,7 @@ public class CraftingTableDisplay implements Listener {
 		ArmorStand slot8 = (ArmorStand) map.get("8");
 		ArmorStand slot9 = (ArmorStand) map.get("9");
 		
-		openedBenches.remove(block);
+		HashMap<String, Object> entry = openedBenches.remove(block);
 		
 		item.setLocked(true);
 		slot1.setLocked(true);
@@ -123,38 +125,53 @@ public class CraftingTableDisplay implements Listener {
 		slot8.setLocked(true);
 		slot9.setLocked(true);
 		
-		float yaw = getCardinalDirection(player);
-		Vector vector = new Location(slot8.getWorld(), slot8.getLocation().getX(), slot8.getLocation().getY(), slot8.getLocation().getZ(), yaw, 0).getDirection().normalize();
-		slot1.teleport(slot1.getLocation().add(rotateVectorAroundY(vector.clone(), 135).multiply(0.2828)));
-		slot2.teleport(slot2.getLocation().add(rotateVectorAroundY(vector.clone(), 180).multiply(0.2)));
-		slot3.teleport(slot3.getLocation().add(rotateVectorAroundY(vector.clone(), 225).multiply(0.2828)));
-		slot4.teleport(slot4.getLocation().add(rotateVectorAroundY(vector.clone(), 90).multiply(0.2)));
-		
-		slot6.teleport(slot6.getLocation().add(rotateVectorAroundY(vector.clone(), -90).multiply(0.2)));
-		slot7.teleport(slot7.getLocation().add(rotateVectorAroundY(vector.clone(), 45).multiply(0.2828)));
-		slot8.teleport(slot8.getLocation().add(vector.clone().multiply(0.2)));
-		slot9.teleport(slot9.getLocation().add(rotateVectorAroundY(vector.clone(), -45).multiply(0.2828)));
-		
-		PacketManager.updateArmorStand(slot1);
-		PacketManager.updateArmorStand(slot2);
-		PacketManager.updateArmorStand(slot3);
-		PacketManager.updateArmorStand(slot4);
-		PacketManager.updateArmorStand(slot5);
-		PacketManager.updateArmorStand(slot6);
-		PacketManager.updateArmorStand(slot7);
-		PacketManager.updateArmorStand(slot8);
-		PacketManager.updateArmorStand(slot9);
-		
-		new BukkitRunnable() {
-			public void run() {
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+			
+			if (itemstack.isSimilar(player.getOpenInventory().getItem(slot)) && itemstack.getAmount() == player.getOpenInventory().getItem(slot).getAmount()) {
+				item.setLocked(false);
+				slot1.setLocked(false);
+				slot2.setLocked(false);
+				slot3.setLocked(false);
+				slot4.setLocked(false);
+				slot5.setLocked(false);
+				slot6.setLocked(false);
+				slot7.setLocked(false);
+				slot8.setLocked(false);
+				slot9.setLocked(false);
+				
+				openedBenches.put(block, entry);
+				return;
+			}
+			
+			float yaw = getCardinalDirection(player);
+			Vector vector = new Location(slot8.getWorld(), slot8.getLocation().getX(), slot8.getLocation().getY(), slot8.getLocation().getZ(), yaw, 0).getDirection().normalize();
+			slot1.teleport(slot1.getLocation().add(rotateVectorAroundY(vector.clone(), 135).multiply(0.2828)));
+			slot2.teleport(slot2.getLocation().add(rotateVectorAroundY(vector.clone(), 180).multiply(0.2)));
+			slot3.teleport(slot3.getLocation().add(rotateVectorAroundY(vector.clone(), 225).multiply(0.2828)));
+			slot4.teleport(slot4.getLocation().add(rotateVectorAroundY(vector.clone(), 90).multiply(0.2)));
+			
+			slot6.teleport(slot6.getLocation().add(rotateVectorAroundY(vector.clone(), -90).multiply(0.2)));
+			slot7.teleport(slot7.getLocation().add(rotateVectorAroundY(vector.clone(), 45).multiply(0.2828)));
+			slot8.teleport(slot8.getLocation().add(vector.clone().multiply(0.2)));
+			slot9.teleport(slot9.getLocation().add(rotateVectorAroundY(vector.clone(), -45).multiply(0.2828)));
+			
+			PacketManager.updateArmorStand(slot1);
+			PacketManager.updateArmorStand(slot2);
+			PacketManager.updateArmorStand(slot3);
+			PacketManager.updateArmorStand(slot4);
+			PacketManager.updateArmorStand(slot5);
+			PacketManager.updateArmorStand(slot6);
+			PacketManager.updateArmorStand(slot7);
+			PacketManager.updateArmorStand(slot8);
+			PacketManager.updateArmorStand(slot9);
+			
+			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 				for (Player each : InteractionVisualizer.itemDrop) {
 					each.spawnParticle(Particle.CLOUD, loc.clone().add(0.5, 1.1, 0.5), 10, 0.05, 0.05, 0.05, 0.05);
 				}
-			}
-		}.runTaskLater(InteractionVisualizer.plugin, 6);
-		
-		new BukkitRunnable() {
-			public void run() {
+			}, 6);
+			
+			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 				Vector lift = new Vector(0.0, 0.15, 0.0);
 				Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
 				item.setItemStack(itemstack);
@@ -163,23 +180,21 @@ public class CraftingTableDisplay implements Listener {
 				item.setPickupDelay(32767);
 				PacketManager.updateItem(item);
 				
-				new BukkitRunnable() {
-					public void run() {
-						SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
-						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot1);
-						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot2);
-						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot3);
-						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot4);
-						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot5);
-						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot6);
-						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot7);
-						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot8);
-						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot9);
-						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-					}
-				}.runTaskLater(InteractionVisualizer.plugin, 8);
-			}
-		}.runTaskLater(InteractionVisualizer.plugin, 10);
+				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+					SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
+					PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot1);
+					PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot2);
+					PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot3);
+					PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot4);
+					PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot5);
+					PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot6);
+					PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot7);
+					PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot8);
+					PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot9);
+					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+				}, 8);
+			}, 10);
+		}, 1);
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)

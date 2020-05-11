@@ -29,12 +29,7 @@ public class Updater implements Listener {
 				Player player = event.getPlayer();
 				if (player.hasPermission("interactionvisualizer.update")) {
 					String version = Updater.checkUpdate();
-					if (version.equals("latest")) {
-						TextComponent text = new TextComponent(ChatColor.GREEN + "[InteractionVisualizer] You are running the latest version: " + InteractionVisualizer.plugin.getDescription().getVersion() + "!");
-						text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.YELLOW + "Link to SpigotMC resource page!").create()));
-						text.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.spigotmc.org/resources/77050"));
-						player.spigot().sendMessage(text);
-					} else {
+					if (!version.equals("latest")) {
 						Updater.sendUpdateMessage(player, version);
 					}
 				}
