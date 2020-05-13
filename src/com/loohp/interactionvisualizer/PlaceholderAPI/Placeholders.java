@@ -6,6 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.InteractionVisualizer.Modules;
 import com.loohp.interactionvisualizer.Database.Database;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -30,7 +31,7 @@ public class Placeholders extends PlaceholderExpansion {
 	@Override
     public String onRequest(OfflinePlayer offlineplayer, String identifier){
   
-        if(identifier.equals("itemstand")){
+        if (identifier.equals("itemstand")) {
         	if (offlineplayer.isOnline()) {
         		Player player = offlineplayer.getPlayer();
         		if (InteractionVisualizer.itemStand.contains(player)) {
@@ -38,14 +39,14 @@ public class Placeholders extends PlaceholderExpansion {
         		}
         		return "disabled";
         	}
-        	HashMap<String, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
-        	if (map.get("itemstand")) {
+        	HashMap<Modules, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
+        	if (map.get(Modules.ITEMSTAND)) {
         		return "enabled";
         	}
         	return "disabled";
         }
 
-        if(identifier.equals("itemdrop")){
+        if (identifier.equals("itemdrop")) {
         	if (offlineplayer.isOnline()) {
         		Player player = offlineplayer.getPlayer();
         		if (InteractionVisualizer.itemDrop.contains(player)) {
@@ -53,14 +54,14 @@ public class Placeholders extends PlaceholderExpansion {
         		}
         		return "disabled";
         	}
-        	HashMap<String, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
-        	if (map.get("itemdrop")) {
+        	HashMap<Modules, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
+        	if (map.get(Modules.ITEMDROP)) {
         		return "enabled";
         	}
         	return "disabled";
         }
         
-        if(identifier.equals("hologram")){
+        if (identifier.equals("hologram")) {
         	if (offlineplayer.isOnline()) {
         		Player player = offlineplayer.getPlayer();
         		if (InteractionVisualizer.holograms.contains(player)) {
@@ -68,8 +69,8 @@ public class Placeholders extends PlaceholderExpansion {
         		}
         		return "disabled";
         	}
-        	HashMap<String, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
-        	if (map.get("hologram")) {
+        	HashMap<Modules, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
+        	if (map.get(Modules.HOLOGRAM)) {
         		return "enabled";
         	}
         	return "disabled";

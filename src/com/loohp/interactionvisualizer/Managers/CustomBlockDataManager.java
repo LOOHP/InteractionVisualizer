@@ -23,7 +23,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -42,11 +41,9 @@ public class CustomBlockDataManager {
     private static File BlockDataBackupFolder = new File(InteractionVisualizer.plugin.getDataFolder().getPath() + "/Backup", "blockdata");
     
     public static void intervalSaveToFile() {
-    	new BukkitRunnable() {
-    		public void run() {
-    			save();
-    		}
-    	}.runTaskTimerAsynchronously(plugin, 200, 1200);
+    	Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+    		save();
+    	}, 200, 1200);
     }
 
     public static void setup() {
@@ -70,6 +67,20 @@ public class CustomBlockDataManager {
                 } catch (IOException e) {
                     Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] Failed to make backup for blockdata.json");
                 }
+        	}
+        	if (BlockDataBackupFolder.exists()) {
+        		for (File file : BlockDataBackupFolder.listFiles()) {
+        			try {
+	        			String fileName = file.getName();
+	        			if (fileName.matches("^[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}-[0-9]{2}-[0-9]{2}_.*_blockdata\\.json$")) {
+	        				Date timestamp = new SimpleDateFormat("yyyy'-'MM'-'dd'_'HH'-'mm'-'ss'_'zzz'_blockdata.json'").parse(fileName);
+	        				if ((System.currentTimeMillis() - timestamp.getTime()) > 2592000000L) {
+								Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] Removing Backup/blockdata/" + fileName + " as it is from 30 days ago.");
+								file.delete();						
+							}
+	        			}
+        			} catch (Exception ignore) {}
+        		}
         	}
         	json = (JSONObject) parser.parse(new InputStreamReader(new FileInputStream(file), "UTF-8"));
         } catch (Exception ex) {

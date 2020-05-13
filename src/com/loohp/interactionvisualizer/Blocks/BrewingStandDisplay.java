@@ -29,6 +29,7 @@ import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
+import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
 
 public class BrewingStandDisplay implements Listener {
 	
@@ -320,7 +321,7 @@ public class BrewingStandDisplay implements Listener {
 	}
 	
 	public static List<Block> nearbyBrewingStand() {
-		return TileEntityManager.getTileEntites("brewingstand");
+		return TileEntityManager.getTileEntites(TileEntityType.BREWING_STAND);
 	}
 	
 	public static boolean isActive(Location loc) {

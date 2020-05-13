@@ -34,6 +34,7 @@ import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
+import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
@@ -441,7 +442,7 @@ public class SmokerDisplay implements Listener {
 	}
 	
 	public static List<Block> nearbySmoker() {
-		return TileEntityManager.getTileEntites("smoker");
+		return TileEntityManager.getTileEntites(TileEntityType.SMOKER);
 	}
 	
 	public static boolean isActive(Location loc) {

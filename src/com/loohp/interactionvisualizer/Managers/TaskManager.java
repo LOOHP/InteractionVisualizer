@@ -1,6 +1,7 @@
 package com.loohp.interactionvisualizer.Managers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,6 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.Blocks.AnvilDisplay;
 import com.loohp.interactionvisualizer.Blocks.BeaconDisplay;
 import com.loohp.interactionvisualizer.Blocks.BlastFurnaceDisplay;
@@ -35,11 +37,12 @@ import com.loohp.interactionvisualizer.Debug.Debug;
 import com.loohp.interactionvisualizer.Entities.VillagerDisplay;
 import com.loohp.interactionvisualizer.Listeners.ChunkEvents;
 import com.loohp.interactionvisualizer.Updater.Updater;
+import com.loohp.interactionvisualizer.Utils.MCVersion;
 
 public class TaskManager {
 	
 	public static Plugin plugin = InteractionVisualizer.plugin;
-	public static String version;
+	public static MCVersion version;
 	public static FileConfiguration config = InteractionVisualizer.config;
 	
 	public static boolean anvil;
@@ -64,6 +67,8 @@ public class TaskManager {
 	public static boolean villager;
 	
 	public static List<Integer> tasks = new ArrayList<Integer>();
+	
+	public static HashMap<InventoryType, List<VisualizerInteractDisplay>> customProcesses = new HashMap<InventoryType, List<VisualizerInteractDisplay>>();
 	
 	public static void setup() {
 		anvil = false;
@@ -99,7 +104,7 @@ public class TaskManager {
 		Bukkit.getPluginManager().registerEvents(new Updater(), plugin);
 		Bukkit.getPluginManager().registerEvents(new com.loohp.interactionvisualizer.Listeners.Events(), plugin);
 		Bukkit.getPluginManager().registerEvents(new PacketManager(), plugin);
-		if (version.contains("legacy")) {
+		if (version.isLegacy()) {
 			ChunkEvents.setup();
 			InteractionVisualizer.defaultworld.getChunkAt(0, 0).load();
 			Bukkit.getPluginManager().registerEvents(new ChunkEvents(), plugin);
@@ -112,7 +117,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.Loom.Enabled") &&
-				   (version.equals("1.14") || version.equals("1.15"))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15))
 				) {
 			Bukkit.getPluginManager().registerEvents(new LoomDisplay(), plugin);
 			tasks.add(LoomDisplay.run());
@@ -125,7 +130,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.CartographyTable.Enabled") &&
-				   (version.equals("1.14") || version.equals("1.15"))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15))
 				) {
 			Bukkit.getPluginManager().registerEvents(new CartographyTableDisplay(), plugin);
 			tasks.add(CartographyTableDisplay.run());
@@ -138,14 +143,14 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.Grindstone.Enabled") &&
-				   (version.equals("1.14") || version.equals("1.15"))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15))
 				) {
 			Bukkit.getPluginManager().registerEvents(new GrindstoneDisplay(), plugin);
 			grindstone = true;
 		}
 		
 		if (config.getBoolean("Blocks.Stonecutter.Enabled") &&
-				   (version.equals("1.14") || version.equals("1.15"))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15))
 				) {
 			Bukkit.getPluginManager().registerEvents(new StonecutterDisplay(), plugin);
 			tasks.add(StonecutterDisplay.run());
@@ -177,7 +182,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.BlastFurnace.Enabled") &&
-				   (version.equals("1.14") || version.equals("1.15"))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15))
 				) {
 			Bukkit.getPluginManager().registerEvents(new BlastFurnaceDisplay(), plugin);
 			tasks.add(BlastFurnaceDisplay.run());
@@ -186,7 +191,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.Smoker.Enabled") &&
-				   (version.equals("1.14") || version.equals("1.15"))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15))
 				) {
 			Bukkit.getPluginManager().registerEvents(new SmokerDisplay(), plugin);
 			tasks.add(SmokerDisplay.run());
@@ -200,7 +205,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.ShulkerBox.Enabled") &&
-				   (!version.contains("OLD"))
+				   (!version.isOld())
 				) {
 			Bukkit.getPluginManager().registerEvents(new ShulkerBoxDisplay(), plugin);
 			shulkerbox = true;
@@ -233,9 +238,9 @@ public class TaskManager {
 		tasks.add(LightManager.run());
 		tasks.add(PacketManager.update());
 		
-		//if (!(beacon || furnace || blastfurnace || smoker || jukebox || brewingstand)) {
-		//	tileEntities = false;
-		//}
+		for (InventoryType type : InventoryType.values()) {
+			customProcesses.put(type, new ArrayList<VisualizerInteractDisplay>());
+		}
 	}
 	
 	public static void run() {
@@ -264,6 +269,8 @@ public class TaskManager {
 				}
 				
 				Inventory inv = player.getOpenInventory().getTopInventory();
+				
+				customProcesses.get(inv.getType()).forEach((each) -> each.process(player));
 				
 				switch (inv.getType()) {
 				case ANVIL:

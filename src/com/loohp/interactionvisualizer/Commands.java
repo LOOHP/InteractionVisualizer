@@ -13,6 +13,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import com.loohp.interactionvisualizer.InteractionVisualizer.Modules;
 import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.Managers.EffectManager;
@@ -103,16 +104,16 @@ public class Commands implements CommandExecutor, TabCompleter {
 					Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 						switch (args[1].toLowerCase()) {
 						case "itemstand":
-							Toggle.toggle(sender, player, "itemstand");
+							Toggle.toggle(sender, player, Modules.ITEMSTAND);
 							break;
 						case "itemdrop":
-							Toggle.toggle(sender, player, "itemdrop");
+							Toggle.toggle(sender, player, Modules.ITEMDROP);
 							break;
 						case "hologram":
-							Toggle.toggle(sender, player, "hologram");
+							Toggle.toggle(sender, player, Modules.HOLOGRAM);
 							break;
 						case "all":
-							HashMap<String, Boolean> info = Database.getPlayerInfo(player);
+							HashMap<Modules, Boolean> info = Database.getPlayerInfo(player);
 							boolean toggle = true;
 							int truecount = 0;
 							for (boolean value : info.values()) {
@@ -122,7 +123,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 									break;
 								}
 							}
-							for (Entry<String, Boolean> entry : info.entrySet()) {
+							for (Entry<Modules, Boolean> entry : info.entrySet()) {
 								if (entry.getValue() != toggle) {
 									Toggle.toggle(sender, player, entry.getKey());
 								}
@@ -152,16 +153,16 @@ public class Commands implements CommandExecutor, TabCompleter {
 					Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 						switch (args[1].toLowerCase()) {
 						case "itemstand":
-							Toggle.toggle(sender, player, "itemstand");
+							Toggle.toggle(sender, player, Modules.ITEMSTAND);
 							break;
 						case "itemdrop":
-							Toggle.toggle(sender, player, "itemdrop");
+							Toggle.toggle(sender, player, Modules.ITEMDROP);
 							break;
 						case "hologram":
-							Toggle.toggle(sender, player, "hologram");
+							Toggle.toggle(sender, player, Modules.HOLOGRAM);
 							break;
 						case "all":
-							HashMap<String, Boolean> info = Database.getPlayerInfo(player);
+							HashMap<Modules, Boolean> info = Database.getPlayerInfo(player);
 							boolean toggle = true;
 							int truecount = 0;
 							for (boolean value : info.values()) {
@@ -171,7 +172,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 									break;
 								}
 							}
-							for (Entry<String, Boolean> entry : info.entrySet()) {
+							for (Entry<Modules, Boolean> entry : info.entrySet()) {
 								if (entry.getValue() != toggle) {
 									Toggle.toggle(sender, player, entry.getKey());
 								}

@@ -34,8 +34,10 @@ import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
+import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.LegacyFacingUtils;
+import com.loohp.interactionvisualizer.Utils.MCVersion;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class FurnaceDisplay implements Listener {
@@ -371,7 +373,7 @@ public class FurnaceDisplay implements Listener {
 							if (hasFuel(furnace)) {
 								int time = furnace.getCookTime();
 								int max = 10 * 20;
-								if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+								if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
 									max = furnace.getCookTimeTotal();
 								}
 								String symbol = "";
@@ -446,7 +448,7 @@ public class FurnaceDisplay implements Listener {
 	}
 	
 	public static List<Block> nearbyFurnace() {
-		return TileEntityManager.getTileEntites("furnace");
+		return TileEntityManager.getTileEntites(TileEntityType.FURNACE);
 	}
 	
 	public static boolean isActive(Location loc) {
@@ -458,7 +460,7 @@ public class FurnaceDisplay implements Listener {
 		Location origin = block.getLocation();	
 	
 		BlockFace facing = null;
-		if (!InteractionVisualizer.version.contains("legacy")) {
+		if (!InteractionVisualizer.version.isLegacy()) {
 			BlockData blockData = block.getState().getBlockData();
 			facing = ((Directional) blockData).getFacing();	
 		} else {

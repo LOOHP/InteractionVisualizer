@@ -23,6 +23,7 @@ import com.loohp.interactionvisualizer.Managers.MusicManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
+import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
 import com.loohp.interactionvisualizer.Utils.LegacyRecordsUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -136,7 +137,7 @@ public class JukeBoxDisplay implements Listener {
 						Item item = null;
 						if (entry.getValue().get("Item") instanceof String) {
 							if (itemstack != null) {
-								String disc = InteractionVisualizer.version.contains("legacy") ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString().toUpperCase()) : jukebox.getPlaying().toString().toUpperCase();
+								String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString().toUpperCase()) : jukebox.getPlaying().toString().toUpperCase();
 								String text = getColor(disc) + MusicManager.getMusicConfig().getString("Discs." + disc);
 								
 								item = new Item(jukebox.getLocation().clone().add(0.5, 1.0, 0.5));
@@ -157,7 +158,7 @@ public class JukeBoxDisplay implements Listener {
 							if (itemstack != null) {
 								if (!item.getItemStack().equals(itemstack)) {
 									item.setItemStack(itemstack);
-									String disc = InteractionVisualizer.version.contains("legacy") ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString().toUpperCase()) : jukebox.getPlaying().toString().toUpperCase();
+									String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString().toUpperCase()) : jukebox.getPlaying().toString().toUpperCase();
 									String text = getColor(disc) + MusicManager.getMusicConfig().getString("Discs." + disc);
 									
 									item.setCustomName(text);
@@ -176,7 +177,7 @@ public class JukeBoxDisplay implements Listener {
 	}
 	
 	public static List<Block> nearbyJukeBox() {
-		return TileEntityManager.getTileEntites("jukebox");
+		return TileEntityManager.getTileEntites(TileEntityType.JUKEBOX);
 	}
 	
 	public static boolean isActive(Location loc) {

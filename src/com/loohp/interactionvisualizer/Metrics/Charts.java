@@ -6,6 +6,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
+import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
 
 public class Charts {
 	
@@ -217,12 +218,9 @@ public class Charts {
             @Override
             public Integer call() throws Exception {
             	int total = 0;
-            	total += TileEntityManager.getTileEntites("blastfurnace").size();
-            	total += TileEntityManager.getTileEntites("brewingstand").size();
-            	total += TileEntityManager.getTileEntites("furnace").size();
-            	total += TileEntityManager.getTileEntites("smoker").size();
-            	total += TileEntityManager.getTileEntites("beacon").size();
-            	total += TileEntityManager.getTileEntites("jukebox").size();
+            	for (TileEntityType type : TileEntityType.values()) {
+            		total += TileEntityManager.getTileEntites(type).size();
+            	}
                 return total;
             }
         }));

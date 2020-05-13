@@ -41,6 +41,7 @@ import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.Updater.Updater;
 import com.loohp.interactionvisualizer.Utils.LegacyInstrumentUtils;
 import com.loohp.interactionvisualizer.Utils.LegacyRecordsUtils;
+import com.loohp.interactionvisualizer.Utils.MCVersion;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -50,7 +51,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static ProtocolManager protocolManager;
 	public static FileConfiguration config;
 	
-	public static String version = "";
+	public static MCVersion version;
 	public static Integer metaversion = 0;
 	
 	public static Boolean openinv = false;
@@ -85,6 +86,12 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	public static boolean UpdaterEnabled = true;
 	
+	public enum Modules {
+		ITEMSTAND,
+		ITEMDROP,
+		HOLOGRAM;
+	}
+	
 	@Override
 	public void onEnable() {
 		plugin = getServer().getPluginManager().getPlugin("InteractionVisualizer");
@@ -113,47 +120,27 @@ public class InteractionVisualizer extends JavaPlugin {
 
 		Metrics metrics = new Metrics(this, pluginId);
 		
-		String packageName = getServer().getClass().getPackage().getName();
+		version = MCVersion.fromPackageName(getServer().getClass().getPackage().getName());
 		
-		if (packageName.contains("1_15_R1")) {
-	    	version = "1.15";
-	    	metaversion = 3;
-	    } else if (packageName.contains("1_14_R1")) {
-	    	version = "1.14";
-	    	metaversion = 2;
-	    } else if (packageName.contains("1_13_R2")) {
-	    	version = "1.13.1";
-	    	metaversion = 1;
-	    } else if (packageName.contains("1_13_R1")) {
-	    	version = "1.13";
-	    	metaversion = 1;
-	    } else if (packageName.contains("1_12_R1")) {
-	    	version = "legacy1.12";
-	    	metaversion = 0;
-	    } else if (packageName.contains("1_11_R1")) {
-	    	version = "legacy1.11";
-	    	metaversion = 0;
-	    } else if (packageName.contains("1_10_R1")) {
-	    	version = "legacy1.10";
-	    	unsupportedMessage();
-	    } else if (packageName.contains("1_9_R2")) {
-	    	version = "legacy1.9.4";
-	    	unsupportedMessage();
-	    } else if (packageName.contains("1_9_R1")) {
-	    	version = "legacy1.9";
-	    	unsupportedMessage();
-	    } else if (packageName.contains("1_8_R3")) {
-	    	version = "OLDlegacy1.8.4";
-	    	unsupportedMessage();
-	    } else if (packageName.contains("1_8_R2")) {
-	    	version = "OLDlegacy1.8.3";
-	    	unsupportedMessage();
-	    } else if (packageName.contains("1_8_R1")) {
-	    	version = "OLDlegacy1.8";
-	    	unsupportedMessage();
-	    } else {
-	    	unsupportedMessage();
-	    }
+		switch (version) {
+		case V1_15:
+			metaversion = 3;
+			break;
+		case V1_14:
+			metaversion = 2;
+			break;
+		case V1_13_1:
+		case V1_13:
+			metaversion = 1;
+			break;
+		case V1_12:
+		case V1_11:
+			metaversion = 0;
+			break;
+		default:
+			unsupportedMessage();
+			break;
+		}
 		
 		plugin.getConfig().options().copyDefaults(true);
 		config = plugin.getConfig();
@@ -162,7 +149,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		defaultworld = getServer().getWorlds().get(0);
 		defaultlocation = new Location(defaultworld, 0, 0, 0);
-		if (!version.contains("legacy") && !version.equals("1.13") && !version.equals("1.13.1")) {
+		if (!version.isLegacy() && !version.equals(MCVersion.V1_13) && !version.equals(MCVersion.V1_13_1)) {
 			defaultworld.setChunkForceLoaded(0, 0, true);
 		}
 		
@@ -185,7 +172,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		MaterialManager.setup();
 		
-		if (version.contains("legacy")) {
+		if (version.isLegacy()) {
 			LegacyRecordsUtils.setup();
 			LegacyInstrumentUtils.setup();
 		}

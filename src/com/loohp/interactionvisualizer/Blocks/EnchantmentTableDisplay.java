@@ -202,7 +202,7 @@ public class EnchantmentTableDisplay implements Listener {
 			if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
 				return;
 			}
-			if (!InteractionVisualizer.version.contains("legacy")) {
+			if (!InteractionVisualizer.version.isLegacy()) {
 				if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTING_TABLE")) {
 					return;
 				}

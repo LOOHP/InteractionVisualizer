@@ -28,23 +28,32 @@ public class TileEntityManager {
 	private static List<BlockState> states = Collections.synchronizedList(new LinkedList<BlockState>());
 	private static AtomicInteger stateTaskCount = new AtomicInteger();
 	private static AtomicInteger stateDoneCount = new AtomicInteger();
-	private static HashMap<String, List<Block>> current = new HashMap<String, List<Block>>();
-	private static HashMap<String, List<Block>> upcomming = new HashMap<String, List<Block>>();
+	private static HashMap<TileEntityType, List<Block>> current = new HashMap<TileEntityType, List<Block>>();
+	private static HashMap<TileEntityType, List<Block>> upcomming = new HashMap<TileEntityType, List<Block>>();
 	
 	private static Integer tileEntityChunkPerTick = InteractionVisualizer.tileEntityChunkPerTick;
 	
-	public static List<Block> getTileEntites(String type) {
+	public enum TileEntityType {
+		BLAST_FURNACE,
+		BREWING_STAND,
+		FURNACE,
+		SMOKER,
+		BEACON,
+		JUKEBOX;
+	}
+	
+	public static List<Block> getTileEntites(TileEntityType type) {
 		List<Block> list = current.get(type);
 		return list != null ? list : new LinkedList<Block>();
 	}
 	
 	public static void run() {
-		upcomming.put("blastfurnace", new LinkedList<Block>());
-		upcomming.put("brewingstand", new LinkedList<Block>());
-		upcomming.put("furnace", new LinkedList<Block>());
-		upcomming.put("smoker", new LinkedList<Block>());
-		upcomming.put("beacon", new LinkedList<Block>());
-		upcomming.put("jukebox", new LinkedList<Block>());
+		upcomming.put(TileEntityType.BLAST_FURNACE, new LinkedList<Block>());
+		upcomming.put(TileEntityType.BREWING_STAND, new LinkedList<Block>());
+		upcomming.put(TileEntityType.FURNACE, new LinkedList<Block>());
+		upcomming.put(TileEntityType.SMOKER, new LinkedList<Block>());
+		upcomming.put(TileEntityType.BEACON, new LinkedList<Block>());
+		upcomming.put(TileEntityType.JUKEBOX, new LinkedList<Block>());
 		stateTaskCount.set(0);
 		stateDoneCount.set(0);
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> getAllChunks());
@@ -119,23 +128,23 @@ public class TileEntityManager {
 			Block block = state.getBlock();
 			Material type = state.getType();
 			if (type.toString().toUpperCase().equals("BLAST_FURNACE")) {
-				upcomming.get("blastfurnace").add(block);
+				upcomming.get(TileEntityType.BLAST_FURNACE).add(block);
 			} else if (type.toString().toUpperCase().equals("BREWING_STAND")) {
-				upcomming.get("brewingstand").add(block);
+				upcomming.get(TileEntityType.BREWING_STAND).add(block);
 			} else if (FurnaceDisplay.isFurnace(type)) {
-				upcomming.get("furnace").add(block);
+				upcomming.get(TileEntityType.FURNACE).add(block);
 			} else if (type.toString().toUpperCase().equals("SMOKER")) {
-				upcomming.get("smoker").add(block);
+				upcomming.get(TileEntityType.SMOKER).add(block);
 			} else if (type.toString().toUpperCase().equals("BEACON")) {
-				upcomming.get("beacon").add(block);
+				upcomming.get(TileEntityType.BEACON).add(block);
 			} else if (type.toString().toUpperCase().equals("JUKEBOX")) {
-				upcomming.get("jukebox").add(block);
+				upcomming.get(TileEntityType.JUKEBOX).add(block);
 			}
 		}
 		if (plugin.isEnabled()) {
 			Bukkit.getScheduler().runTaskLater(plugin, () -> {
 				current = upcomming;
-				upcomming = new HashMap<String, List<Block>>();
+				upcomming = new HashMap<TileEntityType, List<Block>>();
 				Bukkit.getScheduler().runTaskLater(plugin, () -> run(), 1);
 			}, 1);
 		}
@@ -149,17 +158,17 @@ public class TileEntityManager {
 			Block block = state.getBlock();
 			Material type = state.getType();
 			if (type.toString().toUpperCase().equals("BLAST_FURNACE")) {
-				upcomming.get("blastfurnace").add(block);
+				upcomming.get(TileEntityType.BLAST_FURNACE).add(block);
 			} else if (type.toString().toUpperCase().equals("BREWING_STAND")) {
-				upcomming.get("brewingstand").add(block);
+				upcomming.get(TileEntityType.BREWING_STAND).add(block);
 			} else if (FurnaceDisplay.isFurnace(type)) {
-				upcomming.get("furnace").add(block);
+				upcomming.get(TileEntityType.FURNACE).add(block);
 			} else if (type.toString().toUpperCase().equals("SMOKER")) {
-				upcomming.get("smoker").add(block);
+				upcomming.get(TileEntityType.SMOKER).add(block);
 			} else if (type.toString().toUpperCase().equals("BEACON")) {
-				upcomming.get("beacon").add(block);
+				upcomming.get(TileEntityType.BEACON).add(block);
 			} else if (type.toString().toUpperCase().equals("JUKEBOX")) {
-				upcomming.get("jukebox").add(block);
+				upcomming.get(TileEntityType.JUKEBOX).add(block);
 			}
 			if (count > 10) {
 				break;
@@ -168,7 +177,7 @@ public class TileEntityManager {
 		if (states.isEmpty()) {
 			Bukkit.getScheduler().runTaskLater(plugin, () -> {
 				current = upcomming;
-				upcomming = new HashMap<String, List<Block>>();
+				upcomming = new HashMap<TileEntityType, List<Block>>();
 				Bukkit.getScheduler().runTaskLater(plugin, () -> run(), 1);
 			}, 1);
 		} else {

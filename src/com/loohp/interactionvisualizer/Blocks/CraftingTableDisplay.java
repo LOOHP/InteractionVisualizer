@@ -33,6 +33,7 @@ import com.loohp.interactionvisualizer.Managers.LightManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
+import com.loohp.interactionvisualizer.Utils.MCVersion;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
@@ -295,8 +296,8 @@ public class CraftingTableDisplay implements Listener {
 							if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
 								if (player.getOpenInventory() != null) {
 									if (player.getOpenInventory().getTopInventory() != null) {
-										if (!InteractionVisualizer.version.contains("legacy")) {
-											if (!InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+										if (!InteractionVisualizer.version.isLegacy()) {
+											if (!InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
 												if (player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
 													return;
 												}
@@ -353,8 +354,8 @@ public class CraftingTableDisplay implements Listener {
 			if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
 				return;
 			}
-			if (!InteractionVisualizer.version.contains("legacy")) {
-				if (!InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+			if (!InteractionVisualizer.version.isLegacy()) {
+				if (!InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
 					if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
 						return;
 					}
@@ -382,7 +383,7 @@ public class CraftingTableDisplay implements Listener {
 			}
 			Block block = null;
 			InventoryView view = player.getOpenInventory();
-			if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+			if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
 				block = view.getTopInventory().getLocation().getBlock();
 			} else {
 				block = player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7);

@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.InteractionVisualizer.Modules;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 
 public class Database {
@@ -275,8 +276,8 @@ public class Database {
 		}
 	}
 	
-	public static HashMap<String, Boolean> getPlayerInfo(UUID uuid) {
-		HashMap<String, Boolean> map = new HashMap<String, Boolean>();
+	public static HashMap<Modules, Boolean> getPlayerInfo(UUID uuid) {
+		HashMap<Modules, Boolean> map = new HashMap<Modules, Boolean>();
 		synchronized (syncdb) {
 			open();
 			try {
@@ -285,9 +286,9 @@ public class Database {
 				ResultSet results = statement.executeQuery();
 				results.next();
 				
-				map.put("itemstand", results.getBoolean("ITEMSTAND"));
-				map.put("itemdrop", results.getBoolean("ITEMDROP"));
-				map.put("hologram", results.getBoolean("HOLOGRAM"));				
+				map.put(Modules.ITEMSTAND, results.getBoolean("ITEMSTAND"));
+				map.put(Modules.ITEMDROP, results.getBoolean("ITEMDROP"));
+				map.put(Modules.HOLOGRAM, results.getBoolean("HOLOGRAM"));				
 				
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -301,7 +302,7 @@ public class Database {
 		return map;
 	}
 	
-	public static HashMap<String, Boolean> getPlayerInfo(Player player) {
+	public static HashMap<Modules, Boolean> getPlayerInfo(Player player) {
 		return getPlayerInfo(player.getUniqueId());
 	}
 	

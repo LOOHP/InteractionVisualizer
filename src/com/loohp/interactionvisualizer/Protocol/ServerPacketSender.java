@@ -18,11 +18,12 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
+import com.loohp.interactionvisualizer.Utils.MCVersion;
 
 public class ServerPacketSender {
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
-	private static String version = InteractionVisualizer.version;
+	private static MCVersion version = InteractionVisualizer.version;
 	private static ProtocolManager protocolManager = InteractionVisualizer.protocolManager;
 	
 	public static void sendHandMovement(List<Player> players, Player entity) {
@@ -45,7 +46,7 @@ public class ServerPacketSender {
 	public static void spawnArmorStand(List<Player> players, ArmorStand entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
 		packet1.getIntegers().write(0, entity.getEntityId());
-		if (!version.contains("legacy")) {
+		if (!version.isLegacy()) {
 			packet1.getIntegers().write(1, 1);
 		} else {
 			packet1.getIntegers().write(1, 30);
@@ -183,7 +184,7 @@ public class ServerPacketSender {
         packet1.getIntegers().write(3, (int) (entity.getVelocity().getZ() * 8000));
         packet1.getIntegers().write(4, (int) (entity.getLocation().getPitch() * 256.0F / 360.0F));
         packet1.getIntegers().write(5, (int) (entity.getLocation().getYaw() * 256.0F / 360.0F));
-        if (InteractionVisualizer.version.equals("1.13") || InteractionVisualizer.version.equals("1.13.1") || InteractionVisualizer.version.contains("legacy")) {
+        if (version.isLegacy() || version.equals(MCVersion.V1_13) || version.equals(MCVersion.V1_13_1)) {
             packet1.getIntegers().write(6, 2);
             packet1.getIntegers().write(7, 1);
         } else {
@@ -289,7 +290,7 @@ public class ServerPacketSender {
         packet1.getIntegers().write(3, 0);
         packet1.getIntegers().write(4, (int) (entity.getPitch() * 256.0F / 360.0F));
         packet1.getIntegers().write(5, (int) (entity.getYaw() * 256.0F / 360.0F));
-        if (InteractionVisualizer.version.equals("1.13") || InteractionVisualizer.version.equals("1.13.1") || InteractionVisualizer.version.contains("legacy")) {
+        if (version.isLegacy() || version.equals(MCVersion.V1_13) || version.equals(MCVersion.V1_13_1)) {
             packet1.getIntegers().write(6, 33);
             packet1.getIntegers().write(7, getItemFrameData(entity));
         } else {

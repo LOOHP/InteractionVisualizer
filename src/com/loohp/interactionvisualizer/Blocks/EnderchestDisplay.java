@@ -31,6 +31,7 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
+import com.loohp.interactionvisualizer.Utils.MCVersion;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.OpenInvUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
@@ -60,7 +61,7 @@ public class EnderchestDisplay implements Listener {
 		if (!event.getView().getTopInventory().getType().equals(InventoryType.ENDER_CHEST)) {
 			return;
 		}
-		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+		if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
 			if (event.getPlayer().getTargetBlockExact(7, FluidCollisionMode.NEVER) != null) {
 				if (!event.getPlayer().getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.ENDER_CHEST)) {
 					return;
@@ -79,7 +80,7 @@ public class EnderchestDisplay implements Listener {
 		}
 		
 		Block block = null;
-		if (!InteractionVisualizer.version.contains("legacy") && !InteractionVisualizer.version.equals("1.13") && !InteractionVisualizer.version.equals("1.13.1")) {
+		if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
 			block = event.getPlayer().getTargetBlockExact(7, FluidCollisionMode.NEVER);
 		} else {
 			block = event.getPlayer().getTargetBlock(MaterialUtils.getNonSolidSet(), 7);

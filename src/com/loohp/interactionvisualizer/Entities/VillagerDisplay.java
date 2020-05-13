@@ -75,7 +75,7 @@ public class VillagerDisplay implements Listener {
 		Vector lift = new Vector(0.0, 0.20, 0.0);
 		if (item0 != null) {
 			Item in = new Item(player.getEyeLocation());
-			Vector vector = villager.getEyeLocation().add(0.5, -0.5, 0.5).toVector().subtract(player.getEyeLocation().toVector()).multiply(0.12).add(lift);
+			Vector vector = villager.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(player.getEyeLocation().toVector()).multiply(0.12).add(lift);
 			in.setItemStack(item0);
 			in.setGravity(true);
 			in.setVelocity(vector);
@@ -89,7 +89,7 @@ public class VillagerDisplay implements Listener {
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 			if (item1final != null) {
 				Item in = new Item(player.getEyeLocation());
-				Vector vector = villager.getEyeLocation().add(0.5, -0.5, 0.5).toVector().subtract(player.getEyeLocation().toVector()).multiply(0.12).add(lift);
+				Vector vector = villager.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(player.getEyeLocation().toVector()).multiply(0.12).add(lift);
 				in.setItemStack(item1final);
 				in.setGravity(true);
 				in.setVelocity(vector);
@@ -102,7 +102,7 @@ public class VillagerDisplay implements Listener {
 				
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 			Item out = new Item(villager.getEyeLocation());
-			Vector vector = player.getEyeLocation().add(0.5, -0.5, 0.5).toVector().subtract(villager.getEyeLocation().toVector()).multiply(0.10).add(lift);
+			Vector vector = player.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(villager.getEyeLocation().toVector()).multiply(0.10).add(lift);
 			out.setItemStack(item2);
 			out.setGravity(true);
 			out.setVelocity(vector);

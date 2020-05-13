@@ -34,6 +34,7 @@ import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
+import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
@@ -442,7 +443,7 @@ public class BlastFurnaceDisplay implements Listener {
 	}
 	
 	public static List<Block> nearbyBlastFurnace() {
-		return TileEntityManager.getTileEntites("blastfurnace");
+		return TileEntityManager.getTileEntites(TileEntityType.BLAST_FURNACE);
 	}
 	
 	public static boolean isActive(Location loc) {

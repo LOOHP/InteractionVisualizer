@@ -86,7 +86,7 @@ public class DoubleChestDisplay implements Listener {
 		
 		DoubleChest doublechest = (DoubleChest) holder;
 		BlockFace facing = null;
-		if (!InteractionVisualizer.version.contains("legacy")) {
+		if (!InteractionVisualizer.version.isLegacy()) {
 			BlockData blockData = chest.getBlockData();
 			facing = ((Directional) blockData).getFacing();
 		} else {
@@ -293,7 +293,7 @@ public class DoubleChestDisplay implements Listener {
 		}
 		DoubleChest doublechest = (DoubleChest) holder;
 		BlockFace facing = null;
-		if (!InteractionVisualizer.version.contains("legacy")) {
+		if (!InteractionVisualizer.version.isLegacy()) {
 			BlockData blockData = chest.getBlockData();
 			facing = ((Directional) blockData).getFacing();
 		} else {

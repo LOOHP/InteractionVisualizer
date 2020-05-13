@@ -12,10 +12,11 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
+import com.loohp.interactionvisualizer.Utils.MCVersion;
 
 public class WatchableCollection {
 	
-	private static String version = InteractionVisualizer.version;
+	private static MCVersion version = InteractionVisualizer.version;
 	private static Integer metaversion = InteractionVisualizer.metaversion;
 	private static Serializer booleanSerializer;
 	private static Serializer stringSerializer;
@@ -31,7 +32,7 @@ public class WatchableCollection {
 		byteSerializer = Registry.get(Byte.class);
 		intSerializer = Registry.get(Integer.class);
 		itemSerializer = Registry.getItemStackSerializer(false);
-		if (!version.contains("legacy")) {
+		if (!version.isLegacy()) {
 			optChatSerializer = Registry.getChatComponentSerializer(true);
 		}
 		vectorSerializer = Registry.getVectorSerializer();

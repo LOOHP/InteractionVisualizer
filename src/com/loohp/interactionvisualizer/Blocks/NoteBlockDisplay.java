@@ -59,7 +59,7 @@ public class NoteBlockDisplay implements Listener {
 			displayingNotes.put(block, map);
 			
 			String text = "";
-			if (!InteractionVisualizer.version.contains("legacy")) {
+			if (!InteractionVisualizer.version.isLegacy()) {
 				NoteBlock state = (NoteBlock) block.getBlockData();
 				Tone tone = state.getNote().getTone();
 				String inst = MusicManager.getMusicConfig().getString("Instruments." + state.getInstrument().toString().toUpperCase());

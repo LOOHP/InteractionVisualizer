@@ -27,6 +27,7 @@ import com.loohp.interactionvisualizer.Managers.EffectManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
+import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
 import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -259,7 +260,7 @@ public class BeaconDisplay implements Listener {
 	}
 	
 	public static List<Block> nearbyBeacon() {
-		return TileEntityManager.getTileEntites("beacon");
+		return TileEntityManager.getTileEntites(TileEntityType.BEACON);
 	}
 	
 	public static boolean isActive(Location loc) {
@@ -330,7 +331,7 @@ public class BeaconDisplay implements Listener {
 		if (!glass.getType().toString().toUpperCase().contains("GLASS")) {
 			return ChatColor.WHITE;
 		}
-		if (!InteractionVisualizer.version.contains("legacy")) {
+		if (!InteractionVisualizer.version.isLegacy()) {
 			if (glass.getType().equals(Material.GLASS) || glass.getType().equals(Material.GLASS_PANE)) {
 				return ChatColor.WHITE;
 			}
