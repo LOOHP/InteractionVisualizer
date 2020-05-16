@@ -20,6 +20,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -94,7 +95,6 @@ public class CraftingTableDisplay implements Listener {
 			return;
 		}
 		
-		int slot = event.getRawSlot();
 		ItemStack itemstack = event.getCurrentItem().clone();
 		Location loc = block.getLocation();	
 		Player player = (Player) event.getWhoClicked();
@@ -113,36 +113,35 @@ public class CraftingTableDisplay implements Listener {
 		ArmorStand slot8 = (ArmorStand) map.get("8");
 		ArmorStand slot9 = (ArmorStand) map.get("9");
 		
-		HashMap<String, Object> entry = openedBenches.remove(block);
-		
-		item.setLocked(true);
-		slot1.setLocked(true);
-		slot2.setLocked(true);
-		slot3.setLocked(true);
-		slot4.setLocked(true);
-		slot5.setLocked(true);
-		slot6.setLocked(true);
-		slot7.setLocked(true);
-		slot8.setLocked(true);
-		slot9.setLocked(true);
+		Inventory before = Bukkit.createInventory(null, 9);
+		for (int i = 1; i < 10; i++) {
+			before.setItem(i - 1, player.getOpenInventory().getItem(i).clone());
+		}
+		String hash = InventoryUtils.toBase64(before);
 		
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 			
-			if (itemstack.isSimilar(player.getOpenInventory().getItem(slot)) && itemstack.getAmount() == player.getOpenInventory().getItem(slot).getAmount()) {
-				item.setLocked(false);
-				slot1.setLocked(false);
-				slot2.setLocked(false);
-				slot3.setLocked(false);
-				slot4.setLocked(false);
-				slot5.setLocked(false);
-				slot6.setLocked(false);
-				slot7.setLocked(false);
-				slot8.setLocked(false);
-				slot9.setLocked(false);
-				
-				openedBenches.put(block, entry);
+			Inventory after = Bukkit.createInventory(null, 9);
+			for (int i = 1; i < 10; i++) {
+				after.setItem(i - 1, player.getOpenInventory().getItem(i).clone());
+			}
+			
+			if (InventoryUtils.toBase64(after).equals(hash)) {
 				return;
 			}
+			
+			item.setLocked(true);
+			slot1.setLocked(true);
+			slot2.setLocked(true);
+			slot3.setLocked(true);
+			slot4.setLocked(true);
+			slot5.setLocked(true);
+			slot6.setLocked(true);
+			slot7.setLocked(true);
+			slot8.setLocked(true);
+			slot9.setLocked(true);
+			
+			openedBenches.remove(block);
 			
 			float yaw = getCardinalDirection(player);
 			Vector vector = new Location(slot8.getWorld(), slot8.getLocation().getX(), slot8.getLocation().getY(), slot8.getLocation().getZ(), yaw, 0).getDirection().normalize();
