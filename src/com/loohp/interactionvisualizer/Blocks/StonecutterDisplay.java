@@ -18,6 +18,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.StonecutterInventory;
@@ -86,26 +87,31 @@ public class StonecutterDisplay implements Listener {
 			return;
 		}
 		
-		int slot = event.getRawSlot();
 		ItemStack itemstack = event.getCurrentItem().clone();
 		Location loc = block.getLocation();	
 		Player player = (Player) event.getWhoClicked();
-		
-		HashMap<String, Object> entry = openedStonecutter.remove(block);
 		
 		if (map.get("Item") instanceof String) {
 			map.put("Item", new Item(block.getLocation().clone().add(0.5, 1.2, 0.5)));
 		}
 		Item item = (Item) map.get("Item");
-		item.setLocked(true);
+		
+		Inventory before = Bukkit.createInventory(null, 9);
+		before.setItem(0, player.getOpenInventory().getItem(0).clone());
+		String hash = InventoryUtils.toBase64(before);
 		
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 			
-			if (player.getOpenInventory().getItem(slot) == null || (itemstack.isSimilar(player.getOpenInventory().getItem(slot)) && itemstack.getAmount() == player.getOpenInventory().getItem(slot).getAmount())) {
-				item.setLocked(false);
-				openedStonecutter.put(block, entry);
+			Inventory after = Bukkit.createInventory(null, 9);
+			after.setItem(0, player.getOpenInventory().getItem(0).clone());
+			
+			if (InventoryUtils.toBase64(after).equals(hash)) {
 				return;
 			}
+			
+			item.setLocked(true);
+			
+			openedStonecutter.remove(block);
 			
 			item.setItemStack(itemstack);
 			

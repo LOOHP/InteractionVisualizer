@@ -17,6 +17,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
@@ -98,7 +99,6 @@ public class AnvilDisplay implements Listener {
 			return;
 		}
 		
-		int slot = event.getRawSlot();
 		ItemStack itemstack = event.getCurrentItem();
 		Location loc = block.getLocation();	
 		Player player = (Player) event.getWhoClicked();
@@ -110,21 +110,26 @@ public class AnvilDisplay implements Listener {
 		}
 		Item item = (Item) map.get("2");
 		
-		HashMap<String, Object> entry = openedAnvil.remove(block);
-		
-		slot0.setLocked(true);
-		slot1.setLocked(true);
-		item.setLocked(true);
+		Inventory before = Bukkit.createInventory(null, 9);
+		before.setItem(0, player.getOpenInventory().getItem(0).clone());
+		before.setItem(1, player.getOpenInventory().getItem(1).clone());
+		String hash = InventoryUtils.toBase64(before);
 		
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 			
-			if (player.getOpenInventory().getItem(slot) == null || (itemstack.isSimilar(player.getOpenInventory().getItem(slot)) && itemstack.getAmount() == player.getOpenInventory().getItem(slot).getAmount())) {
-				slot0.setLocked(false);
-				slot1.setLocked(false);
-				item.setLocked(false);
-				openedAnvil.put(block, entry);
+			Inventory after = Bukkit.createInventory(null, 9);
+			after.setItem(0, player.getOpenInventory().getItem(0).clone());
+			after.setItem(1, player.getOpenInventory().getItem(1).clone());
+			
+			if (InventoryUtils.toBase64(after).equals(hash)) {
 				return;
 			}
+			
+			slot0.setLocked(true);
+			slot1.setLocked(true);
+			item.setLocked(true);
+			
+			openedAnvil.remove(block);
 			
 			float yaw = getCardinalDirection(player);
 			Vector vector = new Location(slot0.getWorld(), slot0.getLocation().getX(), slot0.getLocation().getY(), slot0.getLocation().getZ(), yaw, 0).getDirection().normalize();

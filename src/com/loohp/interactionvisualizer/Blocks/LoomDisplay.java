@@ -17,6 +17,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -105,14 +106,24 @@ public class LoomDisplay implements Listener {
 			return;
 		}
 		
-		int slot = event.getRawSlot();
 		ItemStack itemstack = event.getCurrentItem().clone();
 		Location loc = block.getLocation();	
 		Player player = (Player) event.getWhoClicked();
 		
+		Inventory before = Bukkit.createInventory(null, 9);
+		before.setItem(0, player.getOpenInventory().getItem(0).clone());
+		before.setItem(1, player.getOpenInventory().getItem(1).clone());
+		before.setItem(2, player.getOpenInventory().getItem(2).clone());
+		String hash = InventoryUtils.toBase64(before);
+		
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 			
-			if (player.getOpenInventory().getItem(slot) == null || (itemstack.isSimilar(player.getOpenInventory().getItem(slot)) && itemstack.getAmount() == player.getOpenInventory().getItem(slot).getAmount())) {
+			Inventory after = Bukkit.createInventory(null, 9);
+			after.setItem(0, player.getOpenInventory().getItem(0).clone());
+			after.setItem(1, player.getOpenInventory().getItem(1).clone());
+			after.setItem(2, player.getOpenInventory().getItem(2).clone());
+			
+			if (InventoryUtils.toBase64(after).equals(hash)) {
 				return;
 			}
 		
@@ -360,7 +371,7 @@ public class LoomDisplay implements Listener {
 		
 		ArmorStand stand = (ArmorStand) map.get("Banner");
 		if (item != null) {
-			if (!item.getType().equals(stand.getHelmet().getType())) {
+			if (!item.isSimilar(stand.getHelmet())) {
 				stand.setHelmet(item);
 				PacketManager.updateArmorStand(stand);
 			}
