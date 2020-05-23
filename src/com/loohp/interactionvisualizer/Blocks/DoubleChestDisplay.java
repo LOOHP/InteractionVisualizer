@@ -24,6 +24,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -43,19 +44,23 @@ public class DoubleChestDisplay implements Listener {
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseDoubleChest(InventoryClickEvent event) {
+		Player player = (Player) event.getWhoClicked();
 		if (event.isCancelled()) {
 			return;
 		}
-		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
+		if (VanishUtils.isVanished(player)) {
 			return;
 		}
-		if (OpenInvUtils.isSlientChest((Player) event.getWhoClicked())) {
+		if (OpenInvUtils.isSlientChest(player)) {
 			return;
 		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
 		if (event.getView().getTopInventory() == null) {
+			return;
+		}
+		if (!event.getView().getTopInventory().getType().equals(InventoryType.CHEST)) {
 			return;
 		}
 		try {
@@ -109,9 +114,7 @@ public class DoubleChestDisplay implements Listener {
 		boolean isIn = true;
 		boolean isMove = false;
 		ItemStack itemstack = null;
-		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 53) {
-			
 			itemstack = event.getCurrentItem();
 			if (itemstack != null) {
 				if (itemstack.getType().equals(Material.AIR)) {
@@ -150,7 +153,6 @@ public class DoubleChestDisplay implements Listener {
 				}
 			}		
 		}
-		
 		if (itemstack == null) {
 			if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
 				itemstack = event.getCurrentItem();
@@ -163,8 +165,7 @@ public class DoubleChestDisplay implements Listener {
 				}
 			}
 		}
-		
-		if (event.isShiftClick()) {
+		if (event.isShiftClick() && event.getView().getItem(event.getRawSlot()) != null) {
 			if (isIn) {
 				if (!InventoryUtils.stillHaveSpace(event.getView().getTopInventory(), event.getView().getItem(event.getRawSlot()).getType())) {
 					return;
@@ -188,9 +189,8 @@ public class DoubleChestDisplay implements Listener {
 				}
 			}
 		}
-		
 		if (isMove == true) {
-			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), player);
 			if (itemstack != null) {
 				Item item = new Item(loc.clone().add(0.5, 1, 0.5));
 				Vector offset = new Vector(0.0, 0.15, 0.0);
@@ -206,10 +206,10 @@ public class DoubleChestDisplay implements Listener {
 				item.setPickupDelay(32767);
 				item.setGravity(true);
 				PacketManager.updateItem(item);
-				if (!link.containsKey((Player) event.getWhoClicked())) {
-					link.put((Player) event.getWhoClicked(), new ArrayList<Item>());
+				if (!link.containsKey(player)) {
+					link.put(player, new ArrayList<Item>());
 				}
-				List<Item> list = link.get((Player) event.getWhoClicked());
+				List<Item> list = link.get(player);
 				list.add(item);
 				boolean finalIsIn = isIn;
 				Location finalLoc = loc;
@@ -218,7 +218,7 @@ public class DoubleChestDisplay implements Listener {
 						if (finalIsIn) {
 							item.teleport(finalLoc.clone().add(0.5, 1, 0.5));
 						} else {
-							item.teleport(event.getWhoClicked().getEyeLocation().add(0.0, -0.5, 0.0));
+							item.teleport(player.getEyeLocation().add(0.0, -0.5, 0.0));
 						}
 						item.setVelocity(new Vector(0.0, 0.0, 0.0));
 						item.setGravity(false);
@@ -237,6 +237,7 @@ public class DoubleChestDisplay implements Listener {
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onDragDoubleChest(InventoryDragEvent event) {
+		Player player = (Player) event.getWhoClicked();
 		if (event.isCancelled()) {
 			return;
 		}
@@ -315,7 +316,7 @@ public class DoubleChestDisplay implements Listener {
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 53) {
-				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), player);
 				
 				ItemStack itemstack = event.getOldCursor();
 				if (itemstack != null) {
@@ -335,10 +336,10 @@ public class DoubleChestDisplay implements Listener {
 					item.setPickupDelay(32767);
 					item.setGravity(true);
 					PacketManager.updateItem(item);
-					if (!link.containsKey((Player) event.getWhoClicked())) {
-						link.put((Player) event.getWhoClicked(), new ArrayList<Item>());
+					if (!link.containsKey(player)) {
+						link.put(player, new ArrayList<Item>());
 					}
-					List<Item> list = link.get((Player) event.getWhoClicked());
+					List<Item> list = link.get(player);
 					list.add(item);
 					Location finalLoc = loc;
 					new BukkitRunnable() {

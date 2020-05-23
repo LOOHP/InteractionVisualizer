@@ -19,6 +19,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -36,19 +37,23 @@ public class ShulkerBoxDisplay implements Listener {
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseShulkerbox(InventoryClickEvent event) {
+		Player player = (Player) event.getWhoClicked();
 		if (event.isCancelled()) {
 			return;
 		}
-		if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
+		if (VanishUtils.isVanished(player)) {
 			return;
 		}
-		if (OpenInvUtils.isSlientChest((Player) event.getWhoClicked())) {
+		if (OpenInvUtils.isSlientChest(player)) {
 			return;
 		}
 		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
 		if (event.getView().getTopInventory() == null) {
+			return;
+		}
+		if (!event.getView().getTopInventory().getType().equals(InventoryType.SHULKER_BOX)) {
 			return;
 		}
 		try {
@@ -129,7 +134,7 @@ public class ShulkerBoxDisplay implements Listener {
 			}
 		}
 		
-		if (event.isShiftClick()) {
+		if (event.isShiftClick() && event.getView().getItem(event.getRawSlot()) != null) {
 			if (isIn) {
 				if (!InventoryUtils.stillHaveSpace(event.getView().getTopInventory(), event.getView().getItem(event.getRawSlot()).getType())) {
 					return;
@@ -155,7 +160,7 @@ public class ShulkerBoxDisplay implements Listener {
 		}
 		
 		if (isMove == true) {
-			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), player);
 			if (itemstack != null) {
 				Item item = new Item(loc.clone().add(0.5, 0.5, 0.5));
 				Vector offset = new Vector(0.0, 0.15, 0.0);
@@ -171,10 +176,10 @@ public class ShulkerBoxDisplay implements Listener {
 				item.setPickupDelay(32767);
 				item.setGravity(true);
 				PacketManager.updateItem(item);
-				if (!link.containsKey((Player) event.getWhoClicked())) {
-					link.put((Player) event.getWhoClicked(), new ArrayList<Item>());
+				if (!link.containsKey(player)) {
+					link.put(player, new ArrayList<Item>());
 				}
-				List<Item> list = link.get((Player) event.getWhoClicked());
+				List<Item> list = link.get(player);
 				list.add(item);
 				boolean finalIsIn = isIn;
 				new BukkitRunnable() {
@@ -201,6 +206,7 @@ public class ShulkerBoxDisplay implements Listener {
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onDragShulkerbox(InventoryDragEvent event) {
+		Player player = (Player) event.getWhoClicked();
 		if (event.isCancelled()) {
 			return;
 		}
@@ -252,7 +258,7 @@ public class ShulkerBoxDisplay implements Listener {
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 26) {
-				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), player);
 				
 				ItemStack itemstack = event.getOldCursor();
 				if (itemstack != null) {
@@ -272,10 +278,10 @@ public class ShulkerBoxDisplay implements Listener {
 					item.setPickupDelay(32767);
 					item.setGravity(true);
 					PacketManager.updateItem(item);
-					if (!link.containsKey((Player) event.getWhoClicked())) {
-						link.put((Player) event.getWhoClicked(), new ArrayList<Item>());
+					if (!link.containsKey(player)) {
+						link.put(player, new ArrayList<Item>());
 					}
-					List<Item> list = link.get((Player) event.getWhoClicked());
+					List<Item> list = link.get(player);
 					list.add(item);
 					new BukkitRunnable() {
 						public void run() {

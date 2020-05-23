@@ -61,6 +61,9 @@ public class EnderchestDisplay implements Listener {
 		if (!event.getView().getTopInventory().getType().equals(InventoryType.ENDER_CHEST)) {
 			return;
 		}
+		if (!InventoryUtils.toBase64(event.getPlayer().getEnderChest()).equals(InventoryUtils.toBase64(event.getView().getTopInventory()))) {
+			return;
+		}
 		if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
 			if (event.getPlayer().getTargetBlockExact(7, FluidCollisionMode.NEVER) != null) {
 				if (!event.getPlayer().getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.ENDER_CHEST)) {
@@ -91,17 +94,18 @@ public class EnderchestDisplay implements Listener {
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseEnderChest(InventoryClickEvent event) {
+		Player player = (Player) event.getWhoClicked();
 		if (event.isCancelled()) {
 			return;
 		}
-		if (!playermap.containsKey((Player) event.getWhoClicked())) {
+		if (!playermap.containsKey(player)) {
 			return;
 		}
 		if (event.getClick().equals(ClickType.MIDDLE) && !event.getWhoClicked().getGameMode().equals(GameMode.CREATIVE)) {
 			return;
 		}
 		
-		Block block = playermap.get((Player) event.getWhoClicked());
+		Block block = playermap.get(player);
 		Location loc = block.getLocation();
 		
 		boolean isIn = true;
@@ -162,7 +166,7 @@ public class EnderchestDisplay implements Listener {
 			}
 		}
 		
-		if (event.isShiftClick()) {
+		if (event.isShiftClick() && event.getView().getItem(event.getRawSlot()) != null) {
 			if (isIn) {
 				if (!InventoryUtils.stillHaveSpace(event.getView().getTopInventory(), event.getView().getItem(event.getRawSlot()).getType())) {
 					return;
@@ -188,7 +192,7 @@ public class EnderchestDisplay implements Listener {
 		}
 		
 		if (isMove == true) {
-			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), player);
 			if (itemstack != null) {
 				Item item = new Item(loc.clone().add(0.5, 1, 0.5));
 				Vector offset = new Vector(0.0, 0.15, 0.0);
@@ -204,10 +208,10 @@ public class EnderchestDisplay implements Listener {
 				item.setPickupDelay(32767);
 				item.setGravity(true);
 				PacketManager.updateItem(item);
-				if (!link.containsKey((Player) event.getWhoClicked())) {
-					link.put((Player) event.getWhoClicked(), new ArrayList<Item>());
+				if (!link.containsKey(player)) {
+					link.put(player, new ArrayList<Item>());
 				}
-				List<Item> list = link.get((Player) event.getWhoClicked());
+				List<Item> list = link.get(player);
 				list.add(item);
 				boolean finalIsIn = isIn;
 				new BukkitRunnable() {
@@ -234,10 +238,11 @@ public class EnderchestDisplay implements Listener {
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onDragEnderChest(InventoryDragEvent event) {
+		Player player = (Player) event.getWhoClicked();
 		if (event.isCancelled()) {
 			return;
 		}
-		if (!playermap.containsKey((Player) event.getWhoClicked())) {
+		if (!playermap.containsKey(player)) {
 			return;
 		}
 		
@@ -264,12 +269,12 @@ public class EnderchestDisplay implements Listener {
 			return;
 		}
 		
-		Block block = playermap.get((Player) event.getWhoClicked());
+		Block block = playermap.get(player);
 		Location loc = block.getLocation();
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 26) {
-				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), player);
 				
 				ItemStack itemstack = event.getOldCursor();
 				if (itemstack != null) {
@@ -289,10 +294,10 @@ public class EnderchestDisplay implements Listener {
 					item.setPickupDelay(32767);
 					item.setGravity(true);
 					PacketManager.updateItem(item);
-					if (!link.containsKey((Player) event.getWhoClicked())) {
-						link.put((Player) event.getWhoClicked(), new ArrayList<Item>());
+					if (!link.containsKey(player)) {
+						link.put(player, new ArrayList<Item>());
 					}
-					List<Item> list = link.get((Player) event.getWhoClicked());
+					List<Item> list = link.get(player);
 					list.add(item);
 					new BukkitRunnable() {
 						public void run() {

@@ -132,13 +132,13 @@ public class JukeBoxDisplay implements Listener {
 					org.bukkit.block.Jukebox jukebox = (org.bukkit.block.Jukebox) block.getState();
 					
 					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
-						ItemStack itemstack = jukebox.getPlaying() == null ? null : (jukebox.getPlaying().equals(Material.AIR) ? null : new ItemStack(jukebox.getPlaying(), 1));
+						ItemStack itemstack = InteractionVisualizer.version.isLegacy() ? (jukebox.getPlaying() == null ? null : (jukebox.getPlaying().equals(Material.AIR) ? null : new ItemStack(jukebox.getPlaying(), 1))) : (jukebox.getRecord() == null ? null : (jukebox.getRecord().getType().equals(Material.AIR) ? null : jukebox.getRecord().clone()));
 						
 						Item item = null;
 						if (entry.getValue().get("Item") instanceof String) {
 							if (itemstack != null) {
 								String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString().toUpperCase()) : jukebox.getPlaying().toString().toUpperCase();
-								String text = getColor(disc) + MusicManager.getMusicConfig().getString("Discs." + disc);
+								String text = getColor(disc) + (!itemstack.getItemMeta().hasDisplayName() ? MusicManager.getMusicConfig().getString("Discs." + disc) : itemstack.getItemMeta().getDisplayName());
 								
 								item = new Item(jukebox.getLocation().clone().add(0.5, 1.0, 0.5));
 								item.setItemStack(itemstack);
@@ -159,7 +159,7 @@ public class JukeBoxDisplay implements Listener {
 								if (!item.getItemStack().equals(itemstack)) {
 									item.setItemStack(itemstack);
 									String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString().toUpperCase()) : jukebox.getPlaying().toString().toUpperCase();
-									String text = getColor(disc) + MusicManager.getMusicConfig().getString("Discs." + disc);
+									String text = getColor(disc) + (!itemstack.getItemMeta().hasDisplayName() ? MusicManager.getMusicConfig().getString("Discs." + disc) : itemstack.getItemMeta().getDisplayName());
 									
 									item.setCustomName(text);
 									item.setCustomNameVisible(true);
