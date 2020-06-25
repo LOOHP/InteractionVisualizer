@@ -75,6 +75,8 @@ Blocks:
     Enabled: true
   NoteBlock:
     Enabled: true
+  SmithingTable:
+    Enabled: true
   Smoker:
     Enabled: true
     CheckingPeriod: 20
@@ -98,6 +100,9 @@ Modules:
     Enabled: true
   Hologram:
     Enabled: true
+
+Settings:
+  UseHandSwingAnimation: true
 
 Options:
   Updater: true

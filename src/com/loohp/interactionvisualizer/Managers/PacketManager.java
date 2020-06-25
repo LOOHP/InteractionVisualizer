@@ -32,7 +32,6 @@ import com.loohp.interactionvisualizer.Protocol.ServerPacketSender;
 public class PacketManager implements Listener {
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
-	private static List<String> exemptBlocks = InteractionVisualizer.exemptBlocks;
 	
 	public static ConcurrentHashMap<VisualizerEntity, List<Player>> active = new ConcurrentHashMap<VisualizerEntity, List<Player>>();
 	public static ConcurrentHashMap<VisualizerEntity, Boolean> loaded = new ConcurrentHashMap<VisualizerEntity, Boolean>();
@@ -164,7 +163,7 @@ public class PacketManager implements Listener {
 	}
 	
 	private static boolean isOccluding(Material material) {
-		if (exemptBlocks.contains(material.toString().toUpperCase())) {
+		if (InteractionVisualizer.exemptBlocks.contains(material.toString().toUpperCase())) {
 			return false;
 		}
 		return material.isOccluding();

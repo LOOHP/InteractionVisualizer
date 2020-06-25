@@ -31,6 +31,7 @@ import com.loohp.interactionvisualizer.Blocks.JukeBoxDisplay;
 import com.loohp.interactionvisualizer.Blocks.LoomDisplay;
 import com.loohp.interactionvisualizer.Blocks.NoteBlockDisplay;
 import com.loohp.interactionvisualizer.Blocks.ShulkerBoxDisplay;
+import com.loohp.interactionvisualizer.Blocks.SmithingTableDisplay;
 import com.loohp.interactionvisualizer.Blocks.SmokerDisplay;
 import com.loohp.interactionvisualizer.Blocks.StonecutterDisplay;
 import com.loohp.interactionvisualizer.Debug.Debug;
@@ -63,6 +64,7 @@ public class TaskManager {
 	public static boolean smoker;
 	public static boolean stonecutter;
 	public static boolean shulkerbox;
+	public static boolean smithingtable;
 	
 	public static boolean villager;
 	
@@ -89,6 +91,7 @@ public class TaskManager {
 		smoker = false;
 		stonecutter = false;
 		shulkerbox = false;
+		smithingtable = false;
 		
 		villager = false;
 		
@@ -117,7 +120,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.Loom.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
 				) {
 			Bukkit.getPluginManager().registerEvents(new LoomDisplay(), plugin);
 			tasks.add(LoomDisplay.run());
@@ -130,7 +133,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.CartographyTable.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
 				) {
 			Bukkit.getPluginManager().registerEvents(new CartographyTableDisplay(), plugin);
 			tasks.add(CartographyTableDisplay.run());
@@ -143,14 +146,14 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.Grindstone.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
 				) {
 			Bukkit.getPluginManager().registerEvents(new GrindstoneDisplay(), plugin);
 			grindstone = true;
 		}
 		
 		if (config.getBoolean("Blocks.Stonecutter.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
 				) {
 			Bukkit.getPluginManager().registerEvents(new StonecutterDisplay(), plugin);
 			tasks.add(StonecutterDisplay.run());
@@ -182,7 +185,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.BlastFurnace.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
 				) {
 			Bukkit.getPluginManager().registerEvents(new BlastFurnaceDisplay(), plugin);
 			tasks.add(BlastFurnaceDisplay.run());
@@ -191,7 +194,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.Smoker.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
 				) {
 			Bukkit.getPluginManager().registerEvents(new SmokerDisplay(), plugin);
 			tasks.add(SmokerDisplay.run());
@@ -228,6 +231,13 @@ public class TaskManager {
 			Bukkit.getPluginManager().registerEvents(new JukeBoxDisplay(), plugin);
 			tasks.add(JukeBoxDisplay.run());
 			jukebox = true;
+		}
+		
+		if (config.getBoolean("Blocks.SmithingTable.Enabled") &&
+				   (version.equals(MCVersion.V1_16))
+				) {
+			Bukkit.getPluginManager().registerEvents(new SmithingTableDisplay(), plugin);
+			smithingtable = true;
 		}
 		
 		if (config.getBoolean("Entities.Villager.Enabled")) {
@@ -345,6 +355,11 @@ public class TaskManager {
 					return;
 				case SHULKER_BOX:
 					//
+					return;
+				case SMITHING:
+					if (smithingtable) {
+						SmithingTableDisplay.process(player);
+					}
 					return;
 				case SMOKER:
 					//

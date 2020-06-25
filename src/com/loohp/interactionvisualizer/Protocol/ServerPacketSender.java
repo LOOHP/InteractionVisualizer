@@ -1,12 +1,14 @@
 package com.loohp.interactionvisualizer.Protocol;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import com.comphenix.protocol.PacketType;
@@ -19,6 +21,7 @@ import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
 import com.loohp.interactionvisualizer.Utils.MCVersion;
+import com.mojang.datafixers.util.Pair;
 
 public class ServerPacketSender {
 	
@@ -26,7 +29,29 @@ public class ServerPacketSender {
 	private static MCVersion version = InteractionVisualizer.version;
 	private static ProtocolManager protocolManager = InteractionVisualizer.protocolManager;
 	
+	private static Class<?> nmsEnumItemSlotClass;
+	private static Class<?> craftItemStackClass;
+	
+	static {
+		try {
+			nmsEnumItemSlotClass = getNMSClass("net.minecraft.server.", "EnumItemSlot");
+			craftItemStackClass = getNMSClass("org.bukkit.craftbukkit.", "inventory.CraftItemStack");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}	
+	}
+	
+	private static Class<?> getNMSClass(String prefix, String nmsClassString) throws ClassNotFoundException {
+        String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
+        String name = prefix + version + nmsClassString;
+        return Class.forName(name);
+    }
+	
 	public static void sendHandMovement(List<Player> players, Player entity) {
+		if (!InteractionVisualizer.handMovementEnabled) {
+			return;
+		}
+		
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ANIMATION);
 		packet1.getIntegers().write(0, entity.getEntityId());
 		packet1.getIntegers().write(1, 0);
@@ -43,6 +68,7 @@ public class ServerPacketSender {
 		});
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void spawnArmorStand(List<Player> players, ArmorStand entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
 		packet1.getIntegers().write(0, entity.getEntityId());
@@ -68,13 +94,28 @@ public class ServerPacketSender {
         
         PacketContainer packet3 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
         packet3.getIntegers().write(0, entity.getEntityId());
-        packet3.getItemSlots().write(0, ItemSlot.MAINHAND);
-        packet3.getItemModifier().write(0, entity.getItemInMainHand());
+        if (version.equals(MCVersion.V1_16)) {
+        	try {
+				Object nmsMainHandItem = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(entity.getItemInMainHand(), entity.getItemInMainHand());
+				Object nmsHelmetItem = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(entity.getHelmet(), entity.getHelmet());
+				List<Pair> pairs = new ArrayList<>(2);
+				pairs.add(new Pair(nmsEnumItemSlotClass.getEnumConstants()[0], nmsMainHandItem));
+				pairs.add(new Pair(nmsEnumItemSlotClass.getEnumConstants()[5], nmsHelmetItem));
+				packet3.getModifier().write(1, pairs);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				e.printStackTrace();
+			}
+        } else {
+        	packet3.getItemSlots().write(0, ItemSlot.MAINHAND);
+        	packet3.getItemModifier().write(0, entity.getItemInMainHand());
+        }
 
         PacketContainer packet4 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
-        packet4.getIntegers().write(0, entity.getEntityId());
-        packet4.getItemSlots().write(0, ItemSlot.HEAD);
-        packet4.getItemModifier().write(0, entity.getHelmet());
+        if (!version.equals(MCVersion.V1_16)) {
+        	packet4.getIntegers().write(0, entity.getEntityId());
+        	packet4.getItemSlots().write(0, ItemSlot.HEAD);
+        	packet4.getItemModifier().write(0, entity.getHelmet());
+        }
         
         if (!plugin.isEnabled()) {
 			return;
@@ -85,7 +126,9 @@ public class ServerPacketSender {
 					protocolManager.sendServerPacket(player, packet1);
 					protocolManager.sendServerPacket(player, packet2);
 					protocolManager.sendServerPacket(player, packet3);
-					protocolManager.sendServerPacket(player, packet4);
+					if (!version.equals(MCVersion.V1_16)) {
+						protocolManager.sendServerPacket(player, packet4);
+					}
 				}
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();
@@ -93,6 +136,7 @@ public class ServerPacketSender {
         });
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void updateArmorStand(List<Player> players, ArmorStand entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
         packet1.getIntegers().write(0, entity.getEntityId());
@@ -109,13 +153,28 @@ public class ServerPacketSender {
 
         PacketContainer packet3 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
         packet3.getIntegers().write(0, entity.getEntityId());
-        packet3.getItemSlots().write(0, ItemSlot.MAINHAND);
-        packet3.getItemModifier().write(0, entity.getItemInMainHand());
+        if (version.equals(MCVersion.V1_16)) {
+        	try {
+        		Object nmsMainHandItem = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(entity.getItemInMainHand(), entity.getItemInMainHand());
+				Object nmsHelmetItem = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(entity.getHelmet(), entity.getHelmet());
+				List<Pair> pairs = new ArrayList<>(2);
+				pairs.add(new Pair(nmsEnumItemSlotClass.getEnumConstants()[0], nmsMainHandItem));
+				pairs.add(new Pair(nmsEnumItemSlotClass.getEnumConstants()[5], nmsHelmetItem));
+				packet3.getModifier().write(1, pairs);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				e.printStackTrace();
+			}
+        } else {
+        	packet3.getItemSlots().write(0, ItemSlot.MAINHAND);
+        	packet3.getItemModifier().write(0, entity.getItemInMainHand());
+        }
 
         PacketContainer packet4 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
-        packet4.getIntegers().write(0, entity.getEntityId());
-        packet4.getItemSlots().write(0, ItemSlot.HEAD);
-        packet4.getItemModifier().write(0, entity.getHelmet());
+        if (!version.equals(MCVersion.V1_16)) {
+        	packet4.getIntegers().write(0, entity.getEntityId());
+        	packet4.getItemSlots().write(0, ItemSlot.HEAD);
+        	packet4.getItemModifier().write(0, entity.getHelmet());
+        }
         
         if (!plugin.isEnabled()) {
 			return;
@@ -126,7 +185,9 @@ public class ServerPacketSender {
 					protocolManager.sendServerPacket(player, packet1);
 					protocolManager.sendServerPacket(player, packet2);
 					protocolManager.sendServerPacket(player, packet3);
-					protocolManager.sendServerPacket(player, packet4);
+					if (!version.equals(MCVersion.V1_16)) {
+						protocolManager.sendServerPacket(player, packet4);
+					}
 				}
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();

@@ -3,8 +3,9 @@ package com.loohp.interactionvisualizer;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -63,7 +64,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static List<Player> itemDrop = new CopyOnWriteArrayList<Player>();
 	public static List<Player> holograms = new CopyOnWriteArrayList<Player>();
 	
-	public static List<String> exemptBlocks = new ArrayList<String>();
+	public static Set<String> exemptBlocks = new HashSet<String>();
 	
 	public static World defaultworld;
 	public static Location defaultlocation;
@@ -83,6 +84,8 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	public static Integer tileEntityChunkPerTick = 9;
 	public static Boolean loadTileEntitiesAsync = true;
+	
+	public static Boolean handMovementEnabled = true;
 	
 	public static boolean UpdaterEnabled = true;
 	
@@ -123,6 +126,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		version = MCVersion.fromPackageName(getServer().getClass().getPackage().getName());
 		
 		switch (version) {
+		case V1_16:
 		case V1_15:
 			metaversion = 3;
 			break;
@@ -198,6 +202,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		exemptBlocks.add("CRAFTING_TABLE");
 		exemptBlocks.add("WORKBENCH");
 		exemptBlocks.add("LOOM");
+		exemptBlocks.add("SMITHING_TABLE");
 		
 		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] InteractionVisualizer has been enabled!");
 		
@@ -285,12 +290,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		if (!Bukkit.getOnlinePlayers().isEmpty()) {
 			getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] Plugin reload detected, attempting to despawn all visual entities. If anything went wrong, please restart! (Reloads are always not recommended)");
-			int [] entityIdArray = new int[PacketManager.active.size()];
-			int i = 0;
-			for (Entry<VisualizerEntity, List<Player>> entry : PacketManager.active.entrySet()) {
-				entityIdArray[i] = entry.getKey().getEntityId();
-				i++;
-			}
+			int[] entityIdArray = PacketManager.active.keySet().stream().mapToInt(each -> each.getEntityId()).toArray();
 			
 			PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 			packet1.getIntegerArrays().write(0, entityIdArray);
@@ -323,6 +323,8 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		tileEntityChunkPerTick = config.getInt("TileEntityUpdate.ChunksPerTick");
 		loadTileEntitiesAsync = config.getBoolean("TileEntityUpdate.LoadTileEntitiesAsync");
+		
+		handMovementEnabled = config.getBoolean("Settings.UseHandSwingAnimation");
 		
 		UpdaterEnabled = plugin.getConfig().getBoolean("Options.Updater");
 	}
