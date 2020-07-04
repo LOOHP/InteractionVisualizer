@@ -1,5 +1,8 @@
 package com.loohp.interactionvisualizer.Protocol;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,12 +34,18 @@ public class ServerPacketSender {
 	
 	private static Class<?> nmsEnumItemSlotClass;
 	private static Class<?> craftItemStackClass;
+	private static Class<?> nmsItemStackClass;
+	private static MethodHandle asNMSCopyMethod;
+	private static Object[] nmsItemSlotEnums;
 	
-	static {
+	public static void setup() {
 		try {
 			nmsEnumItemSlotClass = getNMSClass("net.minecraft.server.", "EnumItemSlot");
 			craftItemStackClass = getNMSClass("org.bukkit.craftbukkit.", "inventory.CraftItemStack");
-		} catch (ClassNotFoundException e) {
+			nmsItemStackClass = getNMSClass("net.minecraft.server.", "ItemStack");
+			asNMSCopyMethod = MethodHandles.lookup().findStatic(craftItemStackClass, "asNMSCopy", MethodType.methodType(nmsItemStackClass, ItemStack.class));
+			nmsItemSlotEnums = nmsEnumItemSlotClass.getEnumConstants();
+		} catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException e) {
 			e.printStackTrace();
 		}	
 	}
@@ -68,7 +77,6 @@ public class ServerPacketSender {
 		});
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void spawnArmorStand(List<Player> players, ArmorStand entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
 		packet1.getIntegers().write(0, entity.getEntityId());
@@ -96,13 +104,13 @@ public class ServerPacketSender {
         packet3.getIntegers().write(0, entity.getEntityId());
         if (version.equals(MCVersion.V1_16)) {
         	try {
-				Object nmsMainHandItem = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(entity.getItemInMainHand(), entity.getItemInMainHand());
-				Object nmsHelmetItem = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(entity.getHelmet(), entity.getHelmet());
-				List<Pair> pairs = new ArrayList<>(2);
-				pairs.add(new Pair(nmsEnumItemSlotClass.getEnumConstants()[0], nmsMainHandItem));
-				pairs.add(new Pair(nmsEnumItemSlotClass.getEnumConstants()[5], nmsHelmetItem));
+				Object nmsMainHandItem = asNMSCopyMethod.invoke(entity.getItemInMainHand());
+				Object nmsHelmetItem = asNMSCopyMethod.invoke(entity.getHelmet());
+				List<Pair<Object, Object>> pairs = new ArrayList<>(2);
+				pairs.add(new Pair<Object, Object>(nmsItemSlotEnums[0], nmsMainHandItem));
+				pairs.add(new Pair<Object, Object>(nmsItemSlotEnums[5], nmsHelmetItem));
 				packet3.getModifier().write(1, pairs);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			} catch (Throwable e) {
 				e.printStackTrace();
 			}
         } else {
@@ -136,7 +144,6 @@ public class ServerPacketSender {
         });
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void updateArmorStand(List<Player> players, ArmorStand entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
         packet1.getIntegers().write(0, entity.getEntityId());
@@ -155,13 +162,13 @@ public class ServerPacketSender {
         packet3.getIntegers().write(0, entity.getEntityId());
         if (version.equals(MCVersion.V1_16)) {
         	try {
-        		Object nmsMainHandItem = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(entity.getItemInMainHand(), entity.getItemInMainHand());
-				Object nmsHelmetItem = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(entity.getHelmet(), entity.getHelmet());
-				List<Pair> pairs = new ArrayList<>(2);
-				pairs.add(new Pair(nmsEnumItemSlotClass.getEnumConstants()[0], nmsMainHandItem));
-				pairs.add(new Pair(nmsEnumItemSlotClass.getEnumConstants()[5], nmsHelmetItem));
+        		Object nmsMainHandItem = asNMSCopyMethod.invoke(entity.getItemInMainHand());
+				Object nmsHelmetItem = asNMSCopyMethod.invoke(entity.getHelmet());
+				List<Pair<Object, Object>> pairs = new ArrayList<>(2);
+				pairs.add(new Pair<Object, Object>(nmsItemSlotEnums[0], nmsMainHandItem));
+				pairs.add(new Pair<Object, Object>(nmsItemSlotEnums[5], nmsHelmetItem));
 				packet3.getModifier().write(1, pairs);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			} catch (Throwable e) {
 				e.printStackTrace();
 			}
         } else {

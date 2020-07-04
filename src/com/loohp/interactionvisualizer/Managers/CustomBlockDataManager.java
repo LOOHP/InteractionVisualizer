@@ -46,7 +46,7 @@ public class CustomBlockDataManager {
     	}, 200, 1200);
     }
 
-    public static void setup() {
+    public synchronized static void setup() {
         try {
         	if (!plugin.getDataFolder().exists()) {
         		plugin.getDataFolder().mkdir();
@@ -89,7 +89,7 @@ public class CustomBlockDataManager {
     }
     
     @SuppressWarnings("unchecked")
-	public static boolean save() {
+	public synchronized static boolean save() {
         try {
         	JSONObject toSave = json;
         

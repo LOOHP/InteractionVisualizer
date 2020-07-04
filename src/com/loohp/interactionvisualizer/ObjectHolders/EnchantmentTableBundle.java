@@ -25,6 +25,7 @@ import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
+import com.loohp.interactionvisualizer.Utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.Utils.CustomStringUtils;
 import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
 
@@ -91,7 +92,7 @@ public class EnchantmentTableBundle {
 			for (Entry<Enchantment, Integer> entry : enchantsToAdd.entrySet()) {
 				Enchantment ench = entry.getKey();
 				int level = entry.getValue();
-				String str = EnchantmentManager.getEnchConfig().getString("Enchantments." + ench.getName());
+				String str = ChatColorUtils.translateAlternateColorCodes('&', EnchantmentManager.getEnchConfig().getString("Enchantments." + ench.getName()));
 				String enchantmentName = str == null ? CustomStringUtils.capitalize(ench.getName().toLowerCase().replace("_", " ")) : str;
 				if (enchantmentName == null) {
 					continue;
@@ -108,7 +109,7 @@ public class EnchantmentTableBundle {
 			}
 			
 			ArmorStand stand = new ArmorStand(standloc);
-			String levelStr = EnchantmentManager.getEnchConfig().getString("Translations.LEVEL");
+			String levelStr = ChatColorUtils.translateAlternateColorCodes('&', EnchantmentManager.getEnchConfig().getString("Translations.LEVEL"));
 			stand.setCustomName(ChatColor.GREEN + levelStr + " " + arrow + " " + expCost);
 			stand.setCustomNameVisible(true);
 			setStand(stand);

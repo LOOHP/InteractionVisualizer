@@ -28,6 +28,7 @@ import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
+import com.loohp.interactionvisualizer.Utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -225,7 +226,7 @@ public class BeaconDisplay implements Listener {
 							}
 						} else {
 							if (beacon.getPrimaryEffect() != null) {
-								String two = color + EffectManager.getEffectConfig().getString("Effects." + beacon.getPrimaryEffect().getType().getName().toUpperCase()) + " " + RomanNumberUtils.toRoman(beacon.getPrimaryEffect().getAmplifier() + 1);
+								String two = color + ChatColorUtils.translateAlternateColorCodes('&', EffectManager.getEffectConfig().getString("Effects." + beacon.getPrimaryEffect().getType().getName().toUpperCase())) + " " + RomanNumberUtils.toRoman(beacon.getPrimaryEffect().getAmplifier() + 1);
 								if (!line2.getCustomName().equals(two)) {
 									line2.setCustomName(two);
 									line2.setCustomNameVisible(true);
@@ -239,7 +240,7 @@ public class BeaconDisplay implements Listener {
 								}
 							}
 							if (beacon.getSecondaryEffect() != null) {
-								String three = color + EffectManager.getEffectConfig().getString("Effects." + beacon.getSecondaryEffect().getType().getName().toUpperCase()) + " " + RomanNumberUtils.toRoman(beacon.getSecondaryEffect().getAmplifier() + 1);
+								String three = color + ChatColorUtils.translateAlternateColorCodes('&', EffectManager.getEffectConfig().getString("Effects." + beacon.getSecondaryEffect().getType().getName().toUpperCase())) + " " + RomanNumberUtils.toRoman(beacon.getSecondaryEffect().getAmplifier() + 1);
 								if (!line3.getCustomName().equals(three)) {
 									line3.setCustomName(three);
 									line3.setCustomNameVisible(true);

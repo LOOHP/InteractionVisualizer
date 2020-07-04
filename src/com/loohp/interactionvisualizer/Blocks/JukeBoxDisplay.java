@@ -24,6 +24,7 @@ import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
+import com.loohp.interactionvisualizer.Utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.Utils.LegacyRecordsUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -138,7 +139,7 @@ public class JukeBoxDisplay implements Listener {
 						if (entry.getValue().get("Item") instanceof String) {
 							if (itemstack != null) {
 								String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString().toUpperCase()) : jukebox.getPlaying().toString().toUpperCase();
-								String text = getColor(disc) + (!itemstack.getItemMeta().hasDisplayName() ? MusicManager.getMusicConfig().getString("Discs." + disc) : itemstack.getItemMeta().getDisplayName());
+								String text = getColor(disc) + (!itemstack.getItemMeta().hasDisplayName() ? ChatColorUtils.translateAlternateColorCodes('&', MusicManager.getMusicConfig().getString("Discs." + disc)) : itemstack.getItemMeta().getDisplayName());
 								
 								item = new Item(jukebox.getLocation().clone().add(0.5, 1.0, 0.5));
 								item.setItemStack(itemstack);
@@ -210,6 +211,8 @@ public class JukeBoxDisplay implements Listener {
 			return ChatColor.AQUA;
 		case "MUSIC_DISC_WARD":
 			return ChatColor.DARK_GREEN;
+		case "MUSIC_DISC_PIGSTEP":
+			return ChatColor.GOLD;
 		default:
 			return ChatColor.WHITE;
 		}

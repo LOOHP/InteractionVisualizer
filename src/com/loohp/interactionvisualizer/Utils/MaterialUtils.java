@@ -14,6 +14,34 @@ public class MaterialUtils {
 	private static Set<Material> lowblocks = new HashSet<Material>();
 	private static Set<Material> blockexceptions = new HashSet<Material>();
 	private static Set<Material> nonSolid = new HashSet<Material>();
+	
+	public enum MaterialMode {
+		TOOL("Tool"),
+		STANDING("Standing"),
+		LOWBLOCK("LowBlock"),
+		ITEM("Item"),
+		BLOCK("Block");
+		
+		String name;
+		
+		MaterialMode (String name) {
+			this.name = name;
+		}
+		
+		@Override
+		public String toString() {
+			return name;
+		}
+		
+		public static MaterialMode getModeFromName(String name) {
+			for (MaterialMode mode : MaterialMode.values()) {
+				if (mode.toString().equalsIgnoreCase(name)) {
+					return mode;
+				}
+			}
+			return null;
+		}
+	}
 
 	public static void setup() {
 		tools.clear();
@@ -48,23 +76,23 @@ public class MaterialUtils {
 		}
 	}
 	
-	public static String getMaterialType(Material material) {
+	public static MaterialMode getMaterialType(Material material) {
 		if (tools.contains(material)) {
-			return "Tool";
+			return MaterialMode.TOOL;
 		}
 		if (standing.contains(material)) {
-			return "Standing";
+			return MaterialMode.STANDING;
 		}
 		if (lowblocks.contains(material)) {
-			return "LowBlock";
+			return MaterialMode.LOWBLOCK;
 		}
 		if (blockexceptions.contains(material)) {
-			return "Item";
+			return MaterialMode.ITEM;
 		}
 		if (material.isBlock()) {
-			return "Block";
+			return MaterialMode.BLOCK;
 		}
-		return "Item";
+		return MaterialMode.ITEM;
 	}
 
 	public static Set<Material> getNonSolidSet() {

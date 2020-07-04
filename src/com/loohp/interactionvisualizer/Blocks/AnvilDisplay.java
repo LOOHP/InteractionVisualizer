@@ -31,6 +31,7 @@ import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
+import com.loohp.interactionvisualizer.Utils.MaterialUtils.MaterialMode;
 
 public class AnvilDisplay implements Listener {
 	
@@ -347,15 +348,15 @@ public class AnvilDisplay implements Listener {
 			}
 			if (item != null) {
 				boolean changed = true;
-				if (MaterialUtils.getMaterialType(item.getType()).equals("Block") && !standMode(stand).equals("Block")) {
+				if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.BLOCK) && !standMode(stand).equals(MaterialMode.BLOCK)) {
 					toggleStandMode(stand, "Block");
-				} else if (MaterialUtils.getMaterialType(item.getType()).equals("Tool") && !standMode(stand).equals("Tool")) {
+				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.TOOL) && !standMode(stand).equals(MaterialMode.TOOL)) {
 					toggleStandMode(stand, "Tool");
-				} else if (MaterialUtils.getMaterialType(item.getType()).equals("Item") && !standMode(stand).equals("Item")) {
+				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.ITEM) && !standMode(stand).equals(MaterialMode.ITEM)) {
 					toggleStandMode(stand, "Item");
-				} else if (MaterialUtils.getMaterialType(item.getType()).equals("Standing") && !standMode(stand).equals("Standing")) {
+				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.STANDING) && !standMode(stand).equals(MaterialMode.STANDING)) {
 					toggleStandMode(stand, "Standing");
-				} else if (MaterialUtils.getMaterialType(item.getType()).equals("LowBlock") && !standMode(stand).equals("LowBlock")) {
+				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.LOWBLOCK) && !standMode(stand).equals(MaterialMode.LOWBLOCK)) {
 					toggleStandMode(stand, "LowBlock");
 				} else {
 					changed = false;
@@ -376,9 +377,9 @@ public class AnvilDisplay implements Listener {
 		}
 	}
 	
-	public static String standMode(ArmorStand stand) {
+	public static MaterialMode standMode(ArmorStand stand) {
 		if (stand.getCustomName().startsWith("IV.Anvil.")) {
-			return stand.getCustomName().substring(stand.getCustomName().lastIndexOf(".") + 1);
+			return MaterialMode.getModeFromName(stand.getCustomName().substring(stand.getCustomName().lastIndexOf(".") + 1));
 		}
 		return null;
 	}

@@ -43,6 +43,10 @@ Tools:
   - "GOLD_SPADE"
   - "GOLD_SWORD"
   - "DIAMOND_SPADE"
+  - "NETHERITE_SWORD"
+  - "NETHERITE_AXE"
+  - "NETHERITE_SHOVEL"
+  - "NETHERITE_HOE"
 
 Standing:
   - "END_ROD"
