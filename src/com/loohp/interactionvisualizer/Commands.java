@@ -22,6 +22,7 @@ import com.loohp.interactionvisualizer.Managers.MaterialManager;
 import com.loohp.interactionvisualizer.Managers.MusicManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Updater.Updater;
+import com.loohp.interactionvisualizer.Utils.ChatColorUtils;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -54,9 +55,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 				MusicManager.reloadConfig();
 				CustomBlockDataManager.setup();
 				MaterialManager.reloadConfig();
-				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Reload")));
+				sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Reload")));
 			} else {
-				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
+				sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
 			}
 			return true;
 		}
@@ -67,10 +68,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 				if (player.hasPermission("interactionvisualizer.refresh")) {
 					Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.reset(player));
 				} else {
-					sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
+					sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
 				}
 			} else {
-				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Console")));
+				sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Console")));
 			}
 			return true;
 		}
@@ -88,7 +89,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 					}
 				});
 			} else {
-				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
+				sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
 			}
 			return true;
 		}
@@ -97,7 +98,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			if (sender.hasPermission("interactionvisualizer.toggle")) {
 				if (args.length == 2) {
 					if (!(sender instanceof Player)) {
-						sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Console")));
+						sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Console")));
 						return true;
 					}
 					Player player = (Player) sender;
@@ -130,7 +131,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 							}
 							break;
 						default:
-							sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Modes")));
+							sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Modes")));
 						}
 					});
 					return true;
@@ -139,14 +140,14 @@ public class Commands implements CommandExecutor, TabCompleter {
 						if (Bukkit.getPlayer(args[2]) != null) {
 							if (!Bukkit.getPlayer(args[2]).equals((Player) sender)) {
 								if (!sender.hasPermission("interactionvisualizer.toggle.others")) {
-									sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
+									sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
 									return true;
 								}
 							}
 						}
 					}
 					if (Bukkit.getPlayer(args[2]) == null) {
-						sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.PlayerNotFound")));
+						sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.PlayerNotFound")));
 						return true;
 					}
 					Player player = Bukkit.getPlayer(args[2]);
@@ -179,16 +180,16 @@ public class Commands implements CommandExecutor, TabCompleter {
 							}
 							break;
 						default:
-							sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Modes")));
+							sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Modes")));
 						}
 					});
 					return true;
 				} else {
-					sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Usage")));
+					sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Toggle.Usage")));
 				}				
 				return true;
 			}
-			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
+			sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.NoPermission")));
 			return true;
 		}
 		
@@ -202,7 +203,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			return true;
 		}
 		
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', Bukkit.spigot().getConfig().getString("messages.unknown-command")));
+		sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', Bukkit.spigot().getConfig().getString("messages.unknown-command")));
 		return true;
 	}
 

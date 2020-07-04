@@ -34,8 +34,8 @@ import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils;
-import com.loohp.interactionvisualizer.Utils.VanishUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils.MaterialMode;
+import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 import ru.beykerykt.lightapi.LightType;
 
