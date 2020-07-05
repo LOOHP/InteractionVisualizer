@@ -34,6 +34,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!label.equalsIgnoreCase("interactionvisualizer") && !label.equalsIgnoreCase("iv")) {
