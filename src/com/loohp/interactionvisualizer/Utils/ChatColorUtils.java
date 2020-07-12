@@ -30,6 +30,12 @@ public class ChatColorUtils {
 		colors.add('d');
 		colors.add('e');
 		colors.add('f');
+		colors.add('k');
+		colors.add('l');
+		colors.add('m');
+		colors.add('n');
+		colors.add('o');
+		colors.add('r');
 	}
 	
     public static String hexToColorCode(String hex) {

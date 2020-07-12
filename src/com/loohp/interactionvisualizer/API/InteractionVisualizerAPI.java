@@ -21,6 +21,7 @@ import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.EffectManager;
 import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
+import com.loohp.interactionvisualizer.Managers.MaterialManager;
 import com.loohp.interactionvisualizer.Managers.MusicManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
@@ -104,40 +105,91 @@ public class InteractionVisualizerAPI {
 		return Toggle.toggle(player, module);
 	}
 	
+	public enum ConfiguationType {
+		MAIN("config.yml"),
+		MATERIAL("material.yml"),
+		EFFECTS("effect.yml"),
+		ENCHANTMENT("enchantment.yml"),
+		MUSIC("music.yml");
+		
+		String fileName;
+		
+		ConfiguationType(String fileName) {
+			this.fileName = fileName;
+		}
+		
+		public String getConfigFileName() {
+			return fileName;
+		}
+		
+		public static ConfiguationType fromConfigFileName(String filename) {
+			for (ConfiguationType cfgtype : ConfiguationType.values()) {
+				if (cfgtype.getConfigFileName().equalsIgnoreCase(filename)) {
+					return cfgtype;
+				}
+			}
+			return null;
+		}
+	}
+	
 	/**
-	Get InteractionVisualizer's main configuration.
-	@return The FileConfiguration.
+	Get InteractionVisualizer's configurations.
+	@return The FileConfiguration of the given ConfiguationType.
 	*/
+	public static FileConfiguration getConfig(ConfiguationType configType) {
+		switch (configType) {
+		case EFFECTS:
+			return EffectManager.getEffectConfig();
+		case ENCHANTMENT:
+			return EnchantmentManager.getEnchConfig();
+		case MUSIC:
+			return MusicManager.getMusicConfig();
+		case MATERIAL:
+			return MaterialManager.getMaterialConfig();
+		case MAIN:
+		default:
+			return InteractionVisualizer.config;
+		}
+	}
+	
+	/**
+	Please use getConfig(ConfiguationType configType) instead
+	@return Magic Value.
+	*/
+	@Deprecated
 	public static FileConfiguration getConfig() {
 		return InteractionVisualizer.config;
 	}
 	
 	/**
-	Get InteractionVisualizer's enchantment configuration.
-	@return The FileConfiguration.
+	Please use getConfig(ConfiguationType configType) instead
+	@return Magic Value.
 	*/
+	@Deprecated
 	public static FileConfiguration getEnchantmentConfig() {
 		return EnchantmentManager.getEnchConfig();
 	}
 	
 	/**
-	Get InteractionVisualizer's music configuration.
-	@return The FileConfiguration.
+	Please use getConfig(ConfiguationType configType) instead
+	@return Magic Value.
 	*/
+	@Deprecated
 	public static FileConfiguration getMusicConfig() {
 		return MusicManager.getMusicConfig();
 	}
 	
 	/**
-	Get InteractionVisualizer's effect configuration.
-	@return The FileConfiguration.
+	Please use getConfig(ConfiguationType configType) instead
+	@return Magic Value.
 	*/
+	@Deprecated
 	public static FileConfiguration getEffectConfig() {
 		return EffectManager.getEffectConfig();
 	}
 	
 	/**
-	Play a throw item animtion from location1 to location2.
+	Play a throw item animation from location1 to location2.
 	If the boolean "pickupSound" is true, a pickup item sound will be played.
 	*/
 	public static void playFakeItemThrowAnimation(Location from, Location to, ItemStack itemstack, boolean pickupSound) {
