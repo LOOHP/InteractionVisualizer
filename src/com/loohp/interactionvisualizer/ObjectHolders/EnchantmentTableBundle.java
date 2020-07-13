@@ -1,6 +1,5 @@
 package com.loohp.interactionvisualizer.ObjectHolders;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,7 @@ public class EnchantmentTableBundle {
 	boolean animationPlaying;
 	Player enchanter;
 	List<Player> players;
-	String arrow;
+	char arrow;
 	
 	public EnchantmentTableBundle(Player enchanter, Block block, List<Player> players) {
 		this.plugin = InteractionVisualizer.plugin;
@@ -50,7 +49,7 @@ public class EnchantmentTableBundle {
 		this.animationPlaying = false;
 		this.players = players;
 		this.enchanter = enchanter;
-		this.arrow = "\u27f9";
+		this.arrow = '\u27f9';
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -172,7 +171,7 @@ public class EnchantmentTableBundle {
 		});
 	}
 	
-	public void playPickUpAnimationAndRemove(ItemStack itemstack, HashMap<Block, EnchantmentTableBundle> mapToRemoveFrom) {
+	public void playPickUpAnimationAndRemove(ItemStack itemstack, Map<Block, EnchantmentTableBundle> mapToRemoveFrom) {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			while (animationPlaying) {
 				try {TimeUnit.MILLISECONDS.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}

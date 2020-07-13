@@ -1,7 +1,6 @@
 package com.loohp.interactionvisualizer.Blocks;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -39,11 +38,11 @@ import com.loohp.interactionvisualizer.Utils.VanishUtils;
 public class EnderchestDisplay implements Listener {
 	
 	public static ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<Player, List<Item>>();
-	public static HashMap<Player, Block> playermap = new HashMap<Player, Block>();
+	public static ConcurrentHashMap<Player, Block> playermap = new ConcurrentHashMap<Player, Block>();
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onOpenEnderChest(InventoryOpenEvent event) {
-		if (event.isCancelled()) {
+		if (event.isCancelled()) {	
 			return;
 		}
 		if (VanishUtils.isVanished((Player) event.getPlayer())) {
@@ -321,22 +320,23 @@ public class EnderchestDisplay implements Listener {
 	
 	@EventHandler
 	public void onCloseEnderChest(InventoryCloseEvent event) {
-		if (!playermap.containsKey((Player) event.getPlayer())) {
+		
+		Player player = (Player) event.getPlayer();
+		
+		if (!playermap.containsKey(player)) {
 			return;
 		}
 		
-		if (!link.containsKey((Player) event.getPlayer())) {
-			return;
+		List<Item> list = link.get(player);
+		if (list != null) {
+			Iterator<Item> itr = list.iterator();
+			while (itr.hasNext()) {
+				Item item = itr.next();
+				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+			}
+			link.remove(player);
 		}
 		
-		List<Item> list = link.get((Player) event.getPlayer());
-		Iterator<Item> itr = list.iterator();
-		while (itr.hasNext()) {
-			Item item = itr.next();
-			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-		}
-		
-		link.remove((Player) event.getPlayer());
-		playermap.remove((Player) event.getPlayer());
+		playermap.remove(player);
 	}
 }

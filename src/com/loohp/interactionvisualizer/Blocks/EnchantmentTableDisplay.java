@@ -2,6 +2,7 @@ package com.loohp.interactionvisualizer.Blocks;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -30,8 +31,8 @@ import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 public class EnchantmentTableDisplay implements Listener {
 	
-	public static HashMap<Block, EnchantmentTableBundle> openedETable = new HashMap<Block, EnchantmentTableBundle>();
-	public static HashMap<Player, Block> playermap = new HashMap<Player, Block>();
+	public static Map<Block, EnchantmentTableBundle> openedETable = new ConcurrentHashMap<Block, EnchantmentTableBundle>();
+	public static Map<Player, Block> playermap = new ConcurrentHashMap<Player, Block>();
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onEnchant(EnchantItemEvent event) {
@@ -62,7 +63,7 @@ public class EnchantmentTableDisplay implements Listener {
 			}
 			
 			EnchantmentTableBundle etb = openedETable.get(block);
-			if (!etb.getEnchanter().equals(event.getEnchanter())) {
+			if (!etb.getEnchanter().equals(player)) {
 				return;
 			}
 			
@@ -110,14 +111,15 @@ public class EnchantmentTableDisplay implements Listener {
 			return;
 		}
 		
+		Player player = (Player) event.getWhoClicked();
+		
 		EnchantmentTableBundle etb = openedETable.get(block);
-		if (!etb.getEnchanter().equals((Player) event.getWhoClicked())) {
+		if (!etb.getEnchanter().equals(player)) {
 			return;
 		}
 		
 		ItemStack itemstack = event.getCurrentItem().clone();		
 		int slot = event.getRawSlot();
-		Player player = (Player) event.getWhoClicked();
 		
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 			if (player.getOpenInventory().getItem(slot) == null || (itemstack.isSimilar(player.getOpenInventory().getItem(slot)) && itemstack.getAmount() == player.getOpenInventory().getItem(slot).getAmount())) {
@@ -134,12 +136,15 @@ public class EnchantmentTableDisplay implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		if (!playermap.containsKey((Player) event.getWhoClicked())) {
+		
+		Player player = (Player) event.getWhoClicked();
+		
+		if (!playermap.containsKey(player)) {
 			return;
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 1) {
-			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), player);
 		}
 	}
 	
@@ -148,13 +153,16 @@ public class EnchantmentTableDisplay implements Listener {
 		if (event.isCancelled()) {
 			return;
 		}
-		if (!playermap.containsKey((Player) event.getWhoClicked())) {
+		
+		Player player = (Player) event.getWhoClicked();
+		
+		if (!playermap.containsKey(player)) {
 			return;
 		}
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 1) {
-				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), player);
 				break;
 			}
 		}
@@ -162,30 +170,31 @@ public class EnchantmentTableDisplay implements Listener {
 	
 	@EventHandler
 	public void onCloseEnchantmentTable(InventoryCloseEvent event) {
-		if (!playermap.containsKey((Player) event.getPlayer())) {
+		
+		Player player = (Player) event.getPlayer();
+		
+		if (!playermap.containsKey(player)) {
 			return;
 		}
 		
-		Block block = playermap.get((Player) event.getPlayer());
+		Block block = playermap.get(player);
 		
-		if (!openedETable.containsKey(block)) {
-			return;
-		}
+		playermap.remove(player);
 		
-		EnchantmentTableBundle etb = openedETable.get(block);
-		if (!etb.getEnchanter().equals((Player) event.getPlayer())) {
-			return;
-		}
+		ItemStack itemstack = event.getView().getItem(0) != null ? (!event.getView().getItem(0).getType().equals(Material.AIR) ? event.getView().getItem(0).clone() : null) : null;
 		
-		ItemStack itemstack = null;
-		if (event.getView().getItem(0) != null) {
-			if (!event.getView().getItem(0).getType().equals(Material.AIR)) {
-				itemstack = event.getView().getItem(0).clone();
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+			if (!openedETable.containsKey(block)) {
+				return;
 			}
-		}
-		
-		etb.playPickUpAnimationAndRemove(itemstack, openedETable);
-		playermap.remove((Player) event.getPlayer());
+			
+			EnchantmentTableBundle etb = openedETable.get(block);
+			if (!etb.getEnchanter().equals(player)) {
+				return;
+			}
+			
+			etb.playPickUpAnimationAndRemove(itemstack, openedETable);
+		}, 3);
 	}
 	
 	public static void process(Player player) {		
