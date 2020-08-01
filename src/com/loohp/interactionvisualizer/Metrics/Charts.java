@@ -18,7 +18,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.Anvil.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.Anvil.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -29,7 +29,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.Beacon.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.Beacon.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -40,7 +40,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.BlastFurnace.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.BlastFurnace.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -51,7 +51,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.BrewingStand.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.BrewingStand.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -62,7 +62,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.CartographyTable.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.CartographyTable.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -73,7 +73,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.Chest.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.Chest.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -84,7 +84,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.CraftingTable.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.CraftingTable.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -95,7 +95,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.DoubleChest.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.DoubleChest.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -106,7 +106,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.EnchantmentTable.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.EnchantmentTable.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -117,7 +117,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.EnderChest.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.EnderChest.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -128,7 +128,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.Furnace.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.Furnace.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -139,7 +139,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.Grindstone.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.Grindstone.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -150,7 +150,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.Loom.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.Loom.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -161,7 +161,29 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.Smoker.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.Smoker.Enabled")) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
+		metrics.addCustomChart(new Metrics.SimplePie("shulkerbox_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (config.getBoolean("Blocks.ShulkerBox.Enabled")) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
+		metrics.addCustomChart(new Metrics.SimplePie("smithingtable_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (config.getBoolean("Blocks.SmithingTable.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -172,7 +194,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.Stonecutter.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.Stonecutter.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -183,7 +205,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.NoteBlock.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.NoteBlock.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -194,7 +216,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Blocks.JukeBox.Enabled") == true) {
+	        	if (config.getBoolean("Blocks.JukeBox.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -205,7 +227,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (config.getBoolean("Entities.Villager.Enabled") == true) {
+	        	if (config.getBoolean("Entities.Villager.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;

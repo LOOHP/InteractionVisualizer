@@ -29,12 +29,14 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
+import net.md_5.bungee.api.chat.hover.content.Content;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class Commands implements CommandExecutor, TabCompleter {
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!label.equalsIgnoreCase("interactionvisualizer") && !label.equalsIgnoreCase("iv")) {
@@ -197,8 +199,14 @@ public class Commands implements CommandExecutor, TabCompleter {
 		if (args[0].equalsIgnoreCase("ethereal")) {
 			TextComponent text = new TextComponent("She is Imaginary~~");
 			text.setColor(ChatColor.YELLOW);
-			TextComponent bone = new TextComponent("§eNana's Bone\n§7Lost §6In-§dMaginary~~");
-			text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] {bone}));
+			TextComponent bone1 = new TextComponent("Nana's ");
+			bone1.setColor(ChatColor.GOLD);
+			TranslatableComponent bone2 = new TranslatableComponent("item.minecraft.bone");
+			bone2.setColor(ChatColor.YELLOW);
+			TextComponent bone3 = new TextComponent("\n§7Lost §6In-§dMaginary~~");
+			bone1.addExtra(bone2);
+			bone1.addExtra(bone3);
+			text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Content[]{new Text(new BaseComponent[] {bone1})}));
 			text.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.instagram.com/narliar/"));
 			sender.spigot().sendMessage(text);
 			return true;
