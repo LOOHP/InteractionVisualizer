@@ -30,13 +30,12 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
-import net.md_5.bungee.api.chat.hover.content.Content;
-import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class Commands implements CommandExecutor, TabCompleter {
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!label.equalsIgnoreCase("interactionvisualizer") && !label.equalsIgnoreCase("iv")) {
@@ -206,7 +205,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			TextComponent bone3 = new TextComponent("\n§7Lost §6In-§dMaginary~~");
 			bone1.addExtra(bone2);
 			bone1.addExtra(bone3);
-			text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Content[]{new Text(new BaseComponent[] {bone1})}));
+			text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] {bone1}));
 			text.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.instagram.com/narliar/"));
 			sender.spigot().sendMessage(text);
 			return true;
