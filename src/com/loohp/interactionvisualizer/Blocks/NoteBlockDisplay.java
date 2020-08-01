@@ -17,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.Managers.MusicManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
@@ -24,12 +25,34 @@ import com.loohp.interactionvisualizer.Utils.LegacyInstrumentUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class NoteBlockDisplay implements Listener {
+public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Listener {
 	
-	private static ConcurrentHashMap<Block, ConcurrentHashMap<String, Object>> displayingNotes = new ConcurrentHashMap<Block, ConcurrentHashMap<String, Object>>();
+	public ConcurrentHashMap<Block, ConcurrentHashMap<String, Object>> displayingNotes = new ConcurrentHashMap<Block, ConcurrentHashMap<String, Object>>();
+	
+	@Override
+	public int gc() {
+		return -1;
+	}
+	
+	@Override
+	public int run() {
+		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+			Iterator<Entry<Block, ConcurrentHashMap<String, Object>>> itr = displayingNotes.entrySet().iterator();
+			while (itr.hasNext()) {
+				Entry<Block, ConcurrentHashMap<String, Object>> entry = itr.next();
+				long unix = System.currentTimeMillis();
+				long timeout = (long) entry.getValue().get("Timeout");
+				if (unix > timeout) {
+					ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
+					Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand));
+					itr.remove();
+				}
+			}
+		}, 0, 20).getTaskId();
+	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
-	public static void onUseNoteBlock(PlayerInteractEvent event) {
+	public void onUseNoteBlock(PlayerInteractEvent event) {
 		Block block = event.getClickedBlock();
 		if (block == null) {
 			return;
@@ -82,23 +105,7 @@ public class NoteBlockDisplay implements Listener {
 		}, 1);
 	}
 	
-	public static int run() {
-		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-			Iterator<Entry<Block, ConcurrentHashMap<String, Object>>> itr = displayingNotes.entrySet().iterator();
-			while (itr.hasNext()) {
-				Entry<Block, ConcurrentHashMap<String, Object>> entry = itr.next();
-				long unix = System.currentTimeMillis();
-				long timeout = (long) entry.getValue().get("Timeout");
-				if (unix > timeout) {
-					ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
-					Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand));
-					itr.remove();
-				}
-			}
-		}, 0, 20).getTaskId();
-	}
-	
-	public static void setStand(ArmorStand stand) {
+	public void setStand(ArmorStand stand) {
 		stand.setArms(true);
 		stand.setBasePlate(false);
 		stand.setMarker(true);
@@ -110,7 +117,7 @@ public class NoteBlockDisplay implements Listener {
 		stand.setCustomNameVisible(true);
 	}
 	
-	public static Location getFaceOffset(Block block, BlockFace face) {
+	public Location getFaceOffset(Block block, BlockFace face) {
 		Location location = block.getLocation().clone().add(0.5, 0.5, 0.5);
 		switch (face) {
 		case DOWN:
@@ -130,7 +137,7 @@ public class NoteBlockDisplay implements Listener {
 		}
 	}
 	
-	public static ChatColor getColor(Tone tone) {
+	public ChatColor getColor(Tone tone) {
 		switch (tone) {
 		case A:
 			return ChatColor.RED;

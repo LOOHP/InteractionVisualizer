@@ -41,8 +41,6 @@ import com.loohp.interactionvisualizer.PlaceholderAPI.Placeholders;
 import com.loohp.interactionvisualizer.Protocol.ServerPacketSender;
 import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.Updater.Updater;
-import com.loohp.interactionvisualizer.Utils.LegacyInstrumentUtils;
-import com.loohp.interactionvisualizer.Utils.LegacyRecordsUtils;
 import com.loohp.interactionvisualizer.Utils.MCVersion;
 
 import net.md_5.bungee.api.ChatColor;
@@ -88,6 +86,8 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	public static Boolean handMovementEnabled = true;
 	
+	public static Integer lightUpdatePeriod = 10;
+	
 	public static boolean UpdaterEnabled = true;
 	
 	public enum Modules {
@@ -118,7 +118,6 @@ public class InteractionVisualizer extends JavaPlugin {
 			hookMessage("Essentials");
 			ess3 = true;
 		}
-		//EntityCreator.setup();
 		
 		int pluginId = 7024;
 
@@ -147,9 +146,9 @@ public class InteractionVisualizer extends JavaPlugin {
 			break;
 		}
 		
-		plugin.getConfig().options().copyDefaults(true);
-		config = plugin.getConfig();
-		plugin.saveConfig();
+		getConfig().options().copyDefaults(true);
+		config = getConfig();
+		saveConfig();
 		loadConfig();
 		
 		defaultworld = getServer().getWorlds().get(0);
@@ -178,11 +177,6 @@ public class InteractionVisualizer extends JavaPlugin {
 		PlayerLocationManager.updateLocation();
 		
 		MaterialManager.setup();
-		
-		if (version.isLegacy()) {
-			LegacyRecordsUtils.setup();
-			LegacyInstrumentUtils.setup();
-		}
 		
 		getCommand("interactionvisualizer").setExecutor(new Commands());
 		
@@ -328,6 +322,8 @@ public class InteractionVisualizer extends JavaPlugin {
 		loadTileEntitiesAsync = config.getBoolean("TileEntityUpdate.LoadTileEntitiesAsync");
 		
 		handMovementEnabled = config.getBoolean("Settings.UseHandSwingAnimation");
+		
+		lightUpdatePeriod = config.getInt("LightUpdate.Period");
 		
 		UpdaterEnabled = plugin.getConfig().getBoolean("Options.Updater");
 	}

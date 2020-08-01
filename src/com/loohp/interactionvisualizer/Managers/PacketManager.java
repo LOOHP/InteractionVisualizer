@@ -271,7 +271,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOrRange(players, entity);
+			List<Player> playersInRange = filterOutOffRange(players, entity);
 			ServerPacketSender.spawnArmorStand(playersInRange, entity);
 			playersInRange.forEach((each) -> {
 				Set<VisualizerEntity> list = playerStatus.get(each);
@@ -308,7 +308,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOrRange(players, entity);
+			List<Player> playersInRange = filterOutOffRange(players, entity);
 			ServerPacketSender.updateArmorStand(playersInRange, entity);
 		});
         
@@ -341,7 +341,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOrRange(players, entity);
+			List<Player> playersInRange = filterOutOffRange(players, entity);
 			ServerPacketSender.updateArmorStandOnlyMeta(playersInRange, entity);
 		});
         
@@ -359,7 +359,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = bypassFilter ? players : filterOutOrRange(players, entity);
+			List<Player> playersInRange = bypassFilter ? players : filterOutOffRange(players, entity);
 			ServerPacketSender.removeArmorStand(playersInRange, entity);
 			playersInRange.forEach((each) -> {
 				Set<VisualizerEntity> list = playerStatus.get(each);
@@ -387,7 +387,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOrRange(players, entity);
+			List<Player> playersInRange = filterOutOffRange(players, entity);
 			ServerPacketSender.spawnItem(playersInRange, entity);
 			playersInRange.forEach((each) -> {
 				Set<VisualizerEntity> list = playerStatus.get(each);
@@ -424,7 +424,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOrRange(players, entity);
+			List<Player> playersInRange = filterOutOffRange(players, entity);
 			ServerPacketSender.updateItem(playersInRange, entity);
 		});
 		
@@ -445,7 +445,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = bypassFilter ? players : filterOutOrRange(players, entity);
+			List<Player> playersInRange = bypassFilter ? players : filterOutOffRange(players, entity);
 			ServerPacketSender.removeItem(playersInRange, entity);
 			playersInRange.forEach((each) -> {
 				Set<VisualizerEntity> list = playerStatus.get(each);
@@ -470,7 +470,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOrRange(players, entity);
+			List<Player> playersInRange = filterOutOffRange(players, entity);
 			ServerPacketSender.spawnItemFrame(playersInRange, entity);
 			playersInRange.forEach((each) -> {
 				Set<VisualizerEntity> list = playerStatus.get(each);
@@ -508,7 +508,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOrRange(players, entity);
+			List<Player> playersInRange = filterOutOffRange(players, entity);
 			ServerPacketSender.updateItemFrame(playersInRange, entity);
 		});
         
@@ -526,7 +526,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = bypassFilter ? players : filterOutOrRange(players, entity);
+			List<Player> playersInRange = bypassFilter ? players : filterOutOffRange(players, entity);
 			ServerPacketSender.removeItemFrame(playersInRange, entity);
 			playersInRange.forEach((each) -> {
 				Set<VisualizerEntity> list = playerStatus.get(each);
@@ -541,7 +541,7 @@ public class PacketManager implements Listener {
 		removeItemFrame(players, entity, true, false);
 	}
 	
-	private static List<Player> filterOutOrRange(List<Player> players, VisualizerEntity entity) {
+	private static List<Player> filterOutOffRange(List<Player> players, VisualizerEntity entity) {
 		List<Player> playersInRange = new LinkedList<Player>();
 		for (Player player : players) {
 			Location playerLocation = PlayerLocationManager.getPlayerLocation(player);

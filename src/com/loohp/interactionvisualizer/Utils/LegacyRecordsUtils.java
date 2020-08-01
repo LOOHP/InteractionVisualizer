@@ -6,7 +6,7 @@ public class LegacyRecordsUtils {
 	
 	public static HashMap<String, String> mapping = new HashMap<String, String>();
 	
-	public static void setup() {
+	static {
 		mapping.put("GOLD_RECORD", "MUSIC_DISC_13");
 		mapping.put("GREEN_RECORD", "MUSIC_DISC_CAT");
 		mapping.put("RECORD_3", "MUSIC_DISC_BLOCKS");

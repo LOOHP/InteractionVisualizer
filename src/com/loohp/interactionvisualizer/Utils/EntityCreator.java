@@ -32,7 +32,7 @@ public class EntityCreator {
 	private static MethodHandle nmsEntityGetBukkitEntityMethod;
 	private static ItemStack dummyitem;
 	
-	public static void setup() {
+	static {
 		try {
 			craftWorldClass = getNMSClass("org.bukkit.craftbukkit.", "CraftWorld");
 			craftEntityClass = getNMSClass("org.bukkit.craftbukkit.", "entity.CraftEntity");

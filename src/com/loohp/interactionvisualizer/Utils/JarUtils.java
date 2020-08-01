@@ -10,6 +10,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class JarUtils {
+	
     public static final char JAR_SEPARATOR = '/';
 
     public static void copyFolderFromJar(String folderName, File destFolder, CopyOption option) throws IOException {

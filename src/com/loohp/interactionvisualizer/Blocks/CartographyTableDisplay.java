@@ -22,72 +22,18 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
-public class CartographyTableDisplay implements Listener {
+public class CartographyTableDisplay extends VisualizerInteractDisplay implements Listener {
 	
-	public static HashMap<Block, HashMap<String, Object>> openedCTable = new HashMap<Block, HashMap<String, Object>>();
-	public static HashMap<Player, Block> playermap = new HashMap<Player, Block>();
-
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onUseCartographyTable(InventoryClickEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
-		if (!playermap.containsKey((Player) event.getWhoClicked())) {
-			return;
-		}
-		
-		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 1) {
-			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
-		}
-	}
+	public HashMap<Block, HashMap<String, Object>> openedCTable = new HashMap<Block, HashMap<String, Object>>();
+	public HashMap<Player, Block> playermap = new HashMap<Player, Block>();
 	
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onDragCartographyTable(InventoryDragEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
-		if (!playermap.containsKey((Player) event.getWhoClicked())) {
-			return;
-		}
-		
-		for (int slot : event.getRawSlots()) {
-			if (slot >= 0 && slot <= 1) {
-				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
-				break;
-			}
-		}
-	}
-	
-	@EventHandler
-	public void onCloseCartographyTable(InventoryCloseEvent event) {
-		if (!playermap.containsKey((Player) event.getPlayer())) {
-			return;
-		}
-		
-		Block block = playermap.get((Player) event.getPlayer());
-		
-		if (!openedCTable.containsKey(block)) {
-			return;
-		}
-		
-		HashMap<String, Object> map = openedCTable.get(block);
-		if (!map.get("Player").equals((Player) event.getPlayer())) {
-			return;
-		}
-		
-		if (map.get("Item") instanceof ItemFrame) {
-			ItemFrame entity = (ItemFrame) map.get("Item");
-			PacketManager.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), entity);
-		}
-		openedCTable.remove(block);
-		playermap.remove((Player) event.getPlayer());
-	}
-	
-	public static int run() {		
+	@Override
+	public int run() {		
 		return new BukkitRunnable() {
 			public void run() {
 				
@@ -133,7 +79,8 @@ public class CartographyTableDisplay implements Listener {
 		}.runTaskTimer(InteractionVisualizer.plugin, 0, 6).getTaskId();
 	}
 	
-	public static void process(Player player) {
+	@Override
+	public void process(Player player) {
 		if (VanishUtils.isVanished(player)) {
 			return;
 		}
@@ -216,5 +163,61 @@ public class CartographyTableDisplay implements Listener {
 				}
 			}
 		}
+	}
+
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onUseCartographyTable(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		if (!playermap.containsKey((Player) event.getWhoClicked())) {
+			return;
+		}
+		
+		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 1) {
+			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onDragCartographyTable(InventoryDragEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		if (!playermap.containsKey((Player) event.getWhoClicked())) {
+			return;
+		}
+		
+		for (int slot : event.getRawSlots()) {
+			if (slot >= 0 && slot <= 1) {
+				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				break;
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onCloseCartographyTable(InventoryCloseEvent event) {
+		if (!playermap.containsKey((Player) event.getPlayer())) {
+			return;
+		}
+		
+		Block block = playermap.get((Player) event.getPlayer());
+		
+		if (!openedCTable.containsKey(block)) {
+			return;
+		}
+		
+		HashMap<String, Object> map = openedCTable.get(block);
+		if (!map.get("Player").equals((Player) event.getPlayer())) {
+			return;
+		}
+		
+		if (map.get("Item") instanceof ItemFrame) {
+			ItemFrame entity = (ItemFrame) map.get("Item");
+			PacketManager.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), entity);
+		}
+		openedCTable.remove(block);
+		playermap.remove((Player) event.getPlayer());
 	}
 }

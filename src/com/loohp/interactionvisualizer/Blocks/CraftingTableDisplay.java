@@ -28,6 +28,7 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.LightManager;
@@ -41,10 +42,242 @@ import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 import ru.beykerykt.lightapi.LightType;
 
-public class CraftingTableDisplay implements Listener {
+public class CraftingTableDisplay extends VisualizerInteractDisplay implements Listener {
 	
-	public static HashMap<Block, HashMap<String, Object>> openedBenches = new HashMap<Block, HashMap<String, Object>>();
-	public static HashMap<Player, Block> playermap = new HashMap<Player, Block>();
+	public HashMap<Block, HashMap<String, Object>> openedBenches = new HashMap<Block, HashMap<String, Object>>();
+	public HashMap<Player, Block> playermap = new HashMap<Player, Block>();
+	
+	@Override
+	public int run() {		
+		return new BukkitRunnable() {
+			public void run() {
+				
+				Iterator<Block> itr = openedBenches.keySet().iterator();
+				int count = 0;
+				int maxper = (int) Math.ceil((double) openedBenches.size() / (double) 5);
+				int delay = 1;
+				while (itr.hasNext()) {
+					count++;
+					if (count > maxper) {
+						count = 0;
+						delay++;
+					}
+					Block block = itr.next();					
+					new BukkitRunnable() {
+						public void run() {
+							if (!openedBenches.containsKey(block)) {
+								return;
+							}
+							HashMap<String, Object> map = openedBenches.get(block);
+
+							Player player = (Player) map.get("Player");
+							if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
+								if (player.getOpenInventory() != null) {
+									if (player.getOpenInventory().getTopInventory() != null) {
+										if (!InteractionVisualizer.version.isLegacy()) {
+											if (!InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
+												if (player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
+													return;
+												}
+											} else {
+												if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
+													if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length == 9) {
+														return;
+													}
+												}											
+											}
+										} else {
+											if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
+												if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length == 9) {
+													return;
+												}
+											}								
+										}														
+									}
+								}
+							}
+							
+							for (int i = 0; i <= 9; i++) {
+								if (!(map.get(String.valueOf(i)) instanceof String)) {
+									Object entity = map.get(String.valueOf(i));
+									if (i == 5) {
+										LightManager.deleteLight(((ArmorStand) entity).getLocation());
+									}
+									if (entity instanceof Item) {
+										PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
+									} else if (entity instanceof ArmorStand) {
+										PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
+									}
+								}
+							}
+							openedBenches.remove(block);
+						}
+					}.runTaskLater(InteractionVisualizer.plugin, delay);
+				}
+			}
+		}.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
+	}
+	
+	@Override
+	public void process(Player player) {
+		if (VanishUtils.isVanished(player)) {
+			return;
+		}
+		if (!playermap.containsKey(player)) {
+			if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+				return;
+			}
+			if (player.getOpenInventory().getTopInventory().getLocation() == null) {
+				return;
+			}
+			if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
+				return;
+			}
+			if (!InteractionVisualizer.version.isLegacy()) {
+				if (!InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
+					if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
+						return;
+					}
+				} else {
+					if (!(player.getOpenInventory().getTopInventory() instanceof CraftingInventory)) {
+						return;
+					}
+					if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length != 9) {
+						return;
+					}
+					if (!player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
+						return;
+					}
+				}
+			} else {
+				if (!(player.getOpenInventory().getTopInventory() instanceof CraftingInventory)) {
+					return;
+				}
+				if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length != 9) {
+					return;
+				}
+				if (!player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
+					return;
+				}
+			}
+			Block block = null;
+			InventoryView view = player.getOpenInventory();
+			if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
+				block = view.getTopInventory().getLocation().getBlock();
+			} else {
+				block = player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7);
+			}
+			playermap.put(player, block);
+		}
+		
+		InventoryView view = player.getOpenInventory();
+		Block block = playermap.get(player);
+		Location loc = block.getLocation();
+		
+		if (!openedBenches.containsKey(block)) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("Player", player);
+			map.put("0", "N/A");
+			map.putAll(spawnArmorStands(player, block));
+			openedBenches.put(block, map);
+		}
+		
+		HashMap<String, Object> map = openedBenches.get(block);
+		
+		if (!map.get("Player").equals(player)) {
+			return;
+		}
+		ItemStack[] items = new ItemStack[]{
+			view.getItem(1),
+			view.getItem(2),
+			view.getItem(3),
+			view.getItem(4),
+			view.getItem(5),
+			view.getItem(6),
+			view.getItem(7),
+			view.getItem(8),
+			view.getItem(9)
+		};
+
+		if (view.getItem(0) != null) {
+			ItemStack itemstack = view.getItem(0);
+			if (itemstack.getType().equals(Material.AIR)) {
+				itemstack = null;
+			}
+			Item item = null;
+			if (map.get("0") instanceof String) {
+				if (itemstack != null) {
+					item = new Item(loc.clone().add(0.5, 1.2, 0.5));
+					item.setItemStack(itemstack);
+					item.setVelocity(new Vector(0, 0, 0));
+					item.setPickupDelay(32767);
+					item.setGravity(false);
+					map.put("0", item);
+					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+					PacketManager.updateItem(item);
+				} else {
+					map.put("0", "N/A");
+				}
+			} else {
+				item = (Item) map.get("0");
+				if (itemstack != null) {
+					if (!item.getItemStack().equals(itemstack)) {
+						item.setItemStack(itemstack);
+						PacketManager.updateItem(item);
+					}
+				} else {
+					map.put("0", "N/A");
+					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+				}
+			}
+		}
+		for (int i = 0; i < 9; i++) {
+			ArmorStand stand = (ArmorStand) map.get(String.valueOf(i + 1));
+			ItemStack item = items[i];
+			if (item.getType().equals(Material.AIR)) {
+				item = null;
+			}
+			if (item != null) {
+				boolean changed = true;
+				if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.BLOCK) && !standMode(stand).equals(MaterialMode.BLOCK)) {
+					toggleStandMode(stand, "Block");
+				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.TOOL) && !standMode(stand).equals(MaterialMode.TOOL)) {
+					toggleStandMode(stand, "Tool");
+				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.ITEM) && !standMode(stand).equals(MaterialMode.ITEM)) {
+					toggleStandMode(stand, "Item");
+				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.STANDING) && !standMode(stand).equals(MaterialMode.STANDING)) {
+					toggleStandMode(stand, "Standing");
+				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.LOWBLOCK) && !standMode(stand).equals(MaterialMode.LOWBLOCK)) {
+					toggleStandMode(stand, "LowBlock");
+				} else {
+					changed = false;
+				}
+				if (!item.getType().equals(stand.getItemInMainHand().getType())) {
+					changed = true;
+					stand.setItemInMainHand(item);
+				}
+				if (changed) {
+					PacketManager.updateArmorStand(stand);
+				}
+			} else {
+				if (!stand.getItemInMainHand().getType().equals(Material.AIR)) {
+					stand.setItemInMainHand(new ItemStack(Material.AIR));
+					PacketManager.updateArmorStand(stand);
+				}
+			}
+		}
+		Location loc1 = ((ArmorStand) map.get("5")).getLocation();
+		LightManager.deleteLight(loc1);
+		int skylight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromSky();
+		int blocklight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromBlocks() - 1;
+		blocklight = blocklight < 0 ? 0 : blocklight;
+		if (skylight > 0) {
+			LightManager.createLight(loc1, skylight, LightType.SKY);
+		}
+		if (blocklight > 0) {
+			LightManager.createLight(loc1, blocklight, LightType.BLOCK);
+		}
+	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onCraft(InventoryClickEvent event) {
@@ -270,244 +503,14 @@ public class CraftingTableDisplay implements Listener {
 		playermap.remove((Player) event.getPlayer());
 	}
 	
-	public static int run() {		
-		return new BukkitRunnable() {
-			public void run() {
-				
-				Iterator<Block> itr = openedBenches.keySet().iterator();
-				int count = 0;
-				int maxper = (int) Math.ceil((double) openedBenches.size() / (double) 5);
-				int delay = 1;
-				while (itr.hasNext()) {
-					count++;
-					if (count > maxper) {
-						count = 0;
-						delay++;
-					}
-					Block block = itr.next();					
-					new BukkitRunnable() {
-						public void run() {
-							if (!openedBenches.containsKey(block)) {
-								return;
-							}
-							HashMap<String, Object> map = openedBenches.get(block);
-
-							Player player = (Player) map.get("Player");
-							if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
-								if (player.getOpenInventory() != null) {
-									if (player.getOpenInventory().getTopInventory() != null) {
-										if (!InteractionVisualizer.version.isLegacy()) {
-											if (!InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
-												if (player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
-													return;
-												}
-											} else {
-												if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
-													if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length == 9) {
-														return;
-													}
-												}											
-											}
-										} else {
-											if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
-												if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length == 9) {
-													return;
-												}
-											}								
-										}														
-									}
-								}
-							}
-							
-							for (int i = 0; i <= 9; i++) {
-								if (!(map.get(String.valueOf(i)) instanceof String)) {
-									Object entity = map.get(String.valueOf(i));
-									if (i == 5) {
-										LightManager.deleteLight(((ArmorStand) entity).getLocation());
-									}
-									if (entity instanceof Item) {
-										PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
-									} else if (entity instanceof ArmorStand) {
-										PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
-									}
-								}
-							}
-							openedBenches.remove(block);
-						}
-					}.runTaskLater(InteractionVisualizer.plugin, delay);
-				}
-			}
-		}.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
-	}
-	
-	public static void process(Player player) {
-		if (VanishUtils.isVanished(player)) {
-			return;
-		}
-		if (!playermap.containsKey(player)) {
-			if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-				return;
-			}
-			if (player.getOpenInventory().getTopInventory().getLocation() == null) {
-				return;
-			}
-			if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
-				return;
-			}
-			if (!InteractionVisualizer.version.isLegacy()) {
-				if (!InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
-					if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
-						return;
-					}
-				} else {
-					if (!(player.getOpenInventory().getTopInventory() instanceof CraftingInventory)) {
-						return;
-					}
-					if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length != 9) {
-						return;
-					}
-					if (!player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("CRAFTING_TABLE")) {
-						return;
-					}
-				}
-			} else {
-				if (!(player.getOpenInventory().getTopInventory() instanceof CraftingInventory)) {
-					return;
-				}
-				if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length != 9) {
-					return;
-				}
-				if (!player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().toUpperCase().equals("WORKBENCH")) {
-					return;
-				}
-			}
-			Block block = null;
-			InventoryView view = player.getOpenInventory();
-			if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
-				block = view.getTopInventory().getLocation().getBlock();
-			} else {
-				block = player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7);
-			}
-			playermap.put(player, block);
-		}
-		
-		InventoryView view = player.getOpenInventory();
-		Block block = playermap.get(player);
-		Location loc = block.getLocation();
-		
-		if (!openedBenches.containsKey(block)) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("Player", player);
-			map.put("0", "N/A");
-			map.putAll(spawnArmorStands(player, block));
-			openedBenches.put(block, map);
-		}
-		
-		HashMap<String, Object> map = openedBenches.get(block);
-		
-		if (!map.get("Player").equals(player)) {
-			return;
-		}
-		ItemStack[] items = new ItemStack[]{
-			view.getItem(1),
-			view.getItem(2),
-			view.getItem(3),
-			view.getItem(4),
-			view.getItem(5),
-			view.getItem(6),
-			view.getItem(7),
-			view.getItem(8),
-			view.getItem(9)
-		};
-
-		if (view.getItem(0) != null) {
-			ItemStack itemstack = view.getItem(0);
-			if (itemstack.getType().equals(Material.AIR)) {
-				itemstack = null;
-			}
-			Item item = null;
-			if (map.get("0") instanceof String) {
-				if (itemstack != null) {
-					item = new Item(loc.clone().add(0.5, 1.2, 0.5));
-					item.setItemStack(itemstack);
-					item.setVelocity(new Vector(0, 0, 0));
-					item.setPickupDelay(32767);
-					item.setGravity(false);
-					map.put("0", item);
-					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-					PacketManager.updateItem(item);
-				} else {
-					map.put("0", "N/A");
-				}
-			} else {
-				item = (Item) map.get("0");
-				if (itemstack != null) {
-					if (!item.getItemStack().equals(itemstack)) {
-						item.setItemStack(itemstack);
-						PacketManager.updateItem(item);
-					}
-				} else {
-					map.put("0", "N/A");
-					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-				}
-			}
-		}
-		for (int i = 0; i < 9; i++) {
-			ArmorStand stand = (ArmorStand) map.get(String.valueOf(i + 1));
-			ItemStack item = items[i];
-			if (item.getType().equals(Material.AIR)) {
-				item = null;
-			}
-			if (item != null) {
-				boolean changed = true;
-				if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.BLOCK) && !standMode(stand).equals(MaterialMode.BLOCK)) {
-					toggleStandMode(stand, "Block");
-				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.TOOL) && !standMode(stand).equals(MaterialMode.TOOL)) {
-					toggleStandMode(stand, "Tool");
-				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.ITEM) && !standMode(stand).equals(MaterialMode.ITEM)) {
-					toggleStandMode(stand, "Item");
-				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.STANDING) && !standMode(stand).equals(MaterialMode.STANDING)) {
-					toggleStandMode(stand, "Standing");
-				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.LOWBLOCK) && !standMode(stand).equals(MaterialMode.LOWBLOCK)) {
-					toggleStandMode(stand, "LowBlock");
-				} else {
-					changed = false;
-				}
-				if (!item.getType().equals(stand.getItemInMainHand().getType())) {
-					changed = true;
-					stand.setItemInMainHand(item);
-				}
-				if (changed) {
-					PacketManager.updateArmorStand(stand);
-				}
-			} else {
-				if (!stand.getItemInMainHand().getType().equals(Material.AIR)) {
-					stand.setItemInMainHand(new ItemStack(Material.AIR));
-					PacketManager.updateArmorStand(stand);
-				}
-			}
-		}
-		Location loc1 = ((ArmorStand) map.get("5")).getLocation();
-		LightManager.deleteLight(loc1);
-		int skylight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromSky();
-		int blocklight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromBlocks() - 1;
-		blocklight = blocklight < 0 ? 0 : blocklight;
-		if (skylight > 0) {
-			LightManager.createLight(loc1, skylight, LightType.SKY);
-		}
-		if (blocklight > 0) {
-			LightManager.createLight(loc1, blocklight, LightType.BLOCK);
-		}
-	}
-	
-	public static MaterialMode standMode(ArmorStand stand) {
+	public MaterialMode standMode(ArmorStand stand) {
 		if (stand.getCustomName().startsWith("IV.CraftingTable.")) {
 			return MaterialMode.getModeFromName(stand.getCustomName().substring(stand.getCustomName().lastIndexOf(".") + 1));
 		}
 		return null;
 	}
 	
-	public static void toggleStandMode(ArmorStand stand, String mode) {
+	public void toggleStandMode(ArmorStand stand, String mode) {
 		if (!stand.getCustomName().equals("IV.CraftingTable.Item")) {
 			if (stand.getCustomName().equals("IV.CraftingTable.Block")) {
 				stand.setCustomName("IV.CraftingTable.Item");
@@ -574,7 +577,7 @@ public class CraftingTableDisplay implements Listener {
 		}
 	}
 	
-	public static HashMap<String, ArmorStand> spawnArmorStands(Player player, Block block) { //.add(0.68, 0.600781, 0.35)
+	public HashMap<String, ArmorStand> spawnArmorStands(Player player, Block block) { //.add(0.68, 0.600781, 0.35)
 		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location loc = block.getLocation().clone().add(0.5, 0.600781, 0.5);
 		ArmorStand center = new ArmorStand(loc);
@@ -625,7 +628,7 @@ public class CraftingTableDisplay implements Listener {
 		return map;
 	}
 	
-	public static void setStand(ArmorStand stand, float yaw) {
+	public void setStand(ArmorStand stand, float yaw) {
 		stand.setArms(true);
 		stand.setBasePlate(false);
 		stand.setMarker(true);
@@ -639,7 +642,7 @@ public class CraftingTableDisplay implements Listener {
 		stand.setRotation(yaw, stand.getLocation().getPitch());
 	}
 	
-	public static void setStand(ArmorStand stand) {
+	public void setStand(ArmorStand stand) {
 		stand.setArms(true);
 		stand.setBasePlate(false);
 		stand.setMarker(true);
@@ -650,7 +653,7 @@ public class CraftingTableDisplay implements Listener {
 		stand.setVisible(false);
 	}
 	
-	public static Vector rotateVectorAroundY(Vector vector, double degrees) {
+	public Vector rotateVectorAroundY(Vector vector, double degrees) {
 	    double rad = Math.toRadians(degrees);
 	   
 	    double currentX = vector.getX();
@@ -662,7 +665,7 @@ public class CraftingTableDisplay implements Listener {
 	    return new Vector((cosine * currentX - sine * currentZ), vector.getY(), (sine * currentX + cosine * currentZ));
 	}
 	
-	public static float getCardinalDirection(Entity e) {
+	public float getCardinalDirection(Entity e) {
 
 		double rotation = (e.getLocation().getYaw() - 90.0F) % 360.0F;
 

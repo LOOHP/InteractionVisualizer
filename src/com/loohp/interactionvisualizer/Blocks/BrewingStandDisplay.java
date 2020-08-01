@@ -24,6 +24,7 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
@@ -31,99 +32,15 @@ import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
 
-public class BrewingStandDisplay implements Listener {
+public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Listener {
 	
-	public static ConcurrentHashMap<Block, HashMap<String, Object>> brewstand = new ConcurrentHashMap<Block, HashMap<String, Object>>();
-	public static int max = 20 * 20;
-	private static Integer checkingPeriod = InteractionVisualizer.brewingstandChecking;
-	private static Integer gcPeriod = InteractionVisualizer.gcPeriod;
+	public ConcurrentHashMap<Block, HashMap<String, Object>> brewstand = new ConcurrentHashMap<Block, HashMap<String, Object>>();
+	public final int max = 20 * 20;
+	private Integer checkingPeriod = InteractionVisualizer.brewingstandChecking;
+	private Integer gcPeriod = InteractionVisualizer.gcPeriod;
 	
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onUseBrewingStand(InventoryClickEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
-		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
-			return;
-		}
-		if (event.getView().getTopInventory() == null) {
-			return;
-		}
-		try {
-			if (event.getView().getTopInventory().getLocation() == null) {
-				return;
-			}
-		} catch (Exception e) {
-			return;
-		}
-		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
-			return;
-		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.BREWING_STAND)) {
-			return;
-		}
-		
-		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 4) {
-			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
-		}
-	}
-	
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onDragBrewingStand(InventoryDragEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
-		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
-			return;
-		}
-		if (event.getView().getTopInventory() == null) {
-			return;
-		}
-		try {
-			if (event.getView().getTopInventory().getLocation() == null) {
-				return;
-			}
-		} catch (Exception e) {
-			return;
-		}
-		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
-			return;
-		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.BREWING_STAND)) {
-			return;
-		}
-		
-		for (int slot : event.getRawSlots()) {
-			if (slot >= 0 && slot <= 4) {
-				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
-				break;
-			}
-		}
-	}
-	
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onBreakBrewingStand(BlockBreakEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
-		Block block = event.getBlock();
-		if (!brewstand.containsKey(block)) {
-			return;
-		}
-
-		HashMap<String, Object> map = brewstand.get(block);
-		if (map.get("Item") instanceof Item) {
-			Item item = (Item) map.get("Item");
-			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-		}
-		if (map.get("Stand") instanceof ArmorStand) {
-			ArmorStand stand = (ArmorStand) map.get("Stand");
-			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-		}
-		brewstand.remove(block);
-	}
-	
-	public static int gc() {
+	@Override
+	public int gc() {
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Iterator<Entry<Block, HashMap<String, Object>>> itr = brewstand.entrySet().iterator();
 			int count = 0;
@@ -173,7 +90,8 @@ public class BrewingStandDisplay implements Listener {
 		}, 0, gcPeriod).getTaskId();
 	}
 	
-	public static int run() {		
+	@Override
+	public int run() {		
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
 				List<Block> list = nearbyBrewingStand();
@@ -300,7 +218,92 @@ public class BrewingStandDisplay implements Listener {
 		}, 0, checkingPeriod).getTaskId();		
 	}
 	
-	public static boolean hasPotion(org.bukkit.block.BrewingStand brewingstand) {
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onUseBrewingStand(InventoryClickEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+			return;
+		}
+		if (event.getView().getTopInventory() == null) {
+			return;
+		}
+		try {
+			if (event.getView().getTopInventory().getLocation() == null) {
+				return;
+			}
+		} catch (Exception e) {
+			return;
+		}
+		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
+			return;
+		}
+		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.BREWING_STAND)) {
+			return;
+		}
+		
+		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 4) {
+			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onDragBrewingStand(InventoryDragEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+			return;
+		}
+		if (event.getView().getTopInventory() == null) {
+			return;
+		}
+		try {
+			if (event.getView().getTopInventory().getLocation() == null) {
+				return;
+			}
+		} catch (Exception e) {
+			return;
+		}
+		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
+			return;
+		}
+		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.BREWING_STAND)) {
+			return;
+		}
+		
+		for (int slot : event.getRawSlots()) {
+			if (slot >= 0 && slot <= 4) {
+				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				break;
+			}
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onBreakBrewingStand(BlockBreakEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		Block block = event.getBlock();
+		if (!brewstand.containsKey(block)) {
+			return;
+		}
+
+		HashMap<String, Object> map = brewstand.get(block);
+		if (map.get("Item") instanceof Item) {
+			Item item = (Item) map.get("Item");
+			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+		}
+		if (map.get("Stand") instanceof ArmorStand) {
+			ArmorStand stand = (ArmorStand) map.get("Stand");
+			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+		}
+		brewstand.remove(block);
+	}
+	
+	public boolean hasPotion(org.bukkit.block.BrewingStand brewingstand) {
 		Inventory inv = brewingstand.getInventory();
 		if (inv.getItem(0) != null) {
 			if (!inv.getItem(0).getType().equals(Material.AIR)) {
@@ -320,15 +323,15 @@ public class BrewingStandDisplay implements Listener {
 		return false;
 	}
 	
-	public static List<Block> nearbyBrewingStand() {
+	public List<Block> nearbyBrewingStand() {
 		return TileEntityManager.getTileEntites(TileEntityType.BREWING_STAND);
 	}
 	
-	public static boolean isActive(Location loc) {
+	public boolean isActive(Location loc) {
 		return PlayerLocationManager.hasPlayerNearby(loc);
 	}
 	
-	public static HashMap<String, ArmorStand> spawnArmorStands(Block block) { //.add(0.68, 0.700781, 0.35)
+	public HashMap<String, ArmorStand> spawnArmorStands(Block block) { //.add(0.68, 0.700781, 0.35)
 		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location loc = block.getLocation().clone().add(0.5, 0.700781, 0.5);
 		ArmorStand slot1 = new ArmorStand(loc.clone());
@@ -341,7 +344,7 @@ public class BrewingStandDisplay implements Listener {
 		return map;
 	}
 	
-	public static void setStand(ArmorStand stand) {
+	public void setStand(ArmorStand stand) {
 		stand.setBasePlate(false);
 		stand.setMarker(true);
 		stand.setGravity(false);

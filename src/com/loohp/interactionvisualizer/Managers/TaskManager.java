@@ -8,13 +8,13 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
+import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.Blocks.AnvilDisplay;
 import com.loohp.interactionvisualizer.Blocks.BeaconDisplay;
 import com.loohp.interactionvisualizer.Blocks.BlastFurnaceDisplay;
@@ -70,7 +70,8 @@ public class TaskManager {
 	
 	public static List<Integer> tasks = new ArrayList<Integer>();
 	
-	public static HashMap<InventoryType, List<VisualizerInteractDisplay>> customProcesses = new HashMap<InventoryType, List<VisualizerInteractDisplay>>();
+	public static HashMap<InventoryType, List<VisualizerInteractDisplay>> processes = new HashMap<InventoryType, List<VisualizerInteractDisplay>>();
+	public static List<VisualizerRunnableDisplay> runnables = new ArrayList<VisualizerRunnableDisplay>();
 	
 	public static void setup() {
 		anvil = false;
@@ -97,11 +98,13 @@ public class TaskManager {
 		
 		version = InteractionVisualizer.version;
 		
+		/*
 		HandlerList.unregisterAll(plugin);
 		for (int taskid : tasks) {
 			Bukkit.getScheduler().cancelTask(taskid);
 		}
 		tasks.clear();
+		*/
 		
 		Bukkit.getPluginManager().registerEvents(new Debug(), plugin);
 		Bukkit.getPluginManager().registerEvents(new Updater(), plugin);
@@ -113,57 +116,71 @@ public class TaskManager {
 			Bukkit.getPluginManager().registerEvents(new ChunkEvents(), plugin);
 		}
 		
+		for (InventoryType type : InventoryType.values()) {
+			processes.put(type, new ArrayList<VisualizerInteractDisplay>());
+		}
+		
 		if (config.getBoolean("Blocks.CraftingTable.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new CraftingTableDisplay(), plugin);
-			CraftingTableDisplay.run();
+			CraftingTableDisplay ctd = new CraftingTableDisplay();
+			ctd.register(InventoryType.WORKBENCH);
+			Bukkit.getPluginManager().registerEvents(ctd, plugin);
 			craftingtable = true;
 		}
 		
 		if (config.getBoolean("Blocks.Loom.Enabled") &&
 				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
 				) {
-			Bukkit.getPluginManager().registerEvents(new LoomDisplay(), plugin);
-			tasks.add(LoomDisplay.run());
+			LoomDisplay ld = new LoomDisplay();
+			ld.register(InventoryType.LOOM);
+			Bukkit.getPluginManager().registerEvents(ld, plugin);
 			loom = true;
 		}
 		
 		if (config.getBoolean("Blocks.EnchantmentTable.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new EnchantmentTableDisplay(), plugin);
+			EnchantmentTableDisplay etd = new EnchantmentTableDisplay();
+			etd.register(InventoryType.ENCHANTING);
+			Bukkit.getPluginManager().registerEvents(etd, plugin);
 			enchantmenttable = true;
 		}
 		
 		if (config.getBoolean("Blocks.CartographyTable.Enabled") &&
 				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
 				) {
-			Bukkit.getPluginManager().registerEvents(new CartographyTableDisplay(), plugin);
-			tasks.add(CartographyTableDisplay.run());
+			CartographyTableDisplay ctd = new CartographyTableDisplay();
+			ctd.register(InventoryType.CARTOGRAPHY);
+			Bukkit.getPluginManager().registerEvents(ctd, plugin);
 			cartographytable = true;
 		}
 		
 		if (config.getBoolean("Blocks.Anvil.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new AnvilDisplay(), plugin);
+			AnvilDisplay ad = new AnvilDisplay();
+			ad.register(InventoryType.ANVIL);
+			Bukkit.getPluginManager().registerEvents(ad, plugin);
 			anvil = true;
 		}
 		
 		if (config.getBoolean("Blocks.Grindstone.Enabled") &&
 				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
 				) {
-			Bukkit.getPluginManager().registerEvents(new GrindstoneDisplay(), plugin);
+			GrindstoneDisplay gd = new GrindstoneDisplay();
+			gd.register(InventoryType.GRINDSTONE);
+			Bukkit.getPluginManager().registerEvents(gd, plugin);
 			grindstone = true;
 		}
 		
 		if (config.getBoolean("Blocks.Stonecutter.Enabled") &&
 				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
 				) {
-			Bukkit.getPluginManager().registerEvents(new StonecutterDisplay(), plugin);
-			tasks.add(StonecutterDisplay.run());
+			StonecutterDisplay sd = new StonecutterDisplay();
+			sd.register(InventoryType.STONECUTTER);
+			Bukkit.getPluginManager().registerEvents(sd, plugin);
 			stonecutter = true;
 		}
 		
 		if (config.getBoolean("Blocks.BrewingStand.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new BrewingStandDisplay(), plugin);
-			tasks.add(BrewingStandDisplay.run());
-			tasks.add(BrewingStandDisplay.gc());
+			BrewingStandDisplay bsd = new BrewingStandDisplay();
+			bsd.register();
+			Bukkit.getPluginManager().registerEvents(bsd, plugin);
 			brewingstand = true;
 		}
 		
@@ -178,27 +195,27 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.Furnace.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new FurnaceDisplay(), plugin);
-			tasks.add(FurnaceDisplay.run());
-			tasks.add(FurnaceDisplay.gc());
+			FurnaceDisplay fd = new FurnaceDisplay();
+			fd.register();
+			Bukkit.getPluginManager().registerEvents(fd, plugin);
 			furnace = true;
 		}
 		
 		if (config.getBoolean("Blocks.BlastFurnace.Enabled") &&
 				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
 				) {
-			Bukkit.getPluginManager().registerEvents(new BlastFurnaceDisplay(), plugin);
-			tasks.add(BlastFurnaceDisplay.run());
-			tasks.add(BlastFurnaceDisplay.gc());
+			BlastFurnaceDisplay bfd = new BlastFurnaceDisplay();
+			bfd.register();
+			Bukkit.getPluginManager().registerEvents(bfd, plugin);
 			blastfurnace = true;
 		}
 		
 		if (config.getBoolean("Blocks.Smoker.Enabled") &&
 				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
 				) {
-			Bukkit.getPluginManager().registerEvents(new SmokerDisplay(), plugin);
-			tasks.add(SmokerDisplay.run());
-			tasks.add(SmokerDisplay.gc());
+			SmokerDisplay sd = new SmokerDisplay();
+			sd.register();
+			Bukkit.getPluginManager().registerEvents(sd, plugin);
 			smoker = true;
 		}
 		
@@ -215,28 +232,32 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.Beacon.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new BeaconDisplay(), plugin);
-			tasks.add(BeaconDisplay.run());
-			tasks.add(BeaconDisplay.gc());
+			BeaconDisplay bd = new BeaconDisplay();
+			bd.register();
+			Bukkit.getPluginManager().registerEvents(bd, plugin);
 			beacon = true;
 		}
 		
 		if (config.getBoolean("Blocks.NoteBlock.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new NoteBlockDisplay(), plugin);
-			tasks.add(NoteBlockDisplay.run());
+			NoteBlockDisplay nbd = new NoteBlockDisplay();
+			nbd.register();
+			Bukkit.getPluginManager().registerEvents(nbd, plugin);
 			noteblock = true;
 		}
 		
 		if (config.getBoolean("Blocks.JukeBox.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new JukeBoxDisplay(), plugin);
-			tasks.add(JukeBoxDisplay.run());
+			JukeBoxDisplay jbd = new JukeBoxDisplay();
+			jbd.register();
+			Bukkit.getPluginManager().registerEvents(jbd, plugin);
 			jukebox = true;
 		}
 		
 		if (config.getBoolean("Blocks.SmithingTable.Enabled") &&
 				   (version.equals(MCVersion.V1_16))
 				) {
-			Bukkit.getPluginManager().registerEvents(new SmithingTableDisplay(), plugin);
+			SmithingTableDisplay std = new SmithingTableDisplay();
+			std.register(InventoryType.SMITHING);
+			Bukkit.getPluginManager().registerEvents(std, plugin);
 			smithingtable = true;
 		}
 		
@@ -247,10 +268,6 @@ public class TaskManager {
 		
 		tasks.add(LightManager.run());
 		tasks.add(PacketManager.update());
-		
-		for (InventoryType type : InventoryType.values()) {
-			customProcesses.put(type, new ArrayList<VisualizerInteractDisplay>());
-		}
 	}
 	
 	public static void run() {
@@ -280,103 +297,7 @@ public class TaskManager {
 				
 				Inventory inv = player.getOpenInventory().getTopInventory();
 				
-				customProcesses.get(inv.getType()).forEach((each) -> each.process(player));
-				
-				switch (inv.getType()) {
-				case ANVIL:
-					if (anvil) {
-						AnvilDisplay.process(player);
-					}
-					return;
-				case BARREL:
-					//
-					return;
-				case BEACON:
-					//
-					return;
-				case BLAST_FURNACE:
-					//
-					return;
-				case BREWING:
-					//
-					return;
-				case CARTOGRAPHY:
-					if (cartographytable) {
-						CartographyTableDisplay.process(player);
-					}
-					return;
-				case CHEST:
-					//
-					return;
-				case CRAFTING:
-					//
-					return;
-				case CREATIVE:
-					//
-					return;
-				case DISPENSER:
-					//
-					return;
-				case DROPPER:
-					//
-					return;
-				case ENCHANTING:
-					if (enchantmenttable) {
-						EnchantmentTableDisplay.process(player);
-					}
-					return;
-				case ENDER_CHEST:
-					//
-					return;
-				case FURNACE:
-					//
-					return;
-				case GRINDSTONE:
-					if (grindstone) {
-						GrindstoneDisplay.process(player);
-					}
-					return;
-				case HOPPER:
-					//
-					return;
-				case LECTERN:
-					//
-					return;
-				case LOOM:
-					if (loom) {
-						LoomDisplay.process(player);
-					}
-					return;
-				case MERCHANT:
-					//
-					return;
-				case PLAYER:
-					//
-					return;
-				case SHULKER_BOX:
-					//
-					return;
-				case SMITHING:
-					if (smithingtable) {
-						SmithingTableDisplay.process(player);
-					}
-					return;
-				case SMOKER:
-					//
-					return;
-				case STONECUTTER:
-					if (stonecutter) {
-						StonecutterDisplay.process(player);
-					}
-					return;
-				case WORKBENCH:
-					if (craftingtable) {
-						CraftingTableDisplay.process(player);
-					}
-					return;
-				default:
-					return;							
-				}
+				processes.get(inv.getType()).forEach((each) -> each.process(player));
 			}, delay);
 		}
 		next = next + delay;

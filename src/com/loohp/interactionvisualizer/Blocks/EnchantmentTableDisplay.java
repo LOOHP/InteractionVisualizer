@@ -23,16 +23,62 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.ObjectHolders.EnchantmentTableBundle;
 import com.loohp.interactionvisualizer.Utils.CustomMapUtils;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
-public class EnchantmentTableDisplay implements Listener {
+public class EnchantmentTableDisplay extends VisualizerInteractDisplay implements Listener {
 	
-	public static Map<Block, EnchantmentTableBundle> openedETable = new ConcurrentHashMap<Block, EnchantmentTableBundle>();
-	public static Map<Player, Block> playermap = new ConcurrentHashMap<Player, Block>();
+	public Map<Block, EnchantmentTableBundle> openedETable = new ConcurrentHashMap<Block, EnchantmentTableBundle>();
+	public Map<Player, Block> playermap = new ConcurrentHashMap<Player, Block>();
+	
+	@Override
+	public void process(Player player) {		
+		if (VanishUtils.isVanished(player)) {
+			return;
+		}
+		if (!playermap.containsKey(player)) {
+			if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+				return;
+			}
+			if (player.getOpenInventory().getTopInventory().getLocation() == null) {
+				return;
+			}
+			if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
+				return;
+			}
+			if (!InteractionVisualizer.version.isLegacy()) {
+				if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTING_TABLE")) {
+					return;
+				}
+			} else {
+				if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTMENT_TABLE")) {
+					return;
+				}
+			}
+			InventoryView view = player.getOpenInventory();
+			Block block = view.getTopInventory().getLocation().getBlock();
+			playermap.put(player, block);
+		}
+		
+		InventoryView view = player.getOpenInventory();
+		Block block = playermap.get(player);
+		if (!openedETable.containsKey(block)) {
+			openedETable.put(block, new EnchantmentTableBundle(player, block, InteractionVisualizer.itemDrop));
+		}
+		EnchantmentTableBundle etb = openedETable.get(block);
+		
+		if (!etb.getEnchanter().equals(player)) {
+			return;
+		}
+		
+		ItemStack itemstack = view.getItem(0) != null && !view.getItem(0).getType().equals(Material.AIR) ? view.getItem(0).clone() : null;
+
+		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> etb.setItemStack(itemstack), 2);
+	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onEnchant(EnchantItemEvent event) {
@@ -195,49 +241,5 @@ public class EnchantmentTableDisplay implements Listener {
 			
 			etb.playPickUpAnimationAndRemove(itemstack, openedETable);
 		}, 3);
-	}
-	
-	public static void process(Player player) {		
-		if (VanishUtils.isVanished(player)) {
-			return;
-		}
-		if (!playermap.containsKey(player)) {
-			if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-				return;
-			}
-			if (player.getOpenInventory().getTopInventory().getLocation() == null) {
-				return;
-			}
-			if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
-				return;
-			}
-			if (!InteractionVisualizer.version.isLegacy()) {
-				if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTING_TABLE")) {
-					return;
-				}
-			} else {
-				if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().equals("ENCHANTMENT_TABLE")) {
-					return;
-				}
-			}
-			InventoryView view = player.getOpenInventory();
-			Block block = view.getTopInventory().getLocation().getBlock();
-			playermap.put(player, block);
-		}
-		
-		InventoryView view = player.getOpenInventory();
-		Block block = playermap.get(player);
-		if (!openedETable.containsKey(block)) {
-			openedETable.put(block, new EnchantmentTableBundle(player, block, InteractionVisualizer.itemDrop));
-		}
-		EnchantmentTableBundle etb = openedETable.get(block);
-		
-		if (!etb.getEnchanter().equals(player)) {
-			return;
-		}
-		
-		ItemStack itemstack = view.getItem(0) != null && !view.getItem(0).getType().equals(Material.AIR) ? view.getItem(0).clone() : null;
-
-		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> etb.setItemStack(itemstack), 2);
 	}
 }

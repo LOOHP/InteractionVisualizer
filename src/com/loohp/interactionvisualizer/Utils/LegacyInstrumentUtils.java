@@ -6,7 +6,7 @@ public class LegacyInstrumentUtils {
 	
 	private static HashMap<String, String> mapping = new HashMap<String, String>();
 	
-	public static void setup() {
+	static {
 		mapping.put("WOOD", "BASS_GUITAR");
 		mapping.put("LOG", "BASS_GUITAR");
 		mapping.put("LOG_2", "BASS_GUITAR");

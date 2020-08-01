@@ -24,6 +24,7 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
@@ -33,9 +34,115 @@ import com.loohp.interactionvisualizer.Utils.MaterialUtils;
 import com.loohp.interactionvisualizer.Utils.MaterialUtils.MaterialMode;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
-public class GrindstoneDisplay implements Listener {
+public class GrindstoneDisplay extends VisualizerInteractDisplay implements Listener {
 	
-	public static HashMap<Block, HashMap<String, Object>> openedGrindstone = new HashMap<Block, HashMap<String, Object>>();	
+	public HashMap<Block, HashMap<String, Object>> openedGrindstone = new HashMap<Block, HashMap<String, Object>>();	
+	
+	@Override
+	public void process(Player player) {		
+		if (VanishUtils.isVanished(player)) {
+			return;
+		}
+		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+			return;
+		}
+		if (player.getOpenInventory().getTopInventory().getLocation() == null) {
+			return;
+		}
+		if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
+			return;
+		}
+		if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().equals(Material.GRINDSTONE)) {
+			return;
+		}
+		
+		InventoryView view = player.getOpenInventory();
+		Block block = view.getTopInventory().getLocation().getBlock();
+		Location loc = block.getLocation();
+		
+		if (!openedGrindstone.containsKey(block)) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("Player", player);
+			map.put("2", "N/A");
+			map.putAll(spawnArmorStands(player, block));
+			openedGrindstone.put(block, map);
+		}
+		
+		HashMap<String, Object> map = openedGrindstone.get(block);
+		
+		if (!map.get("Player").equals(player)) {
+			return;
+		}
+		ItemStack[] items = new ItemStack[]{view.getItem(0),view.getItem(1)};
+
+		if (view.getItem(2) != null) {
+			ItemStack itemstack = view.getItem(2);
+			if (itemstack.getType().equals(Material.AIR)) {
+				itemstack = null;
+			}
+			Item item = null;
+			if (map.get("2") instanceof String) {
+				if (itemstack != null) {
+					item = new Item(loc.clone().add(0.5, 1.2, 0.5));
+					item.setItemStack(itemstack);
+					item.setVelocity(new Vector(0, 0, 0));
+					item.setPickupDelay(32767);
+					item.setGravity(false);
+					map.put("2", item);
+					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+					PacketManager.updateItem(item);
+				} else {
+					map.put("2", "N/A");
+				}
+			} else {
+				item = (Item) map.get("2");
+				if (itemstack != null) {
+					if (!item.getItemStack().equals(itemstack)) {
+						item.setItemStack(itemstack);
+						PacketManager.updateItem(item);
+					}
+				} else {
+					map.put("2", "N/A");
+					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+				}
+			}
+		}
+		for (int i = 0; i < 2; i++) {
+			ArmorStand stand = (ArmorStand) map.get(String.valueOf(i));
+			ItemStack item = items[i];
+			if (item.getType().equals(Material.AIR)) {
+				item = null;
+			}
+			if (item != null) {
+				boolean changed = true;
+				if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.BLOCK) && !standMode(stand).equals(MaterialMode.BLOCK)) {
+					toggleStandMode(stand, "Block");
+				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.TOOL) && !standMode(stand).equals(MaterialMode.TOOL)) {
+					toggleStandMode(stand, "Tool");
+				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.ITEM) && !standMode(stand).equals(MaterialMode.ITEM)) {
+					toggleStandMode(stand, "Item");
+				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.STANDING) && !standMode(stand).equals(MaterialMode.STANDING)) {
+					toggleStandMode(stand, "Standing");
+				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.LOWBLOCK) && !standMode(stand).equals(MaterialMode.LOWBLOCK)) {
+					toggleStandMode(stand, "LowBlock");
+				} else {
+					changed = false;
+				}
+				if (!item.getType().equals(stand.getItemInMainHand().getType())) {
+					changed = true;
+					stand.setItemInMainHand(item);
+				}
+				if (changed) {
+					PacketManager.updateArmorStand(stand);
+				}
+			} else {
+				if (!stand.getItemInMainHand().getType().equals(Material.AIR)) {
+					stand.setItemInMainHand(new ItemStack(Material.AIR));
+					PacketManager.updateArmorStand(stand);
+				}
+			}
+		}
+	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onGrindstone(InventoryClickEvent event) {
@@ -268,120 +375,14 @@ public class GrindstoneDisplay implements Listener {
 		openedGrindstone.remove(block);
 	}
 	
-	public static void process(Player player) {		
-		if (VanishUtils.isVanished(player)) {
-			return;
-		}
-		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-			return;
-		}
-		if (player.getOpenInventory().getTopInventory().getLocation() == null) {
-			return;
-		}
-		if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
-			return;
-		}
-		if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().equals(Material.GRINDSTONE)) {
-			return;
-		}
-		
-		InventoryView view = player.getOpenInventory();
-		Block block = view.getTopInventory().getLocation().getBlock();
-		Location loc = block.getLocation();
-		
-		if (!openedGrindstone.containsKey(block)) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("Player", player);
-			map.put("2", "N/A");
-			map.putAll(spawnArmorStands(player, block));
-			openedGrindstone.put(block, map);
-		}
-		
-		HashMap<String, Object> map = openedGrindstone.get(block);
-		
-		if (!map.get("Player").equals(player)) {
-			return;
-		}
-		ItemStack[] items = new ItemStack[]{view.getItem(0),view.getItem(1)};
-
-		if (view.getItem(2) != null) {
-			ItemStack itemstack = view.getItem(2);
-			if (itemstack.getType().equals(Material.AIR)) {
-				itemstack = null;
-			}
-			Item item = null;
-			if (map.get("2") instanceof String) {
-				if (itemstack != null) {
-					item = new Item(loc.clone().add(0.5, 1.2, 0.5));
-					item.setItemStack(itemstack);
-					item.setVelocity(new Vector(0, 0, 0));
-					item.setPickupDelay(32767);
-					item.setGravity(false);
-					map.put("2", item);
-					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-					PacketManager.updateItem(item);
-				} else {
-					map.put("2", "N/A");
-				}
-			} else {
-				item = (Item) map.get("2");
-				if (itemstack != null) {
-					if (!item.getItemStack().equals(itemstack)) {
-						item.setItemStack(itemstack);
-						PacketManager.updateItem(item);
-					}
-				} else {
-					map.put("2", "N/A");
-					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-				}
-			}
-		}
-		for (int i = 0; i < 2; i++) {
-			ArmorStand stand = (ArmorStand) map.get(String.valueOf(i));
-			ItemStack item = items[i];
-			if (item.getType().equals(Material.AIR)) {
-				item = null;
-			}
-			if (item != null) {
-				boolean changed = true;
-				if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.BLOCK) && !standMode(stand).equals(MaterialMode.BLOCK)) {
-					toggleStandMode(stand, "Block");
-				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.TOOL) && !standMode(stand).equals(MaterialMode.TOOL)) {
-					toggleStandMode(stand, "Tool");
-				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.ITEM) && !standMode(stand).equals(MaterialMode.ITEM)) {
-					toggleStandMode(stand, "Item");
-				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.STANDING) && !standMode(stand).equals(MaterialMode.STANDING)) {
-					toggleStandMode(stand, "Standing");
-				} else if (MaterialUtils.getMaterialType(item.getType()).equals(MaterialMode.LOWBLOCK) && !standMode(stand).equals(MaterialMode.LOWBLOCK)) {
-					toggleStandMode(stand, "LowBlock");
-				} else {
-					changed = false;
-				}
-				if (!item.getType().equals(stand.getItemInMainHand().getType())) {
-					changed = true;
-					stand.setItemInMainHand(item);
-				}
-				if (changed) {
-					PacketManager.updateArmorStand(stand);
-				}
-			} else {
-				if (!stand.getItemInMainHand().getType().equals(Material.AIR)) {
-					stand.setItemInMainHand(new ItemStack(Material.AIR));
-					PacketManager.updateArmorStand(stand);
-				}
-			}
-		}
-
-	}
-	
-	public static MaterialMode standMode(ArmorStand stand) {
+	public MaterialMode standMode(ArmorStand stand) {
 		if (stand.getCustomName().startsWith("IV.Grindstone.")) {
 			return MaterialMode.getModeFromName(stand.getCustomName().substring(stand.getCustomName().lastIndexOf(".") + 1));
 		}
 		return null;
 	}
 	
-	public static void toggleStandMode(ArmorStand stand, String mode) {
+	public void toggleStandMode(ArmorStand stand, String mode) {
 		if (!stand.getCustomName().equals("IV.Grindstone.Item")) {
 			if (stand.getCustomName().equals("IV.Grindstone.Block")) {
 				stand.setCustomName("IV.Grindstone.Item");
@@ -448,7 +449,7 @@ public class GrindstoneDisplay implements Listener {
 		}
 	}
 	
-	public static HashMap<String, ArmorStand> spawnArmorStands(Player player, Block block) { //.add(0.68, 0.600781, 0.35)
+	public HashMap<String, ArmorStand> spawnArmorStands(Player player, Block block) { //.add(0.68, 0.600781, 0.35)
 		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location loc = block.getLocation().clone().add(0.5, 0.600781, 0.5);
 		ArmorStand center = new ArmorStand(loc);
@@ -473,7 +474,7 @@ public class GrindstoneDisplay implements Listener {
 		return map;
 	}
 	
-	public static void setStand(ArmorStand stand, float yaw) {
+	public void setStand(ArmorStand stand, float yaw) {
 		stand.setArms(true);
 		stand.setBasePlate(false);
 		stand.setMarker(true);
@@ -487,7 +488,7 @@ public class GrindstoneDisplay implements Listener {
 		stand.setRotation(yaw, stand.getLocation().getPitch());
 	}
 	
-	public static void setStand(ArmorStand stand) {
+	public void setStand(ArmorStand stand) {
 		stand.setArms(true);
 		stand.setBasePlate(false);
 		stand.setMarker(true);
@@ -498,7 +499,7 @@ public class GrindstoneDisplay implements Listener {
 		stand.setVisible(false);
 	}
 	
-	public static Vector rotateVectorAroundY(Vector vector, double degrees) {
+	public Vector rotateVectorAroundY(Vector vector, double degrees) {
 	    double rad = Math.toRadians(degrees);
 	   
 	    double currentX = vector.getX();
@@ -510,7 +511,7 @@ public class GrindstoneDisplay implements Listener {
 	    return new Vector((cosine * currentX - sine * currentZ), vector.getY(), (sine * currentX + cosine * currentZ));
 	}
 	
-	public static float getCardinalDirection(Entity e) {
+	public float getCardinalDirection(Entity e) {
 
 		double rotation = (e.getLocation().getYaw() - 90.0F) % 360.0F;
 

@@ -18,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.MusicManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
@@ -29,31 +30,14 @@ import com.loohp.interactionvisualizer.Utils.LegacyRecordsUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class JukeBoxDisplay implements Listener {
+public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listener {
 	
-	public static ConcurrentHashMap<Block, HashMap<String, Object>> jukeboxMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
-	private static Integer checkingPeriod = InteractionVisualizer.jukeboxChecking;
-	private static Integer gcPeriod = InteractionVisualizer.gcPeriod;
+	public ConcurrentHashMap<Block, HashMap<String, Object>> jukeboxMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
+	private Integer checkingPeriod = InteractionVisualizer.jukeboxChecking;
+	private Integer gcPeriod = InteractionVisualizer.gcPeriod;
 	
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onBreakJukeBox(BlockBreakEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
-		Block block = event.getBlock();
-		if (!jukeboxMap.containsKey(block)) {
-			return;
-		}
-
-		HashMap<String, Object> map = jukeboxMap.get(block);
-		if (map.get("Item") instanceof Item) {
-			Item item = (Item) map.get("Item");
-			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-		}
-		jukeboxMap.remove(block);
-	}
-	
-	public static int gc() {
+	@Override
+	public int gc() {
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Iterator<Entry<Block, HashMap<String, Object>>> itr = jukeboxMap.entrySet().iterator();
 			int count = 0;
@@ -95,7 +79,8 @@ public class JukeBoxDisplay implements Listener {
 		}, 0, gcPeriod).getTaskId();
 	}
 	
-	public static int run() {		
+	@Override
+	public int run() {		
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
 				List<Block> list = nearbyJukeBox();
@@ -177,15 +162,33 @@ public class JukeBoxDisplay implements Listener {
 		}, 0, checkingPeriod).getTaskId();		
 	}
 	
-	public static List<Block> nearbyJukeBox() {
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onBreakJukeBox(BlockBreakEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		Block block = event.getBlock();
+		if (!jukeboxMap.containsKey(block)) {
+			return;
+		}
+
+		HashMap<String, Object> map = jukeboxMap.get(block);
+		if (map.get("Item") instanceof Item) {
+			Item item = (Item) map.get("Item");
+			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+		}
+		jukeboxMap.remove(block);
+	}
+	
+	public List<Block> nearbyJukeBox() {
 		return TileEntityManager.getTileEntites(TileEntityType.JUKEBOX);
 	}
 	
-	public static boolean isActive(Location loc) {
+	public boolean isActive(Location loc) {
 		return PlayerLocationManager.hasPlayerNearby(loc);
 	}
 	
-	public static ChatColor getColor(String material) {
+	public ChatColor getColor(String material) {
 		switch (material) {
 		case "MUSIC_DISC_11":
 			return ChatColor.WHITE;

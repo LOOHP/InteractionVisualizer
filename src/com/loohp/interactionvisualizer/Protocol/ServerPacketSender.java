@@ -229,7 +229,7 @@ public class ServerPacketSender {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTask(plugin, () -> {
+		Bukkit.getScheduler().runTaskLater(plugin, () -> {
 			try {
 				for (Player player : players) {
 					protocolManager.sendServerPacket(player, packet1);
@@ -237,7 +237,7 @@ public class ServerPacketSender {
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();
 			}
-		});
+		}, 1);
 	}
 	
 	public static void spawnItem(List<Player> players, Item entity) {
@@ -339,7 +339,7 @@ public class ServerPacketSender {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTask(plugin, () -> {
+		Bukkit.getScheduler().runTaskLater(plugin, () -> {
 			try {
 				for (Player player : players) {
 					protocolManager.sendServerPacket(player, packet1);
@@ -347,7 +347,7 @@ public class ServerPacketSender {
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();
 			}
-		});
+		}, 1);
 	}
 
 	public static void spawnItemFrame(List<Player> players, ItemFrame entity) {
@@ -437,7 +437,7 @@ public class ServerPacketSender {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTask(plugin, () -> {
+		Bukkit.getScheduler().runTaskLater(plugin, () -> {
 			try {
 				for (Player player : players) {
 					protocolManager.sendServerPacket(player, packet1);
@@ -445,6 +445,6 @@ public class ServerPacketSender {
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();
 			}
-		});
+		}, 1);
 	}
 }

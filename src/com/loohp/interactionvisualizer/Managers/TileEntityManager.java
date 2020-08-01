@@ -17,7 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Blocks.FurnaceDisplay;
 import com.loohp.interactionvisualizer.ObjectHolders.ChunkPosition;
 import com.loohp.interactionvisualizer.ObjectHolders.ChunkUpdateQueue;
 
@@ -131,7 +130,7 @@ public class TileEntityManager {
 				upcomming.get(TileEntityType.BLAST_FURNACE).add(block);
 			} else if (type.toString().toUpperCase().equals("BREWING_STAND")) {
 				upcomming.get(TileEntityType.BREWING_STAND).add(block);
-			} else if (FurnaceDisplay.isFurnace(type)) {
+			} else if (isFurnace(type)) {
 				upcomming.get(TileEntityType.FURNACE).add(block);
 			} else if (type.toString().toUpperCase().equals("SMOKER")) {
 				upcomming.get(TileEntityType.SMOKER).add(block);
@@ -161,7 +160,7 @@ public class TileEntityManager {
 				upcomming.get(TileEntityType.BLAST_FURNACE).add(block);
 			} else if (type.toString().toUpperCase().equals("BREWING_STAND")) {
 				upcomming.get(TileEntityType.BREWING_STAND).add(block);
-			} else if (FurnaceDisplay.isFurnace(type)) {
+			} else if (isFurnace(type)) {
 				upcomming.get(TileEntityType.FURNACE).add(block);
 			} else if (type.toString().toUpperCase().equals("SMOKER")) {
 				upcomming.get(TileEntityType.SMOKER).add(block);
@@ -183,6 +182,20 @@ public class TileEntityManager {
 		} else {
 			Bukkit.getScheduler().runTaskLater(plugin, () -> loadTileEntitiesSynced(), 1);
 		}
+	}
+	
+	private static boolean isFurnace(String material) {
+		if (material.toUpperCase().equals("FURNACE")) {
+			return true;
+		}
+		if (material.toUpperCase().equals("BURNING_FURNACE")) {
+			return true;
+		}
+		return false;
+	}
+	
+	private static boolean isFurnace(Material material) {
+		return isFurnace(material.toString());
 	}
 	
 }

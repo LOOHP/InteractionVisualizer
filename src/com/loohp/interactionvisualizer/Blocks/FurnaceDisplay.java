@@ -28,6 +28,7 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
@@ -40,11 +41,203 @@ import com.loohp.interactionvisualizer.Utils.LegacyFacingUtils;
 import com.loohp.interactionvisualizer.Utils.MCVersion;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
-public class FurnaceDisplay implements Listener {
+public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listener {
 	
-	public static ConcurrentHashMap<Block, HashMap<String, Object>> furnaceMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
-	private static Integer checkingPeriod = InteractionVisualizer.furnaceChecking;
-	private static Integer gcPeriod = InteractionVisualizer.gcPeriod;
+	public ConcurrentHashMap<Block, HashMap<String, Object>> furnaceMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
+	private Integer checkingPeriod = InteractionVisualizer.furnaceChecking;
+	private Integer gcPeriod = InteractionVisualizer.gcPeriod;
+	
+	@Override
+	public int gc() {
+		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+			Iterator<Entry<Block, HashMap<String, Object>>> itr = furnaceMap.entrySet().iterator();
+			int count = 0;
+			int maxper = (int) Math.ceil((double) furnaceMap.size() / (double) gcPeriod);
+			int delay = 1;
+			while (itr.hasNext()) {
+				count++;
+				if (count > maxper) {
+					count = 0;
+					delay++;
+				}
+				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+					Block block = entry.getKey();
+					boolean active = false;
+					if (isActive(block.getLocation())) {
+						active = true;
+					}
+					if (active == false) {
+						HashMap<String, Object> map = entry.getValue();
+						if (map.get("Item") instanceof Item) {
+							Item item = (Item) map.get("Item");
+							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+						}
+						if (map.get("Stand") instanceof ArmorStand) {
+							ArmorStand stand = (ArmorStand) map.get("Stand");
+							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+						}
+						furnaceMap.remove(block);
+						return;
+					}
+					if (!isFurnace(block.getType())) {
+						HashMap<String, Object> map = entry.getValue();
+						if (map.get("Item") instanceof Item) {
+							Item item = (Item) map.get("Item");
+							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+						}
+						if (map.get("Stand") instanceof ArmorStand) {
+							ArmorStand stand = (ArmorStand) map.get("Stand");
+							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+						}
+						furnaceMap.remove(block);
+						return;
+					}
+				}, delay);
+			}
+		}, 0, gcPeriod).getTaskId();
+	}
+	
+	@Override
+	public int run() {		
+		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
+				List<Block> list = nearbyFurnace();
+				for (Block block : list) {
+					if (furnaceMap.get(block) == null && isActive(block.getLocation())) {
+						if (isFurnace(block.getType())) {
+							HashMap<String, Object> map = new HashMap<String, Object>();
+							map.put("Item", "N/A");
+							map.putAll(spawnArmorStands(block));
+							furnaceMap.put(block, map);
+						}
+					}
+				}
+			});
+			
+			Iterator<Entry<Block, HashMap<String, Object>>> itr = furnaceMap.entrySet().iterator();
+			int count = 0;
+			int maxper = (int) Math.ceil((double) furnaceMap.size() / (double) checkingPeriod);
+			int delay = 1;
+			while (itr.hasNext()) {
+				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				
+				count++;
+				if (count > maxper) {
+					count = 0;
+					delay++;
+				}
+				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+					Block block = entry.getKey();
+					
+					if (!isActive(block.getLocation())) {
+						return;
+					}										
+					if (!isFurnace(block.getType())) {
+						return;
+					}					
+					org.bukkit.block.Furnace furnace = (org.bukkit.block.Furnace) block.getState();
+					
+					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+						Inventory inv = furnace.getInventory();
+						ItemStack itemstack = inv.getItem(0);
+						if (itemstack != null) {
+							if (itemstack.getType().equals(Material.AIR)) {
+								itemstack = null;
+							}
+						}
+						
+						if (itemstack == null) {
+							itemstack = inv.getItem(2);
+							if (itemstack != null) {
+								if (itemstack.getType().equals(Material.AIR)) {
+									itemstack = null;
+								}
+							}
+						}					
+	
+						Item item = null;
+						if (entry.getValue().get("Item") instanceof String) {
+							if (itemstack != null) {
+								item = new Item(furnace.getLocation().clone().add(0.5, 1.0, 0.5));
+								item.setItemStack(itemstack);
+								item.setVelocity(new Vector(0, 0, 0));
+								item.setPickupDelay(32767);
+								item.setGravity(false);
+								entry.getValue().put("Item", item);
+								PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+								PacketManager.updateItem(item);
+							} else {
+								entry.getValue().put("Item", "N/A");
+							}
+						} else {
+							item = (Item) entry.getValue().get("Item");
+							if (itemstack != null) {
+								if (!item.getItemStack().equals(itemstack)) {
+									item.setItemStack(itemstack);
+									PacketManager.updateItem(item);
+								}
+							} else {
+								entry.getValue().put("Item", "N/A");
+								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							}
+						}
+	
+						if (hasItemToCook(furnace)) {
+							ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
+							if (hasFuel(furnace)) {
+								int time = furnace.getCookTime();
+								int max = 10 * 20;
+								if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
+									max = furnace.getCookTimeTotal();
+								}
+								String symbol = "";
+								double percentagescaled = (double) time / (double) max * 10.0;
+								double i = 1;
+								for (i = 1; i < percentagescaled; i = i + 1) {
+									symbol = symbol + "§e\u258e";
+								}
+								i = i - 1;
+								if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.33) {
+									symbol = symbol + "§7\u258e";
+								} else if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.67) {
+									symbol = symbol + "§7\u258e";
+								} else if ((percentagescaled - i) > 0) {
+									symbol = symbol + "§e\u258e";
+								}
+								for (i = 10 - 1; i >= percentagescaled; i = i - 1) {
+									symbol = symbol + "§7\u258e";
+								}
+								
+								int left = inv.getItem(0).getAmount() - 1;
+								if (left > 0) {
+									symbol = symbol + " §7+" + left;
+								}
+								if (!stand.getCustomName().equals(symbol) || !stand.isCustomNameVisible()) {
+									stand.setCustomNameVisible(true);
+									stand.setCustomName(symbol);
+									PacketManager.updateArmorStandOnlyMeta(stand);
+								}
+							} else {
+								if (!stand.getCustomName().equals("") || stand.isCustomNameVisible()) {
+									stand.setCustomNameVisible(false);
+									stand.setCustomName("");
+									PacketManager.updateArmorStandOnlyMeta(stand);
+								}
+							}
+						} else {					
+							ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
+							if (!stand.getCustomName().equals("") || stand.isCustomNameVisible()) {
+								stand.setCustomNameVisible(false);
+								stand.setCustomName("");
+								PacketManager.updateArmorStandOnlyMeta(stand);
+							}
+						}
+					});
+				}, delay);
+			}
+		}, 0, checkingPeriod).getTaskId();		
+	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onFurnace(InventoryClickEvent event) {
@@ -234,197 +427,7 @@ public class FurnaceDisplay implements Listener {
 		furnaceMap.remove(block);
 	}
 	
-	public static int gc() {
-		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-			Iterator<Entry<Block, HashMap<String, Object>>> itr = furnaceMap.entrySet().iterator();
-			int count = 0;
-			int maxper = (int) Math.ceil((double) furnaceMap.size() / (double) gcPeriod);
-			int delay = 1;
-			while (itr.hasNext()) {
-				count++;
-				if (count > maxper) {
-					count = 0;
-					delay++;
-				}
-				Entry<Block, HashMap<String, Object>> entry = itr.next();
-				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-					Block block = entry.getKey();
-					boolean active = false;
-					if (isActive(block.getLocation())) {
-						active = true;
-					}
-					if (active == false) {
-						HashMap<String, Object> map = entry.getValue();
-						if (map.get("Item") instanceof Item) {
-							Item item = (Item) map.get("Item");
-							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-						}
-						if (map.get("Stand") instanceof ArmorStand) {
-							ArmorStand stand = (ArmorStand) map.get("Stand");
-							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-						}
-						furnaceMap.remove(block);
-						return;
-					}
-					if (!isFurnace(block.getType())) {
-						HashMap<String, Object> map = entry.getValue();
-						if (map.get("Item") instanceof Item) {
-							Item item = (Item) map.get("Item");
-							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-						}
-						if (map.get("Stand") instanceof ArmorStand) {
-							ArmorStand stand = (ArmorStand) map.get("Stand");
-							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-						}
-						furnaceMap.remove(block);
-						return;
-					}
-				}, delay);
-			}
-		}, 0, gcPeriod).getTaskId();
-	}
-	
-	public static int run() {		
-		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-				List<Block> list = nearbyFurnace();
-				for (Block block : list) {
-					if (furnaceMap.get(block) == null && isActive(block.getLocation())) {
-						if (isFurnace(block.getType())) {
-							HashMap<String, Object> map = new HashMap<String, Object>();
-							map.put("Item", "N/A");
-							map.putAll(spawnArmorStands(block));
-							furnaceMap.put(block, map);
-						}
-					}
-				}
-			});
-			
-			Iterator<Entry<Block, HashMap<String, Object>>> itr = furnaceMap.entrySet().iterator();
-			int count = 0;
-			int maxper = (int) Math.ceil((double) furnaceMap.size() / (double) checkingPeriod);
-			int delay = 1;
-			while (itr.hasNext()) {
-				Entry<Block, HashMap<String, Object>> entry = itr.next();
-				
-				count++;
-				if (count > maxper) {
-					count = 0;
-					delay++;
-				}
-				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-					Block block = entry.getKey();
-					
-					if (!isActive(block.getLocation())) {
-						return;
-					}										
-					if (!isFurnace(block.getType())) {
-						return;
-					}					
-					org.bukkit.block.Furnace furnace = (org.bukkit.block.Furnace) block.getState();
-					
-					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
-						Inventory inv = furnace.getInventory();
-						ItemStack itemstack = inv.getItem(0);
-						if (itemstack != null) {
-							if (itemstack.getType().equals(Material.AIR)) {
-								itemstack = null;
-							}
-						}
-						
-						if (itemstack == null) {
-							itemstack = inv.getItem(2);
-							if (itemstack != null) {
-								if (itemstack.getType().equals(Material.AIR)) {
-									itemstack = null;
-								}
-							}
-						}					
-	
-						Item item = null;
-						if (entry.getValue().get("Item") instanceof String) {
-							if (itemstack != null) {
-								item = new Item(furnace.getLocation().clone().add(0.5, 1.0, 0.5));
-								item.setItemStack(itemstack);
-								item.setVelocity(new Vector(0, 0, 0));
-								item.setPickupDelay(32767);
-								item.setGravity(false);
-								entry.getValue().put("Item", item);
-								PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-								PacketManager.updateItem(item);
-							} else {
-								entry.getValue().put("Item", "N/A");
-							}
-						} else {
-							item = (Item) entry.getValue().get("Item");
-							if (itemstack != null) {
-								if (!item.getItemStack().equals(itemstack)) {
-									item.setItemStack(itemstack);
-									PacketManager.updateItem(item);
-								}
-							} else {
-								entry.getValue().put("Item", "N/A");
-								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-							}
-						}
-	
-						if (hasItemToCook(furnace)) {
-							ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
-							if (hasFuel(furnace)) {
-								int time = furnace.getCookTime();
-								int max = 10 * 20;
-								if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
-									max = furnace.getCookTimeTotal();
-								}
-								String symbol = "";
-								double percentagescaled = (double) time / (double) max * 10.0;
-								double i = 1;
-								for (i = 1; i < percentagescaled; i = i + 1) {
-									symbol = symbol + "§e\u258e";
-								}
-								i = i - 1;
-								if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.33) {
-									symbol = symbol + "§7\u258e";
-								} else if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.67) {
-									symbol = symbol + "§7\u258e";
-								} else if ((percentagescaled - i) > 0) {
-									symbol = symbol + "§e\u258e";
-								}
-								for (i = 10 - 1; i >= percentagescaled; i = i - 1) {
-									symbol = symbol + "§7\u258e";
-								}
-								
-								int left = inv.getItem(0).getAmount() - 1;
-								if (left > 0) {
-									symbol = symbol + " §7+" + left;
-								}
-								if (!stand.getCustomName().equals(symbol) || !stand.isCustomNameVisible()) {
-									stand.setCustomNameVisible(true);
-									stand.setCustomName(symbol);
-									PacketManager.updateArmorStandOnlyMeta(stand);
-								}
-							} else {
-								if (!stand.getCustomName().equals("") || stand.isCustomNameVisible()) {
-									stand.setCustomNameVisible(false);
-									stand.setCustomName("");
-									PacketManager.updateArmorStandOnlyMeta(stand);
-								}
-							}
-						} else {					
-							ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
-							if (!stand.getCustomName().equals("") || stand.isCustomNameVisible()) {
-								stand.setCustomNameVisible(false);
-								stand.setCustomName("");
-								PacketManager.updateArmorStandOnlyMeta(stand);
-							}
-						}
-					});
-				}, delay);
-			}
-		}, 0, checkingPeriod).getTaskId();		
-	}
-	
-	public static boolean hasItemToCook(org.bukkit.block.Furnace furnace) {
+	public boolean hasItemToCook(org.bukkit.block.Furnace furnace) {
 		Inventory inv = furnace.getInventory();
 		if (inv.getItem(0) != null) {
 			if (!inv.getItem(0).getType().equals(Material.AIR)) {
@@ -434,7 +437,7 @@ public class FurnaceDisplay implements Listener {
 		return false;
 	}
 	
-	public static boolean hasFuel(org.bukkit.block.Furnace furnace) {
+	public boolean hasFuel(org.bukkit.block.Furnace furnace) {
 		if (furnace.getBurnTime() > 0) {
 			return true;
 		}
@@ -447,15 +450,15 @@ public class FurnaceDisplay implements Listener {
 		return false;
 	}
 	
-	public static List<Block> nearbyFurnace() {
+	public List<Block> nearbyFurnace() {
 		return TileEntityManager.getTileEntites(TileEntityType.FURNACE);
 	}
 	
-	public static boolean isActive(Location loc) {
+	public boolean isActive(Location loc) {
 		return PlayerLocationManager.hasPlayerNearby(loc);
 	}
 	
-	public static HashMap<String, ArmorStand> spawnArmorStands(Block block) {
+	public HashMap<String, ArmorStand> spawnArmorStands(Block block) {
 		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location origin = block.getLocation();	
 	
@@ -480,7 +483,7 @@ public class FurnaceDisplay implements Listener {
 		return map;
 	}
 	
-	public static void setStand(ArmorStand stand) {
+	public void setStand(ArmorStand stand) {
 		stand.setBasePlate(false);
 		stand.setMarker(true);
 		stand.setGravity(false);
@@ -492,7 +495,7 @@ public class FurnaceDisplay implements Listener {
 		stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 	}
 	
-	public static boolean isFurnace(String material) {
+	public boolean isFurnace(String material) {
 		if (material.toUpperCase().equals("FURNACE")) {
 			return true;
 		}
@@ -502,7 +505,7 @@ public class FurnaceDisplay implements Listener {
 		return false;
 	}
 	
-	public static boolean isFurnace(Material material) {
+	public boolean isFurnace(Material material) {
 		return isFurnace(material.toString());
 	}
 

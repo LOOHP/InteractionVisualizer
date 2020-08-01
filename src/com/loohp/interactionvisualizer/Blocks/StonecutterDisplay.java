@@ -26,16 +26,166 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
-public class StonecutterDisplay implements Listener {
+public class StonecutterDisplay extends VisualizerInteractDisplay implements Listener {
 	
-	public static HashMap<Block, HashMap<String, Object>> openedStonecutter = new HashMap<Block, HashMap<String, Object>>();
-	public static HashMap<Player, Block> playermap = new HashMap<Player, Block>();
+	public HashMap<Block, HashMap<String, Object>> openedStonecutter = new HashMap<Block, HashMap<String, Object>>();
+	public HashMap<Player, Block> playermap = new HashMap<Player, Block>();
+	
+	@Override
+	public int run() {		
+		return new BukkitRunnable() {
+			public void run() {
+				
+				Iterator<Block> itr = openedStonecutter.keySet().iterator();
+				int count = 0;
+				int maxper = (int) Math.ceil((double) openedStonecutter.size() / (double) 5);
+				int delay = 1;
+				while (itr.hasNext()) {
+					count++;
+					if (count > maxper) {
+						count = 0;
+						delay++;
+					}
+					Block block = itr.next();					
+					new BukkitRunnable() {
+						public void run() {
+							if (!openedStonecutter.containsKey(block)) {
+								return;
+							}
+							HashMap<String, Object> map = openedStonecutter.get(block);
+							if (block.getType().equals(Material.STONECUTTER)) {
+								Player player = (Player) map.get("Player");
+								if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
+									if (player.getOpenInventory() != null) {
+										if (player.getOpenInventory().getTopInventory() != null) {
+											if (player.getOpenInventory().getTopInventory() instanceof StonecutterInventory) {
+												return;
+											}
+										}
+									}
+								}
+							}
+							
+							if (map.get("Item") instanceof Item) {
+								Item entity = (Item) map.get("Item");
+								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
+							}
+							openedStonecutter.remove(block);
+						}
+					}.runTaskLater(InteractionVisualizer.plugin, delay);
+				}				
+			}
+		}.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
+	}
+	
+	@Override
+	public void process(Player player) {
+		if (VanishUtils.isVanished(player)) {
+			return;
+		}
+		if (!playermap.containsKey(player)) {
+			if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+				return;
+			}
+			if (!(player.getOpenInventory().getTopInventory() instanceof StonecutterInventory)) {
+				return;
+			}
+			if (!player.getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.STONECUTTER)) {
+				return;
+			}
+			
+			Block block = player.getTargetBlockExact(7, FluidCollisionMode.NEVER);
+			
+			playermap.put(player, block);
+		}
+		
+		InventoryView view = player.getOpenInventory();
+		Block block = playermap.get(player);
+		Location loc = block.getLocation();
+		if (!openedStonecutter.containsKey(block)) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("Player", player);
+			map.put("Item", "N/A");
+			openedStonecutter.put(block, map);
+		}
+		HashMap<String, Object> map = openedStonecutter.get(block);
+		
+		if (!map.get("Player").equals(player)) {
+			return;
+		}
+		
+		ItemStack input = view.getItem(0);
+		if (input != null) {
+			if (input.getType().equals(Material.AIR)) {
+				input = null;
+			}
+		}
+		ItemStack output = view.getItem(1);
+		if (output != null) {
+			if (output.getType().equals(Material.AIR)) {
+				output = null;
+			}
+		}
+		
+		ItemStack itemstack = null;
+		if (output == null) {
+			if (input != null) {
+				itemstack = input;
+			}
+		} else {
+			itemstack = output;
+		}
+		
+		if (itemstack != null) {
+			ItemStack itempar = itemstack.clone();
+			int taskid = new BukkitRunnable() {
+				public void run() {
+					player.getWorld().spawnParticle(Particle.ITEM_CRACK, loc.clone().add(0.5, 0.7, 0.5), 25, 0.1, 0.1, 0.1, 0.1, itempar);
+				}
+			}.runTaskTimer(InteractionVisualizer.plugin, 0, 1).getTaskId();
+			new BukkitRunnable() {
+				public void run() {
+					Bukkit.getScheduler().cancelTask(taskid);
+				}
+			}.runTaskLater(InteractionVisualizer.plugin, 4);
+		}
+		
+		Item item = null;
+		if (map.get("Item") instanceof String) {
+			if (itemstack != null) {
+				item = new Item(loc.clone().add(0.5, 0.75, 0.5));
+				item.setItemStack(itemstack);
+				item.setVelocity(new Vector(0, 0, 0));
+				item.setPickupDelay(32767);
+				item.setGravity(false);
+				map.put("Item", item);
+				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+				PacketManager.updateItem(item);
+			} else {
+				map.put("Item", "N/A");
+			}
+		} else {
+			item = (Item) map.get("Item");
+			if (itemstack != null) {
+				if (!item.getItemStack().equals(itemstack)) {
+					item.setItemStack(itemstack);
+					PacketManager.updateItem(item);
+				}
+				item.setPickupDelay(32767);
+				item.setGravity(false);
+			} else {
+				map.put("Item", "N/A");
+				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+			}
+		}
+	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onStonecutter(InventoryClickEvent event) {
@@ -183,152 +333,5 @@ public class StonecutterDisplay implements Listener {
 		}
 		openedStonecutter.remove(block);
 		playermap.remove((Player) event.getPlayer());
-	}
-	
-	public static int run() {		
-		return new BukkitRunnable() {
-			public void run() {
-				
-				Iterator<Block> itr = openedStonecutter.keySet().iterator();
-				int count = 0;
-				int maxper = (int) Math.ceil((double) openedStonecutter.size() / (double) 5);
-				int delay = 1;
-				while (itr.hasNext()) {
-					count++;
-					if (count > maxper) {
-						count = 0;
-						delay++;
-					}
-					Block block = itr.next();					
-					new BukkitRunnable() {
-						public void run() {
-							if (!openedStonecutter.containsKey(block)) {
-								return;
-							}
-							HashMap<String, Object> map = openedStonecutter.get(block);
-							if (block.getType().equals(Material.STONECUTTER)) {
-								Player player = (Player) map.get("Player");
-								if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
-									if (player.getOpenInventory() != null) {
-										if (player.getOpenInventory().getTopInventory() != null) {
-											if (player.getOpenInventory().getTopInventory() instanceof StonecutterInventory) {
-												return;
-											}
-										}
-									}
-								}
-							}
-							
-							if (map.get("Item") instanceof Item) {
-								Item entity = (Item) map.get("Item");
-								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
-							}
-							openedStonecutter.remove(block);
-						}
-					}.runTaskLater(InteractionVisualizer.plugin, delay);
-				}				
-			}
-		}.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
-	}
-	
-	public static void process(Player player) {
-		if (VanishUtils.isVanished(player)) {
-			return;
-		}
-		if (!playermap.containsKey(player)) {
-			if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-				return;
-			}
-			if (!(player.getOpenInventory().getTopInventory() instanceof StonecutterInventory)) {
-				return;
-			}
-			if (!player.getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.STONECUTTER)) {
-				return;
-			}
-			
-			Block block = player.getTargetBlockExact(7, FluidCollisionMode.NEVER);
-			
-			playermap.put(player, block);
-		}
-		
-		InventoryView view = player.getOpenInventory();
-		Block block = playermap.get(player);
-		Location loc = block.getLocation();
-		if (!openedStonecutter.containsKey(block)) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("Player", player);
-			map.put("Item", "N/A");
-			openedStonecutter.put(block, map);
-		}
-		HashMap<String, Object> map = openedStonecutter.get(block);
-		
-		if (!map.get("Player").equals(player)) {
-			return;
-		}
-		
-		ItemStack input = view.getItem(0);
-		if (input != null) {
-			if (input.getType().equals(Material.AIR)) {
-				input = null;
-			}
-		}
-		ItemStack output = view.getItem(1);
-		if (output != null) {
-			if (output.getType().equals(Material.AIR)) {
-				output = null;
-			}
-		}
-		
-		ItemStack itemstack = null;
-		if (output == null) {
-			if (input != null) {
-				itemstack = input;
-			}
-		} else {
-			itemstack = output;
-		}
-		
-		if (itemstack != null) {
-			ItemStack itempar = itemstack.clone();
-			int taskid = new BukkitRunnable() {
-				public void run() {
-					player.getWorld().spawnParticle(Particle.ITEM_CRACK, loc.clone().add(0.5, 0.7, 0.5), 25, 0.1, 0.1, 0.1, 0.1, itempar);
-				}
-			}.runTaskTimer(InteractionVisualizer.plugin, 0, 1).getTaskId();
-			new BukkitRunnable() {
-				public void run() {
-					Bukkit.getScheduler().cancelTask(taskid);
-				}
-			}.runTaskLater(InteractionVisualizer.plugin, 4);
-		}
-		
-		Item item = null;
-		if (map.get("Item") instanceof String) {
-			if (itemstack != null) {
-				item = new Item(loc.clone().add(0.5, 0.75, 0.5));
-				item.setItemStack(itemstack);
-				item.setVelocity(new Vector(0, 0, 0));
-				item.setPickupDelay(32767);
-				item.setGravity(false);
-				map.put("Item", item);
-				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
-				PacketManager.updateItem(item);
-			} else {
-				map.put("Item", "N/A");
-			}
-		} else {
-			item = (Item) map.get("Item");
-			if (itemstack != null) {
-				if (!item.getItemStack().equals(itemstack)) {
-					item.setItemStack(itemstack);
-					PacketManager.updateItem(item);
-				}
-				item.setPickupDelay(32767);
-				item.setGravity(false);
-			} else {
-				map.put("Item", "N/A");
-				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-			}
-		}
 	}
 }

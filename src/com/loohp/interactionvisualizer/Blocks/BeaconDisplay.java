@@ -21,6 +21,7 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.Managers.EffectManager;
@@ -33,58 +34,15 @@ import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class BeaconDisplay implements Listener {
+public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener {
 	
-	public static ConcurrentHashMap<Block, HashMap<String, Object>> beaconMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
-	public static ConcurrentHashMap<Block, float[]> placemap = new ConcurrentHashMap<Block, float[]>();
-	private static Integer checkingPeriod = InteractionVisualizer.beaconChecking;
-	private static Integer gcPeriod = InteractionVisualizer.gcPeriod;
-	
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onPlaceBeacon(BlockPlaceEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
-		Block block = event.getBlockPlaced();
-		if (beaconMap.containsKey(block)) {
-			return;
-		}
-
-		if (!block.getType().equals(Material.BEACON)) {
-			return;
-		}
+	public ConcurrentHashMap<Block, HashMap<String, Object>> beaconMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
+	public ConcurrentHashMap<Block, float[]> placemap = new ConcurrentHashMap<Block, float[]>();
+	private Integer checkingPeriod = InteractionVisualizer.beaconChecking;
+	private Integer gcPeriod = InteractionVisualizer.gcPeriod;
 		
-		placemap.put(block, new float[]{event.getPlayer().getLocation().getYaw(), event.getPlayer().getLocation().getPitch()});
-	}
-	
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onBreakBeacon(BlockBreakEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
-		Block block = event.getBlock();
-		if (!beaconMap.containsKey(block)) {
-			return;
-		}
-
-		HashMap<String, Object> map = beaconMap.get(block);
-		if (map.get("1") instanceof ArmorStand) {
-			ArmorStand stand = (ArmorStand) map.get("1");
-			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-		}
-		if (map.get("2") instanceof ArmorStand) {
-			ArmorStand stand = (ArmorStand) map.get("2");
-			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-		}
-		if (map.get("3") instanceof ArmorStand) {
-			ArmorStand stand = (ArmorStand) map.get("3");
-			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
-		}
-		beaconMap.remove(block);
-		CustomBlockDataManager.removeBlock(CustomBlockDataManager.locKey(block.getLocation()));
-	}
-	
-	public static int gc() {
+	@Override
+	public int gc() {
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Iterator<Entry<Block, HashMap<String, Object>>> itr = beaconMap.entrySet().iterator();
 			int count = 0;
@@ -143,7 +101,8 @@ public class BeaconDisplay implements Listener {
 		}, 0, gcPeriod).getTaskId();
 	}
 	
-	public static int run() {		
+	@Override
+	public int run() {		
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
 				List<Block> list = nearbyBeacon();
@@ -260,15 +219,59 @@ public class BeaconDisplay implements Listener {
 		}, 0, checkingPeriod).getTaskId();		
 	}
 	
-	public static List<Block> nearbyBeacon() {
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onPlaceBeacon(BlockPlaceEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		Block block = event.getBlockPlaced();
+		if (beaconMap.containsKey(block)) {
+			return;
+		}
+
+		if (!block.getType().equals(Material.BEACON)) {
+			return;
+		}
+		
+		placemap.put(block, new float[]{event.getPlayer().getLocation().getYaw(), event.getPlayer().getLocation().getPitch()});
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onBreakBeacon(BlockBreakEvent event) {
+		if (event.isCancelled()) {
+			return;
+		}
+		Block block = event.getBlock();
+		if (!beaconMap.containsKey(block)) {
+			return;
+		}
+
+		HashMap<String, Object> map = beaconMap.get(block);
+		if (map.get("1") instanceof ArmorStand) {
+			ArmorStand stand = (ArmorStand) map.get("1");
+			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+		}
+		if (map.get("2") instanceof ArmorStand) {
+			ArmorStand stand = (ArmorStand) map.get("2");
+			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+		}
+		if (map.get("3") instanceof ArmorStand) {
+			ArmorStand stand = (ArmorStand) map.get("3");
+			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+		}
+		beaconMap.remove(block);
+		CustomBlockDataManager.removeBlock(CustomBlockDataManager.locKey(block.getLocation()));
+	}
+	
+	public List<Block> nearbyBeacon() {
 		return TileEntityManager.getTileEntites(TileEntityType.BEACON);
 	}
 	
-	public static boolean isActive(Location loc) {
+	public boolean isActive(Location loc) {
 		return PlayerLocationManager.hasPlayerNearby(loc);
 	}
 	
-	public static HashMap<String, ArmorStand> spawnArmorStands(Block block, BlockFace face) {
+	public HashMap<String, ArmorStand> spawnArmorStands(Block block, BlockFace face) {
 		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location origin = block.getLocation();	
 					
@@ -294,7 +297,7 @@ public class BeaconDisplay implements Listener {
 		return map;
 	}
 	
-	public static void setStand(ArmorStand stand) {
+	public void setStand(ArmorStand stand) {
 		stand.setBasePlate(false);
 		stand.setMarker(true);
 		stand.setGravity(false);
@@ -306,7 +309,7 @@ public class BeaconDisplay implements Listener {
 		stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 	}
 	
-	public static BlockFace getCardinalFacing(float[] dir) {
+	public BlockFace getCardinalFacing(float[] dir) {
 
 		double rotation = (dir[0] - 90.0F) % 360.0F;
 
@@ -327,7 +330,7 @@ public class BeaconDisplay implements Listener {
 		return BlockFace.NORTH;
 	}
 	
-	public static ChatColor getBeaconColor(Block block) {
+	public ChatColor getBeaconColor(Block block) {
 		Block glass = block.getRelative(BlockFace.UP);
 		if (!glass.getType().toString().toUpperCase().contains("GLASS")) {
 			return ChatColor.WHITE;
@@ -420,7 +423,7 @@ public class BeaconDisplay implements Listener {
 		}
 	}
 	
-	public static int getRange(int tier) {
+	public int getRange(int tier) {
 		switch (tier) {
 		case 0:
 			return 0;

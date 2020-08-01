@@ -11,18 +11,18 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 
 public class ItemFrame extends VisualizerEntity {
-	
+
 	ItemStack item;
 	BlockFace facing;
 	int framerotation;
-	
+
 	public ItemFrame(Location location) {
 		super(location);
 		this.item = new ItemStack(Material.AIR);
 		this.facing = BlockFace.SOUTH;
 		this.framerotation = 0;
 	}
-	
+
 	@Override
 	public int cacheCode() {
 		int prime = 17;
@@ -32,15 +32,15 @@ public class ItemFrame extends VisualizerEntity {
 		result = prime * result + framerotation;
 		return result;
 	}
-	
+
 	public EntityType getType() {
 		return EntityType.ITEM_FRAME;
 	}
-	
+
 	public BlockFace getAttachedFace() {
 		return facing;
 	}
-	
+
 	public float getYaw() {
 		switch (facing) {
 		case DOWN:
@@ -56,10 +56,10 @@ public class ItemFrame extends VisualizerEntity {
 		case WEST:
 			return 90.0F;
 		default:
-			return 0.0F;	
+			return 0.0F;
 		}
 	}
-	
+
 	public float getPitch() {
 		switch (facing) {
 		case DOWN:
@@ -75,25 +75,26 @@ public class ItemFrame extends VisualizerEntity {
 		case WEST:
 			return 0.0F;
 		default:
-			return 0.0F;	
+			return 0.0F;
 		}
 	}
-	
+
 	public void setItem(ItemStack item) {
 		this.item = item.clone();
 	}
+
 	public ItemStack getItem() {
 		return item;
 	}
-	
+
 	public void setFacingDirection(BlockFace facing) {
 		this.facing = facing;
 	}
-	
+
 	public BlockFace getFacingDirection() {
 		return facing;
 	}
-	
+
 	public void setFrameRotation(int rotation) {
 		if (rotation >= 0 && rotation < 8) {
 			this.framerotation = rotation;
@@ -101,11 +102,11 @@ public class ItemFrame extends VisualizerEntity {
 			Bukkit.getLogger().severe("Item Frame Rotation must be between 0 and 7");
 		}
 	}
-	
+
 	public int getFrameRotation() {
 		return framerotation;
 	}
-	
+
 	public WrappedDataWatcher getWrappedDataWatcher() {
 		return WatchableCollection.getWatchableCollection(this);
 	}

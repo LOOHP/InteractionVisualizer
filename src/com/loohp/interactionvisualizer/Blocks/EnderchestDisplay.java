@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -23,7 +24,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
@@ -213,24 +213,20 @@ public class EnderchestDisplay implements Listener {
 				List<Item> list = link.get(player);
 				list.add(item);
 				boolean finalIsIn = isIn;
-				new BukkitRunnable() {
-					public void run() {
-						if (finalIsIn) {
-							item.teleport(loc.clone().add(0.5, 1, 0.5));
-						} else {
-							item.teleport(event.getWhoClicked().getEyeLocation().add(0.0, -0.5, 0.0));
-						}
-						item.setVelocity(new Vector(0.0, 0.0, 0.0));
-						item.setGravity(false);
-						PacketManager.updateItem(item);
+				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+					if (finalIsIn) {
+						item.teleport(loc.clone().add(0.5, 1, 0.5));
+					} else {
+						item.teleport(event.getWhoClicked().getEyeLocation().add(0.0, -0.5, 0.0));
 					}
-				}.runTaskLater(InteractionVisualizer.plugin, 8);
-				new BukkitRunnable() {
-					public void run() {
-						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-						list.remove(item);
-					}
-				}.runTaskLater(InteractionVisualizer.plugin, 20);
+					item.setVelocity(new Vector(0.0, 0.0, 0.0));
+					item.setGravity(false);
+					PacketManager.updateItem(item);
+				}, 8);
+				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+					list.remove(item);
+				}, 20);
 			}						
 		}
 	}
@@ -298,20 +294,16 @@ public class EnderchestDisplay implements Listener {
 					}
 					List<Item> list = link.get(player);
 					list.add(item);
-					new BukkitRunnable() {
-						public void run() {
-							item.teleport(loc.clone().add(0.5, 1, 0.5));
-							item.setVelocity(new Vector(0.0, 0.0, 0.0));
-							item.setGravity(false);
-							PacketManager.updateItem(item);
-						}
-					}.runTaskLater(InteractionVisualizer.plugin, 8);
-					new BukkitRunnable() {
-						public void run() {
-							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-							list.remove(item);
-						}
-					}.runTaskLater(InteractionVisualizer.plugin, 20);
+					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+						item.teleport(loc.clone().add(0.5, 1, 0.5));
+						item.setVelocity(new Vector(0.0, 0.0, 0.0));
+						item.setGravity(false);
+						PacketManager.updateItem(item);
+					}, 8);
+					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+						list.remove(item);
+					}, 20);
 				}
 				break;
 			}

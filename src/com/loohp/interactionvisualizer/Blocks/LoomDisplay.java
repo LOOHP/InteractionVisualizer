@@ -25,6 +25,7 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.LightManager;
@@ -35,9 +36,137 @@ import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
 import ru.beykerykt.lightapi.LightType;
 
-public class LoomDisplay implements Listener {
+public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 	
-	public static HashMap<Block, HashMap<String, Object>> openedLooms = new HashMap<Block, HashMap<String, Object>>();
+	public HashMap<Block, HashMap<String, Object>> openedLooms = new HashMap<Block, HashMap<String, Object>>();
+	
+	@Override
+	public int run() {		
+		return new BukkitRunnable() {
+			public void run() {
+				
+				Iterator<Block> itr = openedLooms.keySet().iterator();
+				int count = 0;
+				int maxper = (int) Math.ceil((double) openedLooms.size() / (double) 5);
+				int delay = 1;
+				while (itr.hasNext()) {
+					count++;
+					if (count > maxper) {
+						count = 0;
+						delay++;
+					}
+					Block block = itr.next();					
+					new BukkitRunnable() {
+						public void run() {
+							if (!openedLooms.containsKey(block)) {
+								return;
+							}
+							HashMap<String, Object> map = openedLooms.get(block);
+							if (block.getType().equals(Material.LOOM)) {
+								Player player = (Player) map.get("Player");
+								if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
+									if (player.getOpenInventory() != null) {
+										if (player.getOpenInventory().getTopInventory() != null) {
+											if (player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().equals(Material.LOOM)) {
+												return;
+											}
+										}
+									}
+								}
+							}
+							
+							if (map.get("Banner") instanceof ArmorStand) {
+								ArmorStand entity = (ArmorStand) map.get("Banner");
+								LightManager.deleteLight(entity.getLocation());
+								PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
+							}
+							openedLooms.remove(block);
+						}
+					}.runTaskLater(InteractionVisualizer.plugin, delay);
+				}				
+			}
+		}.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
+	}
+	
+	@Override
+	public void process(Player player) {
+		if (VanishUtils.isVanished(player)) {
+			return;
+		}
+		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+			return;
+		}
+		if (player.getOpenInventory().getTopInventory().getLocation() == null) {
+			return;
+		}
+		if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
+			return;
+		}
+		if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().equals(Material.LOOM)) {
+			return;
+		}
+		
+		InventoryView view = player.getOpenInventory();
+		Block block = view.getTopInventory().getLocation().getBlock();
+		if (!openedLooms.containsKey(block)) {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			map.put("Player", player);
+			map.putAll(spawnArmorStands(player, block));
+			openedLooms.put(block, map);
+		}
+		HashMap<String, Object> map = openedLooms.get(block);
+		
+		if (!map.get("Player").equals(player)) {
+			return;
+		}
+		
+		ItemStack input = view.getItem(0);
+		if (input != null) {
+			if (input.getType().equals(Material.AIR)) {
+				input = null;
+			}
+		}
+		ItemStack output = view.getItem(3);
+		if (output != null) {
+			if (output.getType().equals(Material.AIR)) {
+				output = null;
+			}
+		}
+		
+		ItemStack item = null;
+		if (output == null) {
+			if (input != null) {
+				item = input;
+			}
+		} else {
+			item = output;
+		}
+		
+		ArmorStand stand = (ArmorStand) map.get("Banner");
+		if (item != null) {
+			if (!item.isSimilar(stand.getHelmet())) {
+				stand.setHelmet(item);
+				PacketManager.updateArmorStand(stand);
+			}
+		} else {
+			if (!stand.getHelmet().getType().equals(Material.AIR)) {
+				stand.setHelmet(new ItemStack(Material.AIR));
+				PacketManager.updateArmorStand(stand);
+			}
+		}
+		
+		Location loc1 = ((ArmorStand) map.get("Banner")).getLocation();
+		LightManager.deleteLight(loc1);
+		int skylight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromSky();
+		int blocklight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromBlocks() - 1;
+		blocklight = blocklight < 0 ? 0 : blocklight;
+		if (skylight > 0) {
+			LightManager.createLight(loc1, skylight, LightType.SKY);
+		}
+		if (blocklight > 0) {
+			LightManager.createLight(loc1, blocklight, LightType.BLOCK);
+		}
+	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onLoom(InventoryClickEvent event) {
@@ -269,133 +398,7 @@ public class LoomDisplay implements Listener {
 		openedLooms.remove(block);
 	}
 	
-	public static int run() {		
-		return new BukkitRunnable() {
-			public void run() {
-				
-				Iterator<Block> itr = openedLooms.keySet().iterator();
-				int count = 0;
-				int maxper = (int) Math.ceil((double) openedLooms.size() / (double) 5);
-				int delay = 1;
-				while (itr.hasNext()) {
-					count++;
-					if (count > maxper) {
-						count = 0;
-						delay++;
-					}
-					Block block = itr.next();					
-					new BukkitRunnable() {
-						public void run() {
-							if (!openedLooms.containsKey(block)) {
-								return;
-							}
-							HashMap<String, Object> map = openedLooms.get(block);
-							if (block.getType().equals(Material.LOOM)) {
-								Player player = (Player) map.get("Player");
-								if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
-									if (player.getOpenInventory() != null) {
-										if (player.getOpenInventory().getTopInventory() != null) {
-											if (player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().equals(Material.LOOM)) {
-												return;
-											}
-										}
-									}
-								}
-							}
-							
-							if (map.get("Banner") instanceof ArmorStand) {
-								ArmorStand entity = (ArmorStand) map.get("Banner");
-								LightManager.deleteLight(entity.getLocation());
-								PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
-							}
-							openedLooms.remove(block);
-						}
-					}.runTaskLater(InteractionVisualizer.plugin, delay);
-				}				
-			}
-		}.runTaskTimer(InteractionVisualizer.plugin, 0, 5).getTaskId();
-	}
-	
-	public static void process(Player player) {
-		if (VanishUtils.isVanished(player)) {
-			return;
-		}
-		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
-			return;
-		}
-		if (player.getOpenInventory().getTopInventory().getLocation() == null) {
-			return;
-		}
-		if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
-			return;
-		}
-		if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().equals(Material.LOOM)) {
-			return;
-		}
-		
-		InventoryView view = player.getOpenInventory();
-		Block block = view.getTopInventory().getLocation().getBlock();
-		if (!openedLooms.containsKey(block)) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("Player", player);
-			map.putAll(spawnArmorStands(player, block));
-			openedLooms.put(block, map);
-		}
-		HashMap<String, Object> map = openedLooms.get(block);
-		
-		if (!map.get("Player").equals(player)) {
-			return;
-		}
-		
-		ItemStack input = view.getItem(0);
-		if (input != null) {
-			if (input.getType().equals(Material.AIR)) {
-				input = null;
-			}
-		}
-		ItemStack output = view.getItem(3);
-		if (output != null) {
-			if (output.getType().equals(Material.AIR)) {
-				output = null;
-			}
-		}
-		
-		ItemStack item = null;
-		if (output == null) {
-			if (input != null) {
-				item = input;
-			}
-		} else {
-			item = output;
-		}
-		
-		ArmorStand stand = (ArmorStand) map.get("Banner");
-		if (item != null) {
-			if (!item.isSimilar(stand.getHelmet())) {
-				stand.setHelmet(item);
-				PacketManager.updateArmorStand(stand);
-			}
-		} else {
-			if (!stand.getHelmet().getType().equals(Material.AIR)) {
-				stand.setHelmet(new ItemStack(Material.AIR));
-				PacketManager.updateArmorStand(stand);
-			}
-		}
-		
-		Location loc1 = ((ArmorStand) map.get("Banner")).getLocation();
-		LightManager.deleteLight(loc1);
-		int skylight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromSky();
-		int blocklight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromBlocks() - 1;
-		blocklight = blocklight < 0 ? 0 : blocklight;
-		if (skylight > 0) {
-			LightManager.createLight(loc1, skylight, LightType.SKY);
-		}
-		if (blocklight > 0) {
-			LightManager.createLight(loc1, blocklight, LightType.BLOCK);
-		}
-	}
-	
-	public static HashMap<String, ArmorStand> spawnArmorStands(Player player, Block block) {
+	public HashMap<String, ArmorStand> spawnArmorStands(Player player, Block block) {
 		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location loc = block.getLocation().clone().add(0.5, 0.01, 0.5);
 		Location temploc = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ()).setDirection(player.getLocation().getDirection().normalize().multiply(-1));
@@ -410,7 +413,7 @@ public class LoomDisplay implements Listener {
 		return map;
 	}
 	
-	public static void setStand(ArmorStand stand, float yaw) {
+	public void setStand(ArmorStand stand, float yaw) {
 		stand.setArms(true);
 		stand.setBasePlate(false);
 		stand.setMarker(true);
@@ -424,7 +427,7 @@ public class LoomDisplay implements Listener {
 		stand.setHeadPose(new EulerAngle(0.0, 0.0, 0.0));
 	}
 	
-	public static Vector rotateVectorAroundY(Vector vector, double degrees) {
+	public Vector rotateVectorAroundY(Vector vector, double degrees) {
 	    double rad = Math.toRadians(degrees);
 	   
 	    double currentX = vector.getX();
