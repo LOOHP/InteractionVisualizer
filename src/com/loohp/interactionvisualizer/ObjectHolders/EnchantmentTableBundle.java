@@ -54,8 +54,7 @@ public class EnchantmentTableBundle {
 	
 	@SuppressWarnings("deprecation")
 	public void playEnchantAnimation(Map<Enchantment, Integer> enchantsToAdd, int expCost, ItemStack itemstack) {		
-		Item item = this.item.get();
-		if (item.isLocked()) {
+		if (item.isPresent() && item.get().isLocked()) {
 			return;
 		}
 		if (animationPlaying) {
@@ -66,8 +65,10 @@ public class EnchantmentTableBundle {
 		
 		if (!this.item.isPresent()) {
 			this.item = Optional.of(new Item(location.clone().add(0.5, 1.3, 0.5)));
-			PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+			PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item.get());
 		}
+		
+		Item item = this.item.get();
 		
 		item.setItemStack(itemstack);
 		item.setGravity(false);
