@@ -37,9 +37,9 @@ public class Debug implements Listener {
 			}
 		}
 		
-		try {
+		if (InteractionVisualizer.version.isPost1_16()) {
 			Bukkit.removeRecipe(new NamespacedKey(InteractionVisualizer.plugin, "nana_bone"));
-		} catch (Exception e) {}
+		}
 		
 		ItemStack bone = new ItemStack(Material.BONE, 1);
 		ItemMeta meta = bone.getItemMeta();
