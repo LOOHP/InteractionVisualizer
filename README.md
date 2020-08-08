@@ -11,6 +11,9 @@ More information (screenshots, commands, permissions) about the plugin can be fo
 Built against [Spigot's API](https://www.spigotmc.org/wiki/buildtools/) (required mc versions are listed on the spigot page above).
 Plugins built against Spigot usually also work with [Paper](https://papermc.io/).
 
+## Development Builds
+
+- [Jenkins](https://ci.loohpjames.com/job/InteractionVisualizer/)
 
 ## Dependencies 
 
