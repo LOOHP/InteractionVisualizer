@@ -1,3 +1,4 @@
+[![Build Status](https://ci.loohpjames.com/job/InteractionVisualizer/badge/icon)](https://ci.loohpjames.com/job/InteractionVisualizer/)
 # InteractionVisualizer
 
 https://www.spigotmc.org/resources/77050/
