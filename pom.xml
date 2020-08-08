@@ -12,7 +12,6 @@
 				<directory>src</directory>
 				<excludes>
 					<exclude>**/*.java</exclude>
-					<exclude>/lib/*</exclude>
 				</excludes>
 			</resource>
 		</resources>
@@ -106,35 +105,35 @@
 			<artifactId>OpenInv</artifactId>
 			<scope>system</scope>
 			<version>1.0</version>
-			<systemPath>${basedir}\src\lib\OpenInv.jar</systemPath>
+			<systemPath>${basedir}/lib/OpenInv.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>LightAPI-Fork</groupId>
 			<artifactId>LightAPI-Fork</artifactId>
 			<scope>system</scope>
 			<version>1.0</version>
-			<systemPath>${basedir}\src\lib\LightAPI-fork-3.4.4.jar</systemPath>
+			<systemPath>${basedir}/lib/LightAPI-fork-3.4.4.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>CMIAPI</groupId>
 			<artifactId>CMIAPI</artifactId>
 			<scope>system</scope>
 			<version>1.0</version>
-			<systemPath>${basedir}\src\lib\CMIAPI7.6.2.0.jar</systemPath>
+			<systemPath>${basedir}/lib/CMIAPI7.6.2.0.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>Spigot-1.11.2</groupId>
 			<artifactId>Spigot-1.11.2</artifactId>
 			<scope>system</scope>
 			<version>1.0</version>
-			<systemPath>${basedir}\src\lib\spigot-1.11.2.jar</systemPath>
+			<systemPath>${basedir}/lib/spigot-1.11.2.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>Spigot-1.16.1</groupId>
 			<artifactId>Spigot-1.16.1</artifactId>
 			<scope>system</scope>
 			<version>1.0</version>
-			<systemPath>${basedir}\src\lib\spigot-1.16.1.jar</systemPath>
+			<systemPath>${basedir}/lib/spigot-1.16.1.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>
