@@ -102,7 +102,7 @@ public class ServerPacketSender {
         
         PacketContainer packet3 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
         packet3.getIntegers().write(0, entity.getEntityId());
-        if (version.equals(MCVersion.V1_16)) {
+        if ((version.equals(MCVersion.V1_16) || version.equals(MCVersion.V1_16_2))) {
         	try {
 				Object nmsMainHandItem = asNMSCopyMethod.invoke(entity.getItemInMainHand());
 				Object nmsHelmetItem = asNMSCopyMethod.invoke(entity.getHelmet());
@@ -119,7 +119,7 @@ public class ServerPacketSender {
         }
 
         PacketContainer packet4 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
-        if (!version.equals(MCVersion.V1_16)) {
+        if (!(version.equals(MCVersion.V1_16) || version.equals(MCVersion.V1_16_2))) {
         	packet4.getIntegers().write(0, entity.getEntityId());
         	packet4.getItemSlots().write(0, ItemSlot.HEAD);
         	packet4.getItemModifier().write(0, entity.getHelmet());
@@ -134,7 +134,7 @@ public class ServerPacketSender {
 					protocolManager.sendServerPacket(player, packet1);
 					protocolManager.sendServerPacket(player, packet2);
 					protocolManager.sendServerPacket(player, packet3);
-					if (!version.equals(MCVersion.V1_16)) {
+					if (!(version.equals(MCVersion.V1_16) || version.equals(MCVersion.V1_16_2))) {
 						protocolManager.sendServerPacket(player, packet4);
 					}
 				}
@@ -160,7 +160,7 @@ public class ServerPacketSender {
 
         PacketContainer packet3 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
         packet3.getIntegers().write(0, entity.getEntityId());
-        if (version.equals(MCVersion.V1_16)) {
+        if ((version.equals(MCVersion.V1_16) || version.equals(MCVersion.V1_16_2))) {
         	try {
         		Object nmsMainHandItem = asNMSCopyMethod.invoke(entity.getItemInMainHand());
 				Object nmsHelmetItem = asNMSCopyMethod.invoke(entity.getHelmet());
@@ -177,7 +177,7 @@ public class ServerPacketSender {
         }
 
         PacketContainer packet4 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
-        if (!version.equals(MCVersion.V1_16)) {
+        if (!(version.equals(MCVersion.V1_16) || version.equals(MCVersion.V1_16_2))) {
         	packet4.getIntegers().write(0, entity.getEntityId());
         	packet4.getItemSlots().write(0, ItemSlot.HEAD);
         	packet4.getItemModifier().write(0, entity.getHelmet());
@@ -192,7 +192,7 @@ public class ServerPacketSender {
 					protocolManager.sendServerPacket(player, packet1);
 					protocolManager.sendServerPacket(player, packet2);
 					protocolManager.sendServerPacket(player, packet3);
-					if (!version.equals(MCVersion.V1_16)) {
+					if (!(version.equals(MCVersion.V1_16) || version.equals(MCVersion.V1_16_2))) {
 						protocolManager.sendServerPacket(player, packet4);
 					}
 				}

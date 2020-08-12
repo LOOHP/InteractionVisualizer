@@ -128,7 +128,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.Loom.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.isPost1_16())
 				) {
 			LoomDisplay ld = new LoomDisplay();
 			ld.register(InventoryType.LOOM);
@@ -144,7 +144,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.CartographyTable.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.isPost1_16())
 				) {
 			CartographyTableDisplay ctd = new CartographyTableDisplay();
 			ctd.register(InventoryType.CARTOGRAPHY);
@@ -160,7 +160,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.Grindstone.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.isPost1_16())
 				) {
 			GrindstoneDisplay gd = new GrindstoneDisplay();
 			gd.register(InventoryType.GRINDSTONE);
@@ -169,7 +169,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.Stonecutter.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.isPost1_16())
 				) {
 			StonecutterDisplay sd = new StonecutterDisplay();
 			sd.register(InventoryType.STONECUTTER);
@@ -202,7 +202,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.BlastFurnace.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.isPost1_16())
 				) {
 			BlastFurnaceDisplay bfd = new BlastFurnaceDisplay();
 			bfd.register();
@@ -211,7 +211,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.Smoker.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.equals(MCVersion.V1_16))
+				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.isPost1_16())
 				) {
 			SmokerDisplay sd = new SmokerDisplay();
 			sd.register();
@@ -253,7 +253,7 @@ public class TaskManager {
 		}
 		
 		if (config.getBoolean("Blocks.SmithingTable.Enabled") &&
-				   (version.equals(MCVersion.V1_16))
+				   (version.isPost1_16())
 				) {
 			SmithingTableDisplay std = new SmithingTableDisplay();
 			std.register(InventoryType.SMITHING);
