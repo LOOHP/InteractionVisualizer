@@ -38,7 +38,6 @@ import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Metrics.Charts;
 import com.loohp.interactionvisualizer.Metrics.Metrics;
 import com.loohp.interactionvisualizer.PlaceholderAPI.Placeholders;
-import com.loohp.interactionvisualizer.Protocol.ServerPacketSender;
 import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.Updater.Updater;
 import com.loohp.interactionvisualizer.Utils.MCVersion;
@@ -162,7 +161,6 @@ public class InteractionVisualizer extends JavaPlugin {
 			getServer().getScheduler().runTaskAsynchronously(this, () -> LangManager.generate());
 		}
 		
-		ServerPacketSender.setup();
 		WatchableCollection.setup();
 		SoundManager.setup();
 		EnchantmentManager.setup();

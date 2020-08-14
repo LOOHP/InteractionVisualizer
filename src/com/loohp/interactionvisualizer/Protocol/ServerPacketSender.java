@@ -1,8 +1,5 @@
 package com.loohp.interactionvisualizer.Protocol;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,43 +15,19 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
+import com.comphenix.protocol.wrappers.Pair;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
 import com.loohp.interactionvisualizer.Utils.MCVersion;
-import com.mojang.datafixers.util.Pair;
 
 public class ServerPacketSender {
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
 	private static MCVersion version = InteractionVisualizer.version;
 	private static ProtocolManager protocolManager = InteractionVisualizer.protocolManager;
-	
-	private static Class<?> nmsEnumItemSlotClass;
-	private static Class<?> craftItemStackClass;
-	private static Class<?> nmsItemStackClass;
-	private static MethodHandle asNMSCopyMethod;
-	private static Object[] nmsItemSlotEnums;
-	
-	public static void setup() {
-		try {
-			nmsEnumItemSlotClass = getNMSClass("net.minecraft.server.", "EnumItemSlot");
-			craftItemStackClass = getNMSClass("org.bukkit.craftbukkit.", "inventory.CraftItemStack");
-			nmsItemStackClass = getNMSClass("net.minecraft.server.", "ItemStack");
-			asNMSCopyMethod = MethodHandles.lookup().findStatic(craftItemStackClass, "asNMSCopy", MethodType.methodType(nmsItemStackClass, ItemStack.class));
-			nmsItemSlotEnums = nmsEnumItemSlotClass.getEnumConstants();
-		} catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException e) {
-			e.printStackTrace();
-		}	
-	}
-	
-	private static Class<?> getNMSClass(String prefix, String nmsClassString) throws ClassNotFoundException {
-        String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
-        String name = prefix + version + nmsClassString;
-        return Class.forName(name);
-    }
 	
 	public static void sendHandMovement(List<Player> players, Player entity) {
 		if (!InteractionVisualizer.handMovementEnabled) {
@@ -103,16 +76,10 @@ public class ServerPacketSender {
         PacketContainer packet3 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
         packet3.getIntegers().write(0, entity.getEntityId());
         if ((version.equals(MCVersion.V1_16) || version.equals(MCVersion.V1_16_2))) {
-        	try {
-				Object nmsMainHandItem = asNMSCopyMethod.invoke(entity.getItemInMainHand());
-				Object nmsHelmetItem = asNMSCopyMethod.invoke(entity.getHelmet());
-				List<Pair<Object, Object>> pairs = new ArrayList<>(2);
-				pairs.add(new Pair<Object, Object>(nmsItemSlotEnums[0], nmsMainHandItem));
-				pairs.add(new Pair<Object, Object>(nmsItemSlotEnums[5], nmsHelmetItem));
-				packet3.getModifier().write(1, pairs);
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
+        	List<Pair<ItemSlot, ItemStack>> pairs = new ArrayList<>();
+        	pairs.add(new Pair<ItemSlot, ItemStack>(ItemSlot.MAINHAND, entity.getItemInMainHand()));
+        	pairs.add(new Pair<ItemSlot, ItemStack>(ItemSlot.HEAD, entity.getHelmet()));
+        	packet3.getSlotStackPairLists().write(0, pairs);
         } else {
         	packet3.getItemSlots().write(0, ItemSlot.MAINHAND);
         	packet3.getItemModifier().write(0, entity.getItemInMainHand());
@@ -161,16 +128,10 @@ public class ServerPacketSender {
         PacketContainer packet3 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
         packet3.getIntegers().write(0, entity.getEntityId());
         if ((version.equals(MCVersion.V1_16) || version.equals(MCVersion.V1_16_2))) {
-        	try {
-        		Object nmsMainHandItem = asNMSCopyMethod.invoke(entity.getItemInMainHand());
-				Object nmsHelmetItem = asNMSCopyMethod.invoke(entity.getHelmet());
-				List<Pair<Object, Object>> pairs = new ArrayList<>(2);
-				pairs.add(new Pair<Object, Object>(nmsItemSlotEnums[0], nmsMainHandItem));
-				pairs.add(new Pair<Object, Object>(nmsItemSlotEnums[5], nmsHelmetItem));
-				packet3.getModifier().write(1, pairs);
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
+        	List<Pair<ItemSlot, ItemStack>> pairs = new ArrayList<>();
+        	pairs.add(new Pair<ItemSlot, ItemStack>(ItemSlot.MAINHAND, entity.getItemInMainHand()));
+        	pairs.add(new Pair<ItemSlot, ItemStack>(ItemSlot.HEAD, entity.getHelmet()));
+        	packet3.getSlotStackPairLists().write(0, pairs);
         } else {
         	packet3.getItemSlots().write(0, ItemSlot.MAINHAND);
         	packet3.getItemModifier().write(0, entity.getItemInMainHand());
