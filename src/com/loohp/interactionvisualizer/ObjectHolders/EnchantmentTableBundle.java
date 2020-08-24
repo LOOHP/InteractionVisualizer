@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -31,25 +32,27 @@ import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
 import net.md_5.bungee.api.ChatColor;
 
 public class EnchantmentTableBundle {
-	
+
 	Plugin plugin;
 	Block block;
 	Location location;
 	Optional<Item> item;
-	boolean animationPlaying;
+	AtomicBoolean animationPlaying;
 	Player enchanter;
 	List<Player> players;
 	char arrow;
+	Object notifier;
 	
 	public EnchantmentTableBundle(Player enchanter, Block block, List<Player> players) {
 		this.plugin = InteractionVisualizer.plugin;
 		this.block = block;
 		this.location = block.getLocation().clone();
 		this.item = Optional.empty();
-		this.animationPlaying = false;
+		this.animationPlaying = new AtomicBoolean(false);
 		this.players = players;
 		this.enchanter = enchanter;
 		this.arrow = '\u27f9';
+		this.notifier = new Object();
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -57,11 +60,11 @@ public class EnchantmentTableBundle {
 		if (item.isPresent() && item.get().isLocked()) {
 			return;
 		}
-		if (animationPlaying) {
+		if (animationPlaying.get()) {
 			return;
 		}
 		
-		animationPlaying = true;
+		animationPlaying.set(true);
 		
 		if (!this.item.isPresent()) {
 			this.item = Optional.of(new Item(location.clone().add(0.5, 1.3, 0.5)));
@@ -133,25 +136,30 @@ public class EnchantmentTableBundle {
 			item.setGravity(false);
 			PacketManager.updateItem(item);
 			item.setLocked(false);
-			animationPlaying = false;
+			animationPlaying.set(false);
+			synchronized (this.notifier) {
+				notifier.notifyAll();
+			}
 		}, 98);
 	}
 	
 	public void playPickUpAnimation(ItemStack itemstack) {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			while (animationPlaying) {
-				try {TimeUnit.MILLISECONDS.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
+			if (animationPlaying.get()) {
+				synchronized (this.notifier) {
+					try {notifier.wait();} catch (InterruptedException e) {e.printStackTrace();}
+				}
 			}
 			Bukkit.getScheduler().runTask(plugin, () -> {
 				if (!item.isPresent()) {
 					return;
 				}
-				animationPlaying = true;
+				animationPlaying.set(true);
 				Item item = this.item.get();
 				item.setLocked(true);
 				item.setItemStack(itemstack);
 				if (itemstack == null || itemstack.getType().equals(Material.AIR)) {
-					animationPlaying = false;
+					animationPlaying.set(false);
 					return;
 				}
 				
@@ -166,7 +174,10 @@ public class EnchantmentTableBundle {
 					SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
 					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
 				    this.item = Optional.empty();
-				    animationPlaying = false;
+				    animationPlaying.set(false);
+				    synchronized (this.notifier) {
+						notifier.notifyAll();
+					}
 				}, 8);
 			});
 		});
@@ -174,8 +185,10 @@ public class EnchantmentTableBundle {
 	
 	public void playPickUpAnimationAndRemove(ItemStack itemstack, Map<Block, EnchantmentTableBundle> mapToRemoveFrom) {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			while (animationPlaying) {
-				try {TimeUnit.MILLISECONDS.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
+			if (animationPlaying.get()) {
+				synchronized (this.notifier) {
+					try {notifier.wait();} catch (InterruptedException e) {e.printStackTrace();}
+				}
 			}
 			Bukkit.getScheduler().runTask(plugin, () -> {
 				if (!item.isPresent()) {
@@ -185,7 +198,7 @@ public class EnchantmentTableBundle {
 				Item item = this.item.get();
 				item.setLocked(true);
 				if (itemstack != null && !itemstack.getType().equals(Material.AIR)) {
-					animationPlaying = true;
+					animationPlaying.set(true);
 					item.setItemStack(itemstack);
 					Vector lift = new Vector(0.0, 0.15, 0.0);
 					Vector pickup = enchanter.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(location.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
@@ -197,7 +210,7 @@ public class EnchantmentTableBundle {
 					Bukkit.getScheduler().runTaskLater(plugin, () -> {
 						SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
 						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
-						animationPlaying = false;
+						animationPlaying.set(false);
 						mapToRemoveFrom.remove(block);
 					}, 8);
 				} else {
@@ -215,7 +228,7 @@ public class EnchantmentTableBundle {
 	}
 	
 	public void setItemStack(ItemStack itemstack) {
-		if (animationPlaying) {
+		if (animationPlaying.get()) {
 			return;
 		}
 		if (itemstack == null || itemstack.getType().equals(Material.AIR)) {
@@ -254,7 +267,7 @@ public class EnchantmentTableBundle {
 	}
 	
 	public boolean isAnimationPlaying() {
-		return animationPlaying;
+		return animationPlaying.get();
 	}
 	
 	public Player getEnchanter() {

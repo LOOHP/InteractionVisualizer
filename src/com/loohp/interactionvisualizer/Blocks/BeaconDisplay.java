@@ -119,7 +119,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 									BlockFace face = BlockFace.valueOf(data);
 									map.putAll(spawnArmorStands(block, face));
 									done = true;
-								} catch (Exception e) {
+								} catch (Exception | AbstractMethodError e) {
 									done = false;
 								}
 							}

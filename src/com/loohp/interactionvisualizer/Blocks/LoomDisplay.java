@@ -219,7 +219,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 			if (event.getView().getTopInventory().getLocation() == null) {
 				return;
 			}
-		} catch (Exception e) {
+		} catch (Exception | AbstractMethodError e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
@@ -294,7 +294,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 			if (event.getView().getTopInventory().getLocation() == null) {
 				return;
 			}
-		} catch (Exception e) {
+		} catch (Exception | AbstractMethodError e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
@@ -324,7 +324,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 			if (event.getView().getTopInventory().getLocation() == null) {
 				return;
 			}
-		} catch (Exception e) {
+		} catch (Exception | AbstractMethodError e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
@@ -351,7 +351,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 			if (event.getView().getTopInventory().getLocation() == null) {
 				return;
 			}
-		} catch (Exception e) {
+		} catch (Exception | AbstractMethodError e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {

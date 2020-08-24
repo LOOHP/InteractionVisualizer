@@ -233,7 +233,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 			if (event.getView().getTopInventory().getLocation() == null) {
 				return;
 			}
-		} catch (Exception e) {
+		} catch (Exception | AbstractMethodError e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
@@ -263,7 +263,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 			if (event.getView().getTopInventory().getLocation() == null) {
 				return;
 			}
-		} catch (Exception e) {
+		} catch (Exception | AbstractMethodError e) {
 			return;
 		}
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
