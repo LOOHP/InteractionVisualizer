@@ -98,10 +98,10 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
 			ItemStack itemstack = player.getOpenInventory().getItem(0).clone();
 			Map<Enchantment, Integer> enchantsAdded = new HashMap<Enchantment, Integer>();
 			if (itemstack.getType().equals(Material.ENCHANTED_BOOK)) {
-				enchantsAdded.putAll(((EnchantmentStorageMeta) itemstack.getItemMeta()).getEnchants());
-			} else {
-				enchantsAdded.putAll(itemstack.getEnchantments());
+				enchantsAdded.putAll(((EnchantmentStorageMeta) itemstack.getItemMeta()).getStoredEnchants());
 			}
+			enchantsAdded.putAll(itemstack.getEnchantments());
+			
 			enchantsAdded = CustomMapUtils.sortMapByValueReverse(enchantsAdded);
 			
 			if (!openedETable.containsKey(block)) {
