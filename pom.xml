@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>InteractionVisualizer</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
-	<version>1.13.8</version>
+	<version>1.13.9</version>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
