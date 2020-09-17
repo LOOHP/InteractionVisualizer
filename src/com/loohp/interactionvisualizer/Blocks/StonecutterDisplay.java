@@ -97,11 +97,11 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 			if (!(player.getOpenInventory().getTopInventory() instanceof StonecutterInventory)) {
 				return;
 			}
-			if (!player.getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.STONECUTTER)) {
-				return;
-			}
 			
 			Block block = player.getTargetBlockExact(7, FluidCollisionMode.NEVER);
+			if (block == null || !block.getType().equals(Material.STONECUTTER)) {
+				return;
+			}
 			
 			playermap.put(player, block);
 		}

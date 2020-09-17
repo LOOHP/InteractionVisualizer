@@ -91,11 +91,12 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
 			if (!(player.getOpenInventory().getTopInventory() instanceof CartographyInventory)) {
 				return;
 			}
-			if (!player.getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.CARTOGRAPHY_TABLE)) {
+
+			Block block = player.getTargetBlockExact(7, FluidCollisionMode.NEVER);
+			if (block == null || !block.getType().equals(Material.CARTOGRAPHY_TABLE)) {
 				return;
 			}
 			
-			Block block = player.getTargetBlockExact(7, FluidCollisionMode.NEVER);
 			playermap.put(player, block);
 		}
 		

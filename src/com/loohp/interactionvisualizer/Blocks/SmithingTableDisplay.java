@@ -57,11 +57,12 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
 			if (!(player.getOpenInventory().getTopInventory() instanceof SmithingInventory)) {
 				return;
 			}
-			if (!player.getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.SMITHING_TABLE)) {
+
+			Block block = player.getTargetBlockExact(7, FluidCollisionMode.NEVER);
+			if (block == null || !block.getType().equals(Material.SMITHING_TABLE)) {
 				return;
 			}
 			
-			Block block = player.getTargetBlockExact(7, FluidCollisionMode.NEVER);
 			playermap.put(player, block);
 		}
 		
