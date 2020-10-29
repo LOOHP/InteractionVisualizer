@@ -117,7 +117,7 @@ public class ChestDisplay implements Listener {
 				}
 			}
 			if (itemstack == null) {
-				if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) || event.getAction().equals(InventoryAction.HOTBAR_SWAP)) {
+				if ((event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) || event.getAction().equals(InventoryAction.HOTBAR_SWAP)) && event.getHotbarButton() >= 0) {
 					itemstack = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
 					if (itemstack != null) {
 						if (itemstack.getType().equals(Material.AIR)) {

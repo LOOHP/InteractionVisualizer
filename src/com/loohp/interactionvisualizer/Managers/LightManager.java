@@ -51,29 +51,43 @@ public class LightManager {
 		public int getLightLevel() {
 			return LightLevel;
 		}
-		
+
 		@Override
 		public int hashCode() {
-			int hashCode = location.hashCode();
-			if (lightType != null) {
-				switch (lightType) {
-				case BLOCK:
-					hashCode *= 17;
-					break;
-				case SKY:
-					hashCode *= 23;
-					break;
-				}
-			}
-			return hashCode;
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + LightLevel;
+			result = prime * result + ((lightType == null) ? 0 : lightType.hashCode());
+			result = prime * result + ((location == null) ? 0 : location.hashCode());
+			return result;
 		}
-		
+
 		@Override
 		public boolean equals(Object obj) {
-			if (obj instanceof LightData) {
-				return ((LightData) obj).hashCode() == this.hashCode();
+			if (this == obj) {
+				return true;
 			}
-			return false;
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			LightData other = (LightData) obj;
+			if (LightLevel != other.LightLevel) {
+				return false;
+			}
+			if (lightType != other.lightType) {
+				return false;
+			}
+			if (location == null) {
+				if (other.location != null) {
+					return false;
+				}
+			} else if (!location.equals(other.location)) {
+				return false;
+			}
+			return true;
 		}
 	}
 	
