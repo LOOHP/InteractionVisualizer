@@ -124,6 +124,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		version = MCVersion.fromPackageName(getServer().getClass().getPackage().getName());
 		
 		switch (version) {
+		case V1_16_4:
 		case V1_16_2:
 		case V1_16:
 		case V1_15:
