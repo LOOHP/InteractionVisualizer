@@ -77,6 +77,8 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static Integer beaconChecking = 20;
 	public static Integer jukeboxChecking = 20;
 	
+	public static Double playerPickupYOffset = 0.0;
+	
 	public static Integer gcPeriod = 600;
 	
 	public static Integer tileEntityChunkPerTick = 9;
@@ -314,6 +316,8 @@ public class InteractionVisualizer extends JavaPlugin {
 		brewingstandChecking = config.getInt("Blocks.BrewingStand.CheckingPeriod");
 		beaconChecking = config.getInt("Blocks.Beacon.CheckingPeriod");
 		jukeboxChecking = config.getInt("Blocks.JukeBox.CheckingPeriod");
+		
+		playerPickupYOffset = config.getDouble("Settings.PickupAnimationPlayerYOffset");
 		
 		gcPeriod = config.getInt("GarbageCollector.Period");
 		

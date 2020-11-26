@@ -78,11 +78,7 @@ public class ServerPacketSender {
 	public static void spawnArmorStand(List<Player> players, ArmorStand entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
 		packet1.getIntegers().write(0, entity.getEntityId());
-		if (!version.isLegacy()) {
-			packet1.getIntegers().write(1, 1);
-		} else {
-			packet1.getIntegers().write(1, 30);
-		}
+		packet1.getIntegers().write(1, version.isLegacy() ? 30 : 1);
 		packet1.getIntegers().write(2, (int) (entity.getVelocity().getX() * 8000));
 		packet1.getIntegers().write(3, (int) (entity.getVelocity().getY() * 8000));
 		packet1.getIntegers().write(4, (int) (entity.getVelocity().getZ() * 8000));		

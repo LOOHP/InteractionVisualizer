@@ -330,7 +330,7 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
 			item.setLocked(true);
 			
 			Vector lift = new Vector(0.0, 0.15, 0.0);
-			Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
+			Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
 			item.setVelocity(pickup);
 			item.setGravity(true);
 			item.setPickupDelay(32767);

@@ -173,11 +173,11 @@ public class ChestDisplay implements Listener {
 			if (itemstack != null) {
 				Item item = new Item(loc.clone().add(0.5, 1, 0.5));
 				Vector offset = new Vector(0.0, 0.15, 0.0);
-				Vector vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, -0.5, 0.0).toVector()).multiply(-0.15).add(offset);
+				Vector vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, -0.5, 0.0).add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(-0.15).add(offset);
 				item.setVelocity(vector);
 				if (isIn) {
-					item.teleport(event.getWhoClicked().getEyeLocation());
-					vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().toVector()).multiply(0.15).add(offset);
+					item.teleport(event.getWhoClicked().getEyeLocation().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0));
+					vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.15).add(offset);
 					item.setVelocity(vector);
 				}
 				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
@@ -195,7 +195,7 @@ public class ChestDisplay implements Listener {
 					if (finalIsIn) {
 						item.teleport(loc.clone().add(0.5, 1, 0.5));
 					} else {
-						item.teleport(event.getWhoClicked().getEyeLocation().add(0.0, -0.5, 0.0));
+						item.teleport(event.getWhoClicked().getEyeLocation().add(0.0, -0.5, 0.0).add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0));
 					}
 					item.setVelocity(new Vector(0.0, 0.0, 0.0));
 					item.setGravity(false);
@@ -279,9 +279,9 @@ public class ChestDisplay implements Listener {
 				}
 				
 				if (itemstack != null) {
-					Item item = new Item(event.getWhoClicked().getEyeLocation());
+					Item item = new Item(event.getWhoClicked().getEyeLocation().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0));
 					Vector offset = new Vector(0.0, 0.15, 0.0);
-					Vector vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().toVector()).multiply(0.15).add(offset);
+					Vector vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.15).add(offset);
 					item.setVelocity(vector);
 					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
 					item.setItemStack(itemstack);

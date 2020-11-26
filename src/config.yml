@@ -109,6 +109,7 @@ Modules:
 
 Settings:
   UseHandSwingAnimation: true
+  PickupAnimationPlayerYOffset: 0
 
 Options:
   Updater: true

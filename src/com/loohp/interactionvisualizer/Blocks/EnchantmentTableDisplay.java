@@ -104,12 +104,8 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
 			
 			enchantsAdded = CustomMapUtils.sortMapByValueReverse(enchantsAdded);
 			
-			if (!openedETable.containsKey(block)) {
-				return;
-			}
-			
 			EnchantmentTableBundle etb = openedETable.get(block);
-			if (!etb.getEnchanter().equals(player)) {
+			if (etb == null || !etb.getEnchanter().equals(player)) {
 				return;
 			}
 			
@@ -152,15 +148,10 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
 		}
 		
 		Block block = playermap.get((Player) event.getWhoClicked());
-		
-		if (!openedETable.containsKey(block)) {
-			return;
-		}
-		
 		Player player = (Player) event.getWhoClicked();
 		
 		EnchantmentTableBundle etb = openedETable.get(block);
-		if (!etb.getEnchanter().equals(player)) {
+		if (etb == null || !etb.getEnchanter().equals(player)) {
 			return;
 		}
 		
@@ -216,30 +207,23 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
 	
 	@EventHandler
 	public void onCloseEnchantmentTable(InventoryCloseEvent event) {
-		
 		Player player = (Player) event.getPlayer();
 		
 		if (!playermap.containsKey(player)) {
 			return;
 		}
 		
-		Block block = playermap.get(player);
-		
-		playermap.remove(player);
+		Block block = playermap.remove(player);
 		
 		ItemStack itemstack = event.getView().getItem(0) != null ? (!event.getView().getItem(0).getType().equals(Material.AIR) ? event.getView().getItem(0).clone() : null) : null;
 		
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-			if (!openedETable.containsKey(block)) {
-				return;
-			}
-			
 			EnchantmentTableBundle etb = openedETable.get(block);
-			if (!etb.getEnchanter().equals(player)) {
+			if (etb == null || !etb.getEnchanter().equals(player)) {
 				return;
 			}
 			
 			etb.playPickUpAnimationAndRemove(itemstack, openedETable);
-		}, 3);
+		}, 1);
 	}
 }
