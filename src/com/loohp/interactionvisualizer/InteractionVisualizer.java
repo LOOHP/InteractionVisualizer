@@ -151,7 +151,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		getConfig().options().copyDefaults(true);
 		config = getConfig();
 		saveConfig();
-		loadConfig();
+		reloadConfig();
 		
 		defaultworld = getServer().getWorlds().get(0);
 		defaultlocation = new Location(defaultworld, 0, 0, 0);
@@ -305,7 +305,10 @@ public class InteractionVisualizer extends JavaPlugin {
 		getServer().getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] InteractionVisualizer has been disabled!");
 	}
 	
-	public static void loadConfig() {
+	@Override
+	public void reloadConfig() {
+		super.reloadConfig();
+		
 		itemStandEnabled = config.getBoolean("Modules.ItemStand.Enabled");
 		itemDropEnabled = config.getBoolean("Modules.ItemDrop.Enabled");
 		hologramsEnabled = config.getBoolean("Modules.Hologram.Enabled");

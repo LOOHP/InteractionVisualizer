@@ -50,7 +50,6 @@ public class Commands implements CommandExecutor, TabCompleter {
 		if (args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("interactionvisualizer.reload")) {
 				plugin.reloadConfig();
-				InteractionVisualizer.loadConfig();
 				EnchantmentManager.reloadConfig();
 				EffectManager.reloadConfig();
 				MusicManager.reloadConfig();
