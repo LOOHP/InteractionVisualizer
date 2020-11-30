@@ -308,6 +308,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	@Override
 	public void reloadConfig() {
 		super.reloadConfig();
+		config = getConfig();
 		
 		itemStandEnabled = config.getBoolean("Modules.ItemStand.Enabled");
 		itemDropEnabled = config.getBoolean("Modules.ItemDrop.Enabled");
