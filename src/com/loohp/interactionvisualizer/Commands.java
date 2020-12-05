@@ -22,6 +22,7 @@ import com.loohp.interactionvisualizer.Managers.MaterialManager;
 import com.loohp.interactionvisualizer.Managers.MusicManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Updater.Updater;
+import com.loohp.interactionvisualizer.Updater.Updater.UpdaterResponse;
 import com.loohp.interactionvisualizer.Utils.ChatColorUtils;
 
 import net.md_5.bungee.api.ChatColor;
@@ -81,11 +82,15 @@ public class Commands implements CommandExecutor, TabCompleter {
 				sender.sendMessage(ChatColor.AQUA + "[InteractionVisualizer] InteractionVisualizer written by LOOHP!");
 				sender.sendMessage(ChatColor.GOLD + "[InteractionVisualizer] You are running InteractionVisualizer version: " + plugin.getDescription().getVersion());
 				Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-					String version = Updater.checkUpdate();
-					if (version.equals("latest")) {
-						sender.sendMessage(ChatColor.GREEN + "[InteractionVisualizer] You are running the latest version!");
+					UpdaterResponse version = Updater.checkUpdate();
+					if (version.getResult().equals("latest")) {
+						if (version.isDevBuildLatest()) {
+							sender.sendMessage(ChatColor.GREEN + "[InteractionVisualizer] You are running the latest version!");
+						} else {
+							Updater.sendUpdateMessage(sender, version.getResult(), version.getSpigotPluginId(), true);
+						}
 					} else {
-						Updater.sendUpdateMessage(sender, version);
+						Updater.sendUpdateMessage(sender, version.getResult(), version.getSpigotPluginId());
 					}
 				});
 			} else {

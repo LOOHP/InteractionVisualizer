@@ -39,6 +39,7 @@ import com.loohp.interactionvisualizer.Metrics.Metrics;
 import com.loohp.interactionvisualizer.PlaceholderAPI.Placeholders;
 import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.Updater.Updater;
+import com.loohp.interactionvisualizer.Updater.Updater.UpdaterResponse;
 import com.loohp.interactionvisualizer.Utils.MCVersion;
 
 import net.md_5.bungee.api.ChatColor;
@@ -219,12 +220,12 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
 			if (UpdaterEnabled) {
-				String version = Updater.checkUpdate();
-				if (!version.equals("latest")) {
-					Updater.sendUpdateMessage(Bukkit.getConsoleSender(), version);
+				UpdaterResponse version = Updater.checkUpdate();
+				if (!version.getResult().equals("latest")) {
+					Updater.sendUpdateMessage(Bukkit.getConsoleSender(), version.getResult(), version.getSpigotPluginId());
 					for (Player player : Bukkit.getOnlinePlayers()) {
 						if (player.hasPermission("interactionvisualizer.update")) {
-							Updater.sendUpdateMessage(player, version);
+							Updater.sendUpdateMessage(player, version.getResult(), version.getSpigotPluginId());
 						}
 					}
 				}
