@@ -3,8 +3,10 @@ package com.loohp.interactionvisualizer;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -90,6 +92,8 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static Integer lightUpdatePeriod = 10;
 	
 	public static boolean UpdaterEnabled = true;
+	
+	public static Map<World, Integer> playerTrackingRange = new HashMap<>();
 	
 	public enum Modules {
 		ITEMSTAND,
@@ -334,6 +338,13 @@ public class InteractionVisualizer extends JavaPlugin {
 		lightUpdatePeriod = config.getInt("LightUpdate.Period");
 		
 		UpdaterEnabled = plugin.getConfig().getBoolean("Options.Updater");
+		
+		playerTrackingRange.clear();
+		int defaultRange = getServer().spigot().getConfig().getInt("world-settings.default.entity-tracking-range.players", 64);
+		for (World world : getServer().getWorlds()) {
+			int range = getServer().spigot().getConfig().getInt("world-settings." + world.getName() + ".entity-tracking-range.players", defaultRange);
+			playerTrackingRange.put(world, range);
+		}
 	}
 	
 	public static List<Player> getOnlinePlayers() {

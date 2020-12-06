@@ -182,7 +182,9 @@ public class PacketManager implements Listener {
 				
 				Location playerLocation = PlayerLocationManager.getPlayerLocation(player);
 				for (VisualizerEntity entity : activeList) {
-					if (!entity.getWorld().equals(playerLocation.getWorld()) || entity.getLocation().distanceSquared(playerLocation) > 4096) {
+					int range = InteractionVisualizer.playerTrackingRange.getOrDefault(entity.getWorld(), 64);
+					range *= range;
+					if (!entity.getWorld().equals(playerLocation.getWorld()) || entity.getLocation().distanceSquared(playerLocation) > range) {
 						if (entity instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) entity;
 							removeArmorStand(playerList, stand, false, true);
@@ -197,7 +199,9 @@ public class PacketManager implements Listener {
 				}
 				
 				for (VisualizerEntity entity : active.keySet()) {
-					if (entity.getWorld().equals(playerLocation.getWorld()) && entity.getLocation().distanceSquared(playerLocation) <= 4096) {
+					int range = InteractionVisualizer.playerTrackingRange.getOrDefault(entity.getWorld(), 64);
+					range *= range;
+					if (entity.getWorld().equals(playerLocation.getWorld()) && entity.getLocation().distanceSquared(playerLocation) <= range) {
 						if (activeList.contains(entity)) {
 							continue;
 						}
@@ -545,7 +549,9 @@ public class PacketManager implements Listener {
 		List<Player> playersInRange = new LinkedList<Player>();
 		for (Player player : players) {
 			Location playerLocation = PlayerLocationManager.getPlayerLocation(player);
-			if (playerLocation.getWorld().equals(entity.getWorld()) && (playerLocation.distanceSquared(entity.getLocation()) <= 4096)) {
+			int range = InteractionVisualizer.playerTrackingRange.getOrDefault(entity.getWorld(), 64);
+			range *= range;
+			if (playerLocation.getWorld().equals(entity.getWorld()) && (playerLocation.distanceSquared(entity.getLocation()) <= range)) {
 				playersInRange.add(player);
 			}
 		}
@@ -556,7 +562,9 @@ public class PacketManager implements Listener {
 		List<Player> playersInRange = new LinkedList<Player>();
 		for (Player player : players) {
 			Location playerLocation = PlayerLocationManager.getPlayerLocation(player);
-			if (playerLocation.getWorld().equals(entity.getWorld()) && (playerLocation.distanceSquared(entity.getLocation()) <= 4096)) {
+			int range = InteractionVisualizer.playerTrackingRange.getOrDefault(entity.getWorld(), 64);
+			range *= range;
+			if (playerLocation.getWorld().equals(entity.getWorld()) && (playerLocation.distanceSquared(entity.getLocation()) <= range)) {
 				playersInRange.add(player);
 			}
 		}
