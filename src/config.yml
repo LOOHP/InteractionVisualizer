@@ -63,7 +63,11 @@ Blocks:
     Enabled: true
   CraftingTable:
     Enabled: true
+  Dispenser:
+    Enabled: true
   DoubleChest:
+    Enabled: true
+  Dropper:
     Enabled: true
   EnchantmentTable:
     Enabled: true
@@ -73,6 +77,8 @@ Blocks:
     Enabled: true
     CheckingPeriod: 20
   Grindstone:
+    Enabled: true
+  Hopper:
     Enabled: true
   JukeBox:
     Enabled: true

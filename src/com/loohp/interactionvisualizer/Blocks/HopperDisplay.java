@@ -31,12 +31,12 @@ import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.OpenInvUtils;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
-public class ShulkerBoxDisplay implements Listener {
+public class HopperDisplay implements Listener {
 	
 	public ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<Player, List<Item>>();
 	
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onUseShulkerbox(InventoryClickEvent event) {
+	public void onUseHopper(InventoryClickEvent event) {
 		Player player = (Player) event.getWhoClicked();
 		if (event.isCancelled()) {
 			return;
@@ -53,7 +53,7 @@ public class ShulkerBoxDisplay implements Listener {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getType().equals(InventoryType.SHULKER_BOX)) {
+		if (!event.getView().getTopInventory().getType().equals(InventoryType.HOPPER)) {
 			return;
 		}
 		try {
@@ -66,7 +66,7 @@ public class ShulkerBoxDisplay implements Listener {
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().contains("SHULKER_BOX")) {
+		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.HOPPER)) {
 			return;
 		}
 		if (event.getClick().equals(ClickType.MIDDLE) && !event.getWhoClicked().getGameMode().equals(GameMode.CREATIVE)) {
@@ -80,7 +80,7 @@ public class ShulkerBoxDisplay implements Listener {
 		boolean isMove = false;
 		ItemStack itemstack = null;
 		
-		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 26) {
+		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 4) {
 			
 			itemstack = event.getCurrentItem();
 			if (itemstack != null) {
@@ -168,7 +168,7 @@ public class ShulkerBoxDisplay implements Listener {
 				item.setVelocity(vector);
 				if (isIn) {
 					item.teleport(event.getWhoClicked().getEyeLocation().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0));
-					vector = loc.clone().add(0.5, 0.5, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.13).add(offset);
+					vector = loc.clone().add(0.5, 0.65, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.13).add(offset);
 					item.setVelocity(vector);
 				}
 				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
@@ -201,7 +201,7 @@ public class ShulkerBoxDisplay implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onDragShulkerbox(InventoryDragEvent event) {
+	public void onDragHopper(InventoryDragEvent event) {
 		Player player = (Player) event.getWhoClicked();
 		if (event.isCancelled()) {
 			return;
@@ -222,7 +222,7 @@ public class ShulkerBoxDisplay implements Listener {
 		if (event.getView().getTopInventory().getLocation().getBlock() == null) {
 			return;
 		}
-		if (!event.getView().getTopInventory().getLocation().getBlock().getType().toString().toUpperCase().contains("SHULKER_BOX")) {
+		if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.HOPPER)) {
 			return;
 		}
 		
@@ -253,7 +253,7 @@ public class ShulkerBoxDisplay implements Listener {
 		Location loc = block.getLocation();
 		
 		for (int slot : event.getRawSlots()) {
-			if (slot >= 0 && slot <= 26) {
+			if (slot >= 0 && slot <= 4) {
 				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), player);
 				
 				ItemStack itemstack = event.getOldCursor();
@@ -266,7 +266,7 @@ public class ShulkerBoxDisplay implements Listener {
 				if (itemstack != null) {
 					Item item = new Item(event.getWhoClicked().getEyeLocation().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0));
 					Vector offset = new Vector(0.0, 0.15, 0.0);
-					Vector vector = loc.clone().add(0.5, 0.5, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.13).add(offset);
+					Vector vector = loc.clone().add(0.5, 0.65, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.13).add(offset);
 					item.setVelocity(vector);
 					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
 					item.setItemStack(itemstack);
@@ -296,7 +296,7 @@ public class ShulkerBoxDisplay implements Listener {
 	}
 	
 	@EventHandler
-	public void onCloseShulkerbox(InventoryCloseEvent event) {
+	public void onCloseHopper(InventoryCloseEvent event) {
 		if (event.getView().getTopInventory() == null) {
 			return;
 		}

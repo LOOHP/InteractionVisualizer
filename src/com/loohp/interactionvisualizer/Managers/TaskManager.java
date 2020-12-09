@@ -22,11 +22,14 @@ import com.loohp.interactionvisualizer.Blocks.BrewingStandDisplay;
 import com.loohp.interactionvisualizer.Blocks.CartographyTableDisplay;
 import com.loohp.interactionvisualizer.Blocks.ChestDisplay;
 import com.loohp.interactionvisualizer.Blocks.CraftingTableDisplay;
+import com.loohp.interactionvisualizer.Blocks.DispenserDisplay;
 import com.loohp.interactionvisualizer.Blocks.DoubleChestDisplay;
+import com.loohp.interactionvisualizer.Blocks.DropperDisplay;
 import com.loohp.interactionvisualizer.Blocks.EnchantmentTableDisplay;
 import com.loohp.interactionvisualizer.Blocks.EnderchestDisplay;
 import com.loohp.interactionvisualizer.Blocks.FurnaceDisplay;
 import com.loohp.interactionvisualizer.Blocks.GrindstoneDisplay;
+import com.loohp.interactionvisualizer.Blocks.HopperDisplay;
 import com.loohp.interactionvisualizer.Blocks.JukeBoxDisplay;
 import com.loohp.interactionvisualizer.Blocks.LoomDisplay;
 import com.loohp.interactionvisualizer.Blocks.NoteBlockDisplay;
@@ -53,11 +56,14 @@ public class TaskManager {
 	public static boolean cartographytable;
 	public static boolean chest;
 	public static boolean craftingtable;
+	public static boolean dispenser;
 	public static boolean doublechest;
+	public static boolean dropper;
 	public static boolean enchantmenttable;
 	public static boolean enderchest;
 	public static boolean furnace;
 	public static boolean grindstone;
+	public static boolean hopper;
 	public static boolean jukebox;
 	public static boolean loom;
 	public static boolean noteblock;
@@ -81,11 +87,14 @@ public class TaskManager {
 		cartographytable = false;
 		chest = false;
 		craftingtable = false;
+		dispenser = false;
 		doublechest = false;
+		dropper = false;
 		enchantmenttable = false;
 		enderchest = false;
 		furnace = false;
 		grindstone = false;
+		hopper = false;
 		jukebox = false;
 		loom = false;
 		noteblock = false;
@@ -229,6 +238,21 @@ public class TaskManager {
 				) {
 			Bukkit.getPluginManager().registerEvents(new ShulkerBoxDisplay(), plugin);
 			shulkerbox = true;
+		}
+		
+		if (config.getBoolean("Blocks.Dispenser.Enabled")) {
+			Bukkit.getPluginManager().registerEvents(new DispenserDisplay(), plugin);
+			dispenser = true;
+		}
+		
+		if (config.getBoolean("Blocks.Dropper.Enabled")) {
+			Bukkit.getPluginManager().registerEvents(new DropperDisplay(), plugin);
+			dropper = true;
+		}
+		
+		if (config.getBoolean("Blocks.Hopper.Enabled")) {
+			Bukkit.getPluginManager().registerEvents(new HopperDisplay(), plugin);
+			hopper = true;
 		}
 		
 		if (config.getBoolean("Blocks.Beacon.Enabled")) {

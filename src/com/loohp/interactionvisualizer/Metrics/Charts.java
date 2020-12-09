@@ -91,11 +91,33 @@ public class Charts {
 	        }
 	    }));
 		
+		metrics.addCustomChart(new Metrics.SimplePie("dispenser_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (config.getBoolean("Blocks.Dispenser.Enabled")) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
 		metrics.addCustomChart(new Metrics.SimplePie("doublechest_enabled", new Callable<String>() {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
 	        	if (config.getBoolean("Blocks.DoubleChest.Enabled")) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
+		metrics.addCustomChart(new Metrics.SimplePie("dropper_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (config.getBoolean("Blocks.Dropper.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -140,6 +162,17 @@ public class Charts {
 	        public String call() throws Exception {
 	        	String string = "Disabled";
 	        	if (config.getBoolean("Blocks.Grindstone.Enabled")) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
+		metrics.addCustomChart(new Metrics.SimplePie("hopper_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (config.getBoolean("Blocks.Hopper.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
