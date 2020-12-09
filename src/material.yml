@@ -143,6 +143,7 @@ BlockExceptions:
   - "BROWN_MUSHROOM"
   - "RED_MUSHROOM"
   - "TORCH"
+  - "REDSTONE_TORCH"
   - "IRON_BARS"
   - "IRON_FENCE"
   - "GLASS_PANE"
