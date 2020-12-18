@@ -19,6 +19,7 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
+import com.loohp.interactionvisualizer.API.Events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.MusicManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
@@ -33,8 +34,18 @@ import net.md_5.bungee.api.ChatColor;
 public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listener {
 	
 	public ConcurrentHashMap<Block, HashMap<String, Object>> jukeboxMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
-	private Integer checkingPeriod = InteractionVisualizer.jukeboxChecking;
-	private Integer gcPeriod = InteractionVisualizer.gcPeriod;
+	private int checkingPeriod = 20;
+	private int gcPeriod = 600;
+	
+	public JukeBoxDisplay() {
+		onReload(new InteractionVisualizerReloadEvent());
+	}
+	
+	@EventHandler
+	public void onReload(InteractionVisualizerReloadEvent event) {
+		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.JukeBox.CheckingPeriod");
+		gcPeriod = InteractionVisualizer.plugin.getConfig().getInt("GarbageCollector.Period");
+	}
 	
 	@Override
 	public int gc() {

@@ -23,6 +23,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
+import com.loohp.interactionvisualizer.API.Events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.EntityHolders.VisualizerEntity;
 import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
@@ -73,16 +74,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static boolean itemDropEnabled = true;
 	public static boolean hologramsEnabled = true;
 	
-	public static Integer furnaceChecking = 20;
-	public static Integer blastfurnaceChecking = 20;
-	public static Integer smokerChecking = 20;
-	public static Integer brewingstandChecking = 20;
-	public static Integer beaconChecking = 20;
-	public static Integer jukeboxChecking = 20;
-	
 	public static Double playerPickupYOffset = 0.0;
-	
-	public static Integer gcPeriod = 600;
 	
 	public static Integer tileEntityChunkPerTick = 9;
 	public static Boolean loadTileEntitiesAsync = true;
@@ -319,16 +311,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		itemDropEnabled = config.getBoolean("Modules.ItemDrop.Enabled");
 		hologramsEnabled = config.getBoolean("Modules.Hologram.Enabled");
 		
-		furnaceChecking = config.getInt("Blocks.Furnace.CheckingPeriod");
-		blastfurnaceChecking = config.getInt("Blocks.BlastFurnace.CheckingPeriod");
-		smokerChecking = config.getInt("Blocks.Smoker.CheckingPeriod");
-		brewingstandChecking = config.getInt("Blocks.BrewingStand.CheckingPeriod");
-		beaconChecking = config.getInt("Blocks.Beacon.CheckingPeriod");
-		jukeboxChecking = config.getInt("Blocks.JukeBox.CheckingPeriod");
-		
 		playerPickupYOffset = config.getDouble("Settings.PickupAnimationPlayerYOffset");
-		
-		gcPeriod = config.getInt("GarbageCollector.Period");
 		
 		tileEntityChunkPerTick = config.getInt("TileEntityUpdate.ChunksPerTick");
 		loadTileEntitiesAsync = config.getBoolean("TileEntityUpdate.LoadTileEntitiesAsync");
@@ -345,6 +328,8 @@ public class InteractionVisualizer extends JavaPlugin {
 			int range = getServer().spigot().getConfig().getInt("world-settings." + world.getName() + ".entity-tracking-range.players", defaultRange);
 			playerTrackingRange.put(world, range);
 		}
+		
+		getServer().getPluginManager().callEvent(new InteractionVisualizerReloadEvent());
 	}
 	
 	public static List<Player> getOnlinePlayers() {

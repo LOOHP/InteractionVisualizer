@@ -22,6 +22,7 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
+import com.loohp.interactionvisualizer.API.Events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.Managers.EffectManager;
@@ -38,8 +39,18 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 	
 	public ConcurrentHashMap<Block, HashMap<String, Object>> beaconMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
 	public ConcurrentHashMap<Block, float[]> placemap = new ConcurrentHashMap<Block, float[]>();
-	private Integer checkingPeriod = InteractionVisualizer.beaconChecking;
-	private Integer gcPeriod = InteractionVisualizer.gcPeriod;
+	private int checkingPeriod = 20;
+	private int gcPeriod = 600;
+	
+	public BeaconDisplay() {
+		onReload(new InteractionVisualizerReloadEvent());
+	}
+	
+	@EventHandler
+	public void onReload(InteractionVisualizerReloadEvent event) {
+		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Beacon.CheckingPeriod");
+		gcPeriod = InteractionVisualizer.plugin.getConfig().getInt("GarbageCollector.Period");
+	}
 		
 	@Override
 	public int gc() {

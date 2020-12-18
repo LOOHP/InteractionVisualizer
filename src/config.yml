@@ -53,10 +53,23 @@ Blocks:
     CheckingPeriod: 20
   BlastFurnace:
     Enabled: true
-    CheckingPeriod: 20
+    CheckingPeriod: 10
+    Options:
+      ProgressBarCharacter: "\u258e"
+      EmptyColor: "&7"
+      FilledColor: "&e"
+      NoFuelColor: "&c"
+      ProgressBarLength: 10
+      AmountPending: " &7+{Amount}"
   BrewingStand:
     Enabled: true
     CheckingPeriod: 20
+    Options:
+      ProgressBarCharacter: "\u258e"
+      EmptyColor: "&7"
+      FilledColor: "&6"
+      NoFuelColor: "&c"
+      ProgressBarLength: 10
   CartographyTable:
     Enabled: true
   Chest:
@@ -76,6 +89,13 @@ Blocks:
   Furnace:
     Enabled: true
     CheckingPeriod: 20
+    Options:
+      ProgressBarCharacter: "\u258e"
+      EmptyColor: "&7"
+      FilledColor: "&e"
+      NoFuelColor: "&c"
+      ProgressBarLength: 10
+      AmountPending: " &7+{Amount}"
   Grindstone:
     Enabled: true
   Hopper:
@@ -91,7 +111,14 @@ Blocks:
     Enabled: true
   Smoker:
     Enabled: true
-    CheckingPeriod: 20
+    CheckingPeriod: 10
+    Options:
+      ProgressBarCharacter: "\u258e"
+      EmptyColor: "&7"
+      FilledColor: "&e"
+      NoFuelColor: "&c"
+      ProgressBarLength: 10
+      AmountPending: " &7+{Amount}"
   Stonecutter:
     Enabled: true
   ShulkerBox:

@@ -29,6 +29,7 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
+import com.loohp.interactionvisualizer.API.Events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
@@ -36,16 +37,41 @@ import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
+import com.loohp.interactionvisualizer.Utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.LegacyFacingUtils;
 import com.loohp.interactionvisualizer.Utils.MCVersion;
 import com.loohp.interactionvisualizer.Utils.VanishUtils;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listener {
 	
 	public ConcurrentHashMap<Block, HashMap<String, Object>> furnaceMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
-	private Integer checkingPeriod = InteractionVisualizer.furnaceChecking;
-	private Integer gcPeriod = InteractionVisualizer.gcPeriod;
+	private int checkingPeriod = 20;
+	private int gcPeriod = 600;
+	private String progressBarCharacter = "";
+	private String emptyColor = "&7";
+	private String filledColor = "&e";
+	private String noFuelColor = "&c";
+	private int progressBarLength = 10;
+	private String amountPending = " &7+{Amount}";
+	
+	public FurnaceDisplay() {
+		onReload(new InteractionVisualizerReloadEvent());
+	}
+	
+	@EventHandler
+	public void onReload(InteractionVisualizerReloadEvent event) {
+		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Furnace.CheckingPeriod");
+		gcPeriod = InteractionVisualizer.plugin.getConfig().getInt("GarbageCollector.Period");
+		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Furnace.Options.ProgressBarCharacter"));
+		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Furnace.Options.EmptyColor"));
+		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Furnace.Options.FilledColor"));
+		noFuelColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Furnace.Options.NoFuelColor"));
+		progressBarLength = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Furnace.Options.ProgressBarLength");
+		amountPending = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Furnace.Options.AmountPending"));
+	}
 	
 	@Override
 	public int gc() {
@@ -183,50 +209,50 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
 							}
 						}
 	
+						ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
 						if (hasItemToCook(furnace)) {
-							ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
+							int time = furnace.getCookTime();
+							int max = 10 * 20;
+							if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
+								max = furnace.getCookTimeTotal();
+							}
+							String symbol = "";
+							double percentagescaled = (double) time / (double) max * (double) progressBarLength;
+							double i = 1;
+							for (i = 1; i < percentagescaled; i++) {
+								symbol = symbol + filledColor + progressBarCharacter;
+							}
+							i = i - 1;
+							if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.33) {
+								symbol += emptyColor + progressBarCharacter;
+							} else if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.67) {
+								symbol += emptyColor + progressBarCharacter;
+							} else if ((percentagescaled - i) > 0) {
+								symbol += filledColor + progressBarCharacter;
+							}
+							for (i = progressBarLength - 1; i >= percentagescaled; i--) {
+								symbol += emptyColor + progressBarCharacter;
+							}
+							
+							int left = inv.getItem(0).getAmount() - 1;
+							if (left > 0) {
+								symbol += amountPending.replace("{Amount}", left + "");
+							}
 							if (hasFuel(furnace)) {
-								int time = furnace.getCookTime();
-								int max = 10 * 20;
-								if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
-									max = furnace.getCookTimeTotal();
-								}
-								String symbol = "";
-								double percentagescaled = (double) time / (double) max * 10.0;
-								double i = 1;
-								for (i = 1; i < percentagescaled; i = i + 1) {
-									symbol = symbol + "§e\u258e";
-								}
-								i = i - 1;
-								if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.33) {
-									symbol = symbol + "§7\u258e";
-								} else if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.67) {
-									symbol = symbol + "§7\u258e";
-								} else if ((percentagescaled - i) > 0) {
-									symbol = symbol + "§e\u258e";
-								}
-								for (i = 10 - 1; i >= percentagescaled; i = i - 1) {
-									symbol = symbol + "§7\u258e";
-								}
-								
-								int left = inv.getItem(0).getAmount() - 1;
-								if (left > 0) {
-									symbol = symbol + " §7+" + left;
-								}
 								if (!stand.getCustomName().equals(symbol) || !stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(true);
 									stand.setCustomName(symbol);
 									PacketManager.updateArmorStandOnlyMeta(stand);
 								}
 							} else {
-								if (!stand.getCustomName().equals("") || stand.isCustomNameVisible()) {
-									stand.setCustomNameVisible(false);
-									stand.setCustomName("");
+								symbol = noFuelColor + ChatColor.stripColor(symbol);
+								if (!stand.getCustomName().equals(symbol) || !stand.isCustomNameVisible()) {
+									stand.setCustomNameVisible(true);
+									stand.setCustomName(symbol);
 									PacketManager.updateArmorStandOnlyMeta(stand);
 								}
 							}
 						} else {					
-							ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
 							if (!stand.getCustomName().equals("") || stand.isCustomNameVisible()) {
 								stand.setCustomNameVisible(false);
 								stand.setCustomName("");

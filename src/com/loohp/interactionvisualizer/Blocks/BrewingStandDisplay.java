@@ -25,19 +25,41 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
+import com.loohp.interactionvisualizer.API.Events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
+import com.loohp.interactionvisualizer.Utils.ChatColorUtils;
 
 public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Listener {
 	
 	public ConcurrentHashMap<Block, HashMap<String, Object>> brewstand = new ConcurrentHashMap<Block, HashMap<String, Object>>();
 	public final int max = 20 * 20;
-	private Integer checkingPeriod = InteractionVisualizer.brewingstandChecking;
-	private Integer gcPeriod = InteractionVisualizer.gcPeriod;
+	private int checkingPeriod = 20;
+	private int gcPeriod = 600;
+	private String progressBarCharacter = "";
+	private String emptyColor = "&7";
+	private String filledColor = "&e";
+	private String noFuelColor = "&c";
+	private int progressBarLength = 10;
+	
+	public BrewingStandDisplay() {
+		onReload(new InteractionVisualizerReloadEvent());
+	}
+	
+	@EventHandler
+	public void onReload(InteractionVisualizerReloadEvent event) {
+		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.BrewingStand.CheckingPeriod");
+		gcPeriod = InteractionVisualizer.plugin.getConfig().getInt("GarbageCollector.Period");
+		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BrewingStand.Options.ProgressBarCharacter"));
+		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BrewingStand.Options.EmptyColor"));
+		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BrewingStand.Options.FilledColor"));
+		noFuelColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BrewingStand.Options.NoFuelColor"));
+		progressBarLength = InteractionVisualizer.plugin.getConfig().getInt("Blocks.BrewingStand.Options.ProgressBarLength");
+	}
 	
 	@Override
 	public int gc() {
@@ -59,7 +81,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 					if (isActive(block.getLocation())) {
 						active = true;
 					}
-					if (active == false) {
+					if (!active) {
 						HashMap<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
@@ -171,7 +193,11 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 							ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
 							if (hasPotion(brewingstand)) {
 								stand.setCustomNameVisible(true);
-								stand.setCustomName("§c\u2b1b");
+								String name = noFuelColor;
+								for (int i = 0; i < progressBarLength; i++) {
+									name += progressBarCharacter;
+								}
+								stand.setCustomName(name);
 								PacketManager.updateArmorStand(stand);
 							} else {
 								stand.setCustomNameVisible(false);
@@ -183,21 +209,21 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 							if (hasPotion(brewingstand)) {
 								int time = brewingstand.getBrewingTime();					
 								String symbol = "";
-								double percentagescaled = (double) (max - time) / (double) max * 10.0;
+								double percentagescaled = (double) (max - time) / (double) max * (double) progressBarLength;
 								double i = 1;
-								for (i = 1; i < percentagescaled; i = i + 1) {
-									symbol = symbol + "§6\u258e";
+								for (i = 1; i < percentagescaled; i++) {
+									symbol += filledColor + progressBarCharacter;
 								}
 								i = i - 1;
 								if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.33) {
-									symbol = symbol + "§7\u258e";
+									symbol += emptyColor + progressBarCharacter;
 								} else if ((percentagescaled - i) > 0 && (percentagescaled - i) < 0.67) {
-									symbol = symbol + "§7\u258e";
+									symbol += emptyColor + progressBarCharacter;
 								} else if ((percentagescaled - i) > 0) {
-									symbol = symbol + "§6\u258e";
+									symbol += filledColor + progressBarCharacter;
 								}
-								for (i = 10 - 1; i >= percentagescaled; i = i - 1) {
-									symbol = symbol + "§7\u258e";
+								for (i = progressBarLength - 1; i >= percentagescaled; i--) {
+									symbol += emptyColor + progressBarCharacter;
 								}
 								if (!stand.getCustomName().equals(symbol) || !stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(true);

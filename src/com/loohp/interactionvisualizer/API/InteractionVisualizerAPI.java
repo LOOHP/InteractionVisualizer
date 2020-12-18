@@ -1,6 +1,6 @@
 package com.loohp.interactionvisualizer.API;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,7 +35,7 @@ public class InteractionVisualizerAPI {
 	@return The GC period in ticks.
 	*/
 	public static int getGCPeriod() {
-		return InteractionVisualizer.gcPeriod;
+		return InteractionVisualizer.plugin.getConfig().getInt("GarbageCollector.Period");
 	}
 	
 	/**
@@ -53,11 +53,11 @@ public class InteractionVisualizerAPI {
 	public static List<Player> getPlayerModuleList(Modules module) {
 		switch (module) {
 		case HOLOGRAM:
-			return new ArrayList<Player>(InteractionVisualizer.holograms);
+			return Collections.unmodifiableList(InteractionVisualizer.holograms);
 		case ITEMDROP:
-			return new ArrayList<Player>(InteractionVisualizer.itemDrop);
+			return Collections.unmodifiableList(InteractionVisualizer.itemDrop);
 		case ITEMSTAND:
-			return new ArrayList<Player>(InteractionVisualizer.itemStand);
+			return Collections.unmodifiableList(InteractionVisualizer.itemStand);
 		}
 		return null;
 	}
@@ -69,17 +69,11 @@ public class InteractionVisualizerAPI {
 	public static boolean hasPlayerEnabledModule(Player player, Modules module) {
 		switch (module) {
 		case HOLOGRAM:
-			if (InteractionVisualizer.holograms.contains(player)) {
-				return true;
-			}
+			return InteractionVisualizer.holograms.contains(player);
 		case ITEMDROP:
-			if (InteractionVisualizer.itemDrop.contains(player)) {
-				return true;
-			}
+			return InteractionVisualizer.itemDrop.contains(player);
 		case ITEMSTAND:
-			if (InteractionVisualizer.itemStand.contains(player)) {
-				return true;
-			}
+			return InteractionVisualizer.itemStand.contains(player);
 		}
 		return false;
 	}
@@ -105,7 +99,7 @@ public class InteractionVisualizerAPI {
 		return Toggle.toggle(player, module);
 	}
 	
-	public enum ConfiguationType {
+	public static enum ConfiguationType {
 		MAIN("config.yml"),
 		MATERIAL("material.yml"),
 		EFFECTS("effect.yml"),
@@ -154,7 +148,7 @@ public class InteractionVisualizerAPI {
 	
 	/**
 	Please use getConfig(ConfiguationType configType) instead
-	@return Magic Value.
+	@return Magic Configuration.
 	*/
 	@Deprecated
 	public static FileConfiguration getConfig() {
@@ -163,7 +157,7 @@ public class InteractionVisualizerAPI {
 	
 	/**
 	Please use getConfig(ConfiguationType configType) instead
-	@return Magic Value.
+	@return Magic Configuration.
 	*/
 	@Deprecated
 	public static FileConfiguration getEnchantmentConfig() {
@@ -172,7 +166,7 @@ public class InteractionVisualizerAPI {
 	
 	/**
 	Please use getConfig(ConfiguationType configType) instead
-	@return Magic Value.
+	@return Magic Configuration.
 	*/
 	@Deprecated
 	public static FileConfiguration getMusicConfig() {
@@ -181,7 +175,7 @@ public class InteractionVisualizerAPI {
 	
 	/**
 	Please use getConfig(ConfiguationType configType) instead
-	@return Magic Value.
+	@return Magic Configuration.
 	*/
 	@Deprecated
 	public static FileConfiguration getEffectConfig() {
@@ -233,13 +227,13 @@ public class InteractionVisualizerAPI {
 		return stand;
 	}
 	
-	public enum ArmorStandHoldingMode {
+	public static enum ArmorStandHoldingMode {
 		ITEM("Item"),
 		LOWBLOCK("LowBlock"),
 		TOOL("Tool"),
 		STANDING("Standing");
 		
-		String mode;
+		private String mode;
 		
 		ArmorStandHoldingMode(String mode) {
 			this.mode = mode;
@@ -247,6 +241,15 @@ public class InteractionVisualizerAPI {
 		
 		public String toString() {
 			return mode;
+		}
+		
+		public static ArmorStandHoldingMode fromName(String name) {
+			for (ArmorStandHoldingMode mode : values()) {
+				if (mode.toString().equalsIgnoreCase(name)) {
+					return mode;
+				}
+			}
+			return null;
 		}
 	}
 	
@@ -256,7 +259,7 @@ public class InteractionVisualizerAPI {
 	@return The same InteractionVisualizer ArmorStand object.
 	*/
 	public static ArmorStandHoldingMode getArmorStandItemHoldingObjectMode(ArmorStand stand, ArmorStandHoldingMode mode) {
-		switch (standMode(stand).toLowerCase()) {
+		switch (getStandModeRaw(stand).toLowerCase()) {
 		case "Item":
 			return ArmorStandHoldingMode.ITEM;
 		case "LowBlock":
@@ -305,9 +308,17 @@ public class InteractionVisualizerAPI {
 		stand.setRotation(yaw, stand.getLocation().getPitch());
 	}
 	
-	private static String standMode(ArmorStand stand) {
+	@Deprecated
+	public static String getStandModeRaw(ArmorStand stand) {
 		if (stand.getCustomName().startsWith("IV.Custom.")) {
 			return stand.getCustomName().substring(stand.getCustomName().lastIndexOf(".") + 1);
+		}
+		return null;
+	}
+	
+	public static ArmorStandHoldingMode getStandMode(ArmorStand stand) {
+		if (stand.getCustomName().startsWith("IV.Custom.")) {
+			return ArmorStandHoldingMode.fromName(stand.getCustomName().substring(stand.getCustomName().lastIndexOf(".") + 1));
 		}
 		return null;
 	}
