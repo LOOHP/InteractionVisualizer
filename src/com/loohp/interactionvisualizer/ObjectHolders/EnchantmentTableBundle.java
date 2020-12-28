@@ -228,8 +228,6 @@ public class EnchantmentTableBundle {
 	}
 	
 	protected CompletableFuture<Boolean> playPickUpAnimationAndRemoveMethod(ItemStack itemstack, Map<Block, EnchantmentTableBundle> mapToRemoveFrom) {
-		Bukkit.getScheduler().cancelTask(timerTaskId);
-		
 		CompletableFuture<Boolean> future = new CompletableFuture<>();
 		
 		if (!item.isPresent()) {
