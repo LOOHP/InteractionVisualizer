@@ -1,7 +1,6 @@
 package com.loohp.interactionvisualizer.Protocol;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,43 +15,19 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
+import com.comphenix.protocol.wrappers.Pair;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
 import com.loohp.interactionvisualizer.Utils.MCVersion;
-import com.mojang.datafixers.util.Pair;
 
 public class ServerPacketSender {
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
 	private static MCVersion version = InteractionVisualizer.version;
 	private static ProtocolManager protocolManager = InteractionVisualizer.protocolManager;
-	
-	private static Class<?> nmsEnumItemSlotClass;
-	private static Class<?> craftItemStackClass;
-	private static Method asNMSCopyMethod;
-	private static Object[] nmsItemSlotEnums;
-	
-	static {
-		if (version.isPost1_16()) {
-			try {
-				nmsEnumItemSlotClass = getNMSClass("net.minecraft.server.", "EnumItemSlot");
-				craftItemStackClass = getNMSClass("org.bukkit.craftbukkit.", "inventory.CraftItemStack");
-				asNMSCopyMethod = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class);
-				nmsItemSlotEnums = nmsEnumItemSlotClass.getEnumConstants();
-			} catch (ClassNotFoundException | NoSuchMethodException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	private static Class<?> getNMSClass(String prefix, String nmsClassString) throws ClassNotFoundException {
-        String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
-        String name = prefix + version + nmsClassString;
-        return Class.forName(name);
-    }
 	
 	public static void sendHandMovement(List<Player> players, Player entity) {
 		if (!InteractionVisualizer.handMovementEnabled) {
@@ -96,28 +71,18 @@ public class ServerPacketSender {
         
         PacketContainer packet3 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
         packet3.getIntegers().write(0, entity.getEntityId());
-        if (version.isPost1_16()) {
-        	/*
+        if (version.isNewerOrEqualTo(MCVersion.V1_16)) {
         	List<Pair<ItemSlot, ItemStack>> pairs = new ArrayList<>();
         	pairs.add(new Pair<ItemSlot, ItemStack>(ItemSlot.MAINHAND, entity.getItemInMainHand()));
         	pairs.add(new Pair<ItemSlot, ItemStack>(ItemSlot.HEAD, entity.getHelmet()));
         	packet3.getSlotStackPairLists().write(0, pairs);
-        	*/
-			try {
-				List<Pair<Object, Object>> pairs = new ArrayList<>(2);
-				pairs.add(new Pair<Object, Object>(nmsItemSlotEnums[0], asNMSCopyMethod.invoke(null, entity.getItemInMainHand())));
-				pairs.add(new Pair<Object, Object>(nmsItemSlotEnums[5], asNMSCopyMethod.invoke(null, entity.getHelmet())));
-				packet3.getModifier().write(1, pairs);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
         } else {
         	packet3.getItemSlots().write(0, ItemSlot.MAINHAND);
         	packet3.getItemModifier().write(0, entity.getItemInMainHand());
         }
 
         PacketContainer packet4 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
-        if (!version.isPost1_16()) {
+        if (!version.isNewerOrEqualTo(MCVersion.V1_16)) {
         	packet4.getIntegers().write(0, entity.getEntityId());
         	packet4.getItemSlots().write(0, ItemSlot.HEAD);
         	packet4.getItemModifier().write(0, entity.getHelmet());
@@ -132,7 +97,7 @@ public class ServerPacketSender {
 					protocolManager.sendServerPacket(player, packet1);
 					protocolManager.sendServerPacket(player, packet2);
 					protocolManager.sendServerPacket(player, packet3);
-					if (!version.isPost1_16()) {
+					if (!version.isNewerOrEqualTo(MCVersion.V1_16)) {
 						protocolManager.sendServerPacket(player, packet4);
 					}
 				}
@@ -158,28 +123,18 @@ public class ServerPacketSender {
 
         PacketContainer packet3 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
         packet3.getIntegers().write(0, entity.getEntityId());
-        if (version.isPost1_16()) {
-        	/*
+        if (version.isNewerOrEqualTo(MCVersion.V1_16)) {
         	List<Pair<ItemSlot, ItemStack>> pairs = new ArrayList<>();
         	pairs.add(new Pair<ItemSlot, ItemStack>(ItemSlot.MAINHAND, entity.getItemInMainHand()));
         	pairs.add(new Pair<ItemSlot, ItemStack>(ItemSlot.HEAD, entity.getHelmet()));
         	packet3.getSlotStackPairLists().write(0, pairs);
-        	*/
-        	try {
-				List<Pair<Object, Object>> pairs = new ArrayList<>(2);
-				pairs.add(new Pair<Object, Object>(nmsItemSlotEnums[0], asNMSCopyMethod.invoke(null, entity.getItemInMainHand())));
-				pairs.add(new Pair<Object, Object>(nmsItemSlotEnums[5], asNMSCopyMethod.invoke(null, entity.getHelmet())));
-				packet3.getModifier().write(1, pairs);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
         } else {
         	packet3.getItemSlots().write(0, ItemSlot.MAINHAND);
         	packet3.getItemModifier().write(0, entity.getItemInMainHand());
         }
 
         PacketContainer packet4 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
-        if (!version.isPost1_16()) {
+        if (!version.isNewerOrEqualTo(MCVersion.V1_16)) {
         	packet4.getIntegers().write(0, entity.getEntityId());
         	packet4.getItemSlots().write(0, ItemSlot.HEAD);
         	packet4.getItemModifier().write(0, entity.getHelmet());
@@ -194,7 +149,7 @@ public class ServerPacketSender {
 					protocolManager.sendServerPacket(player, packet1);
 					protocolManager.sendServerPacket(player, packet2);
 					protocolManager.sendServerPacket(player, packet3);
-					if (!version.isPost1_16()) {
+					if (!version.isNewerOrEqualTo(MCVersion.V1_16)) {
 						protocolManager.sendServerPacket(player, packet4);
 					}
 				}

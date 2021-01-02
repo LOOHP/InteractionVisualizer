@@ -136,9 +136,7 @@ public class TaskManager {
 			craftingtable = true;
 		}
 		
-		if (config.getBoolean("Blocks.Loom.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.isPost1_16())
-				) {
+		if (config.getBoolean("Blocks.Loom.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			LoomDisplay ld = new LoomDisplay();
 			ld.register(InventoryType.LOOM);
 			Bukkit.getPluginManager().registerEvents(ld, plugin);
@@ -152,9 +150,7 @@ public class TaskManager {
 			enchantmenttable = true;
 		}
 		
-		if (config.getBoolean("Blocks.CartographyTable.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.isPost1_16())
-				) {
+		if (config.getBoolean("Blocks.CartographyTable.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			CartographyTableDisplay ctd = new CartographyTableDisplay();
 			ctd.register(InventoryType.CARTOGRAPHY);
 			Bukkit.getPluginManager().registerEvents(ctd, plugin);
@@ -168,18 +164,14 @@ public class TaskManager {
 			anvil = true;
 		}
 		
-		if (config.getBoolean("Blocks.Grindstone.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.isPost1_16())
-				) {
+		if (config.getBoolean("Blocks.Grindstone.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			GrindstoneDisplay gd = new GrindstoneDisplay();
 			gd.register(InventoryType.GRINDSTONE);
 			Bukkit.getPluginManager().registerEvents(gd, plugin);
 			grindstone = true;
 		}
 		
-		if (config.getBoolean("Blocks.Stonecutter.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.isPost1_16())
-				) {
+		if (config.getBoolean("Blocks.Stonecutter.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			StonecutterDisplay sd = new StonecutterDisplay();
 			sd.register(InventoryType.STONECUTTER);
 			Bukkit.getPluginManager().registerEvents(sd, plugin);
@@ -210,18 +202,14 @@ public class TaskManager {
 			furnace = true;
 		}
 		
-		if (config.getBoolean("Blocks.BlastFurnace.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.isPost1_16())
-				) {
+		if (config.getBoolean("Blocks.BlastFurnace.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			BlastFurnaceDisplay bfd = new BlastFurnaceDisplay();
 			bfd.register();
 			Bukkit.getPluginManager().registerEvents(bfd, plugin);
 			blastfurnace = true;
 		}
 		
-		if (config.getBoolean("Blocks.Smoker.Enabled") &&
-				   (version.equals(MCVersion.V1_14) || version.equals(MCVersion.V1_15) || version.isPost1_16())
-				) {
+		if (config.getBoolean("Blocks.Smoker.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			SmokerDisplay sd = new SmokerDisplay();
 			sd.register();
 			Bukkit.getPluginManager().registerEvents(sd, plugin);
@@ -276,9 +264,7 @@ public class TaskManager {
 			jukebox = true;
 		}
 		
-		if (config.getBoolean("Blocks.SmithingTable.Enabled") &&
-				   (version.isPost1_16())
-				) {
+		if (config.getBoolean("Blocks.SmithingTable.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_16)) {
 			SmithingTableDisplay std = new SmithingTableDisplay();
 			std.register(InventoryType.SMITHING);
 			Bukkit.getPluginManager().registerEvents(std, plugin);

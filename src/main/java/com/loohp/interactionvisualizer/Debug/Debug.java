@@ -37,7 +37,7 @@ public class Debug implements Listener {
 			}
 		}
 		
-		if (InteractionVisualizer.version.isPost1_16()) {
+		if (InteractionVisualizer.version.isNewerOrEqualTo(MCVersion.V1_16_4)) {
 			Bukkit.removeRecipe(new NamespacedKey(InteractionVisualizer.plugin, "nana_bone"));
 		}
 		
