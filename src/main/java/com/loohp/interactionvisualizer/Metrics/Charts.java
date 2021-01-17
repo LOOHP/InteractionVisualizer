@@ -36,6 +36,28 @@ public class Charts {
 	        }
 	    }));
 		
+		metrics.addCustomChart(new Metrics.SimplePie("beehive_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (config.getBoolean("Blocks.BeeHive.Enabled")) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
+		metrics.addCustomChart(new Metrics.SimplePie("beenest_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (config.getBoolean("Blocks.BeeNest.Enabled")) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
 		metrics.addCustomChart(new Metrics.SimplePie("blastfurnace_enabled", new Callable<String>() {
 	        @Override
 	        public String call() throws Exception {

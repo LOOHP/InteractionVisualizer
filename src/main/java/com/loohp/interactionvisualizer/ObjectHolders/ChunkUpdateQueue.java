@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class ChunkUpdateQueue {
 	
-	Set<ChunkPosition> queue;
+	private Set<ChunkPosition> queue;
 	
 	public ChunkUpdateQueue() {
 		queue = new LinkedHashSet<ChunkPosition>();

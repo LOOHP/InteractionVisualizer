@@ -32,13 +32,15 @@ public class TileEntityManager {
 	
 	private static Integer tileEntityChunkPerTick = InteractionVisualizer.tileEntityChunkPerTick;
 	
-	public enum TileEntityType {
+	public static enum TileEntityType {
 		BLAST_FURNACE,
 		BREWING_STAND,
 		FURNACE,
 		SMOKER,
 		BEACON,
-		JUKEBOX;
+		JUKEBOX,
+		BEE_NEST,
+		BEEHIVE;
 	}
 	
 	public static List<Block> getTileEntites(TileEntityType type) {
@@ -53,6 +55,8 @@ public class TileEntityManager {
 		upcomming.put(TileEntityType.SMOKER, new LinkedList<Block>());
 		upcomming.put(TileEntityType.BEACON, new LinkedList<Block>());
 		upcomming.put(TileEntityType.JUKEBOX, new LinkedList<Block>());
+		upcomming.put(TileEntityType.BEE_NEST, new LinkedList<Block>());
+		upcomming.put(TileEntityType.BEEHIVE, new LinkedList<Block>());
 		stateTaskCount.set(0);
 		stateDoneCount.set(0);
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> getAllChunks());
@@ -138,6 +142,10 @@ public class TileEntityManager {
 				upcomming.get(TileEntityType.BEACON).add(block);
 			} else if (type.toString().toUpperCase().equals("JUKEBOX")) {
 				upcomming.get(TileEntityType.JUKEBOX).add(block);
+			} else if (type.toString().toUpperCase().equals("BEE_NEST")) {
+				upcomming.get(TileEntityType.BEE_NEST).add(block);
+			} else if (type.toString().toUpperCase().equals("BEEHIVE")) {
+				upcomming.get(TileEntityType.BEEHIVE).add(block);
 			}
 		}
 		if (plugin.isEnabled()) {
@@ -168,6 +176,10 @@ public class TileEntityManager {
 				upcomming.get(TileEntityType.BEACON).add(block);
 			} else if (type.toString().toUpperCase().equals("JUKEBOX")) {
 				upcomming.get(TileEntityType.JUKEBOX).add(block);
+			} else if (type.toString().toUpperCase().equals("BEE_NEST")) {
+				upcomming.get(TileEntityType.BEE_NEST).add(block);
+			} else if (type.toString().toUpperCase().equals("BEEHIVE")) {
+				upcomming.get(TileEntityType.BEEHIVE).add(block);
 			}
 			if (count > 10) {
 				break;

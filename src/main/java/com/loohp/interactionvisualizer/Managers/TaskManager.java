@@ -17,6 +17,8 @@ import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.Blocks.AnvilDisplay;
 import com.loohp.interactionvisualizer.Blocks.BeaconDisplay;
+import com.loohp.interactionvisualizer.Blocks.BeeHiveDisplay;
+import com.loohp.interactionvisualizer.Blocks.BeeNestDisplay;
 import com.loohp.interactionvisualizer.Blocks.BlastFurnaceDisplay;
 import com.loohp.interactionvisualizer.Blocks.BrewingStandDisplay;
 import com.loohp.interactionvisualizer.Blocks.CartographyTableDisplay;
@@ -51,6 +53,8 @@ public class TaskManager {
 	
 	public static boolean anvil;
 	public static boolean beacon;
+	public static boolean beehive;
+	public static boolean beenest;
 	public static boolean blastfurnace;
 	public static boolean brewingstand;
 	public static boolean cartographytable;
@@ -82,6 +86,8 @@ public class TaskManager {
 	public static void setup() {
 		anvil = false;
 		beacon = false;
+		beehive = false;
+		beenest = false;
 		blastfurnace = false;
 		brewingstand = false;
 		cartographytable = false;
@@ -269,6 +275,20 @@ public class TaskManager {
 			std.register(InventoryType.SMITHING);
 			Bukkit.getPluginManager().registerEvents(std, plugin);
 			smithingtable = true;
+		}
+		
+		if (config.getBoolean("Blocks.BeeNest.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_15)) {
+			BeeNestDisplay bnd = new BeeNestDisplay();
+			bnd.register();
+			Bukkit.getPluginManager().registerEvents(bnd, plugin);
+			beenest = true;
+		}
+		
+		if (config.getBoolean("Blocks.BeeHive.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_15)) {
+			BeeHiveDisplay bhd = new BeeHiveDisplay();
+			bhd.register();
+			Bukkit.getPluginManager().registerEvents(bhd, plugin);
+			beehive = true;
 		}
 		
 		if (config.getBoolean("Entities.Villager.Enabled")) {
