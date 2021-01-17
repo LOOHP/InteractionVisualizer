@@ -28,6 +28,8 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.API.Events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
@@ -96,11 +98,11 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 						HashMap<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
-							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 						}
 						if (map.get("Stand") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("Stand");
-							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
 						smokerMap.remove(block);
 						return;
@@ -109,11 +111,11 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 						HashMap<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
-							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 						}
 						if (map.get("Stand") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("Stand");
-							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
 						smokerMap.remove(block);
 						return;
@@ -189,7 +191,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 								item.setPickupDelay(32767);
 								item.setGravity(false);
 								entry.getValue().put("Item", item);
-								PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+								PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
 								PacketManager.updateItem(item);
 							} else {
 								entry.getValue().put("Item", "N/A");
@@ -203,7 +205,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 								}
 							} else {
 								entry.getValue().put("Item", "N/A");
-								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+								PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 							}
 						}
 	
@@ -360,8 +362,8 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 			PacketManager.updateItem(item);
 			
 			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
-				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
+				PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 			}, 8);
 		}, 1);
 	}
@@ -392,7 +394,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 2) {
-			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), (Player) event.getWhoClicked());
 		}
 	}
 	
@@ -423,7 +425,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 2) {
-				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), (Player) event.getWhoClicked());
 				break;
 			}
 		}
@@ -442,11 +444,11 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 		HashMap<String, Object> map = smokerMap.get(block);
 		if (map.get("Item") instanceof Item) {
 			Item item = (Item) map.get("Item");
-			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+			PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 		}
 		if (map.get("Stand") instanceof ArmorStand) {
 			ArmorStand stand = (ArmorStand) map.get("Stand");
-			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 		}
 		smokerMap.remove(block);
 	}
@@ -497,7 +499,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 		
 		map.put("Stand", slot1);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizer.holograms, slot1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), slot1);
 		
 		return map;
 	}

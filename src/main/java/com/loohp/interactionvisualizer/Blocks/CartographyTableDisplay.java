@@ -22,6 +22,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
@@ -69,7 +71,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
 							
 							if (map.get("Item") instanceof ItemFrame) {
 								Entity entity = (Entity) map.get("Item");
-								PacketManager.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), (ItemFrame) entity);
+								PacketManager.removeItemFrame(InteractionVisualizerAPI.getPlayers(), (ItemFrame) entity);
 							}
 							openedCTable.remove(block);
 						}
@@ -146,7 +148,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
 					item.setFacingDirection(BlockFace.UP);
 					item.setSilent(true);
 					map.put("Item", item);
-					PacketManager.sendItemFrameSpawn(InteractionVisualizer.itemStand, item);
+					PacketManager.sendItemFrameSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), item);
 					PacketManager.updateItemFrame(item);
 				} else {
 					map.put("Item", "N/A");
@@ -160,7 +162,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
 					}
 				} else {
 					map.put("Item", "N/A");
-					PacketManager.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.removeItemFrame(InteractionVisualizerAPI.getPlayers(), item);
 				}
 			}
 		}
@@ -176,7 +178,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 1) {
-			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), (Player) event.getWhoClicked());
 		}
 	}
 	
@@ -191,7 +193,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 1) {
-				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), (Player) event.getWhoClicked());
 				break;
 			}
 		}
@@ -216,7 +218,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
 		
 		if (map.get("Item") instanceof ItemFrame) {
 			ItemFrame entity = (ItemFrame) map.get("Item");
-			PacketManager.removeItemFrame(InteractionVisualizer.getOnlinePlayers(), entity);
+			PacketManager.removeItemFrame(InteractionVisualizerAPI.getPlayers(), entity);
 		}
 		openedCTable.remove(block);
 		playermap.remove((Player) event.getPlayer());

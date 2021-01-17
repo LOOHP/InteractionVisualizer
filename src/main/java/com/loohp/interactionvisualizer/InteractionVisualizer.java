@@ -1,15 +1,12 @@
 package com.loohp.interactionvisualizer;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -61,9 +58,9 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static Boolean cmi = false;
 	public static Boolean ess3 = false;
 	
-	public static List<Player> itemStand = new CopyOnWriteArrayList<Player>();
-	public static List<Player> itemDrop = new CopyOnWriteArrayList<Player>();
-	public static List<Player> holograms = new CopyOnWriteArrayList<Player>();
+	public static Set<Player> itemStand = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	public static Set<Player> itemDrop = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	public static Set<Player> holograms = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	
 	public static Set<String> exemptBlocks = new HashSet<String>();
 	
@@ -86,12 +83,6 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static boolean UpdaterEnabled = true;
 	
 	public static Map<World, Integer> playerTrackingRange = new HashMap<>();
-	
-	public enum Modules {
-		ITEMSTAND,
-		ITEMDROP,
-		HOLOGRAM;
-	}
 	
 	@Override
 	public void onEnable() {
@@ -330,10 +321,6 @@ public class InteractionVisualizer extends JavaPlugin {
 		}
 		
 		getServer().getPluginManager().callEvent(new InteractionVisualizerReloadEvent());
-	}
-	
-	public static List<Player> getOnlinePlayers() {
-		return new ArrayList<Player>(Bukkit.getOnlinePlayers());
 	}
 	
 	private static void unsupportedMessage() {

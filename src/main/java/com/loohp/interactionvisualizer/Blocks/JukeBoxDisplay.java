@@ -18,6 +18,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.API.Events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
@@ -71,7 +73,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 						HashMap<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
-							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 						}
 						jukeboxMap.remove(block);
 						return;
@@ -80,7 +82,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 						HashMap<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
-							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 						}
 						jukeboxMap.remove(block);
 						return;
@@ -145,7 +147,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 								item.setCustomName(text);
 								item.setCustomNameVisible(true);
 								entry.getValue().put("Item", item);
-								PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+								PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
 								PacketManager.updateItem(item);
 							} else {
 								entry.getValue().put("Item", "N/A");
@@ -164,7 +166,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 								}
 							} else {
 								entry.getValue().put("Item", "N/A");
-								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+								PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 							}
 						}
 					});
@@ -186,7 +188,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 		HashMap<String, Object> map = jukeboxMap.get(block);
 		if (map.get("Item") instanceof Item) {
 			Item item = (Item) map.get("Item");
-			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+			PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 		}
 		jukeboxMap.remove(block);
 	}

@@ -2,6 +2,7 @@ package com.loohp.interactionvisualizer.ObjectHolders;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
@@ -56,7 +59,7 @@ public class EnchantmentTableBundle {
 	private Location location;
 	private Optional<Item> item;
 	private Player enchanter;
-	private List<Player> players;
+	private Collection<Player> players;
 	private char arrow;
 	
 	private List<Item> createdItems;
@@ -66,7 +69,7 @@ public class EnchantmentTableBundle {
 	
 	private final int timerTaskId;
 	
-	public EnchantmentTableBundle(Player enchanter, Block block, List<Player> players) {
+	public EnchantmentTableBundle(Player enchanter, Block block, Collection<Player> players) {
 		this.plugin = InteractionVisualizer.plugin;
 		this.block = block;
 		this.location = block.getLocation().clone();
@@ -114,7 +117,7 @@ public class EnchantmentTableBundle {
 		if (!this.item.isPresent()) {
 			this.item = Optional.of(new Item(location.clone().add(0.5, 1.3, 0.5)));
 			createdItems.add(this.item.get());
-			PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item.get());
+			PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item.get());
 		}
 		
 		Item item = this.item.get();
@@ -124,7 +127,7 @@ public class EnchantmentTableBundle {
 		item.setLocked(true);
 		item.setVelocity(new Vector(0.0, 0.05, 0.0));
 		PacketManager.updateItem(item);
-		for (Player each : InteractionVisualizer.itemDrop) {
+		for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP)) {
 			each.spawnParticle(Particle.PORTAL, location.clone().add(0.5, 2.6, 0.5), 200);
 		}
 		
@@ -152,7 +155,7 @@ public class EnchantmentTableBundle {
 				stand.setCustomName(display);
 				stand.setCustomNameVisible(true);
 				setStand(stand);
-				PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemDrop, stand);
+				PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), stand);
 				stands.add(stand);
 				standloc.add(0.0, 0.3, 0.0);
 			}
@@ -162,7 +165,7 @@ public class EnchantmentTableBundle {
 			stand.setCustomName(ChatColor.GREEN + levelStr + " " + arrow + " " + expCost);
 			stand.setCustomNameVisible(true);
 			setStand(stand);
-			PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemDrop, stand);
+			PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), stand);
 			stands.add(stand);
 			
 			PacketManager.updateItem(item);
@@ -171,7 +174,7 @@ public class EnchantmentTableBundle {
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
 			while (!stands.isEmpty()) {
 				ArmorStand stand = stands.remove(0);
-				PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+				PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 			}
 			item.setGravity(true);
 			PacketManager.updateItem(item);
@@ -214,8 +217,8 @@ public class EnchantmentTableBundle {
 		PacketManager.updateItem(item);
 		
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
-			SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
-			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+			SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
+			PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 			createdItems.remove(item);
 		    this.item = Optional.empty();
 		    future.complete(false);
@@ -247,8 +250,8 @@ public class EnchantmentTableBundle {
 			PacketManager.updateItem(item);
 			
 			Bukkit.getScheduler().runTaskLater(plugin, () -> {
-				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
-				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
+				PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 				createdItems.remove(item);
 				mapToRemoveFrom.remove(block);
 				future.complete(true);
@@ -293,7 +296,7 @@ public class EnchantmentTableBundle {
 	
 	public void clearItemStack() {
 		if (this.item.isPresent()) {
-			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item.get());
+			PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item.get());
 			createdItems.remove(item.get());
 			this.item = Optional.empty();
 		}
@@ -316,7 +319,7 @@ public class EnchantmentTableBundle {
 		return enchanter;
 	}
 	
-	public List<Player> getViewers() {
+	public Collection<Player> getViewers() {
 		return players;
 	}
 	

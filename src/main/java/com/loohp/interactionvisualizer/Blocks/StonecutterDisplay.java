@@ -26,6 +26,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
@@ -75,7 +77,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 							
 							if (map.get("Item") instanceof Item) {
 								Item entity = (Item) map.get("Item");
-								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
+								PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), (Item) entity);
 							}
 							openedStonecutter.remove(block);
 						}
@@ -166,7 +168,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 				item.setPickupDelay(32767);
 				item.setGravity(false);
 				map.put("Item", item);
-				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
 				PacketManager.updateItem(item);
 			} else {
 				map.put("Item", "N/A");
@@ -182,7 +184,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 				item.setGravity(false);
 			} else {
 				map.put("Item", "N/A");
-				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+				PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 			}
 		}
 	}
@@ -273,8 +275,8 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 			PacketManager.updateItem(item);
 			
 			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
-				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
+				PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 			}, 8);
 		}, 1);
 	}
@@ -289,7 +291,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 1) {
-			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), (Player) event.getWhoClicked());
 		}
 	}
 	
@@ -304,7 +306,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 1) {
-				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), (Player) event.getWhoClicked());
 				break;
 			}
 		}
@@ -329,7 +331,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 		
 		if (map.get("Item") instanceof Item) {
 			Item entity = (Item) map.get("Item");
-			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), entity);
+			PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), entity);
 		}
 		openedStonecutter.remove(block);
 		playermap.remove((Player) event.getPlayer());

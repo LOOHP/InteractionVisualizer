@@ -13,6 +13,8 @@ import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
@@ -79,10 +81,10 @@ public class VillagerDisplay implements Listener {
 			in.setItemStack(item0);
 			in.setGravity(true);
 			in.setVelocity(vector);
-			PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, in);
+			PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), in);
 			PacketManager.updateItem(in);
 			
-			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), in), 14);
+			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), in), 14);
 		}
 		
 		ItemStack item1final = item1;
@@ -93,10 +95,10 @@ public class VillagerDisplay implements Listener {
 				in.setItemStack(item1final);
 				in.setGravity(true);
 				in.setVelocity(vector);
-				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, in);
+				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), in);
 				PacketManager.updateItem(in);
 				
-				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), in), 14);
+				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), in), 14);
 			}
 		}, 8);
 				
@@ -106,10 +108,10 @@ public class VillagerDisplay implements Listener {
 			out.setItemStack(item2);
 			out.setGravity(true);
 			out.setVelocity(vector);
-			PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, out);
+			PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), out);
 			PacketManager.updateItem(out);
 			
-			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), out), 12);
+			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), out), 12);
 		}, 40);
 	}
 

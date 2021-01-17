@@ -6,7 +6,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.InteractionVisualizer.Modules;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.Database.Database;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -34,7 +35,7 @@ public class Placeholders extends PlaceholderExpansion {
         if (identifier.equals("itemstand")) {
         	if (offlineplayer.isOnline()) {
         		Player player = offlineplayer.getPlayer();
-        		if (InteractionVisualizer.itemStand.contains(player)) {
+        		if (InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND).contains(player)) {
         			return "enabled";
         		}
         		return "disabled";
@@ -49,7 +50,7 @@ public class Placeholders extends PlaceholderExpansion {
         if (identifier.equals("itemdrop")) {
         	if (offlineplayer.isOnline()) {
         		Player player = offlineplayer.getPlayer();
-        		if (InteractionVisualizer.itemDrop.contains(player)) {
+        		if (InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP).contains(player)) {
         			return "enabled";
         		}
         		return "disabled";
@@ -64,7 +65,7 @@ public class Placeholders extends PlaceholderExpansion {
         if (identifier.equals("hologram")) {
         	if (offlineplayer.isOnline()) {
         		Player player = offlineplayer.getPlayer();
-        		if (InteractionVisualizer.holograms.contains(player)) {
+        		if (InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM).contains(player)) {
         			return "enabled";
         		}
         		return "disabled";

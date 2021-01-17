@@ -21,6 +21,8 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.API.Events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
@@ -76,15 +78,15 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 						HashMap<String, Object> map = entry.getValue();
 						if (map.get("1") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("1");
-							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
 						if (map.get("2") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("2");
-							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
 						if (map.get("3") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("3");
-							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
 						beaconMap.remove(block);
 						return;
@@ -93,15 +95,15 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 						HashMap<String, Object> map = entry.getValue();
 						if (map.get("1") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("1");
-							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
 						if (map.get("2") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("2");
-							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
 						if (map.get("3") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("3");
-							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
 						beaconMap.remove(block);
 						CustomBlockDataManager.removeBlock(CustomBlockDataManager.locKey(block.getLocation()));
@@ -260,15 +262,15 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 		HashMap<String, Object> map = beaconMap.get(block);
 		if (map.get("1") instanceof ArmorStand) {
 			ArmorStand stand = (ArmorStand) map.get("1");
-			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 		}
 		if (map.get("2") instanceof ArmorStand) {
 			ArmorStand stand = (ArmorStand) map.get("2");
-			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 		}
 		if (map.get("3") instanceof ArmorStand) {
 			ArmorStand stand = (ArmorStand) map.get("3");
-			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 		}
 		beaconMap.remove(block);
 		CustomBlockDataManager.removeBlock(CustomBlockDataManager.locKey(block.getLocation()));
@@ -301,9 +303,9 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 		map.put("2", line2);
 		map.put("3", line3);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizer.holograms, line1);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizer.holograms, line2);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizer.holograms, line3);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), line1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), line2);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), line3);
 		
 		return map;
 	}

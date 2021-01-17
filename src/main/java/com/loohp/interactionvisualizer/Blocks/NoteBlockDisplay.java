@@ -17,6 +17,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.Managers.MusicManager;
@@ -44,7 +46,7 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
 				long timeout = (long) entry.getValue().get("Timeout");
 				if (unix > timeout) {
 					ArmorStand stand = (ArmorStand) entry.getValue().get("Stand");
-					Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand));
+					Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand));
 					itr.remove();
 				}
 			}
@@ -100,7 +102,7 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
 			
 			stand.setCustomName(text);
 			
-			PacketManager.sendArmorStandSpawn(InteractionVisualizer.holograms, stand);
+			PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), stand);
 			PacketManager.updateArmorStand(stand);
 		}, 1);
 	}

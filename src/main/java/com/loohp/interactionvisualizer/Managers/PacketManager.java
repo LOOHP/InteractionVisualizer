@@ -1,10 +1,9 @@
 package com.loohp.interactionvisualizer.Managers;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
@@ -33,7 +33,7 @@ public class PacketManager implements Listener {
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
 	
-	public static ConcurrentHashMap<VisualizerEntity, List<Player>> active = new ConcurrentHashMap<VisualizerEntity, List<Player>>();
+	public static ConcurrentHashMap<VisualizerEntity, Collection<Player>> active = new ConcurrentHashMap<VisualizerEntity, Collection<Player>>();
 	public static ConcurrentHashMap<VisualizerEntity, Boolean> loaded = new ConcurrentHashMap<VisualizerEntity, Boolean>();
 	private static ConcurrentHashMap<VisualizerEntity, Integer> cache = new ConcurrentHashMap<VisualizerEntity, Integer>();
 	
@@ -58,12 +58,12 @@ public class PacketManager implements Listener {
 							return;
 						}
 						Bukkit.getScheduler().runTask(plugin, () -> {		
-							List<Player> players = active.get(entity);
+							Collection<Player> players = active.get(entity);
 							if (players == null) {
 								return;
 							}
 							if (isOccluding(stand.getLocation().getBlock().getType())) {
-								removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand, false, false);
+								removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand, false, false);
 								loaded.put(entity, false);
 							}
 						});
@@ -72,7 +72,7 @@ public class PacketManager implements Listener {
 							if (!PlayerLocationManager.hasPlayerNearby(stand.getLocation())) {
 								return;
 							}
-							List<Player> players = active.get(entity);
+							Collection<Player> players = active.get(entity);
 							if (players == null) {
 								return;
 							}
@@ -93,12 +93,12 @@ public class PacketManager implements Listener {
 							return;
 						}
 						Bukkit.getScheduler().runTask(plugin, () -> {
-							List<Player> players = active.get(entity);
+							Collection<Player> players = active.get(entity);
 							if (players == null) {
 								return;
 							}
 							if (isOccluding(item.getLocation().getBlock().getType())) {
-								removeItem(InteractionVisualizer.getOnlinePlayers(), item, false, false);
+								removeItem(InteractionVisualizerAPI.getPlayers(), item, false, false);
 								loaded.put(entity, false);
 							}
 						});
@@ -107,7 +107,7 @@ public class PacketManager implements Listener {
 							return;
 						}
 						Bukkit.getScheduler().runTask(plugin, () -> {
-							List<Player> players = active.get(entity);
+							Collection<Player> players = active.get(entity);
 							if (players == null) {
 								return;
 							}
@@ -128,12 +128,12 @@ public class PacketManager implements Listener {
 							return;
 						}
 						Bukkit.getScheduler().runTask(plugin, () -> {
-							List<Player> players = active.get(entity);
+							Collection<Player> players = active.get(entity);
 							if (players == null) {
 								return;
 							}
 							if (isOccluding(frame.getLocation().getBlock().getType())) {
-								removeItemFrame(InteractionVisualizer.getOnlinePlayers(), frame, false, false);
+								removeItemFrame(InteractionVisualizerAPI.getPlayers(), frame, false, false);
 								loaded.put(entity, false);
 							}
 						});
@@ -142,7 +142,7 @@ public class PacketManager implements Listener {
 							return;
 						}
 						Bukkit.getScheduler().runTask(plugin, () -> {
-							List<Player> players = active.get(entity);
+							Collection<Player> players = active.get(entity);
 							if (players == null) {
 								return;
 							}
@@ -177,7 +177,7 @@ public class PacketManager implements Listener {
 					continue;
 				}
 				
-				List<Player> playerList = new LinkedList<Player>();
+				Collection<Player> playerList = new HashSet<Player>();
 				playerList.add(player);
 				
 				Location playerLocation = PlayerLocationManager.getPlayerLocation(player);
@@ -232,7 +232,7 @@ public class PacketManager implements Listener {
 		}, 0, 20).getTaskId();
 	}
 	/*
-	public static void sendLightUpdate(List<Player> players, Location location, int skysubchunkbitmask, List<byte[]> skybytearray, int blocksubchunkbitmask, List<byte[]> blockbytearray) {
+	public static void sendLightUpdate(Collection<Player> players, Location location, int skysubchunkbitmask, List<byte[]> skybytearray, int blocksubchunkbitmask, List<byte[]> blockbytearray) {
 		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.LIGHT_UPDATE);
 		int chunkX = (int) Math.floor((double) location.getBlockX() / 16.0);
 		int chunkZ = (int) Math.floor((double) location.getBlockZ() / 16.0);
@@ -255,17 +255,17 @@ public class PacketManager implements Listener {
 		}
 	}
 	*/
-	public static void sendHandMovement(List<Player> players, Player entity) {
+	public static void sendHandMovement(Collection<Player> players, Player entity) {
 		if (!plugin.isEnabled()) {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOrRange(players, entity);
+			Collection<Player> playersInRange = filterOutOrRange(players, entity);
 			ServerPacketSender.sendHandMovement(playersInRange, entity);
 		});
 	}
 	
-	public static void sendArmorStandSpawn(List<Player> players, ArmorStand entity) {
+	public static void sendArmorStandSpawn(Collection<Player> players, ArmorStand entity) {
 		if (!active.containsKey(entity)) {
 			active.put(entity, players);
 			loaded.put(entity, true);
@@ -275,7 +275,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOffRange(players, entity);
+			Collection<Player> playersInRange = filterOutOffRange(players, entity);
 			ServerPacketSender.spawnArmorStand(playersInRange, entity);
 			playersInRange.forEach((each) -> {
 				Set<VisualizerEntity> list = playerStatus.get(each);
@@ -287,18 +287,18 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void updateArmorStand(ArmorStand entity) {
-		List<Player> players = active.get(entity);
+		Collection<Player> players = active.get(entity);
 		if (players == null) {
 			return;
 		}
 		updateArmorStand(players, entity);
 	}
 	
-	public static void updateArmorStand(List<Player> players, ArmorStand entity) {
+	public static void updateArmorStand(Collection<Player> players, ArmorStand entity) {
 		updateArmorStand(players, entity, false);
 	}
 	
-	public static void updateArmorStand(List<Player> players, ArmorStand entity, boolean bypasscache) {
+	public static void updateArmorStand(Collection<Player> players, ArmorStand entity, boolean bypasscache) {
 		if (!bypasscache) {
 			Integer lastCode = cache.get(entity);
 			if (lastCode != null) {
@@ -312,7 +312,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOffRange(players, entity);
+			Collection<Player> playersInRange = filterOutOffRange(players, entity);
 			ServerPacketSender.updateArmorStand(playersInRange, entity);
 		});
         
@@ -320,18 +320,18 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void updateArmorStandOnlyMeta(ArmorStand entity) {
-		List<Player> players = active.get(entity);
+		Collection<Player> players = active.get(entity);
 		if (players == null) {
 			return;
 		}
 		updateArmorStandOnlyMeta(players, entity);
 	}
 	
-	public static void updateArmorStandOnlyMeta(List<Player> players, ArmorStand entity) {
+	public static void updateArmorStandOnlyMeta(Collection<Player> players, ArmorStand entity) {
 		updateArmorStandOnlyMeta(players, entity, false);
 	}
 	
-	public static void updateArmorStandOnlyMeta(List<Player> players, ArmorStand entity, boolean bypasscache) {
+	public static void updateArmorStandOnlyMeta(Collection<Player> players, ArmorStand entity, boolean bypasscache) {
 		if (!bypasscache) {
 			Integer lastCode = cache.get(entity);
 			if (lastCode != null) {
@@ -345,14 +345,14 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOffRange(players, entity);
+			Collection<Player> playersInRange = filterOutOffRange(players, entity);
 			ServerPacketSender.updateArmorStandOnlyMeta(playersInRange, entity);
 		});
         
         cache.put(entity, entity.cacheCode());
 	}
 	
-	public static void removeArmorStand(List<Player> players, ArmorStand entity, boolean removeFromActive, boolean bypassFilter) {
+	public static void removeArmorStand(Collection<Player> players, ArmorStand entity, boolean removeFromActive, boolean bypassFilter) {
 		if (removeFromActive) {
 			active.remove(entity);
 			loaded.remove(entity);
@@ -363,7 +363,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = bypassFilter ? players : filterOutOffRange(players, entity);
+			Collection<Player> playersInRange = bypassFilter ? players : filterOutOffRange(players, entity);
 			ServerPacketSender.removeArmorStand(playersInRange, entity);
 			playersInRange.forEach((each) -> {
 				Set<VisualizerEntity> list = playerStatus.get(each);
@@ -374,11 +374,11 @@ public class PacketManager implements Listener {
 		});
 	}
 	
-	public static void removeArmorStand(List<Player> players, ArmorStand entity) {
+	public static void removeArmorStand(Collection<Player> players, ArmorStand entity) {
 		removeArmorStand(players, entity, true, false);
 	}
 	
-	public static void sendItemSpawn(List<Player> players, Item entity) {
+	public static void sendItemSpawn(Collection<Player> players, Item entity) {
 		if (!active.containsKey(entity)) {
 			active.put(entity, players);
 			loaded.put(entity, true);
@@ -391,7 +391,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOffRange(players, entity);
+			Collection<Player> playersInRange = filterOutOffRange(players, entity);
 			ServerPacketSender.spawnItem(playersInRange, entity);
 			playersInRange.forEach((each) -> {
 				Set<VisualizerEntity> list = playerStatus.get(each);
@@ -403,18 +403,18 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void updateItem(Item entity) {
-		List<Player> players = active.get(entity);
+		Collection<Player> players = active.get(entity);
 		if (players == null) {
 			return;
 		}
 		updateItem(players, entity);
 	}
 	
-	public static void updateItem(List<Player> players, Item entity) {
+	public static void updateItem(Collection<Player> players, Item entity) {
 		updateItem(players, entity, false);
 	}
 	
-	public static void updateItem(List<Player> players, Item entity, boolean bypasscache) {		
+	public static void updateItem(Collection<Player> players, Item entity, boolean bypasscache) {		
 		if (!bypasscache) {
 			Integer lastCode = cache.get(entity);
 			if (lastCode != null) {
@@ -428,14 +428,14 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOffRange(players, entity);
+			Collection<Player> playersInRange = filterOutOffRange(players, entity);
 			ServerPacketSender.updateItem(playersInRange, entity);
 		});
 		
 		cache.put(entity, entity.cacheCode());
 	}
 	
-	public static void removeItem(List<Player> players, Item entity, boolean removeFromActive, boolean bypassFilter) {
+	public static void removeItem(Collection<Player> players, Item entity, boolean removeFromActive, boolean bypassFilter) {
 		if (entity.getItemStack().getType().equals(Material.AIR)) {
 			return;
 		}
@@ -449,7 +449,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = bypassFilter ? players : filterOutOffRange(players, entity);
+			Collection<Player> playersInRange = bypassFilter ? players : filterOutOffRange(players, entity);
 			ServerPacketSender.removeItem(playersInRange, entity);
 			playersInRange.forEach((each) -> {
 				Set<VisualizerEntity> list = playerStatus.get(each);
@@ -460,11 +460,11 @@ public class PacketManager implements Listener {
 		});
 	}
 	
-	public static void removeItem(List<Player> players, Item entity) {
+	public static void removeItem(Collection<Player> players, Item entity) {
 		removeItem(players, entity, true, false);
 	}
 	
-	public static void sendItemFrameSpawn(List<Player> players, ItemFrame entity) {
+	public static void sendItemFrameSpawn(Collection<Player> players, ItemFrame entity) {
 		if (!active.containsKey(entity)) {
 			active.put(entity, players);
 			loaded.put(entity, true);
@@ -474,7 +474,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOffRange(players, entity);
+			Collection<Player> playersInRange = filterOutOffRange(players, entity);
 			ServerPacketSender.spawnItemFrame(playersInRange, entity);
 			playersInRange.forEach((each) -> {
 				Set<VisualizerEntity> list = playerStatus.get(each);
@@ -486,7 +486,7 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void updateItemFrame(ItemFrame entity) {
-		List<Player> players = active.get(entity);
+		Collection<Player> players = active.get(entity);
 		if (players == null) {
 			return;
 		}
@@ -494,11 +494,11 @@ public class PacketManager implements Listener {
 		updateItemFrame(players, entity);
 	}
 	
-	public static void updateItemFrame(List<Player> players , ItemFrame entity) {
+	public static void updateItemFrame(Collection<Player> players , ItemFrame entity) {
 		updateItemFrame(players, entity, false);
 	}
 	
-	public static void updateItemFrame(List<Player> players , ItemFrame entity, boolean bypasscache) {
+	public static void updateItemFrame(Collection<Player> players , ItemFrame entity, boolean bypasscache) {
 		if (!bypasscache) {
 			Integer lastCode = cache.get(entity);
 			if (lastCode != null) {
@@ -512,14 +512,14 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = filterOutOffRange(players, entity);
+			Collection<Player> playersInRange = filterOutOffRange(players, entity);
 			ServerPacketSender.updateItemFrame(playersInRange, entity);
 		});
         
         cache.put(entity, entity.cacheCode());
 	}
 	
-	public static void removeItemFrame(List<Player> players, ItemFrame entity, boolean removeFromActive, boolean bypassFilter) {
+	public static void removeItemFrame(Collection<Player> players, ItemFrame entity, boolean removeFromActive, boolean bypassFilter) {
 		if (removeFromActive) {
 			active.remove(entity);
 			loaded.remove(entity);
@@ -530,7 +530,7 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> playersInRange = bypassFilter ? players : filterOutOffRange(players, entity);
+			Collection<Player> playersInRange = bypassFilter ? players : filterOutOffRange(players, entity);
 			ServerPacketSender.removeItemFrame(playersInRange, entity);
 			playersInRange.forEach((each) -> {
 				Set<VisualizerEntity> list = playerStatus.get(each);
@@ -541,12 +541,12 @@ public class PacketManager implements Listener {
 		});
 	}
 	
-	public static void removeItemFrame(List<Player> players, ItemFrame entity) {
+	public static void removeItemFrame(Collection<Player> players, ItemFrame entity) {
 		removeItemFrame(players, entity, true, false);
 	}
 	
-	private static List<Player> filterOutOffRange(List<Player> players, VisualizerEntity entity) {
-		List<Player> playersInRange = new LinkedList<Player>();
+	private static Collection<Player> filterOutOffRange(Collection<Player> players, VisualizerEntity entity) {
+		Collection<Player> playersInRange = new HashSet<Player>();
 		for (Player player : players) {
 			Location playerLocation = PlayerLocationManager.getPlayerLocation(player);
 			int range = InteractionVisualizer.playerTrackingRange.getOrDefault(entity.getWorld(), 64);
@@ -558,8 +558,8 @@ public class PacketManager implements Listener {
 		return playersInRange;
 	}
 	
-	private static List<Player> filterOutOrRange(List<Player> players, Entity entity) {
-		List<Player> playersInRange = new LinkedList<Player>();
+	private static Collection<Player> filterOutOrRange(Collection<Player> players, Entity entity) {
+		Collection<Player> playersInRange = new HashSet<Player>();
 		for (Player player : players) {
 			Location playerLocation = PlayerLocationManager.getPlayerLocation(player);
 			int range = InteractionVisualizer.playerTrackingRange.getOrDefault(entity.getWorld(), 64);
@@ -583,11 +583,11 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> player = new ArrayList<Player>();
+			Collection<Player> player = new HashSet<Player>();
 			player.add(theplayer);
 			int count = 0;
 			int delay = 1;
-			for (Entry<VisualizerEntity, List<Player>> entry : active.entrySet()) {
+			for (Entry<VisualizerEntity, Collection<Player>> entry : active.entrySet()) {
 				count++;
 				if (count > 5) {
 					delay++;
@@ -613,11 +613,11 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			List<Player> player = new ArrayList<Player>();
+			Collection<Player> player = new HashSet<Player>();
 			player.add(theplayer);
 			int count = 0;
 			int delay = 1;
-			for (Entry<VisualizerEntity, List<Player>> entry : active.entrySet()) {
+			for (Entry<VisualizerEntity, Collection<Player>> entry : active.entrySet()) {
 				VisualizerEntity entity = entry.getKey();
 				if (entry.getValue().contains(theplayer)) {
 					if (loaded.get(entity)) {

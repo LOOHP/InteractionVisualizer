@@ -2,6 +2,7 @@ package com.loohp.interactionvisualizer.Protocol;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -29,7 +30,7 @@ public class ServerPacketSender {
 	private static MCVersion version = InteractionVisualizer.version;
 	private static ProtocolManager protocolManager = InteractionVisualizer.protocolManager;
 	
-	public static void sendHandMovement(List<Player> players, Player entity) {
+	public static void sendHandMovement(Collection<Player> players, Player entity) {
 		if (!InteractionVisualizer.handMovementEnabled) {
 			return;
 		}
@@ -50,7 +51,7 @@ public class ServerPacketSender {
 		});
 	}
 	
-	public static void spawnArmorStand(List<Player> players, ArmorStand entity) {
+	public static void spawnArmorStand(Collection<Player> players, ArmorStand entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
 		packet1.getIntegers().write(0, entity.getEntityId());
 		packet1.getIntegers().write(1, version.isLegacy() ? 30 : 1);
@@ -107,7 +108,7 @@ public class ServerPacketSender {
         });
 	}
 	
-	public static void updateArmorStand(List<Player> players, ArmorStand entity) {
+	public static void updateArmorStand(Collection<Player> players, ArmorStand entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
         packet1.getIntegers().write(0, entity.getEntityId());
         packet1.getDoubles().write(0, entity.getLocation().getX());
@@ -159,7 +160,7 @@ public class ServerPacketSender {
         });
 	}
 
-	public static void updateArmorStandOnlyMeta(List<Player> players, ArmorStand entity) {
+	public static void updateArmorStandOnlyMeta(Collection<Player> players, ArmorStand entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
 		packet1.getIntegers().write(0, entity.getEntityId());	
         WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
@@ -179,7 +180,7 @@ public class ServerPacketSender {
         });
 	}
 	
-	public static void removeArmorStand(List<Player> players, ArmorStand entity) {
+	public static void removeArmorStand(Collection<Player> players, ArmorStand entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 		packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
 		
@@ -197,7 +198,7 @@ public class ServerPacketSender {
 		}, 1);
 	}
 	
-	public static void spawnItem(List<Player> players, Item entity) {
+	public static void spawnItem(Collection<Player> players, Item entity) {
 		if (entity.getItemStack().getType().equals(Material.AIR)) {
 			return;
 		}
@@ -249,7 +250,7 @@ public class ServerPacketSender {
         });
 	}
 
-	public static void updateItem(List<Player> players, Item entity) {		
+	public static void updateItem(Collection<Player> players, Item entity) {		
 		if (entity.getItemStack().getType().equals(Material.AIR)) {
 			return;
 		}
@@ -289,7 +290,7 @@ public class ServerPacketSender {
 		});
 	}
 	
-	public static void removeItem(List<Player> players, Item entity) {
+	public static void removeItem(Collection<Player> players, Item entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 		packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
 		
@@ -307,7 +308,7 @@ public class ServerPacketSender {
 		}, 1);
 	}
 
-	public static void spawnItemFrame(List<Player> players, ItemFrame entity) {
+	public static void spawnItemFrame(Collection<Player> players, ItemFrame entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
         packet1.getIntegers().write(0, entity.getEntityId());
         packet1.getIntegers().write(1, 0);
@@ -367,7 +368,7 @@ public class ServerPacketSender {
 		}
 	}
 	
-	public static void updateItemFrame(List<Player> players , ItemFrame entity) {
+	public static void updateItemFrame(Collection<Player> players , ItemFrame entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
 		packet1.getIntegers().write(0, entity.getEntityId());
         WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
@@ -387,7 +388,7 @@ public class ServerPacketSender {
         });
 	}
 	
-	public static void removeItemFrame(List<Player> players, ItemFrame entity) {
+	public static void removeItemFrame(Collection<Player> players, ItemFrame entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 		packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
 		

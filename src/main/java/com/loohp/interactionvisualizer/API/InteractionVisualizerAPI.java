@@ -1,7 +1,9 @@
 package com.loohp.interactionvisualizer.API;
 
-import java.util.Collections;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -14,7 +16,6 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.InteractionVisualizer.Modules;
 import com.loohp.interactionvisualizer.Toggle;
 import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
@@ -46,20 +47,54 @@ public class InteractionVisualizerAPI {
 		return TileEntityManager.getTileEntites(type);
 	}
 	
+	public static enum Modules {
+		ITEMSTAND,
+		ITEMDROP,
+		HOLOGRAM;
+	}
+	
 	/**
 	Gets all players that has a module enabled for themselves.
-	@return A list of players.
+	@return A set of players.
 	*/
-	public static List<Player> getPlayerModuleList(Modules module) {
+	public static Collection<Player> getPlayerModuleList(Modules module) {
 		switch (module) {
 		case HOLOGRAM:
-			return Collections.unmodifiableList(InteractionVisualizer.holograms);
+			return new HashSet<>(InteractionVisualizer.holograms);
 		case ITEMDROP:
-			return Collections.unmodifiableList(InteractionVisualizer.itemDrop);
+			return new HashSet<>(InteractionVisualizer.itemDrop);
 		case ITEMSTAND:
-			return Collections.unmodifiableList(InteractionVisualizer.itemStand);
+			return new HashSet<>(InteractionVisualizer.itemStand);
 		}
 		return null;
+	}
+	
+	/**
+	Gets all players that has a module enabled for themselves, excluding the provided players.
+	@return A set of players.
+	*/
+	public static Collection<Player> getPlayerModuleList(Modules module, Player... excludes) {
+		Set<Player> set = null;
+		switch (module) {
+		case HOLOGRAM:
+			set = new HashSet<>(InteractionVisualizer.holograms);
+		case ITEMDROP:
+			set = new HashSet<>(InteractionVisualizer.itemDrop);
+		case ITEMSTAND:
+			set = new HashSet<>(InteractionVisualizer.itemStand);
+		}
+		for (Player player : excludes) {
+			set.remove(player);
+		}
+		return set;
+	}
+	
+	/**
+	Gets all players.
+	@return A set of players.
+	*/
+	public static Collection<Player> getPlayers() {
+		return new HashSet<>(Bukkit.getOnlinePlayers());
 	}
 	
 	/**
@@ -69,11 +104,11 @@ public class InteractionVisualizerAPI {
 	public static boolean hasPlayerEnabledModule(Player player, Modules module) {
 		switch (module) {
 		case HOLOGRAM:
-			return InteractionVisualizer.holograms.contains(player);
+			return InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM).contains(player);
 		case ITEMDROP:
-			return InteractionVisualizer.itemDrop.contains(player);
+			return InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP).contains(player);
 		case ITEMSTAND:
-			return InteractionVisualizer.itemStand.contains(player);
+			return InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND).contains(player);
 		}
 		return false;
 	}
@@ -195,14 +230,14 @@ public class InteractionVisualizerAPI {
 		Vector pickup = to.clone().toVector().subtract(from.clone().toVector()).multiply(0.15).add(lift);
 		item.setVelocity(pickup);
 		item.setPickupDelay(32767);
-		PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+		PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
 		PacketManager.updateItem(item);
 		
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 			if (pickupSound) {
-				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
+				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
 			}
-			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+			PacketManager.removeItem(getPlayers(), item);
 		}, 8);
 	}
 	
@@ -395,7 +430,7 @@ public class InteractionVisualizerAPI {
 	@return The InteractionVisualizer ArmorStand object.
 	*/
 	public static ArmorStand spawnFakeArmorStand(ArmorStand stand) {
-		PacketManager.sendArmorStandSpawn(InteractionVisualizer.holograms, stand);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), stand);
 		return stand;
 	}
 	
@@ -404,7 +439,7 @@ public class InteractionVisualizerAPI {
 	@return The InteractionVisualizer ArmorStand object.
 	*/
 	public static ArmorStand updateFakeArmorStand(ArmorStand stand) {
-		PacketManager.updateArmorStand(InteractionVisualizer.holograms, stand);
+		PacketManager.updateArmorStand(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), stand);
 		return stand;
 	}
 	
@@ -413,7 +448,7 @@ public class InteractionVisualizerAPI {
 	@return The InteractionVisualizer ArmorStand object.
 	*/
 	public static ArmorStand removeFakeArmorStand(ArmorStand stand) {
-		PacketManager.removeArmorStand(InteractionVisualizer.holograms, stand);
+		PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), stand);
 		return stand;
 	}
 	
@@ -431,7 +466,7 @@ public class InteractionVisualizerAPI {
 	@return The InteractionVisualizer Item object.
 	*/
 	public static Item spawnFakeItem(Item item) {
-		PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+		PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
 		return item;
 	}
 	
@@ -440,7 +475,7 @@ public class InteractionVisualizerAPI {
 	@return The InteractionVisualizer Item object.
 	*/
 	public static Item updateItem(Item item) {
-		PacketManager.updateItem(InteractionVisualizer.itemDrop, item);
+		PacketManager.updateItem(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
 		return item;
 	}
 	
@@ -449,7 +484,7 @@ public class InteractionVisualizerAPI {
 	@return The InteractionVisualizer Item object.
 	*/
 	public static Item removeItem(Item item) {
-		PacketManager.removeItem(InteractionVisualizer.itemDrop, item);
+		PacketManager.removeItem(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
 		return item;
 	}
 }

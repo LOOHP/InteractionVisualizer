@@ -25,6 +25,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
@@ -160,7 +162,7 @@ public class DispenserDisplay implements Listener {
 		}
 		
 		if (isMove == true) {
-			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), player);
+			PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
 			if (itemstack != null) {
 				Item item = new Item(loc.clone().add(0.5, 0.5, 0.5).add(event.getWhoClicked().getLocation().getDirection().multiply(-0.8)));
 				Vector offset = new Vector(0.0, 0.15, 0.0);
@@ -171,7 +173,7 @@ public class DispenserDisplay implements Listener {
 					vector = loc.clone().add(0.5, 0.5, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.13).add(offset);
 					item.setVelocity(vector);
 				}
-				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
 				item.setItemStack(itemstack);
 				item.setPickupDelay(32767);
 				item.setGravity(true);
@@ -193,7 +195,7 @@ public class DispenserDisplay implements Listener {
 					PacketManager.updateItem(item);
 				}, 8);
 				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 					list.remove(item);
 				}, 20);
 			}						
@@ -254,7 +256,7 @@ public class DispenserDisplay implements Listener {
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 8) {
-				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), player);
+				PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
 				
 				ItemStack itemstack = event.getOldCursor();
 				if (itemstack != null) {
@@ -268,7 +270,7 @@ public class DispenserDisplay implements Listener {
 					Vector offset = new Vector(0.0, 0.15, 0.0);
 					Vector vector = loc.clone().add(0.5, 0.5, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.13).add(offset);
 					item.setVelocity(vector);
-					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+					PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
 					item.setItemStack(itemstack);
 					item.setCustomName(System.currentTimeMillis() + "");
 					item.setPickupDelay(32767);
@@ -286,7 +288,7 @@ public class DispenserDisplay implements Listener {
 						PacketManager.updateItem(item);
 					}, 8);
 					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+						PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 						list.remove(item);
 					}, 20);
 				}
@@ -318,7 +320,7 @@ public class DispenserDisplay implements Listener {
 		Iterator<Item> itr = list.iterator();
 		while (itr.hasNext()) {
 			Item item = itr.next();
-			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+			PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 		}
 		
 		link.remove((Player) event.getPlayer());

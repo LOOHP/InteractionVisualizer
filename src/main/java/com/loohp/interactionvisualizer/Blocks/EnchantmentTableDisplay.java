@@ -23,6 +23,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.ObjectHolders.EnchantmentTableBundle;
@@ -67,7 +69,7 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
 		InventoryView view = player.getOpenInventory();
 		Block block = playermap.get(player);
 		if (!openedETable.containsKey(block)) {
-			openedETable.put(block, new EnchantmentTableBundle(player, block, InteractionVisualizer.itemDrop));
+			openedETable.put(block, new EnchantmentTableBundle(player, block, InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP)));
 		}
 		EnchantmentTableBundle etb = openedETable.get(block);
 		
@@ -181,7 +183,7 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 1) {
-			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), player);
+			PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
 		}
 	}
 	
@@ -199,7 +201,7 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 1) {
-				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), player);
+				PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
 				break;
 			}
 		}

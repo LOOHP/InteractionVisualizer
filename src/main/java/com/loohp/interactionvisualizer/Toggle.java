@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.loohp.interactionvisualizer.InteractionVisualizer.Modules;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.Utils.ChatColorUtils;
 

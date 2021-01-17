@@ -1,6 +1,6 @@
 package com.loohp.interactionvisualizer.Managers;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -14,7 +14,7 @@ public class SoundManager {
 		itemPickup = Sound.valueOf("ENTITY_ITEM_PICKUP");
 	}
 	
-	public static void playItemPickup(Location location, List<Player> players) {
+	public static void playItemPickup(Location location, Collection<Player> players) {
 		for (Player player: players) {
 			player.playSound(location, itemPickup, 2.0F, (float) Math.random() + 1);
 		}

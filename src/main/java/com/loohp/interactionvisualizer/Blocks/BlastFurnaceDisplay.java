@@ -28,6 +28,8 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.API.Events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
@@ -96,11 +98,11 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
 						HashMap<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
-							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 						}
 						if (map.get("Stand") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("Stand");
-							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
 						blastfurnaceMap.remove(block);
 						return;
@@ -109,11 +111,11 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
 						HashMap<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
-							PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+							PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 						}
 						if (map.get("Stand") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("Stand");
-							PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
 						blastfurnaceMap.remove(block);
 						return;
@@ -189,7 +191,7 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
 								item.setPickupDelay(32767);
 								item.setGravity(false);
 								entry.getValue().put("Item", item);
-								PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+								PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
 								PacketManager.updateItem(item);
 							} else {
 								entry.getValue().put("Item", "N/A");
@@ -203,7 +205,7 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
 								}
 							} else {
 								entry.getValue().put("Item", "N/A");
-								PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+								PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 							}
 						}
 	
@@ -361,8 +363,8 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
 			PacketManager.updateItem(item);
 			
 			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
-				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
+				PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 			}, 8);
 		}, 1);
 	}
@@ -393,7 +395,7 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 2) {
-			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), (Player) event.getWhoClicked());
 		}
 	}
 	
@@ -424,7 +426,7 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 2) {
-				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), (Player) event.getWhoClicked());
 				break;
 			}
 		}
@@ -443,11 +445,11 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
 		HashMap<String, Object> map = blastfurnaceMap.get(block);
 		if (map.get("Item") instanceof Item) {
 			Item item = (Item) map.get("Item");
-			PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+			PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 		}
 		if (map.get("Stand") instanceof ArmorStand) {
 			ArmorStand stand = (ArmorStand) map.get("Stand");
-			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), stand);
+			PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 		}
 		blastfurnaceMap.remove(block);
 	}
@@ -498,7 +500,7 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
 		
 		map.put("Stand", slot1);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizer.holograms, slot1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), slot1);
 		
 		return map;
 	}

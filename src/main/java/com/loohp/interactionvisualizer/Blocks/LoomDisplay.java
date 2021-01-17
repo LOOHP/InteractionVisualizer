@@ -25,6 +25,8 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
@@ -78,7 +80,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 							if (map.get("Banner") instanceof ArmorStand) {
 								ArmorStand entity = (ArmorStand) map.get("Banner");
 								LightManager.deleteLight(entity.getLocation());
-								PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
+								PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), (ArmorStand) entity);
 							}
 							openedLooms.remove(block);
 						}
@@ -269,12 +271,12 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 			Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
 			item.setVelocity(pickup);
 			item.setPickupDelay(32767);
-			PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+			PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
 			PacketManager.updateItem(item);
 			
 			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
-				PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
+				PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 			}, 8);
 		}, 1);
 	}
@@ -305,7 +307,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 3) {
-			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), (Player) event.getWhoClicked());
 		}
 	}
 	
@@ -336,7 +338,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 3) {
-				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), (Player) event.getWhoClicked());
 				break;
 			}
 		}
@@ -380,11 +382,11 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 				Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector().subtract(block.getLocation().clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
 				item.setVelocity(pickup);
 				item.setPickupDelay(32767);
-				PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
 				PacketManager.updateItem(item);
 				new BukkitRunnable() {
 					public void run() {
-						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+						PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 					}
 				}.runTaskLater(InteractionVisualizer.plugin, 8);
 			}
@@ -393,7 +395,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 		if (map.get("Banner") instanceof ArmorStand) {
 			ArmorStand entity = (ArmorStand) map.get("Banner");
 			LightManager.deleteLight(entity.getLocation());
-			PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
+			PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), (ArmorStand) entity);
 		}
 		openedLooms.remove(block);
 	}
@@ -408,7 +410,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 		
 		map.put("Banner", banner);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, banner);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), banner);
 		
 		return map;
 	}

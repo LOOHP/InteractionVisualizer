@@ -24,6 +24,8 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
@@ -89,7 +91,7 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
 					item.setPickupDelay(32767);
 					item.setGravity(false);
 					map.put("2", item);
-					PacketManager.sendItemSpawn(InteractionVisualizer.itemDrop, item);
+					PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
 					PacketManager.updateItem(item);
 				} else {
 					map.put("2", "N/A");
@@ -103,7 +105,7 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
 					}
 				} else {
 					map.put("2", "N/A");
-					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+					PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 				}
 			}
 		}
@@ -248,7 +250,7 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
 			PacketManager.updateArmorStand(slot1);
 			
 			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-					for (Player each : InteractionVisualizer.itemDrop) {
+					for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP)) {
 						each.spawnParticle(Particle.CLOUD, loc.clone().add(0.5, 1.1, 0.5), 10, 0.05, 0.05, 0.05, 0.05);
 					}
 			}, 6);
@@ -263,10 +265,10 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
 					PacketManager.updateItem(item);
 					
 					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-						SoundManager.playItemPickup(item.getLocation(), InteractionVisualizer.itemDrop);
-						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot0);
-						PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), slot1);
-						PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), item);
+						SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
+						PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot0);
+						PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot1);
+						PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 					}, 8);
 			}, 10);
 		}, 1);
@@ -298,7 +300,7 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
 		}
 		
 		if (event.getRawSlot() >= 0 && event.getRawSlot() <= 2) {
-			PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+			PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), (Player) event.getWhoClicked());
 		}
 	}
 	
@@ -329,7 +331,7 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
 		
 		for (int slot : event.getRawSlots()) {
 			if (slot >= 0 && slot <= 2) {
-				PacketManager.sendHandMovement(InteractionVisualizer.getOnlinePlayers(), (Player) event.getWhoClicked());
+				PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), (Player) event.getWhoClicked());
 				break;
 			}
 		}
@@ -366,9 +368,9 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
 			if (!(map.get(String.valueOf(i)) instanceof String)) {
 				Object entity = map.get(String.valueOf(i));
 				if (entity instanceof Item) {
-					PacketManager.removeItem(InteractionVisualizer.getOnlinePlayers(), (Item) entity);
+					PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), (Item) entity);
 				} else if (entity instanceof ArmorStand) {
-					PacketManager.removeArmorStand(InteractionVisualizer.getOnlinePlayers(), (ArmorStand) entity);
+					PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), (ArmorStand) entity);
 				}
 			}
 		}
@@ -468,8 +470,8 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
 		map.put("0", slot0);
 		map.put("1", slot1);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot0);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizer.itemStand, slot1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), slot0);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), slot1);
 		
 		return map;
 	}
