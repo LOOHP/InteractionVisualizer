@@ -223,7 +223,6 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
 		Inventory before = Bukkit.createInventory(null, 9);
 		before.setItem(0, player.getOpenInventory().getItem(0).clone());
 		before.setItem(1, player.getOpenInventory().getItem(1).clone());
-		String hash = InventoryUtils.toBase64(before);
 		
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 			
@@ -231,7 +230,7 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
 			after.setItem(0, player.getOpenInventory().getItem(0).clone());
 			after.setItem(1, player.getOpenInventory().getItem(1).clone());
 			
-			if (InventoryUtils.toBase64(after).equals(hash)) {
+			if (InventoryUtils.compareContents(before, after)) {
 				return;
 			}
 			

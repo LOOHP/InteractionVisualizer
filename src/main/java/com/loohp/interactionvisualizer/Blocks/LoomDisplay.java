@@ -245,7 +245,6 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 		before.setItem(0, player.getOpenInventory().getItem(0).clone());
 		before.setItem(1, player.getOpenInventory().getItem(1).clone());
 		before.setItem(2, player.getOpenInventory().getItem(2).clone());
-		String hash = InventoryUtils.toBase64(before);
 		
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 			
@@ -254,7 +253,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 			after.setItem(1, player.getOpenInventory().getItem(1).clone());
 			after.setItem(2, player.getOpenInventory().getItem(2).clone());
 			
-			if (InventoryUtils.toBase64(after).equals(hash)) {
+			if (InventoryUtils.compareContents(before, after)) {
 				return;
 			}
 		

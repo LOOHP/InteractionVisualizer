@@ -250,14 +250,13 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 		
 		Inventory before = Bukkit.createInventory(null, 9);
 		before.setItem(0, player.getOpenInventory().getItem(0).clone());
-		String hash = InventoryUtils.toBase64(before);
 		
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 			
 			Inventory after = Bukkit.createInventory(null, 9);
 			after.setItem(0, player.getOpenInventory().getItem(0).clone());
 			
-			if (InventoryUtils.toBase64(after).equals(hash)) {
+			if (InventoryUtils.compareContents(before, after)) {
 				return;
 			}
 			

@@ -62,7 +62,7 @@ public class EnderchestDisplay implements Listener {
 		if (!event.getView().getTopInventory().getType().equals(InventoryType.ENDER_CHEST)) {
 			return;
 		}
-		if (!InventoryUtils.toBase64(event.getPlayer().getEnderChest()).equals(InventoryUtils.toBase64(event.getView().getTopInventory()))) {
+		if (!InventoryUtils.compareContents(event.getPlayer().getEnderChest(), event.getView().getTopInventory())) {
 			return;
 		}
 		if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {

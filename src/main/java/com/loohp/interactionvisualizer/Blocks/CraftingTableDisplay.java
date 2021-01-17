@@ -353,7 +353,6 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
 		for (int i = 1; i < 10; i++) {
 			before.setItem(i - 1, player.getOpenInventory().getItem(i).clone());
 		}
-		String hash = InventoryUtils.toBase64(before);
 		
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 			
@@ -362,7 +361,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
 				after.setItem(i - 1, player.getOpenInventory().getItem(i).clone());
 			}
 			
-			if (InventoryUtils.toBase64(after).equals(hash)) {
+			if (InventoryUtils.compareContents(before, after)) {
 				return;
 			}
 			
