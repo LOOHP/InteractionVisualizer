@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -62,7 +63,8 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static Set<Player> itemDrop = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	public static Set<Player> holograms = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	
-	public static Set<String> exemptBlocks = new HashSet<String>();
+	public static Set<String> exemptBlocks = new HashSet<>();
+	public static Set<String> disabledWorlds = new HashSet<>();
 	
 	public static World defaultworld;
 	public static Location defaultlocation;
@@ -308,6 +310,8 @@ public class InteractionVisualizer extends JavaPlugin {
 		loadTileEntitiesAsync = config.getBoolean("TileEntityUpdate.LoadTileEntitiesAsync");
 		
 		handMovementEnabled = config.getBoolean("Settings.UseHandSwingAnimation");
+		
+		disabledWorlds = config.getStringList("Settings.DisabledWorlds").stream().collect(Collectors.toSet());
 		
 		lightUpdatePeriod = config.getInt("LightUpdate.Period");
 		

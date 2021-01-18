@@ -161,6 +161,7 @@ Modules:
 Settings:
   UseHandSwingAnimation: true
   PickupAnimationPlayerYOffset: 0
+  DisabledWorlds: []
 
 Options:
   Updater: true

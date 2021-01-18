@@ -1,10 +1,14 @@
 package com.loohp.interactionvisualizer.API;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -54,47 +58,100 @@ public class InteractionVisualizerAPI {
 	}
 	
 	/**
-	Gets all players that has a module enabled for themselves.
+	Gets all players that has a module enabled for themselves, excluding players in disabled worlds.
 	@return A set of players.
 	*/
 	public static Collection<Player> getPlayerModuleList(Modules module) {
+		return getPlayerModuleList(module, true);
+	}
+	
+	/**
+	Gets all players that has a module enabled for themselves.
+	@return A set of players.
+	*/
+	public static Collection<Player> getPlayerModuleList(Modules module, boolean excludeDisabledWorlds) {
+		Collection<Player> players = null;
 		switch (module) {
 		case HOLOGRAM:
-			return new HashSet<>(InteractionVisualizer.holograms);
+			players = new HashSet<>(InteractionVisualizer.holograms);
 		case ITEMDROP:
-			return new HashSet<>(InteractionVisualizer.itemDrop);
+			players = new HashSet<>(InteractionVisualizer.itemDrop);
 		case ITEMSTAND:
-			return new HashSet<>(InteractionVisualizer.itemStand);
+			players = new HashSet<>(InteractionVisualizer.itemStand);
 		}
-		return null;
+		if (excludeDisabledWorlds) {
+			Set<String> disabledWorlds = getDisabledWorlds();
+			Iterator<Player> itr = players.iterator();
+			while (itr.hasNext()) {
+				Player player = itr.next();
+				if (disabledWorlds.contains(player.getWorld().getName())) {
+					itr.remove();
+				}
+			}
+		}
+		return players;
+	}
+	
+	/**
+	Gets all players that has a module enabled for themselves, excluding the provided players and players in disabled worlds.
+	@return A set of players.
+	*/
+	public static Collection<Player> getPlayerModuleList(Modules module, Player... excludes) {
+		return getPlayerModuleList(module, true, excludes);
 	}
 	
 	/**
 	Gets all players that has a module enabled for themselves, excluding the provided players.
 	@return A set of players.
 	*/
-	public static Collection<Player> getPlayerModuleList(Modules module, Player... excludes) {
-		Set<Player> set = null;
+	public static Collection<Player> getPlayerModuleList(Modules module, boolean excludeDisabledWorlds, Player... excludes) {
+		Collection<Player> players = null;
 		switch (module) {
 		case HOLOGRAM:
-			set = new HashSet<>(InteractionVisualizer.holograms);
+			players = new HashSet<>(InteractionVisualizer.holograms);
 		case ITEMDROP:
-			set = new HashSet<>(InteractionVisualizer.itemDrop);
+			players = new HashSet<>(InteractionVisualizer.itemDrop);
 		case ITEMSTAND:
-			set = new HashSet<>(InteractionVisualizer.itemStand);
+			players = new HashSet<>(InteractionVisualizer.itemStand);
 		}
-		for (Player player : excludes) {
-			set.remove(player);
+		if (excludeDisabledWorlds) {
+			Set<Player> excludedPlayers = Stream.of(excludes).collect(Collectors.toSet());
+			Set<String> disabledWorlds = getDisabledWorlds();
+			Iterator<Player> itr = players.iterator();
+			while (itr.hasNext()) {
+				Player player = itr.next();
+				if (excludedPlayers.contains(player) || disabledWorlds.contains(player.getWorld().getName())) {
+					itr.remove();
+				}
+			}
+		} else {
+			for (Player player : excludes) {
+				players.remove(player);
+			}
 		}
-		return set;
+		return players;
+	}
+	
+	/**
+	Gets all players.
+	<B>Including</B> players in disabled worlds.
+	@return A set of players.
+	*/
+	public static Collection<Player> getPlayers() {
+		return getPlayers(false);
 	}
 	
 	/**
 	Gets all players.
 	@return A set of players.
 	*/
-	public static Collection<Player> getPlayers() {
-		return new HashSet<>(Bukkit.getOnlinePlayers());
+	public static Collection<Player> getPlayers(boolean excludeDisabledWorlds) {
+		if (excludeDisabledWorlds) {
+			Set<String> disabledWorlds = getDisabledWorlds();
+			return Bukkit.getWorlds().stream().filter(each -> disabledWorlds.contains(each.getName())).flatMap(each -> each.getPlayers().stream()).collect(Collectors.toSet());
+		} else {
+			return new HashSet<>(Bukkit.getOnlinePlayers());
+		}
 	}
 	
 	/**
@@ -111,6 +168,14 @@ public class InteractionVisualizerAPI {
 			return InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND).contains(player);
 		}
 		return false;
+	}
+	
+	/**
+	Get the list of disabled world names
+	@return a set of world names
+	*/
+	public static Set<String> getDisabledWorlds() {
+		return Collections.unmodifiableSet(InteractionVisualizer.disabledWorlds);
 	}
 	
 	/**
