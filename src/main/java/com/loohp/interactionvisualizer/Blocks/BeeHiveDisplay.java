@@ -29,7 +29,6 @@ import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.API.Events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
-import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
@@ -84,12 +83,12 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
 					}
 					if (active == false) {
 						HashMap<String, Object> map = entry.getValue();
-						if (map.get("Item") instanceof Item) {
-							Item item = (Item) map.get("Item");
-							PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
+						if (map.get("0") instanceof ArmorStand) {
+							ArmorStand stand = (ArmorStand) map.get("0");
+							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
-						if (map.get("Stand") instanceof ArmorStand) {
-							ArmorStand stand = (ArmorStand) map.get("Stand");
+						if (map.get("1") instanceof ArmorStand) {
+							ArmorStand stand = (ArmorStand) map.get("1");
 							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
 						beehiveMap.remove(block);
@@ -97,12 +96,12 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
 					}
 					if (!block.getType().equals(Material.BEEHIVE)) {
 						HashMap<String, Object> map = entry.getValue();
-						if (map.get("Item") instanceof Item) {
-							Item item = (Item) map.get("Item");
-							PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
+						if (map.get("0") instanceof ArmorStand) {
+							ArmorStand stand = (ArmorStand) map.get("0");
+							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
-						if (map.get("Stand") instanceof ArmorStand) {
-							ArmorStand stand = (ArmorStand) map.get("Stand");
+						if (map.get("1") instanceof ArmorStand) {
+							ArmorStand stand = (ArmorStand) map.get("1");
 							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
 						beehiveMap.remove(block);
