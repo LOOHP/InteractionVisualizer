@@ -189,7 +189,7 @@ public class PacketManager implements Listener {
 							
 							boolean playerActive = activeList.contains(entity);
 							boolean sameWorld = entity.getWorld().equals(playerLocation.getWorld());
-							boolean inRange = entity.getLocation().distanceSquared(playerLocation) <= range;
+							boolean inRange = sameWorld ? (entity.getLocation().distanceSquared(playerLocation) <= range) : false;
 							Boolean hasLineOfSight = InteractionVisualizer.hideIfObstructed ? null : true;
 							boolean isLoaded = loaded.getOrDefault(entity, false);
 							Location entityCenter = entity.getLocation();

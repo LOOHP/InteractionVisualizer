@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
-	<version>1.14.3.0</version>
+	<version>1.14.3.1</version>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<resources>
