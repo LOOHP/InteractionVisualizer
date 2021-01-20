@@ -3,7 +3,6 @@ package com.loohp.interactionvisualizer.API;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -19,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
+import com.google.common.collect.Collections2;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Toggle;
 import com.loohp.interactionvisualizer.Database.Database;
@@ -66,33 +66,6 @@ public class InteractionVisualizerAPI {
 	}
 	
 	/**
-	Gets all players that has a module enabled for themselves.
-	@return A set of players.
-	*/
-	public static Collection<Player> getPlayerModuleList(Modules module, boolean excludeDisabledWorlds) {
-		Collection<Player> players = null;
-		switch (module) {
-		case HOLOGRAM:
-			players = new HashSet<>(InteractionVisualizer.holograms);
-		case ITEMDROP:
-			players = new HashSet<>(InteractionVisualizer.itemDrop);
-		case ITEMSTAND:
-			players = new HashSet<>(InteractionVisualizer.itemStand);
-		}
-		if (excludeDisabledWorlds) {
-			Set<String> disabledWorlds = getDisabledWorlds();
-			Iterator<Player> itr = players.iterator();
-			while (itr.hasNext()) {
-				Player player = itr.next();
-				if (disabledWorlds.contains(player.getWorld().getName())) {
-					itr.remove();
-				}
-			}
-		}
-		return players;
-	}
-	
-	/**
 	Gets all players that has a module enabled for themselves, excluding the provided players and players in disabled worlds.
 	@return A set of players.
 	*/
@@ -106,30 +79,25 @@ public class InteractionVisualizerAPI {
 	*/
 	public static Collection<Player> getPlayerModuleList(Modules module, boolean excludeDisabledWorlds, Player... excludes) {
 		Collection<Player> players = null;
+		Set<Player> excludedPlayers = Stream.of(excludes).collect(Collectors.toSet());
 		switch (module) {
 		case HOLOGRAM:
-			players = new HashSet<>(InteractionVisualizer.holograms);
+			players = InteractionVisualizer.holograms;
+			break;
 		case ITEMDROP:
-			players = new HashSet<>(InteractionVisualizer.itemDrop);
+			players = InteractionVisualizer.itemDrop;
+			break;
 		case ITEMSTAND:
-			players = new HashSet<>(InteractionVisualizer.itemStand);
+			players = InteractionVisualizer.itemStand;
+			break;
 		}
 		if (excludeDisabledWorlds) {
-			Set<Player> excludedPlayers = Stream.of(excludes).collect(Collectors.toSet());
 			Set<String> disabledWorlds = getDisabledWorlds();
-			Iterator<Player> itr = players.iterator();
-			while (itr.hasNext()) {
-				Player player = itr.next();
-				if (excludedPlayers.contains(player) || disabledWorlds.contains(player.getWorld().getName())) {
-					itr.remove();
-				}
-			}
+			players = Collections2.filter(players, each -> !excludedPlayers.contains(each) && !disabledWorlds.contains(each.getWorld().getName()));
 		} else {
-			for (Player player : excludes) {
-				players.remove(player);
-			}
+			players = Collections2.filter(players, each -> !excludedPlayers.contains(each));
 		}
-		return players;
+		return Collections.unmodifiableCollection(players);
 	}
 	
 	/**
@@ -171,14 +139,6 @@ public class InteractionVisualizerAPI {
 	}
 	
 	/**
-	Get the list of disabled world names
-	@return a set of world names
-	*/
-	public static Set<String> getDisabledWorlds() {
-		return Collections.unmodifiableSet(InteractionVisualizer.disabledWorlds);
-	}
-	
-	/**
 	Check if player has a module enabled.
 	@return true/false.
 	*/
@@ -189,6 +149,14 @@ public class InteractionVisualizerAPI {
 		} else {
 			return Database.getPlayerInfo(uuid).get(module);
 		}
+	}
+	
+	/**
+	Get the list of disabled world names
+	@return a set of world names
+	*/
+	public static Set<String> getDisabledWorlds() {
+		return Collections.unmodifiableSet(InteractionVisualizer.disabledWorlds);
 	}
 	
 	/**

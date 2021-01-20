@@ -1,7 +1,6 @@
 package com.loohp.interactionvisualizer.Utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,18 +40,11 @@ public class LineOfSightUtils {
             list.add(pos);
         }
         
-        Map<BlockPosition, List<BoundingBox>> boxes = new HashMap<>();
-        for (BlockPosition pos : blocks.keySet()) {
-        	if (pos.getWorld().isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4)) {
-	        	boxes.put(pos, BoundingBoxUtils.getBoundingBoxes(pos));
-        	}
-        }
-        
         for (Entry<BlockPosition, List<Location>> entry : blocks.entrySet()) {
         	BlockPosition blockPos = entry.getKey();
         	List<Location> pos = entry.getValue();
-        	List<BoundingBox> box = boxes.getOrDefault(blockPos, new ArrayList<>());
         	if (blockPos.getWorld().isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
+        		List<BoundingBox> box = BoundingBoxUtils.getBoundingBoxes(blockPos);
         		Material type = blockPos.getBlock().getType();
         		if (!type.isTransparent() && !type.toString().contains("GLASS") && !InteractionVisualizer.exemptBlocks.contains(type.toString())) {
 	        		for (Location point : pos) {

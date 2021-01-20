@@ -3,7 +3,6 @@ package com.loohp.interactionvisualizer.Managers;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -46,121 +45,78 @@ public class PacketManager implements Listener {
 			return;
 		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			Iterator<Entry<VisualizerEntity, Boolean>> itr = loaded.entrySet().iterator();
-			while (itr.hasNext()) {
-				Entry<VisualizerEntity, Boolean> entry = itr.next();
+			for (Entry<VisualizerEntity, Boolean> entry : loaded.entrySet()) {
 				VisualizerEntity entity = entry.getKey();
 				if (entity instanceof ArmorStand) {
 					ArmorStand stand = (ArmorStand) entity;
-					if (!PlayerLocationManager.hasPlayerNearby(stand.getLocation())) {
-						continue;
-					}
-					if (entry.getValue()) {
-						if (!plugin.isEnabled()) {
-							return;
+					if (PlayerLocationManager.hasPlayerNearby(stand.getLocation())) {
+						if (entry.getValue()) {
+							Collection<Player> players = active.get(entity);
+							if (players != null) {
+								if (isOccluding(stand.getLocation().getBlock().getType())) {
+									removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand, false, false);
+									loaded.put(entity, false);
+								}
+							}
+						} else {
+							Collection<Player> players = active.get(entity);
+							if (players != null) {
+								if (!isOccluding(stand.getLocation().getBlock().getType())) {
+									sendArmorStandSpawn(players, stand);
+									updateArmorStand(stand);
+									loaded.put(entity, true);
+								}
+							}
 						}
-						Bukkit.getScheduler().runTask(plugin, () -> {		
-							Collection<Player> players = active.get(entity);
-							if (players == null) {
-								return;
-							}
-							if (isOccluding(stand.getLocation().getBlock().getType())) {
-								removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand, false, false);
-								loaded.put(entity, false);
-							}
-						});
-					} else {
-						Bukkit.getScheduler().runTask(plugin, () -> {
-							if (!PlayerLocationManager.hasPlayerNearby(stand.getLocation())) {
-								return;
-							}
-							Collection<Player> players = active.get(entity);
-							if (players == null) {
-								return;
-							}
-							if (!isOccluding(stand.getLocation().getBlock().getType())) {
-								sendArmorStandSpawn(players, stand);
-								updateArmorStand(stand);
-								loaded.put(entity, true);
-							}
-						});
 					}
 				} else if (entity instanceof Item) {
 					Item item = (Item) entity;
-					if (!PlayerLocationManager.hasPlayerNearby(item.getLocation())) {
-						continue;
-					}
-					if (entry.getValue()) {
-						if (!plugin.isEnabled()) {
-							return;
-						}
-						Bukkit.getScheduler().runTask(plugin, () -> {
+					if (PlayerLocationManager.hasPlayerNearby(item.getLocation())) {
+						if (entry.getValue()) {
 							Collection<Player> players = active.get(entity);
-							if (players == null) {
-								return;
+							if (players != null) {
+								if (isOccluding(item.getLocation().getBlock().getType())) {
+									removeItem(InteractionVisualizerAPI.getPlayers(), item, false, false);
+									loaded.put(entity, false);
+								}
 							}
-							if (isOccluding(item.getLocation().getBlock().getType())) {
-								removeItem(InteractionVisualizerAPI.getPlayers(), item, false, false);
-								loaded.put(entity, false);
-							}
-						});
-					} else {
-						if (!plugin.isEnabled()) {
-							return;
-						}
-						Bukkit.getScheduler().runTask(plugin, () -> {
+						} else {
 							Collection<Player> players = active.get(entity);
-							if (players == null) {
-								return;
+							if (players != null) {
+								if (!isOccluding(item.getLocation().getBlock().getType())) {
+									sendItemSpawn(players, item);
+									updateItem(item);
+									loaded.put(entity, true);
+								}
 							}
-							if (!isOccluding(item.getLocation().getBlock().getType())) {
-								sendItemSpawn(players, item);
-								updateItem(item);
-								loaded.put(entity, true);
-							}
-						});
+						}
 					}
 				} else if (entity instanceof ItemFrame) {
 					ItemFrame frame = (ItemFrame) entity;
-					if (!PlayerLocationManager.hasPlayerNearby(frame.getLocation())) {
-						continue;
-					}
-					if (entry.getValue()) {
-						if (!plugin.isEnabled()) {
-							return;
-						}
-						Bukkit.getScheduler().runTask(plugin, () -> {
+					if (PlayerLocationManager.hasPlayerNearby(frame.getLocation())) {
+						if (entry.getValue()) {
 							Collection<Player> players = active.get(entity);
-							if (players == null) {
-								return;
+							if (players != null) {
+								if (isOccluding(frame.getLocation().getBlock().getType())) {
+									removeItemFrame(InteractionVisualizerAPI.getPlayers(), frame, false, false);
+									loaded.put(entity, false);
+								}
 							}
-							if (isOccluding(frame.getLocation().getBlock().getType())) {
-								removeItemFrame(InteractionVisualizerAPI.getPlayers(), frame, false, false);
-								loaded.put(entity, false);
-							}
-						});
-					} else {
-						if (!plugin.isEnabled()) {
-							return;
-						}
-						Bukkit.getScheduler().runTask(plugin, () -> {
+						} else {
 							Collection<Player> players = active.get(entity);
-							if (players == null) {
-								return;
+							if (players != null) {
+								if (!isOccluding(frame.getLocation().getBlock().getType())) {
+									sendItemFrameSpawn(players, frame);
+									updateItemFrame(frame);
+									loaded.put(entity, true);
+								}
 							}
-							if (!isOccluding(frame.getLocation().getBlock().getType())) {
-								sendItemFrameSpawn(players, frame);
-								updateItemFrame(frame);
-								loaded.put(entity, true);
-							}
-						});
+						}
 					}
 				}
-				try {TimeUnit.MILLISECONDS.sleep(5);} catch (InterruptedException e) {e.printStackTrace();}
 			}
-			if (plugin.isEnabled()) {
-				Bukkit.getScheduler().runTaskLater(plugin, () -> run(), 1);
-			}
+			try {TimeUnit.MILLISECONDS.sleep(5);} catch (InterruptedException e) {}
+			run();
 		});
 	}
 	
@@ -172,6 +128,9 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void update() {
+		if (!plugin.isEnabled()) {
+			return;
+		}
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				try {
@@ -227,6 +186,7 @@ public class PacketManager implements Listener {
 					e.printStackTrace();
 				}
 			}
+			try {TimeUnit.MILLISECONDS.sleep(5);} catch (InterruptedException e) {}
 			update();
 		});
 	}
@@ -554,7 +514,7 @@ public class PacketManager implements Listener {
 	}
 	
 	public static void removeAll(Player theplayer) {
-		playerStatus.put(theplayer, Collections.newSetFromMap(new ConcurrentHashMap<VisualizerEntity, Boolean>()));
+		playerStatus.put(theplayer, Collections.newSetFromMap(new ConcurrentHashMap<>()));
 		if (!plugin.isEnabled()) {
 			return;
 		}
