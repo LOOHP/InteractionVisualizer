@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,16 +29,17 @@ import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
 import com.loohp.interactionvisualizer.EntityHolders.VisualizerEntity;
 import com.loohp.interactionvisualizer.Protocol.ServerPacketSender;
+import com.loohp.interactionvisualizer.Utils.LineOfSightUtils;
 
 public class PacketManager implements Listener {
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
 	
-	public static ConcurrentHashMap<VisualizerEntity, Collection<Player>> active = new ConcurrentHashMap<VisualizerEntity, Collection<Player>>();
-	public static ConcurrentHashMap<VisualizerEntity, Boolean> loaded = new ConcurrentHashMap<VisualizerEntity, Boolean>();
-	private static ConcurrentHashMap<VisualizerEntity, Integer> cache = new ConcurrentHashMap<VisualizerEntity, Integer>();
+	public static Map<VisualizerEntity, Collection<Player>> active = new ConcurrentHashMap<>();
+	public static Map<VisualizerEntity, Boolean> loaded = new ConcurrentHashMap<>();
+	private static Map<VisualizerEntity, Integer> cache = new ConcurrentHashMap<>();
 	
-	public static ConcurrentHashMap<Player, Set<VisualizerEntity>> playerStatus = new ConcurrentHashMap<Player, Set<VisualizerEntity>>();
+	public static Map<Player, Set<VisualizerEntity>> playerStatus = new ConcurrentHashMap<>();
 	
 	public static void run() {
 		if (!plugin.isEnabled()) {
@@ -169,92 +171,66 @@ public class PacketManager implements Listener {
 		return material.isOccluding();
 	}
 	
-	public static int update() {
-		return Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+	public static void update() {
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				Set<VisualizerEntity> activeList = playerStatus.get(player);
-				if (activeList == null) {
-					continue;
-				}
-				
-				Collection<Player> playerList = new HashSet<Player>();
-				playerList.add(player);
-				
-				Location playerLocation = PlayerLocationManager.getPlayerLocation(player);
-				for (VisualizerEntity entity : activeList) {
-					int range = InteractionVisualizer.playerTrackingRange.getOrDefault(entity.getWorld(), 64);
-					range *= range;
-					if (!entity.getWorld().equals(playerLocation.getWorld()) || entity.getLocation().distanceSquared(playerLocation) > range) {
-						if (entity instanceof ArmorStand) {
-							ArmorStand stand = (ArmorStand) entity;
-							removeArmorStand(playerList, stand, false, true);
-						} else if (entity instanceof Item) {
-							Item item = (Item) entity;
-							removeItem(playerList, item, false, true);
-						} else if (entity instanceof ItemFrame) {
-							ItemFrame frame = (ItemFrame) entity;
-							removeItemFrame(playerList, frame, false, true);
-						}
-					}
-				}
-				
-				for (VisualizerEntity entity : active.keySet()) {
-					int range = InteractionVisualizer.playerTrackingRange.getOrDefault(entity.getWorld(), 64);
-					range *= range;
-					if (entity.getWorld().equals(playerLocation.getWorld()) && entity.getLocation().distanceSquared(playerLocation) <= range) {
-						if (activeList.contains(entity)) {
-							continue;
-						}
-						if (!active.get(entity).contains(player)) {
-							continue;
-						}
-						Boolean isLoaded = loaded.get(entity);
-						if (isLoaded == null || !isLoaded) {
-							continue;
-						}
+				try {
+					Set<VisualizerEntity> activeList = playerStatus.get(player);
+					if (activeList != null) {
+						Collection<Player> playerList = new HashSet<>();
+						playerList.add(player);
 						
-						if (entity instanceof ArmorStand) {
-							ArmorStand stand = (ArmorStand) entity;
-							sendArmorStandSpawn(playerList, stand);
-							updateArmorStand(playerList, stand);
-						} else if (entity instanceof Item) {
-							Item item = (Item) entity;
-							sendItemSpawn(playerList, item);
-							updateItem(playerList, item);
-						} else if (entity instanceof ItemFrame) {
-							ItemFrame frame = (ItemFrame) entity;
-							sendItemFrameSpawn(playerList, frame);
-							updateItemFrame(playerList, frame);
+						Location playerLocation = PlayerLocationManager.getPlayerLocation(player);
+						Location playerEyeLocation = PlayerLocationManager.getPlayerEyeLocation(player);					
+						for (Entry<VisualizerEntity, Collection<Player>> entry : active.entrySet()) {
+							VisualizerEntity entity = entry.getKey();
+							int range = InteractionVisualizer.playerTrackingRange.getOrDefault(entity.getWorld(), 64);
+							range *= range;
+							
+							boolean playerActive = activeList.contains(entity);
+							boolean sameWorld = entity.getWorld().equals(playerLocation.getWorld());
+							boolean inRange = entity.getLocation().distanceSquared(playerLocation) <= range;
+							Boolean hasLineOfSight = InteractionVisualizer.hideIfObstructed ? null : true;
+							boolean isLoaded = loaded.getOrDefault(entity, false);
+							Location entityCenter = entity.getLocation();
+							entityCenter.setY(entityCenter.getY() + (entity instanceof Item ? (entity.getHeight() * 1.7) : (entity.getHeight() * 0.7)));
+							
+							if (playerActive && (!sameWorld || !inRange || !(hasLineOfSight != null ? hasLineOfSight : (hasLineOfSight = LineOfSightUtils.hasLineOfSight(playerEyeLocation, entityCenter))))) {
+								if (entity instanceof ArmorStand) {
+									ArmorStand stand = (ArmorStand) entity;
+									removeArmorStand(playerList, stand, false, true);
+								} else if (entity instanceof Item) {
+									Item item = (Item) entity;
+									removeItem(playerList, item, false, true);
+								} else if (entity instanceof ItemFrame) {
+									ItemFrame frame = (ItemFrame) entity;
+									removeItemFrame(playerList, frame, false, true);
+								}
+							} else if (!playerActive && entry.getValue().contains(player) && isLoaded && sameWorld && inRange && (hasLineOfSight != null ? hasLineOfSight : (hasLineOfSight = LineOfSightUtils.hasLineOfSight(playerEyeLocation, entityCenter)))) {
+								if (entity instanceof ArmorStand) {
+									ArmorStand stand = (ArmorStand) entity;
+									sendArmorStandSpawn(playerList, stand);
+									updateArmorStand(playerList, stand);
+								} else if (entity instanceof Item) {
+									Item item = (Item) entity;
+									sendItemSpawn(playerList, item);
+									updateItem(playerList, item);
+								} else if (entity instanceof ItemFrame) {
+									ItemFrame frame = (ItemFrame) entity;
+									sendItemFrameSpawn(playerList, frame);
+									updateItemFrame(playerList, frame);
+								}
+							}
 						}
 					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
-		}, 0, 20).getTaskId();
+			update();
+		});
 	}
-	/*
-	public static void sendLightUpdate(Collection<Player> players, Location location, int skysubchunkbitmask, List<byte[]> skybytearray, int blocksubchunkbitmask, List<byte[]> blockbytearray) {
-		PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.LIGHT_UPDATE);
-		int chunkX = (int) Math.floor((double) location.getBlockX() / 16.0);
-		int chunkZ = (int) Math.floor((double) location.getBlockZ() / 16.0);
-		
-		packet.getIntegers().write(0, chunkX);
-		packet.getIntegers().write(1, chunkZ);
-		packet.getIntegers().write(2, skysubchunkbitmask);
-		packet.getIntegers().write(3, blocksubchunkbitmask);
-		packet.getIntegers().write(4, ~skysubchunkbitmask);
-		packet.getIntegers().write(5, ~blocksubchunkbitmask);
-		packet.getModifier().write(6, skybytearray);
-		packet.getModifier().write(7, blockbytearray);
-		
-		try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet);
-			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-	}
-	*/
+
 	public static void sendHandMovement(Collection<Player> players, Player entity) {
 		if (!plugin.isEnabled()) {
 			return;

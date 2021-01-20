@@ -11,20 +11,20 @@ import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 
 public class ArmorStand extends VisualizerEntity {
 	
-	boolean hasArms;
-	boolean hasBasePlate;
-	boolean isMarker;
-	boolean hasGravity;
-	boolean isSmall;
-	boolean isInvulnerable;
-	boolean isVisible;
-	EulerAngle rightArmPose;
-	EulerAngle headPose;
-	ItemStack helmet;
-	ItemStack mainhand;
-	String customName;
-	boolean custonNameVisible;
-	Vector velocity;
+	private boolean hasArms;
+	private boolean hasBasePlate;
+	private boolean isMarker;
+	private boolean hasGravity;
+	private boolean isSmall;
+	private boolean isInvulnerable;
+	private boolean isVisible;
+	private EulerAngle rightArmPose;
+	private EulerAngle headPose;
+	private ItemStack helmet;
+	private ItemStack mainhand;
+	private String customName;
+	private boolean custonNameVisible;
+	private Vector velocity;
 	
 	public ArmorStand(Location location) {
 		super(location);
@@ -177,6 +177,11 @@ public class ArmorStand extends VisualizerEntity {
 	
 	public WrappedDataWatcher getWrappedDataWatcher() {
 		return WatchableCollection.getWatchableCollection(this);
+	}
+
+	@Override
+	public double getHeight() {
+		return isSmall ? 0.5 : 1.975;
 	}
 
 }

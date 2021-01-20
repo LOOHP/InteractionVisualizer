@@ -12,9 +12,9 @@ import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 
 public class ItemFrame extends VisualizerEntity {
 
-	ItemStack item;
-	BlockFace facing;
-	int framerotation;
+	private ItemStack item;
+	private BlockFace facing;
+	private int framerotation;
 
 	public ItemFrame(Location location) {
 		super(location);
@@ -109,6 +109,11 @@ public class ItemFrame extends VisualizerEntity {
 
 	public WrappedDataWatcher getWrappedDataWatcher() {
 		return WatchableCollection.getWatchableCollection(this);
+	}
+
+	@Override
+	public double getHeight() {
+		return 0.75;
 	}
 
 }

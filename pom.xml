@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
-	<version>1.14.2.3</version>
+	<version>1.14.3.0</version>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<resources>
@@ -80,7 +80,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.16.1-R0.1-SNAPSHOT</version>
+			<version>1.16.4-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -130,11 +130,60 @@
 			<systemPath>${basedir}/lib/spigot-1.11.2.jar</systemPath>
 		</dependency>
 		<dependency>
+			<groupId>Spigot-1.12.2</groupId>
+			<artifactId>Spigot-1.12.2</artifactId>
+			<scope>system</scope>
+			<version>1.0</version>
+			<systemPath>${basedir}/lib/spigot-1.12.2.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>Spigot-1.13</groupId>
+			<artifactId>Spigot-1.13</artifactId>
+			<scope>system</scope>
+			<version>1.0</version>
+			<systemPath>${basedir}/lib/spigot-1.13.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>Spigot-1.13.2</groupId>
+			<artifactId>Spigot-1.13.2</artifactId>
+			<scope>system</scope>
+			<version>1.0</version>
+			<systemPath>${basedir}/lib/spigot-1.13.2.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>Spigot-1.14.4</groupId>
+			<artifactId>Spigot-1.14.4</artifactId>
+			<scope>system</scope>
+			<version>1.0</version>
+			<systemPath>${basedir}/lib/spigot-1.14.4.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>Spigot-1.15.2</groupId>
+			<artifactId>Spigot-1.15.2</artifactId>
+			<scope>system</scope>
+			<version>1.0</version>
+			<systemPath>${basedir}/lib/spigot-1.15.2.jar</systemPath>
+		</dependency>
+		<dependency>
 			<groupId>Spigot-1.16.1</groupId>
 			<artifactId>Spigot-1.16.1</artifactId>
 			<scope>system</scope>
 			<version>1.0</version>
 			<systemPath>${basedir}/lib/spigot-1.16.1.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>Spigot-1.16.3</groupId>
+			<artifactId>Spigot-1.16.3</artifactId>
+			<scope>system</scope>
+			<version>1.0</version>
+			<systemPath>${basedir}/lib/spigot-1.16.3.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>Spigot-1.16.4</groupId>
+			<artifactId>Spigot-1.16.4</artifactId>
+			<scope>system</scope>
+			<version>1.0</version>
+			<systemPath>${basedir}/lib/spigot-1.16.4.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>

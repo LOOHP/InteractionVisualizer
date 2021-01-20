@@ -31,7 +31,6 @@ import com.loohp.interactionvisualizer.Managers.LangManager;
 import com.loohp.interactionvisualizer.Managers.MaterialManager;
 import com.loohp.interactionvisualizer.Managers.MusicManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Managers.TaskManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
@@ -85,6 +84,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static boolean UpdaterEnabled = true;
 	
 	public static Map<World, Integer> playerTrackingRange = new HashMap<>();
+	public static boolean hideIfObstructed = false;
 	
 	@Override
 	public void onEnable() {
@@ -162,10 +162,8 @@ public class InteractionVisualizer extends JavaPlugin {
 		CustomBlockDataManager.setup();
 		TaskManager.run();
 		TileEntityManager.run();
-		PlayerLocationManager.run();
 		CustomBlockDataManager.intervalSaveToFile();
 		PacketManager.run();
-		PlayerLocationManager.updateLocation();
 		
 		MaterialManager.setup();
 		
@@ -312,6 +310,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		handMovementEnabled = config.getBoolean("Settings.UseHandSwingAnimation");
 		
 		disabledWorlds = config.getStringList("Settings.DisabledWorlds").stream().collect(Collectors.toSet());
+		hideIfObstructed = config.getBoolean("Settings.HideIfViewObstructed");
 		
 		lightUpdatePeriod = config.getInt("LightUpdate.Period");
 		

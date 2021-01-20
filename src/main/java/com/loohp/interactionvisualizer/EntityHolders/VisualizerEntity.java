@@ -9,11 +9,11 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
 public abstract class VisualizerEntity {
 
-	int id;
-	UUID uuid;
-	Location location;
-	boolean lock;
-	boolean isSilent;
+	private int id;
+	private UUID uuid;
+	private Location location;
+	protected boolean lock;
+	private boolean isSilent;
 
 	public VisualizerEntity(Location location) {
 		this.id = (int) (Math.random() * Integer.MAX_VALUE);
@@ -88,6 +88,8 @@ public abstract class VisualizerEntity {
 	public boolean isLocked() {
 		return lock;
 	}
+	
+	public abstract double getHeight();
 
 	public abstract WrappedDataWatcher getWrappedDataWatcher();
 

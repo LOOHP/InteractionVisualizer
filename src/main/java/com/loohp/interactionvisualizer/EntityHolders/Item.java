@@ -11,13 +11,13 @@ import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 
 public class Item extends VisualizerEntity {
 
-	ItemStack item;
-	boolean hasGravity;
-	boolean isGlowing;
-	int pickupDelay;
-	String customName;
-	boolean custonNameVisible;
-	Vector velocity;
+	private ItemStack item;
+	private boolean hasGravity;
+	private boolean isGlowing;
+	private int pickupDelay;
+	private String customName;
+	private boolean custonNameVisible;
+	private Vector velocity;
 
 	public Item(Location location) {
 		super(location);
@@ -124,6 +124,11 @@ public class Item extends VisualizerEntity {
 
 	public WrappedDataWatcher getWrappedDataWatcher() {
 		return WatchableCollection.getWatchableCollection(this);
+	}
+
+	@Override
+	public double getHeight() {
+		return 0.25;
 	}
 
 }

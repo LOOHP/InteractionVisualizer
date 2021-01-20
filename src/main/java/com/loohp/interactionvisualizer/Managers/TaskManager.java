@@ -297,7 +297,7 @@ public class TaskManager {
 		}
 		
 		tasks.add(LightManager.run());
-		tasks.add(PacketManager.update());
+		PacketManager.update();
 	}
 	
 	public static void run() {

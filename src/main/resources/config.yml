@@ -162,6 +162,7 @@ Settings:
   UseHandSwingAnimation: true
   PickupAnimationPlayerYOffset: 0
   DisabledWorlds: []
+  HideIfViewObstructed: false
 
 Options:
   Updater: true
