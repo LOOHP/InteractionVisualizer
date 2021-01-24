@@ -238,6 +238,9 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 							if (left > 0) {
 								symbol += amountPending.replace("{Amount}", left + "");
 							}
+							if (symbol.contains("{CompletedAmount}")) {
+								symbol = symbol.replace("{CompletedAmount}", (inv.getItem(2) == null ? 0 : inv.getItem(2).getAmount()) + "");
+							}
 							if (hasFuel(smoker)) {
 								if (!stand.getCustomName().equals(symbol) || !stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(true);
