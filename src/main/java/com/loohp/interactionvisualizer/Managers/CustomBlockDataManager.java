@@ -82,7 +82,9 @@ public class CustomBlockDataManager {
         			} catch (Exception ignore) {}
         		}
         	}
-        	json = (JSONObject) parser.parse(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+        	InputStreamReader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+        	json = (JSONObject) parser.parse(reader);
+        	reader.close();
         } catch (Exception ex) {
             ex.printStackTrace();
         }

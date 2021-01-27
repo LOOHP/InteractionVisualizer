@@ -25,8 +25,6 @@ import com.loohp.interactionvisualizer.API.Events.InteractionVisualizerReloadEve
 import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.EntityHolders.VisualizerEntity;
 import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
-import com.loohp.interactionvisualizer.Managers.EffectManager;
-import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
 import com.loohp.interactionvisualizer.Managers.LangManager;
 import com.loohp.interactionvisualizer.Managers.MaterialManager;
 import com.loohp.interactionvisualizer.Managers.MusicManager;
@@ -40,9 +38,14 @@ import com.loohp.interactionvisualizer.PlaceholderAPI.Placeholders;
 import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.Updater.Updater;
 import com.loohp.interactionvisualizer.Updater.Updater.UpdaterResponse;
+import com.loohp.interactionvisualizer.Utils.LanguageUtils;
 import com.loohp.interactionvisualizer.Utils.MCVersion;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.HoverEvent.Action;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class InteractionVisualizer extends JavaPlugin {
 	
@@ -50,6 +53,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static ProtocolManager protocolManager;
 	public static FileConfiguration config;
 	
+	public static String exactMinecraftVersion;
 	public static MCVersion version;
 	public static Integer metaversion = 0;
 	
@@ -81,7 +85,9 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	public static Integer lightUpdatePeriod = 10;
 	
-	public static boolean UpdaterEnabled = true;
+	public static boolean legacyChatAPI = false;
+	
+	public static boolean updaterEnabled = true;
 	
 	public static Map<World, Integer> playerTrackingRange = new HashMap<>();
 	public static boolean hideIfObstructed = false;
@@ -113,6 +119,7 @@ public class InteractionVisualizer extends JavaPlugin {
 
 		Metrics metrics = new Metrics(this, pluginId);
 		
+		exactMinecraftVersion = Bukkit.getVersion().substring(Bukkit.getVersion().indexOf("(") + 5, Bukkit.getVersion().indexOf(")"));
 		version = MCVersion.fromPackageName(getServer().getClass().getPackage().getName());
 		
 		switch (version) {
@@ -155,8 +162,6 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		WatchableCollection.setup();
 		SoundManager.setup();
-		EnchantmentManager.setup();
-		EffectManager.setup();
 		MusicManager.setup();
 		Database.setup();
 		CustomBlockDataManager.setup();
@@ -190,6 +195,16 @@ public class InteractionVisualizer extends JavaPlugin {
 		exemptBlocks.add("LOOM");
 		exemptBlocks.add("SMITHING_TABLE");
 		
+		try {
+			TextComponent test = new TextComponent("Legacy Bungeecord Chat API Test");
+			test.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, new Text("Test Hover Text")));
+			test.getHoverEvent().getContents();
+			legacyChatAPI = false;
+		} catch (Throwable e) {
+			legacyChatAPI = true;
+			getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractiveChat] Legacy Bungeecord Chat API detected, using legacy methods...");
+		};
+		
 		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] InteractionVisualizer has been enabled!");
 		
 		Bukkit.getScheduler().runTask(this, () -> {
@@ -206,7 +221,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		});
 		
 		Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
-			if (UpdaterEnabled) {
+			if (updaterEnabled) {
 				UpdaterResponse version = Updater.checkUpdate();
 				if (!version.getResult().equals("latest")) {
 					Updater.sendUpdateMessage(Bukkit.getConsoleSender(), version.getResult(), version.getSpigotPluginId());
@@ -314,7 +329,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		lightUpdatePeriod = config.getInt("LightUpdate.Period");
 		
-		UpdaterEnabled = plugin.getConfig().getBoolean("Options.Updater");
+		updaterEnabled = plugin.getConfig().getBoolean("Options.Updater");
 		
 		playerTrackingRange.clear();
 		int defaultRange = getServer().spigot().getConfig().getInt("world-settings.default.entity-tracking-range.players", 64);
@@ -322,6 +337,8 @@ public class InteractionVisualizer extends JavaPlugin {
 			int range = getServer().spigot().getConfig().getInt("world-settings." + world.getName() + ".entity-tracking-range.players", defaultRange);
 			playerTrackingRange.put(world, range);
 		}
+		
+		LanguageUtils.loadTranslations();
 		
 		getServer().getPluginManager().callEvent(new InteractionVisualizerReloadEvent());
 	}

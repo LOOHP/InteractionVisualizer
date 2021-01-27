@@ -23,15 +23,17 @@ import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.API.Events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
-import com.loohp.interactionvisualizer.Managers.MusicManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
-import com.loohp.interactionvisualizer.Utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.Utils.LegacyRecordsUtils;
+import com.loohp.interactionvisualizer.Utils.TranslationUtils;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listener {
 	
@@ -136,8 +138,14 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 						Item item = null;
 						if (entry.getValue().get("Item") instanceof String) {
 							if (itemstack != null) {
-								String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString().toUpperCase()) : jukebox.getPlaying().toString().toUpperCase();
-								String text = getColor(disc) + (!itemstack.getItemMeta().hasDisplayName() ? ChatColorUtils.translateAlternateColorCodes('&', MusicManager.getMusicConfig().getString("Discs." + disc)) : itemstack.getItemMeta().getDisplayName());
+								String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString()) : jukebox.getPlaying().toString();
+								BaseComponent text;
+								if (itemstack.getItemMeta().hasDisplayName()) {
+									text = new TextComponent(getColor(disc) + itemstack.getItemMeta().getDisplayName());
+								} else {
+									text = new TranslatableComponent(TranslationUtils.getRecord(disc));
+									text.setColor(getColor(disc));
+								}
 								
 								item = new Item(jukebox.getLocation().clone().add(0.5, 1.0, 0.5));
 								item.setItemStack(itemstack);
@@ -157,8 +165,14 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 							if (itemstack != null) {
 								if (!item.getItemStack().equals(itemstack)) {
 									item.setItemStack(itemstack);
-									String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString().toUpperCase()) : jukebox.getPlaying().toString().toUpperCase();
-									String text = getColor(disc) + (!itemstack.getItemMeta().hasDisplayName() ? MusicManager.getMusicConfig().getString("Discs." + disc) : itemstack.getItemMeta().getDisplayName());
+									String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString()) : jukebox.getPlaying().toString();
+									BaseComponent text;
+									if (itemstack.getItemMeta().hasDisplayName()) {
+										text = new TextComponent(getColor(disc) + itemstack.getItemMeta().getDisplayName());
+									} else {
+										text = new TranslatableComponent(TranslationUtils.getRecord(disc));
+										text.setColor(getColor(disc));
+									}
 									
 									item.setCustomName(text);
 									item.setCustomNameVisible(true);

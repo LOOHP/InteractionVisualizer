@@ -227,13 +227,13 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 								for (i = progressBarLength - 1; i >= percentagescaled; i--) {
 									symbol += emptyColor + progressBarCharacter;
 								}
-								if (!stand.getCustomName().equals(symbol) || !stand.isCustomNameVisible()) {
+								if (!stand.getCustomName().toPlainText().equals(symbol) || !stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(true);
 									stand.setCustomName(symbol);
 									PacketManager.updateArmorStandOnlyMeta(stand);
 								}
 							} else {
-								if (!stand.getCustomName().equals("") || stand.isCustomNameVisible()) {
+								if (!stand.getCustomName().toPlainText().equals("") || stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(false);
 									stand.setCustomName("");
 									PacketManager.updateArmorStandOnlyMeta(stand);
