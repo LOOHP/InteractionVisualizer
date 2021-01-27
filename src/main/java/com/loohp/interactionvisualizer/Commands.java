@@ -16,6 +16,8 @@ import org.bukkit.plugin.Plugin;
 import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
+import com.loohp.interactionvisualizer.Managers.EffectManager;
+import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
 import com.loohp.interactionvisualizer.Managers.MaterialManager;
 import com.loohp.interactionvisualizer.Managers.MusicManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
@@ -49,6 +51,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 		if (args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("interactionvisualizer.reload")) {
 				plugin.reloadConfig();
+				EnchantmentManager.reloadConfig();
+				EffectManager.reloadConfig();
 				MusicManager.reloadConfig();
 				CustomBlockDataManager.setup();
 				MaterialManager.reloadConfig();

@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
@@ -23,6 +24,10 @@ import com.loohp.interactionvisualizer.Toggle;
 import com.loohp.interactionvisualizer.Database.Database;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
+import com.loohp.interactionvisualizer.Managers.EffectManager;
+import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
+import com.loohp.interactionvisualizer.Managers.MaterialManager;
+import com.loohp.interactionvisualizer.Managers.MusicManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
@@ -188,7 +193,63 @@ public class InteractionVisualizerAPI {
 			return null;
 		}
 	}
-
+	
+	/**
+	Get InteractionVisualizer's configurations.
+	@return The FileConfiguration of the given ConfiguationType.
+	*/
+	public static FileConfiguration getConfig(ConfiguationType configType) {
+		switch (configType) {
+		case EFFECTS:
+			return EffectManager.getEffectConfig();
+		case ENCHANTMENT:
+			return EnchantmentManager.getEnchConfig();
+		case MUSIC:
+			return MusicManager.getMusicConfig();
+		case MATERIAL:
+			return MaterialManager.getMaterialConfig();
+		case MAIN:
+		default:
+			return InteractionVisualizer.config;
+		}
+	}
+	
+	/**
+	Please use getConfig(ConfiguationType configType) instead
+	@return Magic Configuration.
+	*/
+	@Deprecated
+	public static FileConfiguration getConfig() {
+		return InteractionVisualizer.config;
+	}
+	
+	/**
+	Please use getConfig(ConfiguationType configType) instead
+	@return Magic Configuration.
+	*/
+	@Deprecated
+	public static FileConfiguration getEnchantmentConfig() {
+		return EnchantmentManager.getEnchConfig();
+	}
+	
+	/**
+	Please use getConfig(ConfiguationType configType) instead
+	@return Magic Configuration.
+	*/
+	@Deprecated
+	public static FileConfiguration getMusicConfig() {
+		return MusicManager.getMusicConfig();
+	}
+	
+	/**
+	Please use getConfig(ConfiguationType configType) instead
+	@return Magic Configuration.
+	*/
+	@Deprecated
+	public static FileConfiguration getEffectConfig() {
+		return EffectManager.getEffectConfig();
+	}
+	
 	/**
 	Play a throw item animation from location1 to location2.
 	If the boolean "pickupSound" is true, a pickup item sound will be played.
@@ -317,22 +378,22 @@ public class InteractionVisualizerAPI {
 	
 	@Deprecated
 	public static String getStandModeRaw(ArmorStand stand) {
-		if (stand.getCustomName().toPlainText().startsWith("IV.Custom.")) {
-			return stand.getCustomName().toPlainText().substring(stand.getCustomName().toPlainText().lastIndexOf(".") + 1);
+		if (stand.getCustomName().startsWith("IV.Custom.")) {
+			return stand.getCustomName().substring(stand.getCustomName().lastIndexOf(".") + 1);
 		}
 		return null;
 	}
 	
 	public static ArmorStandHoldingMode getStandMode(ArmorStand stand) {
-		if (stand.getCustomName().toPlainText().startsWith("IV.Custom.")) {
-			return ArmorStandHoldingMode.fromName(stand.getCustomName().toPlainText().substring(stand.getCustomName().toPlainText().lastIndexOf(".") + 1));
+		if (stand.getCustomName().startsWith("IV.Custom.")) {
+			return ArmorStandHoldingMode.fromName(stand.getCustomName().substring(stand.getCustomName().lastIndexOf(".") + 1));
 		}
 		return null;
 	}
 	
 	private static void toggleStandMode(ArmorStand stand, String mode) {
-		if (!stand.getCustomName().toPlainText().equals("IV.Custom.Item")) {
-			if (stand.getCustomName().toPlainText().equals("IV.Custom.Block")) {
+		if (!stand.getCustomName().equals("IV.Custom.Item")) {
+			if (stand.getCustomName().equals("IV.Custom.Block")) {
 				stand.setCustomName("IV.Custom.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -341,7 +402,7 @@ public class InteractionVisualizerAPI {
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.14)));
 				
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.Custom.LowBlock")) {
+			if (stand.getCustomName().equals("IV.Custom.LowBlock")) {
 				stand.setCustomName("IV.Custom.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -350,14 +411,14 @@ public class InteractionVisualizerAPI {
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.15)));
 				
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.Custom.Tool")) {
+			if (stand.getCustomName().equals("IV.Custom.Tool")) {
 				stand.setCustomName("IV.Custom.Item");
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(0.3), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(0.1)));
 				stand.teleport(stand.getLocation().add(0, 0.26, 0));
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.Custom.Standing")) {
+			if (stand.getCustomName().equals("IV.Custom.Standing")) {
 				stand.setCustomName("IV.Custom.Item");
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().getDirection().normalize().multiply(0.323), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().getDirection().normalize().multiply(-0.115)));

@@ -22,7 +22,7 @@ import net.md_5.bungee.api.ChatColor;
 public class LangManager {
 	
 	private static File DataFolder = InteractionVisualizer.plugin.getDataFolder();
-	private static File LangFolder = new File(InteractionVisualizer.plugin.getDataFolder(), "Language_Repo");
+	private static File LangFolder = new File(InteractionVisualizer.plugin.getDataFolder(), "Lang");
 	private static File TempFolder = new File(InteractionVisualizer.plugin.getDataFolder(), "Temp");
 	private static int BUFFER_SIZE = 4096;
 	
@@ -47,7 +47,7 @@ public class LangManager {
 			
 			removeFolder(LangFolder);
 			extract(new ZipInputStream(new FileInputStream(zip)), DataFolder);
-			new File(DataFolder, "InteractionVisualizerLanguages-master").renameTo(new File(DataFolder, "Language_Repo"));
+			new File(DataFolder, "InteractionVisualizerLanguages-master").renameTo(new File(DataFolder, "Lang"));
 							
 			removeFolder(TempFolder);
 			

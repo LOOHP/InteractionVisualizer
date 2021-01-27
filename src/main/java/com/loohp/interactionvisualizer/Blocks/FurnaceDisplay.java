@@ -244,21 +244,21 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
 								symbol = symbol.replace("{CompletedAmount}", (inv.getItem(2) == null ? 0 : inv.getItem(2).getAmount()) + "");
 							}
 							if (hasFuel(furnace)) {
-								if (!stand.getCustomName().toPlainText().equals(symbol) || !stand.isCustomNameVisible()) {
+								if (!stand.getCustomName().equals(symbol) || !stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(true);
 									stand.setCustomName(symbol);
 									PacketManager.updateArmorStandOnlyMeta(stand);
 								}
 							} else {
 								symbol = noFuelColor + ChatColor.stripColor(symbol);
-								if (!stand.getCustomName().toPlainText().equals(symbol) || !stand.isCustomNameVisible()) {
+								if (!stand.getCustomName().equals(symbol) || !stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(true);
 									stand.setCustomName(symbol);
 									PacketManager.updateArmorStandOnlyMeta(stand);
 								}
 							}
 						} else {					
-							if (!stand.getCustomName().toPlainText().equals("") || stand.isCustomNameVisible()) {
+							if (!stand.getCustomName().equals("") || stand.isCustomNameVisible()) {
 								stand.setCustomNameVisible(false);
 								stand.setCustomName("");
 								PacketManager.updateArmorStandOnlyMeta(stand);

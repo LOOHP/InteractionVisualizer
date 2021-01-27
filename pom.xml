@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
-	<version>1.14.4.0</version>
+	<version>1.14.3.4</version>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<resources>
@@ -28,14 +28,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.1.0</version>
-				<configuration>
-					<relocations>
-						<relocation>
-							<pattern>com.cryptomorin.xseries</pattern>
-							<shadedPattern>com.loohp.interactionvisualizer.Utils</shadedPattern>
-						</relocation>
-					</relocations>
-				</configuration>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -79,12 +71,6 @@
 	</repositories>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.github.cryptomorin</groupId>
-			<artifactId>XSeries</artifactId>
-			<version>7.8.0</version>
-			<scope>compile</scope>
-		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>

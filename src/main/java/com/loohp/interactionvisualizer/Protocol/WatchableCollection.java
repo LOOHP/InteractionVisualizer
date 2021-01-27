@@ -14,8 +14,6 @@ import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
 import com.loohp.interactionvisualizer.Utils.MCVersion;
 
-import net.md_5.bungee.chat.ComponentSerializer;
-
 public class WatchableCollection {
 	
 	private static MCVersion version = InteractionVisualizer.version;
@@ -49,7 +47,7 @@ public class WatchableCollection {
 		
 		switch (metaversion) {
 		case 0:
-			if (stand.getCustomName() != null && !stand.getCustomName().toPlainText().equals("")) {
+			if (stand.getCustomName() != null && !stand.getCustomName().equals("")) {
 				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), stand.getCustomName());
 			} else {
 				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), "");
@@ -58,7 +56,7 @@ public class WatchableCollection {
 		case 1:
 		case 2:
 		case 3:
-			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(ComponentSerializer.toString(stand.getCustomName())).getHandle()));
+			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromChatMessage(stand.getCustomName())[0].getHandle()));
 			break;
 		}
 		
@@ -133,7 +131,7 @@ public class WatchableCollection {
 		
 		switch (metaversion) {
 		case 0:
-			if (item.getCustomName() != null && !item.getCustomName().toPlainText().equals("")) {
+			if (item.getCustomName() != null && !item.getCustomName().equals("")) {
 				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), item.getCustomName());
 			} else {
 				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), "");
@@ -142,7 +140,7 @@ public class WatchableCollection {
 		case 1:
 		case 2:
 		case 3:
-			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(ComponentSerializer.toString(item.getCustomName())).getHandle()));
+			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromChatMessage(item.getCustomName())[0].getHandle()));
 			break;
 		}
 		

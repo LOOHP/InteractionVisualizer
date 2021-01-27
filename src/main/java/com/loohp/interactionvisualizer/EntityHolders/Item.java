@@ -9,16 +9,13 @@ import org.bukkit.util.Vector;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-
 public class Item extends VisualizerEntity {
 
 	private ItemStack item;
 	private boolean hasGravity;
 	private boolean isGlowing;
 	private int pickupDelay;
-	private BaseComponent customName;
+	private String customName;
 	private boolean custonNameVisible;
 	private Vector velocity;
 
@@ -27,7 +24,7 @@ public class Item extends VisualizerEntity {
 		this.item = new ItemStack(Material.STONE);
 		this.hasGravity = false;
 		this.pickupDelay = 0;
-		this.customName = new TextComponent();
+		this.customName = "";
 		this.custonNameVisible = false;
 		this.isGlowing = false;
 		this.velocity = new Vector(0.0, 0.0, 0.0);
@@ -48,14 +45,10 @@ public class Item extends VisualizerEntity {
 	}
 
 	public void setCustomName(String customName) {
-		this.customName = new TextComponent(customName);
-	}
-	
-	public void setCustomName(BaseComponent customName) {
 		this.customName = customName;
 	}
-	
-	public BaseComponent getCustomName() {
+
+	public String getCustomName() {
 		return customName;
 	}
 
