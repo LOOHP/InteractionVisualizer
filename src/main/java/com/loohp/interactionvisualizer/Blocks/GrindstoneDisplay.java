@@ -377,15 +377,15 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
 	}
 	
 	public MaterialMode standMode(ArmorStand stand) {
-		if (stand.getCustomName().startsWith("IV.Grindstone.")) {
-			return MaterialMode.getModeFromName(stand.getCustomName().substring(stand.getCustomName().lastIndexOf(".") + 1));
+		if (stand.getCustomName().toPlainText().startsWith("IV.Grindstone.")) {
+			return MaterialMode.getModeFromName(stand.getCustomName().toPlainText().substring(stand.getCustomName().toPlainText().lastIndexOf(".") + 1));
 		}
 		return null;
 	}
 	
 	public void toggleStandMode(ArmorStand stand, String mode) {
-		if (!stand.getCustomName().equals("IV.Grindstone.Item")) {
-			if (stand.getCustomName().equals("IV.Grindstone.Block")) {
+		if (!stand.getCustomName().toPlainText().equals("IV.Grindstone.Item")) {
+			if (stand.getCustomName().toPlainText().equals("IV.Grindstone.Block")) {
 				stand.setCustomName("IV.Grindstone.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -394,7 +394,7 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.14)));
 				
 			}
-			if (stand.getCustomName().equals("IV.Grindstone.LowBlock")) {
+			if (stand.getCustomName().toPlainText().equals("IV.Grindstone.LowBlock")) {
 				stand.setCustomName("IV.Grindstone.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -403,14 +403,14 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.15)));
 				
 			}
-			if (stand.getCustomName().equals("IV.Grindstone.Tool")) {
+			if (stand.getCustomName().toPlainText().equals("IV.Grindstone.Tool")) {
 				stand.setCustomName("IV.Grindstone.Item");
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(0.3), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(0.1)));
 				stand.teleport(stand.getLocation().add(0, 0.26, 0));
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 			}
-			if (stand.getCustomName().equals("IV.Grindstone.Standing")) {
+			if (stand.getCustomName().toPlainText().equals("IV.Grindstone.Standing")) {
 				stand.setCustomName("IV.Grindstone.Item");
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().getDirection().normalize().multiply(0.323), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().getDirection().normalize().multiply(-0.115)));

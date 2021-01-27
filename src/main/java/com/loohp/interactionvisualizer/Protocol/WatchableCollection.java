@@ -12,7 +12,10 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
+import com.loohp.interactionvisualizer.Utils.LanguageUtils;
 import com.loohp.interactionvisualizer.Utils.MCVersion;
+
+import net.md_5.bungee.chat.ComponentSerializer;
 
 public class WatchableCollection {
 	
@@ -47,8 +50,8 @@ public class WatchableCollection {
 		
 		switch (metaversion) {
 		case 0:
-			if (stand.getCustomName() != null && !stand.getCustomName().equals("")) {
-				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), stand.getCustomName());
+			if (stand.getCustomName() != null && !stand.getCustomName().toPlainText().equals("")) {
+				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), LanguageUtils.convert(stand.getCustomName(), InteractionVisualizer.language).toLegacyText());
 			} else {
 				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), "");
 			}
@@ -56,7 +59,7 @@ public class WatchableCollection {
 		case 1:
 		case 2:
 		case 3:
-			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromChatMessage(stand.getCustomName())[0].getHandle()));
+			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(ComponentSerializer.toString(stand.getCustomName())).getHandle()));
 			break;
 		}
 		
@@ -131,8 +134,8 @@ public class WatchableCollection {
 		
 		switch (metaversion) {
 		case 0:
-			if (item.getCustomName() != null && !item.getCustomName().equals("")) {
-				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), item.getCustomName());
+			if (item.getCustomName() != null && !item.getCustomName().toPlainText().equals("")) {
+				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), LanguageUtils.convert(item.getCustomName(), InteractionVisualizer.language).toLegacyText());
 			} else {
 				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), "");
 			}
@@ -140,7 +143,7 @@ public class WatchableCollection {
 		case 1:
 		case 2:
 		case 3:
-			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromChatMessage(item.getCustomName())[0].getHandle()));
+			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(ComponentSerializer.toString(item.getCustomName())).getHandle()));
 			break;
 		}
 		

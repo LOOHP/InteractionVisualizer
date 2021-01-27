@@ -27,15 +27,17 @@ import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.API.Events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
-import com.loohp.interactionvisualizer.Managers.EffectManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
-import com.loohp.interactionvisualizer.Utils.ChatColorUtils;
+import com.loohp.interactionvisualizer.Utils.ChatComponentUtils;
 import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
+import com.loohp.interactionvisualizer.Utils.TranslationUtils;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener {
 	
@@ -180,46 +182,52 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 						ArmorStand line3 = (ArmorStand) entry.getValue().get("3");
 							
 						String one = color + "T" + beacon.getTier() + " " + arrow + " " + getRange(beacon.getTier()) + "m";
-						if (!line1.getCustomName().equals(one)) {
+						if (!line1.getCustomName().toPlainText().equals(one)) {
 							line1.setCustomName(one);
 							line1.setCustomNameVisible(true);
 							PacketManager.updateArmorStandOnlyMeta(line1);
 						}
 						if (beacon.getTier() == 0) {
-							if (!line2.getCustomName().equals("")) {
+							if (!line2.getCustomName().toPlainText().equals("")) {
 								line2.setCustomName("");
 								line2.setCustomNameVisible(false);
 								PacketManager.updateArmorStandOnlyMeta(line2);
 							}
-							if (!line3.getCustomName().equals("")) {
+							if (!line3.getCustomName().toPlainText().equals("")) {
 								line3.setCustomName("");
 								line3.setCustomNameVisible(false);
 								PacketManager.updateArmorStandOnlyMeta(line3);
 							}
 						} else {
 							if (beacon.getPrimaryEffect() != null) {
-								String two = color + ChatColorUtils.translateAlternateColorCodes('&', EffectManager.getEffectConfig().getString("Effects." + beacon.getPrimaryEffect().getType().getName().toUpperCase())) + " " + RomanNumberUtils.toRoman(beacon.getPrimaryEffect().getAmplifier() + 1);
-								if (!line2.getCustomName().equals(two)) {
-									line2.setCustomName(two);
+								TranslatableComponent effectTrans = new TranslatableComponent(TranslationUtils.getEffect(beacon.getPrimaryEffect().getType()));
+								effectTrans.setColor(color);
+								TextComponent levelText = new TextComponent(" " + color + RomanNumberUtils.toRoman(beacon.getPrimaryEffect().getAmplifier() + 1));
+								effectTrans.addExtra(levelText);
+								if (!ChatComponentUtils.areSimilar(line2.getCustomName(), effectTrans, true)) {
+									line2.setCustomName(effectTrans);
 									line2.setCustomNameVisible(true);
 									PacketManager.updateArmorStandOnlyMeta(line2);
 								}
 							} else {
-								if (!line2.getCustomName().equals("")) {
+								if (!line2.getCustomName().toPlainText().equals("")) {
 									line2.setCustomName("");
 									line2.setCustomNameVisible(false);
 									PacketManager.updateArmorStandOnlyMeta(line2);
 								}
 							}
 							if (beacon.getSecondaryEffect() != null) {
-								String three = color + ChatColorUtils.translateAlternateColorCodes('&', EffectManager.getEffectConfig().getString("Effects." + beacon.getSecondaryEffect().getType().getName().toUpperCase())) + " " + RomanNumberUtils.toRoman(beacon.getSecondaryEffect().getAmplifier() + 1);
-								if (!line3.getCustomName().equals(three)) {
-									line3.setCustomName(three);
+								TranslatableComponent effectTrans = new TranslatableComponent(TranslationUtils.getEffect(beacon.getSecondaryEffect().getType()));
+								effectTrans.setColor(color);
+								TextComponent levelText = new TextComponent(" " + color + RomanNumberUtils.toRoman(beacon.getSecondaryEffect().getAmplifier() + 1));
+								effectTrans.addExtra(levelText);
+								if (!ChatComponentUtils.areSimilar(line3.getCustomName(), effectTrans, true)) {
+									line3.setCustomName(effectTrans);
 									line3.setCustomNameVisible(true);
 									PacketManager.updateArmorStandOnlyMeta(line3);
 								}
 							} else {
-								if (!line3.getCustomName().equals("")) {
+								if (!line3.getCustomName().toPlainText().equals("")) {
 									line3.setCustomName("");
 									line3.setCustomNameVisible(false);
 									PacketManager.updateArmorStandOnlyMeta(line3);

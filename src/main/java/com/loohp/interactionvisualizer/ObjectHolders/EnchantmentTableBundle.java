@@ -28,14 +28,16 @@ import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
-import com.loohp.interactionvisualizer.Managers.EnchantmentManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
-import com.loohp.interactionvisualizer.Utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.Utils.CustomStringUtils;
 import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
+import com.loohp.interactionvisualizer.Utils.TranslationUtils;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class EnchantmentTableBundle {
 	
@@ -60,7 +62,6 @@ public class EnchantmentTableBundle {
 	private Optional<Item> item;
 	private Player enchanter;
 	private Collection<Player> players;
-	private char arrow;
 	
 	private List<Item> createdItems;
 	
@@ -76,7 +77,6 @@ public class EnchantmentTableBundle {
 		this.item = Optional.empty();
 		this.players = players;
 		this.enchanter = enchanter;
-		this.arrow = '\u27f9';
 		methodQueue = new ConcurrentLinkedQueue<>();
 		activeMethod = null;
 		createdItems = new ArrayList<>();
@@ -144,15 +144,18 @@ public class EnchantmentTableBundle {
 			for (Entry<Enchantment, Integer> entry : enchantsToAdd.entrySet()) {
 				Enchantment ench = entry.getKey();
 				int level = entry.getValue();
-				String str = ChatColorUtils.translateAlternateColorCodes('&', EnchantmentManager.getEnchConfig().getString("Enchantments." + ench.getName()));
-				String enchantmentName = str == null ? CustomStringUtils.capitalize(ench.getName().toLowerCase().replace("_", " ")) : str;
-				if (enchantmentName == null) {
-					continue;
-				}
+				String str = TranslationUtils.getEnchantment(ench);
+				BaseComponent enchantmentName = (str == null || str.equals("")) ? new TextComponent(CustomStringUtils.capitalize(ench.getName().toLowerCase().replace("_", " "))) : new TranslatableComponent(str);
 				ArmorStand stand = new ArmorStand(standloc);
-				String display = ench.getMaxLevel() == 1 && level == 1 ? enchantmentName : enchantmentName + " " + ChatColor.AQUA + RomanNumberUtils.toRoman(entry.getValue());
-				display = ench.isCursed() ? ChatColor.RED + display : ChatColor.AQUA + display;
-				stand.setCustomName(display);
+				if (ench.getMaxLevel() != 1 || level != 1) {
+					enchantmentName.addExtra(new TextComponent(" " + ChatColor.AQUA + RomanNumberUtils.toRoman(entry.getValue())));
+				}
+				if (ench.isCursed()) {
+					enchantmentName.setColor(ChatColor.RED);
+				} else {
+					enchantmentName.setColor(ChatColor.AQUA);
+				}
+				stand.setCustomName(enchantmentName);
 				stand.setCustomNameVisible(true);
 				setStand(stand);
 				PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), stand);
@@ -161,8 +164,12 @@ public class EnchantmentTableBundle {
 			}
 			
 			ArmorStand stand = new ArmorStand(standloc);
-			String levelStr = ChatColorUtils.translateAlternateColorCodes('&', EnchantmentManager.getEnchConfig().getString("Translations.LEVEL"));
-			stand.setCustomName(ChatColor.GREEN + levelStr + " " + arrow + " " + expCost);
+			TranslatableComponent levelTrans = new TranslatableComponent(TranslationUtils.getLevel(expCost));
+			if (expCost != 1) {
+				levelTrans.addWith(expCost + "");
+			}
+			levelTrans.setColor(ChatColor.GREEN);
+			stand.setCustomName(levelTrans);
 			stand.setCustomNameVisible(true);
 			setStand(stand);
 			PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), stand);

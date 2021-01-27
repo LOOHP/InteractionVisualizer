@@ -356,15 +356,15 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
 	}
 	
 	public MaterialMode standMode(ArmorStand stand) {
-		if (stand.getCustomName().startsWith("IV.SmithingTable.")) {
-			return MaterialMode.getModeFromName(stand.getCustomName().substring(stand.getCustomName().lastIndexOf(".") + 1));
+		if (stand.getCustomName().toPlainText().startsWith("IV.SmithingTable.")) {
+			return MaterialMode.getModeFromName(stand.getCustomName().toPlainText().substring(stand.getCustomName().toPlainText().lastIndexOf(".") + 1));
 		}
 		return null;
 	}
 	
 	public void toggleStandMode(ArmorStand stand, String mode) {
-		if (!stand.getCustomName().equals("IV.SmithingTable.Item")) {
-			if (stand.getCustomName().equals("IV.SmithingTable.Block")) {
+		if (!stand.getCustomName().toPlainText().equals("IV.SmithingTable.Item")) {
+			if (stand.getCustomName().toPlainText().equals("IV.SmithingTable.Block")) {
 				stand.setCustomName("IV.SmithingTable.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -373,7 +373,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.14)));
 				
 			}
-			if (stand.getCustomName().equals("IV.SmithingTable.LowBlock")) {
+			if (stand.getCustomName().toPlainText().equals("IV.SmithingTable.LowBlock")) {
 				stand.setCustomName("IV.SmithingTable.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -382,14 +382,14 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.15)));
 				
 			}
-			if (stand.getCustomName().equals("IV.SmithingTable.Tool")) {
+			if (stand.getCustomName().toPlainText().equals("IV.SmithingTable.Tool")) {
 				stand.setCustomName("IV.SmithingTable.Item");
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(0.3), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(0.1)));
 				stand.teleport(stand.getLocation().add(0, 0.26, 0));
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 			}
-			if (stand.getCustomName().equals("IV.SmithingTable.Standing")) {
+			if (stand.getCustomName().toPlainText().equals("IV.SmithingTable.Standing")) {
 				stand.setCustomName("IV.SmithingTable.Item");
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().getDirection().normalize().multiply(0.323), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().getDirection().normalize().multiply(-0.115)));
