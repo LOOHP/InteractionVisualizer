@@ -3,7 +3,7 @@ package com.loohp.interactionvisualizer.Utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -14,12 +14,10 @@ import java.util.Set;
 import java.util.zip.ZipInputStream;
 
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.libs.jline.internal.InputStreamReader;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.google.common.io.Files;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 
 import net.md_5.bungee.api.ChatColor;
@@ -51,7 +49,9 @@ public class LanguageUtils {
 		    	    pw.flush();
 		    	    pw.close();
 		    	}
-		    	JSONObject data = (JSONObject) new JSONParser().parse(new FileReader(hashFile));
+		    	InputStreamReader hashStream = new InputStreamReader(new FileInputStream(hashFile), StandardCharsets.UTF_8);
+		    	JSONObject data = (JSONObject) new JSONParser().parse(hashStream);
+		    	hashStream.close();
 				
 				JSONObject manifest = HTTPRequestUtils.getJSONResponse(VERSION_MANIFEST_URL);
 				if (manifest == null) {
@@ -86,7 +86,7 @@ public class LanguageUtils {
 									if (fileToSave.exists()) {
 										fileToSave.delete();
 									}
-									Files.copy(enUsFile, fileToSave);
+									FileUtils.copy(enUsFile, fileToSave);
 								}
 							} else {
 								JSONObject values = new JSONObject();
@@ -95,7 +95,7 @@ public class LanguageUtils {
 								if (fileToSave.exists()) {
 									fileToSave.delete();
 								}
-								Files.copy(enUsFile, fileToSave);
+								FileUtils.copy(enUsFile, fileToSave);
 								data.put("en_us", values);											
 							}
 							FileUtils.removeFolderRecursively(tempFolder);
@@ -187,11 +187,15 @@ public class LanguageUtils {
 	}
 	
 	public static String getTranslation(String translationKey, String language) {
-		if (InteractionVisualizer.version.isLegacy() && translationKey.equals("item.skull.player.name")) {
-			return "%s's Head";
+		try {
+			if (InteractionVisualizer.version.isLegacy() && translationKey.equals("item.skull.player.name")) {
+				return "%s's Head";
+			}
+			Map<String, String> mapping = translations.get(language);
+			return mapping == null ? new TranslatableComponent(translationKey).toPlainText() : mapping.getOrDefault(translationKey, translationKey);
+		} catch (Exception e) {
+			return translationKey;
 		}
-		Map<String, String> mapping = translations.get(language);
-		return mapping == null ? new TranslatableComponent(translationKey).toPlainText() : mapping.getOrDefault(translationKey, translationKey);
 	}
 	
 	public static BaseComponent convert(BaseComponent baseComponent, String language) {
