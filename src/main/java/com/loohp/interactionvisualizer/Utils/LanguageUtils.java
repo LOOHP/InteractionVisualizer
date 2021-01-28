@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.zip.ZipInputStream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.libs.jline.internal.InputStreamReader;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -146,7 +147,7 @@ public class LanguageUtils {
 				for (File file : langFileFolder.listFiles()) {
 					try {
 						if (file.getName().endsWith(".json")) {
-							FileReader reader = new FileReader(file, StandardCharsets.UTF_8);
+							InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
 							JSONObject json = (JSONObject) new JSONParser().parse(reader);
 							reader.close();
 							Map<String, String> mapping = new HashMap<>();
@@ -158,7 +159,7 @@ public class LanguageUtils {
 							}
 							translations.put(file.getName().substring(0, file.getName().lastIndexOf(".")), mapping);
 						} else if (file.getName().endsWith(".lang")) {
-							BufferedReader br = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8));
+							BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 							Map<String, String> mapping = new HashMap<>();
 							br.lines().forEach(line -> {
 								if (line.contains("=")) {
