@@ -203,7 +203,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		} catch (Throwable e) {
 			legacyChatAPI = true;
 			getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractiveChat] Legacy Bungeecord Chat API detected, using legacy methods...");
-		};
+		}
 		
 		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] InteractionVisualizer has been enabled!");
 		
