@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.bukkit.Bukkit;
@@ -31,11 +34,16 @@ public class LanguageUtils {
 	public static final String RESOURCES_URL = "http://resources.download.minecraft.net/";
 	
 	private static Map<String, Map<String, String>> translations = new HashMap<>();
+	private static AtomicBoolean lock = new AtomicBoolean(false);
 	
 	@SuppressWarnings("unchecked")
-	public static void loadTranslations() {
+	public static void loadTranslations(String language) {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] Loading languages...");
 		Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+			while (lock.get()) {
+				try {TimeUnit.MILLISECONDS.sleep(1);} catch (InterruptedException e) {}
+			}
+			lock.set(true);
 			try {
 				File langFolder = new File(InteractionVisualizer.plugin.getDataFolder(), "lang");
 				langFolder.mkdirs();
@@ -74,30 +82,45 @@ public class LanguageUtils {
 							tempFolder.mkdirs();
 							File jarFile = new File(tempFolder, "client.jar");
 							HTTPRequestUtils.download(jarFile, clientUrl);
-							ZipUtils.extract(new ZipInputStream(new FileInputStream(jarFile)), tempFolder);
-							File enUsFile = new File(tempFolder, "assets/minecraft/lang").listFiles()[0];
-							String enUsFileHash = HashUtils.createSha1String(enUsFile);
-							String enUsExtension = enUsFile.getName().substring(enUsFile.getName().indexOf(".") + 1);
-							if (data.containsKey("en_us")) {
-								JSONObject values = (JSONObject) data.get("en_us");
-								File fileToSave = new File(langFileFolder, "en_us" + "." + enUsExtension);
-								if (!values.get("hash").toString().equals(enUsFileHash) || !fileToSave.exists()) {
-									values.put("hash", enUsFileHash);
-									if (fileToSave.exists()) {
-										fileToSave.delete();
+							
+							try (ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile))) {
+								while (true) {
+									ZipEntry entry = zip.getNextEntry();
+									if (entry == null) {
+										break;
 									}
-									FileUtils.copy(enUsFile, fileToSave);
+									String name = entry.getName();
+									if (name.matches("^.*en_us.(json|lang)$")) {
+										String enUsFileHash = HashUtils.createSha1String(zip);
+										String enUsExtension = name.substring(name.indexOf(".") + 1);
+										if (data.containsKey("en_us")) {
+											JSONObject values = (JSONObject) data.get("en_us");
+											File fileToSave = new File(langFileFolder, "en_us" + "." + enUsExtension);
+											if (!values.get("hash").toString().equals(enUsFileHash) || !fileToSave.exists()) {
+												values.put("hash", enUsFileHash);
+												if (fileToSave.exists()) {
+													fileToSave.delete();
+												}
+												FileUtils.copyZipEntry(jarFile, entry.getName(), fileToSave);
+											}
+										} else {
+											JSONObject values = new JSONObject();
+											values.put("hash", enUsFileHash);
+											File fileToSave = new File(langFileFolder, "en_us" + "." + enUsExtension);
+											if (fileToSave.exists()) {
+												fileToSave.delete();
+											}
+											FileUtils.copyZipEntry(jarFile, entry.getName(), fileToSave);
+											data.put("en_us", values);											
+										}
+										zip.close();
+										break;
+									}
 								}
-							} else {
-								JSONObject values = new JSONObject();
-								values.put("hash", enUsFileHash);
-								File fileToSave = new File(langFileFolder, "en_us" + "." + enUsExtension);
-								if (fileToSave.exists()) {
-									fileToSave.delete();
-								}
-								FileUtils.copy(enUsFile, fileToSave);
-								data.put("en_us", values);											
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
+							
 							FileUtils.removeFolderRecursively(tempFolder);
 							
 							String indexUrl = ((JSONObject) versionData.get("assetIndex")).get("url").toString();
@@ -107,7 +130,7 @@ public class LanguageUtils {
 							} else {
 								JSONObject objects = (JSONObject) assets.get("objects");
 								for (Object obj : objects.keySet()) {
-									if (obj.toString().startsWith("minecraft/lang/")) {
+									if (obj.toString().matches("^minecraft\\/lang\\/" + language + ".(json|lang)$")) {
 										String lang = obj.toString().substring(obj.toString().lastIndexOf("/") + 1, obj.toString().indexOf("."));
 										String extension = obj.toString().substring(obj.toString().indexOf(".") + 1);
 										String hash = ((JSONObject) objects.get(obj.toString())).get("hash").toString();
@@ -144,9 +167,11 @@ public class LanguageUtils {
 				}
 				JsonUtils.saveToFilePretty(data, hashFile);
 				
+				String langRegex = "(en_us|" + language + ")";
+				
 				for (File file : langFileFolder.listFiles()) {
 					try {
-						if (file.getName().endsWith(".json")) {
+						if (file.getName().matches("^" + langRegex + ".json$")) {
 							InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
 							JSONObject json = (JSONObject) new JSONParser().parse(reader);
 							reader.close();
@@ -158,7 +183,7 @@ public class LanguageUtils {
 								} catch (Exception e) {}
 							}
 							translations.put(file.getName().substring(0, file.getName().lastIndexOf(".")), mapping);
-						} else if (file.getName().endsWith(".lang")) {
+						} else if (file.getName().matches("^" + langRegex + ".lang$")) {
 							BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 							Map<String, String> mapping = new HashMap<>();
 							br.lines().forEach(line -> {
@@ -174,11 +199,12 @@ public class LanguageUtils {
 						e.printStackTrace();
 					}
 				}
-				Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] Loaded all " + translations.size() + 1 + " languages!");
+				Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] Loaded all " + translations.size() + " languages!");
 			} catch (Exception e) {
 				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] Unable to setup languages");
 				e.printStackTrace();
 			}
+			lock.set(false);
 		});
 	}
 	

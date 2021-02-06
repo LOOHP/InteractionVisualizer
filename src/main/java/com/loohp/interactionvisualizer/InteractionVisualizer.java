@@ -340,7 +340,7 @@ public class InteractionVisualizer extends JavaPlugin {
 			playerTrackingRange.put(world, range);
 		}
 		
-		LanguageUtils.loadTranslations();
+		LanguageUtils.loadTranslations(language);
 		
 		getServer().getPluginManager().callEvent(new InteractionVisualizerReloadEvent());
 	}
