@@ -268,7 +268,7 @@ public class ChatComponentUtils {
 								}
 							}
 						} else if (value instanceof String) {
-							contents.set(j, new Text(((String) value).replaceAll("§[0-9a-e]", "§f")));
+							contents.set(j, new Text(((String) value).replaceAll("\u00a7[0-9a-e]", "\u00a7f")));
 						}
 					}
 					j++;
@@ -339,7 +339,7 @@ public class ChatComponentUtils {
 							if (InteractionVisualizer.version.isNewerOrEqualTo(MCVersion.V1_16)) {
 								current2.setFont(base.getFont());
 							}
-							//Bukkit.getConsoleSender().sendMessage(ComponentSerializer.toString(each).replace("§", "&"));
+							//Bukkit.getConsoleSender().sendMessage(ComponentSerializer.toString(each).replace("\u00a7", "&"));
 						}
 					}
 					thislist.add(current2);

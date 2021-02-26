@@ -197,7 +197,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		if (args[0].equalsIgnoreCase("ethereal")) {
 			TextComponent text = new TextComponent("She is Imaginary~~");
 			text.setColor(ChatColor.YELLOW);
-			TextComponent bone = new TextComponent("§eNana's Bone\n§7Lost §6In-§dMaginary~~");
+			TextComponent bone = new TextComponent("\u00a7eNana's Bone\n\u00a77Lost \u00a76In-\u00a7dMaginary~~");
 			text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] {bone}));
 			text.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.instagram.com/narliar/"));
 			sender.spigot().sendMessage(text);

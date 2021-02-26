@@ -18,9 +18,10 @@ import ru.beykerykt.lightapi.chunks.ChunkInfo;
 public class LightManager {
 	
 	public static class LightData {
-		Location location;
-		int LightLevel;
-		LightType lightType;
+		
+		private Location location;
+		private int LightLevel;
+		private LightType lightType;
 		
 		public static LightData of(Location location) {
 			return of(location, 0, null);
@@ -34,7 +35,7 @@ public class LightManager {
 			return new LightData(location, lightlevel, lightType);
 		}
 		
-		LightData (Location location, int lightlevel, LightType lightType) {
+		private LightData (Location location, int lightlevel, LightType lightType) {
 			this.location = location;
 			this.lightType = lightType;
 			this.LightLevel = lightlevel;
@@ -46,6 +47,10 @@ public class LightManager {
 		
 		public LightType getLightType() {
 			return lightType;
+		}
+		
+		public boolean hasLightType() {
+			return lightType != null;
 		}
 		
 		public int getLightLevel() {
@@ -108,13 +113,13 @@ public class LightManager {
 		return Bukkit.getScheduler().runTaskTimer(InteractionVisualizer.plugin, () -> {
 			boolean changed = false;
 			
-			Queue<LightData> updateQueue = new LinkedList<LightData>();
+			Queue<LightData> updateQueue = new LinkedList<>();
 			
 			Set<LightData> addqueue = LightManager.addqueue;
 			Set<LightData> deletequeue = LightManager.deletequeue;
 			
-			LightManager.addqueue = new HashSet<LightData>();
-			LightManager.deletequeue = new HashSet<LightData>();
+			LightManager.addqueue = new HashSet<>();
+			LightManager.deletequeue = new HashSet<>();
 			
 			if (!deletequeue.isEmpty()) {
 				changed = true;
@@ -147,8 +152,8 @@ public class LightManager {
 			}
 
 			if (changed) {
-				HashSet<ChunkInfo> blockinfos = new HashSet<ChunkInfo>();
-				HashSet<ChunkInfo> skyinfos = new HashSet<ChunkInfo>();
+				HashSet<ChunkInfo> blockinfos = new HashSet<>();
+				HashSet<ChunkInfo> skyinfos = new HashSet<>();
 				while (!updateQueue.isEmpty()) {
 					LightData lightdata = updateQueue.poll();
 					LightType lightType = lightdata.getLightType();

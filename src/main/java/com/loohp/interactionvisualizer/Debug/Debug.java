@@ -46,11 +46,11 @@ public class Debug implements Listener {
 		TextComponent text = new TextComponent("Nana's Bone");
 		text.setColor(ChatColor.YELLOW);
 		List<String> lore = new ArrayList<String>();
-		lore.add("§7Lost §6In-§dMaginary~~");
+		lore.add("\u00a77Lost \u00a76In-\u00a7dMaginary~~");
 		lore.add("");
-		lore.add("§6https://www.instagram.com/narliar/");
+		lore.add("\u00a76https://www.instagram.com/narliar/");
 		lore.add("");
-		lore.add("§7EasterEgg tribute to the IV author's best friend");
+		lore.add("\u00a77EasterEgg tribute to the IV author's best friend");
 		meta.setLore(lore);
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		meta.setDisplayName(text.toLegacyText());
