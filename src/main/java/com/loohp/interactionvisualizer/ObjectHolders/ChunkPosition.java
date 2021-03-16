@@ -9,9 +9,9 @@ import org.bukkit.World;
 
 public class ChunkPosition {
 	
-	UUID world;
-	int x;
-	int z;
+	private UUID world;
+	private int x;
+	private int z;
 	
 	public ChunkPosition(World world, int chunkX, int chunkZ) {
 		this.world = world.getUID();

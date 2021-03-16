@@ -25,17 +25,20 @@ public class PlayerLocationManager {
 		}
 		
 		Set<ChunkPosition> nearby = new HashSet<>();
-		nearby.add(new ChunkPosition(world, chunkX + 1, chunkZ + 1));
-		nearby.add(new ChunkPosition(world, chunkX + 1, chunkZ));
-		nearby.add(new ChunkPosition(world, chunkX + 1, chunkZ - 1));
-		nearby.add(new ChunkPosition(world, chunkX, chunkZ + 1));
-		nearby.add(new ChunkPosition(world, chunkX, chunkZ));
-		nearby.add(new ChunkPosition(world, chunkX, chunkZ - 1));
-		nearby.add(new ChunkPosition(world, chunkX - 1, chunkZ + 1));
-		nearby.add(new ChunkPosition(world, chunkX - 1, chunkZ));
-		nearby.add(new ChunkPosition(world, chunkX - 1, chunkZ - 1));
+		for (int z = -InteractionVisualizer.tileEntityCheckingRange; z <= InteractionVisualizer.tileEntityCheckingRange; z++) {
+			for (int x = -InteractionVisualizer.tileEntityCheckingRange; x <= InteractionVisualizer.tileEntityCheckingRange; x++) {
+				nearby.add(new ChunkPosition(world, chunkX + x, chunkZ + z));
+			}
+		}
 
-		return nearby.contains(chunkpos);
+		for (Player player : world.getPlayers()) {
+			Location playerLocation = player.getLocation();
+			ChunkPosition playerChunk = new ChunkPosition(world, playerLocation.getBlockX() >> 4, playerLocation.getBlockZ() >> 4);
+			if (nearby.contains(playerChunk)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public static Location getPlayerLocation(Player player) {

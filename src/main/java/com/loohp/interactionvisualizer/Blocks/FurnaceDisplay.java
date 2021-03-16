@@ -38,7 +38,7 @@ import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
-import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
+import com.loohp.interactionvisualizer.ObjectHolders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.Utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.Utils.InventoryUtils;
 import com.loohp.interactionvisualizer.Utils.LegacyFacingUtils;
@@ -91,11 +91,7 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
 				Entry<Block, HashMap<String, Object>> entry = itr.next();
 				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 					Block block = entry.getKey();
-					boolean active = false;
-					if (isActive(block.getLocation())) {
-						active = true;
-					}
-					if (active == false) {
+					if (!isActive(block.getLocation())) {
 						HashMap<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");

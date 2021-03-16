@@ -1,16 +1,17 @@
 package com.loohp.interactionvisualizer.ObjectHolders;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -39,84 +40,90 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 
-public class EnchantmentTableBundle {
+public class EnchantmentTableAnimation {
 	
-	protected static Method playEnchantAnimation;
-	protected static Method playPickUpAnimation;
-	protected static Method playPickUpRemoveAnimation;
+	public static final int SET_ITEM = 0;
+	public static final int PLAY_ENCHANTMENT = 1;
+	public static final int PLAY_PICKUP = 2;
+	public static final int CLOSE_TABLE = 3;
 	
-	static {
-		try {
-			Class<?> clazz = EnchantmentTableBundle.class;
-			playEnchantAnimation = clazz.getDeclaredMethod("playEnchantAnimationMethod", Map.class, Integer.class, ItemStack.class);
-			playPickUpAnimation = clazz.getDeclaredMethod("playPickUpAnimationMethod", ItemStack.class);
-			playPickUpRemoveAnimation = clazz.getDeclaredMethod("playPickUpAnimationAndRemoveMethod", ItemStack.class, Map.class);
-		} catch (NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
+	private static Map<Block, EnchantmentTableAnimation> tables = new ConcurrentHashMap<>();
+	
+	public static EnchantmentTableAnimation getTableAnimation(Block block, Player player) {
+		EnchantmentTableAnimation animation = tables.get(block);
+		if (animation == null) {
+			animation = new EnchantmentTableAnimation(block, player);
+			tables.put(block, animation);
+			return animation;
+		} else if (animation.getEnchanter().equals(player)) {
+			return animation;
+		} else {
+			return null;
 		}
 	}
 
-	private Plugin plugin;
-	private Block block;
-	private Location location;
+	private final Plugin plugin;
+	private final Block block;
+	private final Location location;
 	private Optional<Item> item;
-	private Player enchanter;
-	private Collection<Player> players;
+	private final Player enchanter;
+	private AtomicBoolean enchanting;
 	
-	private List<Item> createdItems;
+	private final Queue<Supplier<CompletableFuture<Integer>>> taskQueue;
 	
-	private ConcurrentLinkedQueue<MethodWrapper<CompletableFuture<Boolean>>> methodQueue;
-	private CompletableFuture<Boolean> activeMethod;
-	
-	private final int timerTaskId;
-	
-	public EnchantmentTableBundle(Player enchanter, Block block, Collection<Player> players) {
+	private EnchantmentTableAnimation(Block block, Player enchanter) {
 		this.plugin = InteractionVisualizer.plugin;
 		this.block = block;
+		this.enchanter = enchanter;
 		this.location = block.getLocation().clone();
 		this.item = Optional.empty();
-		this.players = players;
-		this.enchanter = enchanter;
-		methodQueue = new ConcurrentLinkedQueue<>();
-		activeMethod = null;
-		createdItems = new ArrayList<>();
-		timerTaskId = run();
+		this.enchanting = new AtomicBoolean(false);
+		this.taskQueue = new ConcurrentLinkedQueue<>();
+		tick();
 	}
 	
-	private int run() {
-		return Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-			if (activeMethod == null || activeMethod.isDone() || activeMethod.isCompletedExceptionally()) {
-				try {
-					if (activeMethod != null && activeMethod.isDone() && activeMethod.getNow(false)) {
-						for (Item item : createdItems) {
-							PacketManager.removeItem(players, item);
-						}
-						Bukkit.getScheduler().cancelTask(timerTaskId);
-					} else {
-						MethodWrapper<CompletableFuture<Boolean>> method = methodQueue.poll();
-						if (method != null) {
-							activeMethod = method.execute();
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+	private void tick() {
+		Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+			run();
+		}, 1);
+	}
+	
+	private void run() {
+		Supplier<CompletableFuture<Integer>> task = taskQueue.poll();
+		if (task != null) {
+			int result = -1;
+			try {
+				CompletableFuture<Integer> future = task.get();
+				if (future != null) {
+					result = future.get();
+				} else {
+					run();
+					return;
 				}
+			} catch (Throwable e) {}
+			if (result != CLOSE_TABLE) {
+				tick();
+			} else {
+				tables.remove(block);
 			}
-		}, 0, 1).getTaskId();
+		} else {
+			tick();
+		}
 	}
 	
 	@SuppressWarnings("deprecation")
-	protected CompletableFuture<Boolean> playEnchantAnimationMethod(Map<Enchantment, Integer> enchantsToAdd, Integer expCost, ItemStack itemstack) {
-		CompletableFuture<Boolean> future = new CompletableFuture<>();
+	private CompletableFuture<Integer> playEnchantAnimation(Map<Enchantment, Integer> enchantsToAdd, Integer expCost, ItemStack itemstack) {
+		CompletableFuture<Integer> future = new CompletableFuture<>();
 		
 		if (item.isPresent() && item.get().isLocked()) {
-			future.complete(false);
+			future.complete(PLAY_ENCHANTMENT);
 			return future;
 		}
 		
+		this.enchanting.set(true);
+		
 		if (!this.item.isPresent()) {
 			this.item = Optional.of(new Item(location.clone().add(0.5, 1.3, 0.5)));
-			createdItems.add(this.item.get());
 			PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item.get());
 		}
 		
@@ -192,27 +199,25 @@ public class EnchantmentTableBundle {
 			item.setGravity(false);
 			PacketManager.updateItem(item);
 			item.setLocked(false);
-			future.complete(false);
+			future.complete(PLAY_ENCHANTMENT);
+			
+			this.enchanting.set(false);
 		}, 98);
 		return future;
 	}
 	
-	public void playEnchantAnimation(Map<Enchantment, Integer> enchantsToAdd, Integer expCost, ItemStack itemstack) {
-		methodQueue.add(new MethodWrapper<>(playEnchantAnimation, this, enchantsToAdd, expCost, itemstack));
-	}
-	
-	protected CompletableFuture<Boolean> playPickUpAnimationMethod(ItemStack itemstack) {
-		CompletableFuture<Boolean> future = new CompletableFuture<>();
+	private CompletableFuture<Integer> playPickUpAnimation(ItemStack itemstack) {
+		CompletableFuture<Integer> future = new CompletableFuture<>();
 		
 		if (!item.isPresent()) {
-			future.complete(false);
+			future.complete(PLAY_PICKUP);
 			return future;
 		}
 		Item item = this.item.get();
 		item.setLocked(true);
 		item.setItemStack(itemstack);
 		if (itemstack == null || itemstack.getType().equals(Material.AIR)) {
-			future.complete(false);
+			future.complete(PLAY_PICKUP);
 			return future;
 		}
 		
@@ -226,85 +231,50 @@ public class EnchantmentTableBundle {
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
 			SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
 			PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
-			createdItems.remove(item);
 		    this.item = Optional.empty();
-		    future.complete(false);
+		    future.complete(PLAY_PICKUP);
 		}, 8);
 		return future;
 	}
 	
-	public void playPickUpAnimation(ItemStack itemstack) {
-		methodQueue.add(new MethodWrapper<>(playPickUpAnimation, this, itemstack));
+	private CompletableFuture<Integer> close() {
+		CompletableFuture<Integer> future = new CompletableFuture<>();
+		Bukkit.getScheduler().runTask(plugin, () -> {
+			if (this.item.isPresent()) {
+				PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item.get());
+			}
+			future.complete(CLOSE_TABLE);
+		});
+		return future;
 	}
-	
-	protected CompletableFuture<Boolean> playPickUpAnimationAndRemoveMethod(ItemStack itemstack, Map<Block, EnchantmentTableBundle> mapToRemoveFrom) {
-		CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+	private CompletableFuture<Integer> setItemStack(ItemStack itemstack) {
+		CompletableFuture<Integer> future = new CompletableFuture<>();
 		
-		if (!item.isPresent()) {
-			mapToRemoveFrom.remove(block);
-			future.complete(true);
-			return future;
-		}
-		Item item = this.item.get();
-		item.setLocked(true);
-		if (itemstack != null && !itemstack.getType().equals(Material.AIR)) {
-			item.setItemStack(itemstack);
-			Vector lift = new Vector(0.0, 0.15, 0.0);
-			Vector pickup = enchanter.getEyeLocation().add(0.0, -0.5, 0.0).add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector().subtract(location.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
-			item.setVelocity(pickup);
-			item.setGravity(true);
-			item.setPickupDelay(32767);
-			PacketManager.updateItem(item);
-			
-			Bukkit.getScheduler().runTaskLater(plugin, () -> {
-				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
-				PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
-				createdItems.remove(item);
-				mapToRemoveFrom.remove(block);
-				future.complete(true);
-			}, 8);
-		} else {
-			Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-				while (this.item.isPresent()) {
-					try {TimeUnit.MILLISECONDS.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
-				}
-				Bukkit.getScheduler().runTask(plugin, () -> {
-					mapToRemoveFrom.remove(block);
-					future.complete(true);
-				});
-			});
-		}
+		Bukkit.getScheduler().runTask(plugin, () -> {
+			if (itemstack == null || itemstack.getType().equals(Material.AIR)) {
+				clearItemStack();
+				future.complete(SET_ITEM);
+				return;
+			}
+			if (this.item.isPresent()) {
+				this.item.get().setItemStack(itemstack);
+				PacketManager.updateItem(item.get());
+			} else {
+				this.item = Optional.of(new Item(location.clone().add(0.5, 1.3, 0.5)));
+				this.item.get().setItemStack(itemstack);
+				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item.get());
+				PacketManager.updateItem(item.get());
+			}
+			future.complete(SET_ITEM);
+		});
+		
 		return future;
 	}
 	
-	public void playPickUpAnimationAndRemove(ItemStack itemstack, Map<Block, EnchantmentTableBundle> mapToRemoveFrom) {
-		methodQueue.add(new MethodWrapper<>(playPickUpRemoveAnimation, this, itemstack, mapToRemoveFrom));
-	}
-	
-	public void setItemStack(ItemStack itemstack) {
-		if (!methodQueue.isEmpty() || !(activeMethod == null || activeMethod.isDone() || activeMethod.isCompletedExceptionally())) {
-			return;
-		}
-		if (itemstack == null || itemstack.getType().equals(Material.AIR)) {
-			clearItemStack();
-			return;
-		}
-		if (this.item.isPresent()) {
-			this.item.get().setItemStack(itemstack);
-			PacketManager.updateItem(item.get());
-		} else {
-			this.item = Optional.of(new Item(location.clone().add(0.5, 1.3, 0.5)));
-			createdItems.add(this.item.get());
-			this.item.get().setItemStack(itemstack);
-			PacketManager.sendItemSpawn(players, item.get());
-			PacketManager.updateItem(item.get());
-		}
-	}
-	
-	public void clearItemStack() {
+	private void clearItemStack() {
 		if (this.item.isPresent()) {
 			PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item.get());
-			createdItems.remove(item.get());
 			this.item = Optional.empty();
 		}
 	}
@@ -326,12 +296,52 @@ public class EnchantmentTableBundle {
 		return enchanter;
 	}
 	
-	public Collection<Player> getViewers() {
-		return players;
-	}
-	
 	public Block getBlock() {
 		return block;
+	}
+	
+	public boolean isEnchanting() {
+		return enchanting.get();
+	}
+	
+	public void queueSetItem(ItemStack itemstack, Predicate<EnchantmentTableAnimation> condition) {
+		taskQueue.add(() -> {
+			if (condition.test(this)) {
+				return setItemStack(itemstack == null ? null : itemstack.clone());
+			} else {
+				return null;
+			}
+		});
+	}
+	
+	public void queueEnchant(Map<Enchantment, Integer> enchantsToAdd, int expCost, ItemStack itemstack, Predicate<EnchantmentTableAnimation> condition) {
+		taskQueue.add(() -> {
+			if (condition.test(this)) {
+				return playEnchantAnimation(enchantsToAdd, expCost, itemstack == null ? null : itemstack.clone());
+			} else {
+				return null;
+			}
+		});
+	}
+	
+	public void queuePickupAnimation(ItemStack itemstack, Predicate<EnchantmentTableAnimation> condition) {
+		taskQueue.add(() -> {
+			if (condition.test(this)) {
+				return playPickUpAnimation(itemstack == null ? null : itemstack.clone()) ;
+			} else {
+				return null;
+			}
+		});
+	}
+	
+	public void queueClose(Predicate<EnchantmentTableAnimation> condition) {
+		taskQueue.add(() -> {
+			if (condition.test(this)) {
+				return close();
+			} else {
+				return null;
+			}
+		});
 	}
 
 }

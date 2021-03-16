@@ -79,6 +79,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static Double playerPickupYOffset = 0.0;
 	
 	public static Integer tileEntityChunkPerTick = 9;
+	public static Integer tileEntityCheckingRange = 1;
 	public static Boolean loadTileEntitiesAsync = true;
 	
 	public static Boolean handMovementEnabled = true;
@@ -321,6 +322,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		tileEntityChunkPerTick = config.getInt("TileEntityUpdate.ChunksPerTick");
 		loadTileEntitiesAsync = config.getBoolean("TileEntityUpdate.LoadTileEntitiesAsync");
+		tileEntityCheckingRange = config.getInt("TileEntityUpdate.CheckingRange");
 		
 		handMovementEnabled = config.getBoolean("Settings.UseHandSwingAnimation");
 		

@@ -3,6 +3,7 @@ package com.loohp.interactionvisualizer.Blocks;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,7 +31,7 @@ import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
-import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
+import com.loohp.interactionvisualizer.ObjectHolders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.Utils.ChatComponentUtils;
 import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
 import com.loohp.interactionvisualizer.Utils.TranslationUtils;
@@ -72,11 +73,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 				Entry<Block, HashMap<String, Object>> entry = itr.next();
 				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 					Block block = entry.getKey();
-					boolean active = false;
-					if (isActive(block.getLocation())) {
-						active = true;
-					}
-					if (active == false) {
+					if (!isActive(block.getLocation())) {
 						HashMap<String, Object> map = entry.getValue();
 						if (map.get("1") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("1");
@@ -127,7 +124,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 							HashMap<String, Object> map = new HashMap<String, Object>();
 							map.put("Item", "N/A");
 							boolean done = false;
-							HashMap<String, Object> datamap = CustomBlockDataManager.getBlock(CustomBlockDataManager.locKey(block.getLocation()));
+							Map<String, Object> datamap = CustomBlockDataManager.getBlock(CustomBlockDataManager.locKey(block.getLocation()));
 							if (datamap != null) {
 								try {
 									String data = (String) datamap.get("Directional");
@@ -142,7 +139,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 								float[] dir = placemap.containsKey(block) ? placemap.remove(block) : new float[]{0.0F, 0.0F};
 								BlockFace face = getCardinalFacing(dir);
 								map.putAll(spawnArmorStands(block, face));
-								HashMap<String, Object> savemap = (datamap != null) ? datamap : new HashMap<String, Object>();
+								Map<String, Object> savemap = (datamap != null) ? datamap : new HashMap<String, Object>();
 								savemap.put("Directional", face.toString().toUpperCase());
 								savemap.put("BlockType", block.getType().toString().toUpperCase());
 								CustomBlockDataManager.setBlock(CustomBlockDataManager.locKey(block.getLocation()), savemap);

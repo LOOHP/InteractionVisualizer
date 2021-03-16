@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
@@ -38,7 +39,7 @@ public class CustomBlockDataManager {
     private static JSONObject json;
     private static JSONParser parser = new JSONParser();
     private static Plugin plugin = InteractionVisualizer.plugin;
-    private static File BlockDataBackupFolder = new File(InteractionVisualizer.plugin.getDataFolder().getPath() + "/Backup", "blockdata");
+    private static File blockDataBackupFolder = new File(InteractionVisualizer.plugin.getDataFolder().getPath() + "/Backup", "blockdata");
     
     public static void intervalSaveToFile() {
     	Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
@@ -60,16 +61,16 @@ public class CustomBlockDataManager {
         	    pw.close();
         	} else {
         		String fileName = new SimpleDateFormat("yyyy'-'MM'-'dd'_'HH'-'mm'-'ss'_'zzz'_blockdata.json'").format(new Date()).replace(":", ";");
-        		BlockDataBackupFolder.mkdirs();
-                File outputfile = new File(BlockDataBackupFolder, fileName);
+        		blockDataBackupFolder.mkdirs();
+                File outputfile = new File(blockDataBackupFolder, fileName);
                 try (InputStream in = new FileInputStream(file)) {
                     Files.copy(in, outputfile.toPath());
                 } catch (IOException e) {
                     Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] Failed to make backup for blockdata.json");
                 }
         	}
-        	if (BlockDataBackupFolder.exists()) {
-        		for (File file : BlockDataBackupFolder.listFiles()) {
+        	if (blockDataBackupFolder.exists()) {
+        		for (File file : blockDataBackupFolder.listFiles()) {
         			try {
 	        			String fileName = file.getName();
 	        			if (fileName.matches("^[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}-[0-9]{2}-[0-9]{2}_.*_blockdata\\.json$")) {
@@ -82,7 +83,7 @@ public class CustomBlockDataManager {
         			} catch (Exception ignore) {}
         		}
         	}
-        	InputStreamReader reader = new InputStreamReader(new FileInputStream(file), "UTF-8");
+        	InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
         	json = (JSONObject) parser.parse(reader);
         	reader.close();
         } catch (Exception ex) {
@@ -123,13 +124,13 @@ public class CustomBlockDataManager {
     }
    
     @SuppressWarnings("unchecked")
-    public static HashMap<String, Object> getBlock(String key) {   
+    public static Map<String, Object> getBlock(String key) {   
     	Object obj = json.get(key);
     	if (obj == null) {
     		return null;
     	}
     	JSONObject value = (JSONObject) obj;
-    	HashMap<String, Object> map = new HashMap<String, Object>();
+    	Map<String, Object> map = new HashMap<>();
 		Iterator<String> itr = value.keySet().iterator();
     	while (itr.hasNext()) {
     		String keykey = itr.next();
@@ -139,7 +140,7 @@ public class CustomBlockDataManager {
     }
     
     @SuppressWarnings("unchecked")
-	public static void setBlock(String key, HashMap<String, Object> map) {
+	public static void setBlock(String key, Map<String, Object> map) {
     	Object obj = json.get(key);
     	JSONObject value = (obj != null) ? (JSONObject) obj : new JSONObject();
     	for (Entry<String, Object> entry : map.entrySet()) {

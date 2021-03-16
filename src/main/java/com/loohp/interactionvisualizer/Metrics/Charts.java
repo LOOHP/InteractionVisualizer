@@ -6,13 +6,24 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
-import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
+import com.loohp.interactionvisualizer.ObjectHolders.TileEntity.TileEntityType;
 
 public class Charts {
 	
 	public static FileConfiguration config = InteractionVisualizer.config;
 	
 	public static void registerCharts(Metrics metrics) {
+		
+		metrics.addCustomChart(new Metrics.SimplePie("line_of_sight_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (InteractionVisualizer.hideIfObstructed) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
 		
 		metrics.addCustomChart(new Metrics.SimplePie("anvil_enabled", new Callable<String>() {
 	        @Override

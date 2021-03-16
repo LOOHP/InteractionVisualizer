@@ -26,7 +26,7 @@ import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.Managers.PacketManager;
 import com.loohp.interactionvisualizer.Managers.SoundManager;
 import com.loohp.interactionvisualizer.Managers.TileEntityManager;
-import com.loohp.interactionvisualizer.Managers.TileEntityManager.TileEntityType;
+import com.loohp.interactionvisualizer.ObjectHolders.TileEntity.TileEntityType;
 
 public class InteractionVisualizerAPI {
 	
