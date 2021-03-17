@@ -9,19 +9,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.EnumWrappers.ItemSlot;
-import com.comphenix.protocol.wrappers.Pair;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
 import com.loohp.interactionvisualizer.EntityHolders.Item;
 import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
+import com.loohp.interactionvisualizer.NMS.NMS;
+import com.loohp.interactionvisualizer.ObjectHolders.ValuePairs;
 import com.loohp.interactionvisualizer.Utils.MCVersion;
 
 public class ServerPacketSender {
@@ -29,6 +30,7 @@ public class ServerPacketSender {
 	private static Plugin plugin = InteractionVisualizer.plugin;
 	private static MCVersion version = InteractionVisualizer.version;
 	private static ProtocolManager protocolManager = InteractionVisualizer.protocolManager;
+	private static NMS nms = NMS.getInstance();
 	
 	public static void sendHandMovement(Collection<Player> players, Player entity) {
 		if (!InteractionVisualizer.handMovementEnabled) {
@@ -70,25 +72,11 @@ public class ServerPacketSender {
         WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
         packet2.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
         
-        PacketContainer packet3 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
-        packet3.getIntegers().write(0, entity.getEntityId());
-        if (version.isNewerOrEqualTo(MCVersion.V1_16)) {
-        	List<Pair<ItemSlot, ItemStack>> pairs = new ArrayList<>();
-        	pairs.add(new Pair<ItemSlot, ItemStack>(ItemSlot.MAINHAND, entity.getItemInMainHand()));
-        	pairs.add(new Pair<ItemSlot, ItemStack>(ItemSlot.HEAD, entity.getHelmet()));
-        	packet3.getSlotStackPairLists().write(0, pairs);
-        } else {
-        	packet3.getItemSlots().write(0, ItemSlot.MAINHAND);
-        	packet3.getItemModifier().write(0, entity.getItemInMainHand());
-        }
+        List<ValuePairs<EquipmentSlot, ItemStack>> equipments = new ArrayList<>();
+        equipments.add(new ValuePairs<>(EquipmentSlot.HAND, entity.getItemInMainHand()));
+        equipments.add(new ValuePairs<>(EquipmentSlot.HEAD, entity.getHelmet()));
+        PacketContainer[] packet3 = nms.createEntityEquipmentPacket(entity.getEntityId(), equipments);
 
-        PacketContainer packet4 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
-        if (!version.isNewerOrEqualTo(MCVersion.V1_16)) {
-        	packet4.getIntegers().write(0, entity.getEntityId());
-        	packet4.getItemSlots().write(0, ItemSlot.HEAD);
-        	packet4.getItemModifier().write(0, entity.getHelmet());
-        }
-        
         if (!plugin.isEnabled()) {
 			return;
 		}
@@ -97,9 +85,8 @@ public class ServerPacketSender {
 	        	for (Player player : players) {
 					protocolManager.sendServerPacket(player, packet1);
 					protocolManager.sendServerPacket(player, packet2);
-					protocolManager.sendServerPacket(player, packet3);
-					if (!version.isNewerOrEqualTo(MCVersion.V1_16)) {
-						protocolManager.sendServerPacket(player, packet4);
+					for (PacketContainer packet : packet3) {
+						protocolManager.sendServerPacket(player, packet);
 					}
 				}
 			} catch (InvocationTargetException e) {
@@ -122,24 +109,10 @@ public class ServerPacketSender {
         WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
         packet2.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
 
-        PacketContainer packet3 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
-        packet3.getIntegers().write(0, entity.getEntityId());
-        if (version.isNewerOrEqualTo(MCVersion.V1_16)) {
-        	List<Pair<ItemSlot, ItemStack>> pairs = new ArrayList<>();
-        	pairs.add(new Pair<ItemSlot, ItemStack>(ItemSlot.MAINHAND, entity.getItemInMainHand()));
-        	pairs.add(new Pair<ItemSlot, ItemStack>(ItemSlot.HEAD, entity.getHelmet()));
-        	packet3.getSlotStackPairLists().write(0, pairs);
-        } else {
-        	packet3.getItemSlots().write(0, ItemSlot.MAINHAND);
-        	packet3.getItemModifier().write(0, entity.getItemInMainHand());
-        }
-
-        PacketContainer packet4 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
-        if (!version.isNewerOrEqualTo(MCVersion.V1_16)) {
-        	packet4.getIntegers().write(0, entity.getEntityId());
-        	packet4.getItemSlots().write(0, ItemSlot.HEAD);
-        	packet4.getItemModifier().write(0, entity.getHelmet());
-        }
+        List<ValuePairs<EquipmentSlot, ItemStack>> equipments = new ArrayList<>();
+        equipments.add(new ValuePairs<>(EquipmentSlot.HAND, entity.getItemInMainHand()));
+        equipments.add(new ValuePairs<>(EquipmentSlot.HEAD, entity.getHelmet()));
+        PacketContainer[] packet3 = nms.createEntityEquipmentPacket(entity.getEntityId(), equipments);
         
         if (!plugin.isEnabled()) {
 			return;
@@ -149,9 +122,8 @@ public class ServerPacketSender {
 	        	for (Player player : players) {
 					protocolManager.sendServerPacket(player, packet1);
 					protocolManager.sendServerPacket(player, packet2);
-					protocolManager.sendServerPacket(player, packet3);
-					if (!version.isNewerOrEqualTo(MCVersion.V1_16)) {
-						protocolManager.sendServerPacket(player, packet4);
+					for (PacketContainer packet : packet3) {
+						protocolManager.sendServerPacket(player, packet);
 					}
 				}
 			} catch (InvocationTargetException e) {

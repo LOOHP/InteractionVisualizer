@@ -5,7 +5,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>1.14.5.0</version>
+	<version>1.14.5.1</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -303,11 +303,11 @@
 			<systemPath>${basedir}/lib/spigot-1.16.3.jar</systemPath>
 		</dependency>
 		<dependency>
-			<groupId>Spigot-1.16.4</groupId>
-			<artifactId>Spigot-1.16.4</artifactId>
+			<groupId>Spigot-1.16.5</groupId>
+			<artifactId>Spigot-1.16.5</artifactId>
 			<scope>system</scope>
 			<version>1.0</version>
-			<systemPath>${basedir}/lib/spigot-1.16.4.jar</systemPath>
+			<systemPath>${basedir}/lib/spigot-1.16.5.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>

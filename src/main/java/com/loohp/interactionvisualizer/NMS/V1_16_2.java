@@ -1,7 +1,6 @@
 package com.loohp.interactionvisualizer.NMS;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,30 +8,24 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_16_R2.CraftChunk;
 import org.bukkit.craftbukkit.v1_16_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R2.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_16_R2.util.CraftMagicNumbers;
-import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.ObjectHolders.BlockPosition;
 import com.loohp.interactionvisualizer.ObjectHolders.BoundingBox;
 import com.loohp.interactionvisualizer.ObjectHolders.ChunkPosition;
-import com.loohp.interactionvisualizer.ObjectHolders.ChunkSectionPosition;
 import com.loohp.interactionvisualizer.ObjectHolders.TileEntity;
 import com.loohp.interactionvisualizer.ObjectHolders.TileEntity.TileEntityType;
+import com.loohp.interactionvisualizer.ObjectHolders.ValuePairs;
+import com.mojang.datafixers.util.Pair;
 
-import net.minecraft.server.v1_16_R2.ChunkCoordIntPair;
-import net.minecraft.server.v1_16_R2.EnumSkyBlock;
-import net.minecraft.server.v1_16_R2.LightEngineBlock;
-import net.minecraft.server.v1_16_R2.LightEngineLayerEventListener;
-import net.minecraft.server.v1_16_R2.LightEngineSky;
-import net.minecraft.server.v1_16_R2.LightEngineThreaded;
-import net.minecraft.server.v1_16_R2.NibbleArray;
-import net.minecraft.server.v1_16_R2.SectionPosition;
+import net.minecraft.server.v1_16_R2.EnumItemSlot;
+import net.minecraft.server.v1_16_R2.PacketPlayOutEntityEquipment;
 import net.minecraft.server.v1_16_R2.VoxelShape;
 import net.minecraft.server.v1_16_R2.WorldServer;
-import ru.beykerykt.lightapi.LightType;
 
 public class V1_16_2 extends NMS {
 	
@@ -63,99 +56,36 @@ public class V1_16_2 extends NMS {
 	}
 	
 	@Override
-	public List<byte[]> getBlockLightArray(ChunkPosition chunk, boolean load) {
-		List<byte[]> list = new ArrayList<>();
-		if (!chunk.isLoaded() && !load) {
-			return list;
+	public PacketContainer[] createEntityEquipmentPacket(int entityId, List<ValuePairs<EquipmentSlot, ItemStack>> equipments) {
+		List<Pair<EnumItemSlot, net.minecraft.server.v1_16_R2.ItemStack>> nmsList = new ArrayList<>();
+		for (ValuePairs<EquipmentSlot, ItemStack> pair : equipments) {
+			EnumItemSlot nmsSlot;
+			switch (pair.getFirst()) {
+			case CHEST:
+				nmsSlot = EnumItemSlot.CHEST;
+				break;
+			case FEET:
+				nmsSlot = EnumItemSlot.FEET;
+				break;
+			case HEAD:
+				nmsSlot = EnumItemSlot.HEAD;
+				break;
+			case LEGS:
+				nmsSlot = EnumItemSlot.LEGS;
+				break;
+			case OFF_HAND:
+				nmsSlot = EnumItemSlot.OFFHAND;
+				break;
+			case HAND:
+			default:
+				nmsSlot = EnumItemSlot.MAINHAND;
+				break;
+			}
+			net.minecraft.server.v1_16_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(pair.getSecond());
+			nmsList.add(new Pair<>(nmsSlot, nmsItem));
 		}
-		
-		LightEngineLayerEventListener engine = ((CraftWorld) chunk.getWorld()).getHandle().getChunkProvider().getLightEngine().a(EnumSkyBlock.BLOCK);
-		for (int i = 0; i < 18; ++i) {
-            NibbleArray nibblearray = engine.a(SectionPosition.a(new ChunkCoordIntPair(chunk.getChunkX(), chunk.getChunkZ()), i - 1));
-            if (nibblearray != null) {
-            	list.add(nibblearray.asBytes().clone());
-            }
-        }
-		
-		return list;
-	}
-
-	@Override
-	public List<byte[]> getSkyLightArray(ChunkPosition chunk, boolean load) {
-		List<byte[]> list = new ArrayList<>();
-		if (!chunk.isLoaded() && !load) {
-			return list;
-		}
-		
-		LightEngineLayerEventListener engine = ((CraftWorld) chunk.getWorld()).getHandle().getChunkProvider().getLightEngine().a(EnumSkyBlock.SKY);
-		for (int i = 0; i < 18; ++i) {
-            NibbleArray nibblearray = engine.a(SectionPosition.a(new ChunkCoordIntPair(chunk.getChunkX(), chunk.getChunkZ()), i - 1));
-            if (nibblearray != null) {
-            	list.add(nibblearray.asBytes().clone());
-            }
-        }
-		
-		return list;
-	}
-	
-	@Override
-	public boolean isLightTypeSupported(World world, LightType lightType) {
-		if (!(world instanceof CraftWorld)) {
-			return false;
-		}
-		WorldServer worldServer = ((CraftWorld) world).getHandle();
-		LightEngineThreaded lightEngine = worldServer.getChunkProvider().getLightEngine();
-		if (lightType == LightType.SKY) {
-			return lightEngine.a(EnumSkyBlock.SKY) instanceof LightEngineSky;
-		} else {
-			return lightEngine.a(EnumSkyBlock.BLOCK) instanceof LightEngineBlock;
-		}
-	}
-
-	@Override
-	public boolean isLegacyLightEngine() {
-		return false;
-	}
-
-	@Override
-	public void createLight(World world, int x, int y, int z, LightType lightType, int light) {
-		throw new UnsupportedOperationException("Method cannot be used with the modern light engine.");
-	}
-
-	@Override
-	public void deleteLight(World world, int x, int y, int z, LightType lightType) {
-		throw new UnsupportedOperationException("Method cannot be used with the modern light engine.");
-	}
-
-	@Override
-	public void sendChunkSectionsUpdate(World world, int chunkX, int chunkZ, int sectionsMaskSky, int sectionsMaskBlock, Player player) {
-		throw new UnsupportedOperationException("Method cannot be used with the modern light engine.");
-	}
-	
-	@Override
-	public void sendLightUpdate(ChunkPosition chunkPosition, ChunkSectionPosition blockSectionPosition, ChunkSectionPosition skySectionPosition, List<byte[]> blocklevels, List<byte[]> skylevels, Collection<Player> players) {
-		PacketContainer packet = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.LIGHT_UPDATE);
-		packet.getIntegers().write(0, chunkPosition.getChunkX());
-		packet.getIntegers().write(1, chunkPosition.getChunkZ());
-		int skyBitmask = skySectionPosition.getBitmask();
-		int blockBitmask = skySectionPosition.getBitmask();
-		packet.getIntegers().write(2, skyBitmask);
-		packet.getIntegers().write(3, blockBitmask);
-		packet.getIntegers().write(4, ~skyBitmask);
-		packet.getIntegers().write(5, ~blockBitmask);
-		List<byte[]> skyBits = new ArrayList<>();
-		for (int i : skySectionPosition.getSetPositions()) {
-			skyBits.add(skylevels.get(i));
-		}
-		List<byte[]> blockBits = new ArrayList<>();
-		for (int i : blockSectionPosition.getSetPositions()) {
-			blockBits.add(blocklevels.get(i));
-		}
-		packet.getModifier().write(6, skyBits);
-		packet.getModifier().write(7, blockBits);
-		if (packet.getBooleans().size() > 0) {
-			packet.getBooleans().write(0, false);
-		}
+		PacketPlayOutEntityEquipment packet = new PacketPlayOutEntityEquipment(entityId, nmsList);
+		return new PacketContainer[] {PacketContainer.fromPacket(packet)};
 	}
 
 }

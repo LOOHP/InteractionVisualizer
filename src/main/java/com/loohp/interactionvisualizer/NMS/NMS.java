@@ -1,19 +1,17 @@
 package com.loohp.interactionvisualizer.NMS;
 
-import java.util.Collection;
 import java.util.List;
 
-import org.bukkit.World;
-import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 
+import com.comphenix.protocol.events.PacketContainer;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.ObjectHolders.BlockPosition;
 import com.loohp.interactionvisualizer.ObjectHolders.BoundingBox;
 import com.loohp.interactionvisualizer.ObjectHolders.ChunkPosition;
-import com.loohp.interactionvisualizer.ObjectHolders.ChunkSectionPosition;
 import com.loohp.interactionvisualizer.ObjectHolders.TileEntity;
-
-import ru.beykerykt.lightapi.LightType;
+import com.loohp.interactionvisualizer.ObjectHolders.ValuePairs;
 
 public abstract class NMS {
 	
@@ -57,27 +55,10 @@ public abstract class NMS {
 		return instance;
 	}
 	
+	public abstract PacketContainer[] createEntityEquipmentPacket(int entityId, List<ValuePairs<EquipmentSlot, ItemStack>> equipments);
+	
 	public abstract List<BoundingBox> getBoundingBoxes(BlockPosition pos);
 	
 	public abstract List<TileEntity> getTileEntities(ChunkPosition chunk, boolean load);
 	
-	public abstract List<byte[]> getBlockLightArray(ChunkPosition chunk, boolean load);
-	
-	public abstract List<byte[]> getSkyLightArray(ChunkPosition chunk, boolean load);
-	
-	public abstract boolean isLightTypeSupported(World world, LightType lightType);
-	
-	public abstract boolean isLegacyLightEngine();
-	
-	@Deprecated
-	public abstract void createLight(World world, int x, int y, int z, LightType lightType, int light);
-	
-	@Deprecated
-	public abstract void deleteLight(World world, int x, int y, int z, LightType lightType);
-
-	@Deprecated
-	public abstract void sendChunkSectionsUpdate(World world, int chunkX, int chunkZ, int sectionsMaskSky, int sectionsMaskBlock, Player player);
-	
-	public abstract void sendLightUpdate(ChunkPosition chunkPosition, ChunkSectionPosition blockSectionPosition, ChunkSectionPosition skySectionPosition, List<byte[]> blocklevels, List<byte[]> skylevels, Collection<Player> players);
-
 }
