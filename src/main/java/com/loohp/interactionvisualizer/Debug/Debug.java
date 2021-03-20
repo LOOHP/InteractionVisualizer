@@ -96,7 +96,7 @@ public class Debug implements Listener {
 		lore.add("");
 		lore.add("\u00a76https://www.instagram.com/narliar/");
 		lore.add("");
-		lore.add("\u00a77EasterEgg tribute to the IV author's best friend");
+		lore.add("\u00a77EasterEgg tribute to the IV author's \u00a7cAdorable");
 		meta.setLore(lore);
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		meta.setDisplayName(text.toLegacyText());
