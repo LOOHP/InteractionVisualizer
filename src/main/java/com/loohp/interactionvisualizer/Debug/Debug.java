@@ -28,7 +28,7 @@ public class Debug implements Listener {
 	
 	@EventHandler
 	public void onJoinPluginActive(PlayerJoinEvent event) {
-		if (event.getPlayer().getName().equals("LOOHP") || event.getPlayer().getName().equals("AppLEskakE")) {
+		if (event.getPlayer().getName().equals("LOOHP") || event.getPlayer().getName().equals("AppLEshakE")) {
 			event.getPlayer().sendMessage(ChatColor.BLUE + "InteractionVisualizer " + InteractionVisualizer.plugin.getDescription().getVersion() + " is running!");
 		}
 	}
