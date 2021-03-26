@@ -350,55 +350,63 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 	
 	public ChatColor getBeaconColor(Block block) {
 		Block glass = block.getRelative(BlockFace.UP);
-		if (!glass.getType().toString().toUpperCase().contains("GLASS")) {
-			return ChatColor.WHITE;
-		}
 		if (!InteractionVisualizer.version.isLegacy()) {
-			if (glass.getType().equals(Material.GLASS) || glass.getType().equals(Material.GLASS_PANE)) {
-				return ChatColor.WHITE;
-			}
-			String color = glass.getType().toString().toUpperCase().substring(0, glass.getType().toString().toUpperCase().indexOf("_"));
-			if (color.equals("LIGHT")) {
-				String temp = glass.getType().toString().toUpperCase().substring(glass.getType().toString().toUpperCase().indexOf("_") + 1);
-				color = color + "_" + temp.substring(0, temp.indexOf("_"));
-			}
-			switch (color) {
-			case "WHITE":
-				return ChatColor.WHITE;
-			case "ORANGE":
+			switch (glass.getType()) {
+			case ORANGE_STAINED_GLASS:
+			case ORANGE_STAINED_GLASS_PANE:
 				return ChatColor.GOLD;
-			case "MAGENTA":
+			case MAGENTA_STAINED_GLASS:
+			case MAGENTA_STAINED_GLASS_PANE:
 				return ChatColor.LIGHT_PURPLE;
-			case "LIGHT_BLUE":
+			case LIGHT_BLUE_STAINED_GLASS:
+			case LIGHT_BLUE_STAINED_GLASS_PANE:
 				return ChatColor.AQUA;
-			case "YELLOW":
+			case YELLOW_STAINED_GLASS:
+			case YELLOW_STAINED_GLASS_PANE:
 				return ChatColor.YELLOW;
-			case "LIME":
+			case LIME_STAINED_GLASS:
+			case LIME_STAINED_GLASS_PANE:
 				return ChatColor.GREEN;
-			case "PINK":
+			case PINK_STAINED_GLASS:
+			case PINK_STAINED_GLASS_PANE:
 				return ChatColor.LIGHT_PURPLE;
-			case "GRAY":
+			case GRAY_STAINED_GLASS:
+			case GRAY_STAINED_GLASS_PANE:
 				return ChatColor.DARK_GRAY;
-			case "LIGHT_GRAY":
+			case LIGHT_GRAY_STAINED_GLASS:
+			case LIGHT_GRAY_STAINED_GLASS_PANE:
 				return ChatColor.GRAY;
-			case "CYAN":
+			case CYAN_STAINED_GLASS:
+			case CYAN_STAINED_GLASS_PANE:
 				return ChatColor.DARK_AQUA;
-			case "PURPLE":
+			case PURPLE_STAINED_GLASS:
+			case PURPLE_STAINED_GLASS_PANE:
 				return ChatColor.DARK_PURPLE;
-			case "BLUE":
+			case BLUE_STAINED_GLASS:
+			case BLUE_STAINED_GLASS_PANE:
 				return ChatColor.BLUE;
-			case "BROWN":
+			case BROWN_STAINED_GLASS:
+			case BROWN_STAINED_GLASS_PANE:
 				return ChatColor.GOLD;
-			case "GREEN":
+			case GREEN_STAINED_GLASS:
+			case GREEN_STAINED_GLASS_PANE:
 				return ChatColor.DARK_GREEN;
-			case "RED":
+			case RED_STAINED_GLASS:
+			case RED_STAINED_GLASS_PANE:
 				return ChatColor.RED;
-			case "BLACK":
-				return ChatColor.WHITE;
+			case BLACK_STAINED_GLASS:
+			case BLACK_STAINED_GLASS_PANE:
+			case GLASS:
+			case GLASS_PANE:
+			case WHITE_STAINED_GLASS:
+			case WHITE_STAINED_GLASS_PANE:
 			default:
 				return ChatColor.WHITE;
 			}
 		} else {
+			if (!glass.getType().name().toUpperCase().contains("GLASS")) {
+				return ChatColor.WHITE;
+			}
 			@SuppressWarnings("deprecation")
 			DyeColor color = DyeColor.getByWoolData(glass.getData());
 			switch (color.toString().toUpperCase()) {

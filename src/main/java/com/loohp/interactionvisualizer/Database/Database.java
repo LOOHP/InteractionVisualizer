@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -276,8 +277,8 @@ public class Database {
 		}
 	}
 	
-	public static HashMap<Modules, Boolean> getPlayerInfo(UUID uuid) {
-		HashMap<Modules, Boolean> map = new HashMap<Modules, Boolean>();
+	public static Map<Modules, Boolean> getPlayerInfo(UUID uuid) {
+		Map<Modules, Boolean> map = new HashMap<>();
 		synchronized (syncdb) {
 			open();
 			try {
@@ -302,7 +303,7 @@ public class Database {
 		return map;
 	}
 	
-	public static HashMap<Modules, Boolean> getPlayerInfo(Player player) {
+	public static Map<Modules, Boolean> getPlayerInfo(Player player) {
 		return getPlayerInfo(player.getUniqueId());
 	}
 	

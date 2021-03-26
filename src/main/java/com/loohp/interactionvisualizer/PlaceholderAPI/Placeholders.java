@@ -1,6 +1,6 @@
 package com.loohp.interactionvisualizer.PlaceholderAPI;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -30,6 +30,16 @@ public class Placeholders extends PlaceholderExpansion {
 	}
 	
 	@Override
+    public boolean persist() {
+        return true;
+    }
+    
+    @Override
+    public String getRequiredPlugin() {
+        return InteractionVisualizer.plugin.getName();
+    }
+	
+	@Override
     public String onRequest(OfflinePlayer offlineplayer, String identifier){
   
         if (identifier.equals("itemstand")) {
@@ -40,7 +50,7 @@ public class Placeholders extends PlaceholderExpansion {
         		}
         		return "disabled";
         	}
-        	HashMap<Modules, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
+        	Map<Modules, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
         	if (map.get(Modules.ITEMSTAND)) {
         		return "enabled";
         	}
@@ -55,7 +65,7 @@ public class Placeholders extends PlaceholderExpansion {
         		}
         		return "disabled";
         	}
-        	HashMap<Modules, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
+        	Map<Modules, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
         	if (map.get(Modules.ITEMDROP)) {
         		return "enabled";
         	}
@@ -70,7 +80,7 @@ public class Placeholders extends PlaceholderExpansion {
         		}
         		return "disabled";
         	}
-        	HashMap<Modules, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
+        	Map<Modules, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
         	if (map.get(Modules.HOLOGRAM)) {
         		return "enabled";
         	}

@@ -144,7 +144,7 @@ public class EnchantmentTableAnimation {
 			PacketManager.updateItem(item);
 		}, 20);
 			
-		List<ArmorStand> stands = new LinkedList<ArmorStand>();
+		List<ArmorStand> stands = new LinkedList<>();
 		
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
 			Location standloc = item.getLocation().add(0.0, 0.5, 0.0);

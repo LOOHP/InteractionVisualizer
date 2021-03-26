@@ -1,8 +1,8 @@
 package com.loohp.interactionvisualizer;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -115,7 +115,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 							Toggle.toggle(sender, player, Modules.HOLOGRAM);
 							break;
 						case "all":
-							HashMap<Modules, Boolean> info = Database.getPlayerInfo(player);
+							Map<Modules, Boolean> info = Database.getPlayerInfo(player);
 							boolean toggle = true;
 							int truecount = 0;
 							for (boolean value : info.values()) {
@@ -164,7 +164,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 							Toggle.toggle(sender, player, Modules.HOLOGRAM);
 							break;
 						case "all":
-							HashMap<Modules, Boolean> info = Database.getPlayerInfo(player);
+							Map<Modules, Boolean> info = Database.getPlayerInfo(player);
 							boolean toggle = true;
 							int truecount = 0;
 							for (boolean value : info.values()) {
