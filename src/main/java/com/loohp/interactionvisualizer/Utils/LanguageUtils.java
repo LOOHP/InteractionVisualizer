@@ -1,6 +1,8 @@
 package com.loohp.interactionvisualizer.Utils;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -75,23 +77,25 @@ public class LanguageUtils {
 							Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] Unable to fetch version data from " + urlObj.toString());
 						} else {
 							String clientUrl = ((JSONObject) ((JSONObject) versionData.get("downloads")).get("client")).get("url").toString();
-							File tempFolder = new File(langFolder, "temp");
-							if (tempFolder.exists()) {
-								FileUtils.removeFolderRecursively(tempFolder);
-							}
-							tempFolder.mkdirs();
-							File jarFile = new File(tempFolder, "client.jar");
-							HTTPRequestUtils.download(jarFile, clientUrl);
 							
-							try (ZipInputStream zip = new ZipInputStream(new FileInputStream(jarFile))) {
+							try (ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(HTTPRequestUtils.download(clientUrl)))) {
 								while (true) {
 									ZipEntry entry = zip.getNextEntry();
 									if (entry == null) {
 										break;
 									}
+									
+									ByteArrayOutputStream baos = new ByteArrayOutputStream();
+									byte[] byteChunk = new byte[4096];
+									int n;
+									while ((n = zip.read(byteChunk)) > 0) {
+										baos.write(byteChunk, 0, n);
+									}
+									byte[] currentEntry = baos.toByteArray();
+
 									String name = entry.getName();
 									if (name.matches("^.*assets/minecraft/lang/en_us.(json|lang)$")) {
-										String enUsFileHash = HashUtils.createSha1String(zip);
+										String enUsFileHash = HashUtils.createSha1String(new ByteArrayInputStream(currentEntry));
 										String enUsExtension = name.substring(name.indexOf(".") + 1);
 										if (data.containsKey("en_us")) {
 											JSONObject values = (JSONObject) data.get("en_us");
@@ -101,7 +105,7 @@ public class LanguageUtils {
 												if (fileToSave.exists()) {
 													fileToSave.delete();
 												}
-												FileUtils.copyZipEntry(jarFile, entry.getName(), fileToSave);
+												FileUtils.copy(new ByteArrayInputStream(currentEntry), fileToSave);
 											}
 										} else {
 											JSONObject values = new JSONObject();
@@ -110,7 +114,7 @@ public class LanguageUtils {
 											if (fileToSave.exists()) {
 												fileToSave.delete();
 											}
-											FileUtils.copyZipEntry(jarFile, entry.getName(), fileToSave);
+											FileUtils.copy(new ByteArrayInputStream(currentEntry), fileToSave);
 											data.put("en_us", values);											
 										}
 										zip.close();
@@ -120,8 +124,6 @@ public class LanguageUtils {
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
-							
-							FileUtils.removeFolderRecursively(tempFolder);
 							
 							String indexUrl = ((JSONObject) versionData.get("assetIndex")).get("url").toString();
 							JSONObject assets = HTTPRequestUtils.getJSONResponse(indexUrl);
