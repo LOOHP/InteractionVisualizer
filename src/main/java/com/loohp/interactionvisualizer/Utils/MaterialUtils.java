@@ -8,7 +8,7 @@ import com.loohp.interactionvisualizer.Managers.MaterialManager;
 
 public class MaterialUtils {
 	
-	public enum MaterialMode {
+	public static enum MaterialMode {
 		TOOL("Tool"),
 		STANDING("Standing"),
 		LOWBLOCK("LowBlock"),

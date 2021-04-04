@@ -2,10 +2,11 @@ package com.loohp.interactionvisualizer.Managers;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -27,8 +28,8 @@ public class TileEntityManager {
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
 	private static TileEntityType[] tileEntityTypes = TileEntityType.values();
-	private static HashMap<TileEntityType, List<Block>> current = new HashMap<>();
-	private static HashMap<TileEntityType, List<Block>> upcomming = new HashMap<>();
+	private static Map<TileEntityType, List<Block>> current = new EnumMap<>(TileEntityType.class);
+	private static Map<TileEntityType, List<Block>> upcomming = new EnumMap<>(TileEntityType.class);
 	
 	public static List<Block> getTileEntites(TileEntityType type) {
 		List<Block> list = current.get(type);
@@ -88,7 +89,7 @@ public class TileEntityManager {
 		if (plugin.isEnabled()) {
 			Bukkit.getScheduler().runTaskLater(plugin, () -> {
 				current = upcomming;
-				upcomming = new HashMap<>();
+				upcomming = new EnumMap<>(TileEntityType.class);
 				Bukkit.getScheduler().runTaskLater(plugin, () -> run(), 1);
 			}, 1);
 		}

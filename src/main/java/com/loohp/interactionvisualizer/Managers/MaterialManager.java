@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -21,11 +21,11 @@ public class MaterialManager {
 	public static FileConfiguration config;
 	public static File file;
 	
-	private static Set<Material> tools = new HashSet<Material>();
-	private static Set<Material> standing = new HashSet<Material>();
-	private static Set<Material> lowblocks = new HashSet<Material>();
-	private static Set<Material> blockexceptions = new HashSet<Material>();
-	private static Set<Material> nonSolid = new HashSet<Material>();
+	private static Set<Material> tools = EnumSet.noneOf(Material.class);
+	private static Set<Material> standing = EnumSet.noneOf(Material.class);
+	private static Set<Material> lowblocks = EnumSet.noneOf(Material.class);
+	private static Set<Material> blockexceptions = EnumSet.noneOf(Material.class);
+	private static Set<Material> nonSolid = EnumSet.noneOf(Material.class);
 
 	public static void setup() {
 		if (!InteractionVisualizer.plugin.getDataFolder().exists()) {
@@ -101,7 +101,7 @@ public class MaterialManager {
 		return tools;
 	}
 
-	public static void setTools(Set<Material> tools) {
+	public static void setTools(EnumSet<Material> tools) {
 		MaterialManager.tools = tools;
 	}
 
@@ -110,7 +110,12 @@ public class MaterialManager {
 	}
 
 	public static void setStanding(Set<Material> standing) {
-		MaterialManager.standing = standing;
+		if (standing instanceof EnumSet<?>) {
+			MaterialManager.standing = EnumSet.copyOf(standing);
+		} else {
+			MaterialManager.standing = EnumSet.noneOf(Material.class);
+			MaterialManager.standing.addAll(standing);
+		}
 	}
 
 	public static Set<Material> getLowblocks() {
@@ -118,7 +123,12 @@ public class MaterialManager {
 	}
 
 	public static void setLowblocks(Set<Material> lowblocks) {
-		MaterialManager.lowblocks = lowblocks;
+		if (lowblocks instanceof EnumSet<?>) {
+			MaterialManager.lowblocks = EnumSet.copyOf(lowblocks);
+		} else {
+			MaterialManager.lowblocks = EnumSet.noneOf(Material.class);
+			MaterialManager.lowblocks.addAll(lowblocks);
+		}
 	}
 
 	public static Set<Material> getBlockexceptions() {
@@ -126,7 +136,12 @@ public class MaterialManager {
 	}
 
 	public static void setBlockexceptions(Set<Material> blockexceptions) {
-		MaterialManager.blockexceptions = blockexceptions;
+		if (blockexceptions instanceof EnumSet<?>) {
+			MaterialManager.blockexceptions = EnumSet.copyOf(blockexceptions);
+		} else {
+			MaterialManager.blockexceptions = EnumSet.noneOf(Material.class);
+			MaterialManager.blockexceptions.addAll(blockexceptions);
+		}
 	}
 
 	public static Set<Material> getNonSolid() {
@@ -134,6 +149,11 @@ public class MaterialManager {
 	}
 
 	public static void setNonSolid(Set<Material> nonSolid) {
-		MaterialManager.nonSolid = nonSolid;
+		if (nonSolid instanceof EnumSet<?>) {
+			MaterialManager.nonSolid = EnumSet.copyOf(nonSolid);
+		} else {
+			MaterialManager.nonSolid = EnumSet.noneOf(Material.class);
+			MaterialManager.nonSolid.addAll(nonSolid);
+		}
 	}
 }
