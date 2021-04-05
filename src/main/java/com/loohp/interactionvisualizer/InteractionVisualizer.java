@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -51,7 +50,6 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	public static InteractionVisualizer plugin = null;
 	public static ProtocolManager protocolManager;
-	public static FileConfiguration config;
 	
 	public static String exactMinecraftVersion;
 	public static MCVersion version;
@@ -147,8 +145,8 @@ public class InteractionVisualizer extends JavaPlugin {
 			break;
 		}
 		
+		getConfig().options().header("For information on what each option does. Please refer to https://github.com/LOOHP/InteractionVisualizer/blob/master/src/main/resources/config.yml");
 		getConfig().options().copyDefaults(true);
-		config = getConfig();
 		saveConfig();
 		
 		defaultworld = getServer().getWorlds().get(0);
@@ -157,7 +155,7 @@ public class InteractionVisualizer extends JavaPlugin {
 			defaultworld.setChunkForceLoaded(0, 0, true);
 		}
 		
-		if (config.getBoolean("Options.DownloadLanguageFiles")) {
+		if (getConfig().getBoolean("Options.DownloadLanguageFiles")) {
 			getServer().getScheduler().runTaskAsynchronously(this, () -> LangManager.generate());
 		}
 		
@@ -312,28 +310,27 @@ public class InteractionVisualizer extends JavaPlugin {
 	@Override
 	public void reloadConfig() {
 		super.reloadConfig();
-		config = getConfig();
 		
-		itemStandEnabled = config.getBoolean("Modules.ItemStand.Enabled");
-		itemDropEnabled = config.getBoolean("Modules.ItemDrop.Enabled");
-		hologramsEnabled = config.getBoolean("Modules.Hologram.Enabled");
+		itemStandEnabled = getConfig().getBoolean("Modules.ItemStand.Enabled");
+		itemDropEnabled = getConfig().getBoolean("Modules.ItemDrop.Enabled");
+		hologramsEnabled = getConfig().getBoolean("Modules.Hologram.Enabled");
 		
-		playerPickupYOffset = config.getDouble("Settings.PickupAnimationPlayerYOffset");
+		playerPickupYOffset = getConfig().getDouble("Settings.PickupAnimationPlayerYOffset");
 		
-		tileEntityChunkPerTick = config.getInt("TileEntityUpdate.ChunksPerTick");
-		loadTileEntitiesAsync = config.getBoolean("TileEntityUpdate.LoadTileEntitiesAsync");
-		tileEntityCheckingRange = config.getInt("TileEntityUpdate.CheckingRange");
+		tileEntityChunkPerTick = getConfig().getInt("TileEntityUpdate.ChunksPerTick");
+		loadTileEntitiesAsync = getConfig().getBoolean("TileEntityUpdate.LoadTileEntitiesAsync");
+		tileEntityCheckingRange = getConfig().getInt("TileEntityUpdate.CheckingRange");
 		
-		handMovementEnabled = config.getBoolean("Settings.UseHandSwingAnimation");
+		handMovementEnabled = getConfig().getBoolean("Settings.UseHandSwingAnimation");
 		
-		disabledWorlds = config.getStringList("Settings.DisabledWorlds").stream().collect(Collectors.toSet());
-		hideIfObstructed = config.getBoolean("Settings.HideIfViewObstructed");
+		disabledWorlds = getConfig().getStringList("Settings.DisabledWorlds").stream().collect(Collectors.toSet());
+		hideIfObstructed = getConfig().getBoolean("Settings.HideIfViewObstructed");
 		
-		lightUpdatePeriod = config.getInt("LightUpdate.Period");
+		lightUpdatePeriod = getConfig().getInt("LightUpdate.Period");
 		
-		updaterEnabled = plugin.getConfig().getBoolean("Options.Updater");
+		updaterEnabled = getConfig().getBoolean("Options.Updater");
 		
-		language = plugin.getConfig().getString("Settings.Language");
+		language = getConfig().getString("Settings.Language");
 		
 		playerTrackingRange.clear();
 		int defaultRange = getServer().spigot().getConfig().getInt("world-settings.default.entity-tracking-range.players", 64);

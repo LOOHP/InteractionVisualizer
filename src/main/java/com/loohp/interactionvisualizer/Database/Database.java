@@ -12,7 +12,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
@@ -24,7 +23,6 @@ public class Database {
 	public static boolean isMYSQL = false;
 	
 	private static Connection connection;
-	private static FileConfiguration config = InteractionVisualizer.config;
 	private static String host, database, username, password;
 	private static String table = "InteractionVisualizer_USER_PERFERENCES";
 	private static int port;
@@ -32,7 +30,7 @@ public class Database {
     private static Object syncdb = new Object();
 	
 	public static void setup() {
-		String type = config.getString("Database.Type");
+		String type = InteractionVisualizer.plugin.getConfig().getString("Database.Type");
 		if (type.equalsIgnoreCase("MYSQL")) {
 			isMYSQL = true;
 		} else {
@@ -67,11 +65,11 @@ public class Database {
 	}
 	
 	public static void mysqlSetup(boolean echo) {
-        host = config.getString("Database.MYSQL.Host");
-        port =  config.getInt("Database.MYSQL.Port");
-        database = config.getString("Database.MYSQL.Database");
-        username = config.getString("Database.MYSQL.Username");
-        password = config.getString("Database.MYSQL.Password");
+        host = InteractionVisualizer.plugin.getConfig().getString("Database.MYSQL.Host");
+        port =  InteractionVisualizer.plugin.getConfig().getInt("Database.MYSQL.Port");
+        database = InteractionVisualizer.plugin.getConfig().getString("Database.MYSQL.Database");
+        username = InteractionVisualizer.plugin.getConfig().getString("Database.MYSQL.Username");
+        password = InteractionVisualizer.plugin.getConfig().getString("Database.MYSQL.Password");
 
         try {
 			if (getConnection() != null && !getConnection().isClosed()) {

@@ -49,7 +49,6 @@ public class TaskManager {
 	
 	public static Plugin plugin = InteractionVisualizer.plugin;
 	public static MCVersion version;
-	public static FileConfiguration config = InteractionVisualizer.config;
 	
 	public static boolean anvil;
 	public static boolean beacon;
@@ -135,163 +134,163 @@ public class TaskManager {
 			processes.put(type, new ArrayList<VisualizerInteractDisplay>());
 		}
 		
-		if (config.getBoolean("Blocks.CraftingTable.Enabled")) {
+		if (getConfig().getBoolean("Blocks.CraftingTable.Enabled")) {
 			CraftingTableDisplay ctd = new CraftingTableDisplay();
 			ctd.register(InventoryType.WORKBENCH);
 			Bukkit.getPluginManager().registerEvents(ctd, plugin);
 			craftingtable = true;
 		}
 		
-		if (config.getBoolean("Blocks.Loom.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
+		if (getConfig().getBoolean("Blocks.Loom.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			LoomDisplay ld = new LoomDisplay();
 			ld.register(InventoryType.LOOM);
 			Bukkit.getPluginManager().registerEvents(ld, plugin);
 			loom = true;
 		}
 		
-		if (config.getBoolean("Blocks.EnchantmentTable.Enabled")) {
+		if (getConfig().getBoolean("Blocks.EnchantmentTable.Enabled")) {
 			EnchantmentTableDisplay etd = new EnchantmentTableDisplay();
 			etd.register(InventoryType.ENCHANTING);
 			Bukkit.getPluginManager().registerEvents(etd, plugin);
 			enchantmenttable = true;
 		}
 		
-		if (config.getBoolean("Blocks.CartographyTable.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
+		if (getConfig().getBoolean("Blocks.CartographyTable.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			CartographyTableDisplay ctd = new CartographyTableDisplay();
 			ctd.register(InventoryType.CARTOGRAPHY);
 			Bukkit.getPluginManager().registerEvents(ctd, plugin);
 			cartographytable = true;
 		}
 		
-		if (config.getBoolean("Blocks.Anvil.Enabled")) {
+		if (getConfig().getBoolean("Blocks.Anvil.Enabled")) {
 			AnvilDisplay ad = new AnvilDisplay();
 			ad.register(InventoryType.ANVIL);
 			Bukkit.getPluginManager().registerEvents(ad, plugin);
 			anvil = true;
 		}
 		
-		if (config.getBoolean("Blocks.Grindstone.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
+		if (getConfig().getBoolean("Blocks.Grindstone.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			GrindstoneDisplay gd = new GrindstoneDisplay();
 			gd.register(InventoryType.GRINDSTONE);
 			Bukkit.getPluginManager().registerEvents(gd, plugin);
 			grindstone = true;
 		}
 		
-		if (config.getBoolean("Blocks.Stonecutter.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
+		if (getConfig().getBoolean("Blocks.Stonecutter.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			StonecutterDisplay sd = new StonecutterDisplay();
 			sd.register(InventoryType.STONECUTTER);
 			Bukkit.getPluginManager().registerEvents(sd, plugin);
 			stonecutter = true;
 		}
 		
-		if (config.getBoolean("Blocks.BrewingStand.Enabled")) {
+		if (getConfig().getBoolean("Blocks.BrewingStand.Enabled")) {
 			BrewingStandDisplay bsd = new BrewingStandDisplay();
 			bsd.register();
 			Bukkit.getPluginManager().registerEvents(bsd, plugin);
 			brewingstand = true;
 		}
 		
-		if (config.getBoolean("Blocks.Chest.Enabled")) {
+		if (getConfig().getBoolean("Blocks.Chest.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new ChestDisplay(), plugin);
 			chest = true;
 		}
 		
-		if (config.getBoolean("Blocks.DoubleChest.Enabled")) {
+		if (getConfig().getBoolean("Blocks.DoubleChest.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new DoubleChestDisplay(), plugin);
 			doublechest = true;
 		}
 		
-		if (config.getBoolean("Blocks.Furnace.Enabled")) {
+		if (getConfig().getBoolean("Blocks.Furnace.Enabled")) {
 			FurnaceDisplay fd = new FurnaceDisplay();
 			fd.register();
 			Bukkit.getPluginManager().registerEvents(fd, plugin);
 			furnace = true;
 		}
 		
-		if (config.getBoolean("Blocks.BlastFurnace.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
+		if (getConfig().getBoolean("Blocks.BlastFurnace.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			BlastFurnaceDisplay bfd = new BlastFurnaceDisplay();
 			bfd.register();
 			Bukkit.getPluginManager().registerEvents(bfd, plugin);
 			blastfurnace = true;
 		}
 		
-		if (config.getBoolean("Blocks.Smoker.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
+		if (getConfig().getBoolean("Blocks.Smoker.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			SmokerDisplay sd = new SmokerDisplay();
 			sd.register();
 			Bukkit.getPluginManager().registerEvents(sd, plugin);
 			smoker = true;
 		}
 		
-		if (config.getBoolean("Blocks.EnderChest.Enabled")) {
+		if (getConfig().getBoolean("Blocks.EnderChest.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new EnderchestDisplay(), plugin);
 			enderchest = true;
 		}
 		
-		if (config.getBoolean("Blocks.ShulkerBox.Enabled") &&
+		if (getConfig().getBoolean("Blocks.ShulkerBox.Enabled") &&
 				   (!version.isOld())
 				) {
 			Bukkit.getPluginManager().registerEvents(new ShulkerBoxDisplay(), plugin);
 			shulkerbox = true;
 		}
 		
-		if (config.getBoolean("Blocks.Dispenser.Enabled")) {
+		if (getConfig().getBoolean("Blocks.Dispenser.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new DispenserDisplay(), plugin);
 			dispenser = true;
 		}
 		
-		if (config.getBoolean("Blocks.Dropper.Enabled")) {
+		if (getConfig().getBoolean("Blocks.Dropper.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new DropperDisplay(), plugin);
 			dropper = true;
 		}
 		
-		if (config.getBoolean("Blocks.Hopper.Enabled")) {
+		if (getConfig().getBoolean("Blocks.Hopper.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new HopperDisplay(), plugin);
 			hopper = true;
 		}
 		
-		if (config.getBoolean("Blocks.Beacon.Enabled")) {
+		if (getConfig().getBoolean("Blocks.Beacon.Enabled")) {
 			BeaconDisplay bd = new BeaconDisplay();
 			bd.register();
 			Bukkit.getPluginManager().registerEvents(bd, plugin);
 			beacon = true;
 		}
 		
-		if (config.getBoolean("Blocks.NoteBlock.Enabled")) {
+		if (getConfig().getBoolean("Blocks.NoteBlock.Enabled")) {
 			NoteBlockDisplay nbd = new NoteBlockDisplay();
 			nbd.register();
 			Bukkit.getPluginManager().registerEvents(nbd, plugin);
 			noteblock = true;
 		}
 		
-		if (config.getBoolean("Blocks.JukeBox.Enabled")) {
+		if (getConfig().getBoolean("Blocks.JukeBox.Enabled")) {
 			JukeBoxDisplay jbd = new JukeBoxDisplay();
 			jbd.register();
 			Bukkit.getPluginManager().registerEvents(jbd, plugin);
 			jukebox = true;
 		}
 		
-		if (config.getBoolean("Blocks.SmithingTable.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_16)) {
+		if (getConfig().getBoolean("Blocks.SmithingTable.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_16)) {
 			SmithingTableDisplay std = new SmithingTableDisplay();
 			std.register(InventoryType.SMITHING);
 			Bukkit.getPluginManager().registerEvents(std, plugin);
 			smithingtable = true;
 		}
 		
-		if (config.getBoolean("Blocks.BeeNest.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_15)) {
+		if (getConfig().getBoolean("Blocks.BeeNest.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_15)) {
 			BeeNestDisplay bnd = new BeeNestDisplay();
 			bnd.register();
 			Bukkit.getPluginManager().registerEvents(bnd, plugin);
 			beenest = true;
 		}
 		
-		if (config.getBoolean("Blocks.BeeHive.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_15)) {
+		if (getConfig().getBoolean("Blocks.BeeHive.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_15)) {
 			BeeHiveDisplay bhd = new BeeHiveDisplay();
 			bhd.register();
 			Bukkit.getPluginManager().registerEvents(bhd, plugin);
 			beehive = true;
 		}
 		
-		if (config.getBoolean("Entities.Villager.Enabled")) {
+		if (getConfig().getBoolean("Entities.Villager.Enabled")) {
 			Bukkit.getPluginManager().registerEvents(new VillagerDisplay(), plugin);
 			villager = true;
 		}
@@ -332,6 +331,10 @@ public class TaskManager {
 		}
 		next = next + delay;
 		Bukkit.getScheduler().runTaskLater(plugin, () -> run(), next);
+	}
+	
+	private static FileConfiguration getConfig() {
+		return InteractionVisualizer.plugin.getConfig();
 	}
 
 }
