@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Blocks;
+package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,19 +28,19 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
-import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
-import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
-import com.loohp.interactionvisualizer.EntityHolders.Item;
-import com.loohp.interactionvisualizer.Managers.LightManager;
-import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Managers.SoundManager;
-import com.loohp.interactionvisualizer.Utils.InventoryUtils;
-import com.loohp.interactionvisualizer.Utils.MCVersion;
-import com.loohp.interactionvisualizer.Utils.MaterialUtils;
-import com.loohp.interactionvisualizer.Utils.MaterialUtils.MaterialMode;
-import com.loohp.interactionvisualizer.Utils.VanishUtils;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
+import com.loohp.interactionvisualizer.api.VisualizerInteractDisplay;
+import com.loohp.interactionvisualizer.entityholders.ArmorStand;
+import com.loohp.interactionvisualizer.entityholders.Item;
+import com.loohp.interactionvisualizer.managers.LightManager;
+import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.managers.SoundManager;
+import com.loohp.interactionvisualizer.utils.InventoryUtils;
+import com.loohp.interactionvisualizer.utils.MCVersion;
+import com.loohp.interactionvisualizer.utils.MaterialUtils;
+import com.loohp.interactionvisualizer.utils.MaterialUtils.MaterialMode;
+import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 import ru.beykerykt.lightapi.LightType;
 

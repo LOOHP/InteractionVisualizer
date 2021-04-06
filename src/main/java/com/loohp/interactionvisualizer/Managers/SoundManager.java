@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Managers;
+package com.loohp.interactionvisualizer.managers;
 
 import java.util.Collection;
 import java.util.Random;

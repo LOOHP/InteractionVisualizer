@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Managers;
+package com.loohp.interactionvisualizer.managers;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,10 +19,10 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.NMS.NMS;
-import com.loohp.interactionvisualizer.ObjectHolders.ChunkPosition;
-import com.loohp.interactionvisualizer.ObjectHolders.TileEntity;
-import com.loohp.interactionvisualizer.ObjectHolders.TileEntity.TileEntityType;
+import com.loohp.interactionvisualizer.nms.NMS;
+import com.loohp.interactionvisualizer.objectholders.ChunkPosition;
+import com.loohp.interactionvisualizer.objectholders.TileEntity;
+import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 
 public class TileEntityManager {
 	

@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Entities;
+package com.loohp.interactionvisualizer.entities;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -13,12 +13,12 @@ import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
-import com.loohp.interactionvisualizer.EntityHolders.Item;
-import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Utils.InventoryUtils;
-import com.loohp.interactionvisualizer.Utils.VanishUtils;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
+import com.loohp.interactionvisualizer.entityholders.Item;
+import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.utils.InventoryUtils;
+import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class VillagerDisplay implements Listener {
 	

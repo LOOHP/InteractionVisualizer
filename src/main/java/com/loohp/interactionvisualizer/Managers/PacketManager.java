@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Managers;
+package com.loohp.interactionvisualizer.managers;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -21,13 +21,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
-import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
-import com.loohp.interactionvisualizer.EntityHolders.Item;
-import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
-import com.loohp.interactionvisualizer.EntityHolders.VisualizerEntity;
-import com.loohp.interactionvisualizer.Protocol.ServerPacketSender;
-import com.loohp.interactionvisualizer.Utils.LineOfSightUtils;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.entityholders.ArmorStand;
+import com.loohp.interactionvisualizer.entityholders.Item;
+import com.loohp.interactionvisualizer.entityholders.ItemFrame;
+import com.loohp.interactionvisualizer.entityholders.VisualizerEntity;
+import com.loohp.interactionvisualizer.protocol.ServerPacketSender;
+import com.loohp.interactionvisualizer.utils.LineOfSightUtils;
 
 public class PacketManager implements Listener {
 	

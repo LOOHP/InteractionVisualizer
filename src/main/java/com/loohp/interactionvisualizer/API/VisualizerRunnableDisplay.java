@@ -1,11 +1,11 @@
-package com.loohp.interactionvisualizer.API;
+package com.loohp.interactionvisualizer.api;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
 
-import com.loohp.interactionvisualizer.Managers.TaskManager;
+import com.loohp.interactionvisualizer.managers.TaskManager;
 
 /**
 This class is used for Displays which are shown when something is active by itself like a furnace cooking

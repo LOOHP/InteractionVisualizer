@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Database;
+package com.loohp.interactionvisualizer.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,8 +15,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
-import com.loohp.interactionvisualizer.Managers.PacketManager;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
+import com.loohp.interactionvisualizer.managers.PacketManager;
 
 public class Database {
 	

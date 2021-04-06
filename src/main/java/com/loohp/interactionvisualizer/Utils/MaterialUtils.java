@@ -1,10 +1,10 @@
-package com.loohp.interactionvisualizer.Utils;
+package com.loohp.interactionvisualizer.utils;
 
 import java.util.Set;
 
 import org.bukkit.Material;
 
-import com.loohp.interactionvisualizer.Managers.MaterialManager;
+import com.loohp.interactionvisualizer.managers.MaterialManager;
 
 public class MaterialUtils {
 	

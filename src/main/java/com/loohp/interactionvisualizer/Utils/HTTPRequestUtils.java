@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Utils;
+package com.loohp.interactionvisualizer.utils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

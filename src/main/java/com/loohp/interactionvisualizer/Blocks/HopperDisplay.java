@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Blocks;
+package com.loohp.interactionvisualizer.blocks;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,13 +25,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
-import com.loohp.interactionvisualizer.EntityHolders.Item;
-import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Utils.InventoryUtils;
-import com.loohp.interactionvisualizer.Utils.OpenInvUtils;
-import com.loohp.interactionvisualizer.Utils.VanishUtils;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
+import com.loohp.interactionvisualizer.entityholders.Item;
+import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.utils.InventoryUtils;
+import com.loohp.interactionvisualizer.utils.OpenInvUtils;
+import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class HopperDisplay implements Listener {
 	

@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Blocks;
+package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,12 +22,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
-import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
-import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
-import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Utils.VanishUtils;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
+import com.loohp.interactionvisualizer.api.VisualizerInteractDisplay;
+import com.loohp.interactionvisualizer.entityholders.ItemFrame;
+import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class CartographyTableDisplay extends VisualizerInteractDisplay implements Listener {
 	

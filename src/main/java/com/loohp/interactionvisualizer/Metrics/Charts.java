@@ -1,10 +1,10 @@
-package com.loohp.interactionvisualizer.Metrics;
+package com.loohp.interactionvisualizer.metrics;
 
 import java.util.concurrent.Callable;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Managers.TileEntityManager;
-import com.loohp.interactionvisualizer.ObjectHolders.TileEntity.TileEntityType;
+import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 
 public class Charts {
 	

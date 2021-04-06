@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.ObjectHolders;
+package com.loohp.interactionvisualizer.objectholders;
 
 import org.bukkit.Location;
 import org.bukkit.World;

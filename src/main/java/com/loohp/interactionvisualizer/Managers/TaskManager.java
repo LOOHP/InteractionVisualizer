@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Managers;
+package com.loohp.interactionvisualizer.managers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,37 +13,37 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.API.VisualizerInteractDisplay;
-import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
-import com.loohp.interactionvisualizer.Blocks.AnvilDisplay;
-import com.loohp.interactionvisualizer.Blocks.BeaconDisplay;
-import com.loohp.interactionvisualizer.Blocks.BeeHiveDisplay;
-import com.loohp.interactionvisualizer.Blocks.BeeNestDisplay;
-import com.loohp.interactionvisualizer.Blocks.BlastFurnaceDisplay;
-import com.loohp.interactionvisualizer.Blocks.BrewingStandDisplay;
-import com.loohp.interactionvisualizer.Blocks.CartographyTableDisplay;
-import com.loohp.interactionvisualizer.Blocks.ChestDisplay;
-import com.loohp.interactionvisualizer.Blocks.CraftingTableDisplay;
-import com.loohp.interactionvisualizer.Blocks.DispenserDisplay;
-import com.loohp.interactionvisualizer.Blocks.DoubleChestDisplay;
-import com.loohp.interactionvisualizer.Blocks.DropperDisplay;
-import com.loohp.interactionvisualizer.Blocks.EnchantmentTableDisplay;
-import com.loohp.interactionvisualizer.Blocks.EnderchestDisplay;
-import com.loohp.interactionvisualizer.Blocks.FurnaceDisplay;
-import com.loohp.interactionvisualizer.Blocks.GrindstoneDisplay;
-import com.loohp.interactionvisualizer.Blocks.HopperDisplay;
-import com.loohp.interactionvisualizer.Blocks.JukeBoxDisplay;
-import com.loohp.interactionvisualizer.Blocks.LoomDisplay;
-import com.loohp.interactionvisualizer.Blocks.NoteBlockDisplay;
-import com.loohp.interactionvisualizer.Blocks.ShulkerBoxDisplay;
-import com.loohp.interactionvisualizer.Blocks.SmithingTableDisplay;
-import com.loohp.interactionvisualizer.Blocks.SmokerDisplay;
-import com.loohp.interactionvisualizer.Blocks.StonecutterDisplay;
-import com.loohp.interactionvisualizer.Debug.Debug;
-import com.loohp.interactionvisualizer.Entities.VillagerDisplay;
-import com.loohp.interactionvisualizer.Listeners.ChunkEvents;
-import com.loohp.interactionvisualizer.Updater.Updater;
-import com.loohp.interactionvisualizer.Utils.MCVersion;
+import com.loohp.interactionvisualizer.api.VisualizerInteractDisplay;
+import com.loohp.interactionvisualizer.api.VisualizerRunnableDisplay;
+import com.loohp.interactionvisualizer.blocks.AnvilDisplay;
+import com.loohp.interactionvisualizer.blocks.BeaconDisplay;
+import com.loohp.interactionvisualizer.blocks.BeeHiveDisplay;
+import com.loohp.interactionvisualizer.blocks.BeeNestDisplay;
+import com.loohp.interactionvisualizer.blocks.BlastFurnaceDisplay;
+import com.loohp.interactionvisualizer.blocks.BrewingStandDisplay;
+import com.loohp.interactionvisualizer.blocks.CartographyTableDisplay;
+import com.loohp.interactionvisualizer.blocks.ChestDisplay;
+import com.loohp.interactionvisualizer.blocks.CraftingTableDisplay;
+import com.loohp.interactionvisualizer.blocks.DispenserDisplay;
+import com.loohp.interactionvisualizer.blocks.DoubleChestDisplay;
+import com.loohp.interactionvisualizer.blocks.DropperDisplay;
+import com.loohp.interactionvisualizer.blocks.EnchantmentTableDisplay;
+import com.loohp.interactionvisualizer.blocks.EnderchestDisplay;
+import com.loohp.interactionvisualizer.blocks.FurnaceDisplay;
+import com.loohp.interactionvisualizer.blocks.GrindstoneDisplay;
+import com.loohp.interactionvisualizer.blocks.HopperDisplay;
+import com.loohp.interactionvisualizer.blocks.JukeBoxDisplay;
+import com.loohp.interactionvisualizer.blocks.LoomDisplay;
+import com.loohp.interactionvisualizer.blocks.NoteBlockDisplay;
+import com.loohp.interactionvisualizer.blocks.ShulkerBoxDisplay;
+import com.loohp.interactionvisualizer.blocks.SmithingTableDisplay;
+import com.loohp.interactionvisualizer.blocks.SmokerDisplay;
+import com.loohp.interactionvisualizer.blocks.StonecutterDisplay;
+import com.loohp.interactionvisualizer.debug.Debug;
+import com.loohp.interactionvisualizer.entities.VillagerDisplay;
+import com.loohp.interactionvisualizer.listeners.ChunkEvents;
+import com.loohp.interactionvisualizer.updater.Updater;
+import com.loohp.interactionvisualizer.utils.MCVersion;
 
 public class TaskManager {
 	
@@ -122,7 +122,7 @@ public class TaskManager {
 		
 		Bukkit.getPluginManager().registerEvents(new Debug(), plugin);
 		Bukkit.getPluginManager().registerEvents(new Updater(), plugin);
-		Bukkit.getPluginManager().registerEvents(new com.loohp.interactionvisualizer.Listeners.Events(), plugin);
+		Bukkit.getPluginManager().registerEvents(new com.loohp.interactionvisualizer.listeners.Events(), plugin);
 		Bukkit.getPluginManager().registerEvents(new PacketManager(), plugin);
 		if (version.isLegacy()) {
 			ChunkEvents.setup();

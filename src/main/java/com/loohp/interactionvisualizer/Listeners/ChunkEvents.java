@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Listeners;
+package com.loohp.interactionvisualizer.listeners;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

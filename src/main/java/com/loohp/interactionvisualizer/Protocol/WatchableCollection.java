@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Protocol;
+package com.loohp.interactionvisualizer.protocol;
 
 import java.util.Optional;
 
@@ -9,11 +9,11 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher.Registry;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.Serializer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.WrappedDataWatcherObject;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
-import com.loohp.interactionvisualizer.EntityHolders.Item;
-import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
-import com.loohp.interactionvisualizer.Utils.LanguageUtils;
-import com.loohp.interactionvisualizer.Utils.MCVersion;
+import com.loohp.interactionvisualizer.entityholders.ArmorStand;
+import com.loohp.interactionvisualizer.entityholders.Item;
+import com.loohp.interactionvisualizer.entityholders.ItemFrame;
+import com.loohp.interactionvisualizer.utils.LanguageUtils;
+import com.loohp.interactionvisualizer.utils.MCVersion;
 
 import net.md_5.bungee.chat.ComponentSerializer;
 

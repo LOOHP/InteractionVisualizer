@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Managers;
+package com.loohp.interactionvisualizer.managers;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -10,8 +10,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.EntityHolders.VisualizerEntity;
-import com.loohp.interactionvisualizer.ObjectHolders.ChunkPosition;
+import com.loohp.interactionvisualizer.entityholders.VisualizerEntity;
+import com.loohp.interactionvisualizer.objectholders.ChunkPosition;
 
 public class PlayerLocationManager {
 	

@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Utils;
+package com.loohp.interactionvisualizer.utils;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;

@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.EntityHolders;
+package com.loohp.interactionvisualizer.entityholders;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -7,7 +7,7 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
+import com.loohp.interactionvisualizer.protocol.WatchableCollection;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;

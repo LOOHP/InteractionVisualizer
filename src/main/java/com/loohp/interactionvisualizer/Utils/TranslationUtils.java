@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Utils;
+package com.loohp.interactionvisualizer.utils;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;

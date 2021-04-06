@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Blocks;
+package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,19 +22,19 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
-import com.loohp.interactionvisualizer.API.VisualizerRunnableDisplay;
-import com.loohp.interactionvisualizer.API.Events.InteractionVisualizerReloadEvent;
-import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
-import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
-import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Managers.PlayerLocationManager;
-import com.loohp.interactionvisualizer.Managers.TileEntityManager;
-import com.loohp.interactionvisualizer.ObjectHolders.TileEntity.TileEntityType;
-import com.loohp.interactionvisualizer.Utils.ChatComponentUtils;
-import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
-import com.loohp.interactionvisualizer.Utils.TranslationUtils;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
+import com.loohp.interactionvisualizer.api.VisualizerRunnableDisplay;
+import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
+import com.loohp.interactionvisualizer.entityholders.ArmorStand;
+import com.loohp.interactionvisualizer.managers.CustomBlockDataManager;
+import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
+import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
+import com.loohp.interactionvisualizer.utils.ChatComponentUtils;
+import com.loohp.interactionvisualizer.utils.RomanNumberUtils;
+import com.loohp.interactionvisualizer.utils.TranslationUtils;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;

@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.API;
+package com.loohp.interactionvisualizer.api;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -20,13 +20,13 @@ import org.bukkit.util.Vector;
 import com.google.common.collect.Collections2;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.Toggle;
-import com.loohp.interactionvisualizer.Database.Database;
-import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
-import com.loohp.interactionvisualizer.EntityHolders.Item;
-import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Managers.SoundManager;
-import com.loohp.interactionvisualizer.Managers.TileEntityManager;
-import com.loohp.interactionvisualizer.ObjectHolders.TileEntity.TileEntityType;
+import com.loohp.interactionvisualizer.database.Database;
+import com.loohp.interactionvisualizer.entityholders.ArmorStand;
+import com.loohp.interactionvisualizer.entityholders.Item;
+import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.managers.SoundManager;
+import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 
 public class InteractionVisualizerAPI {
 	

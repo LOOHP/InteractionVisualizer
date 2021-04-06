@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Updater;
+package com.loohp.interactionvisualizer.updater;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.json.simple.JSONObject;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Utils.HTTPRequestUtils;
+import com.loohp.interactionvisualizer.utils.HTTPRequestUtils;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;

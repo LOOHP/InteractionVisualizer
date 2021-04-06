@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Listeners;
+package com.loohp.interactionvisualizer.listeners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Database.Database;
+import com.loohp.interactionvisualizer.database.Database;
 
 public class Events implements Listener {
 	

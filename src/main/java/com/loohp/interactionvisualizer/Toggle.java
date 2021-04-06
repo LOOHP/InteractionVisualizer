@@ -4,9 +4,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
-import com.loohp.interactionvisualizer.Database.Database;
-import com.loohp.interactionvisualizer.Utils.ChatColorUtils;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
+import com.loohp.interactionvisualizer.database.Database;
+import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 
 public class Toggle {
 	

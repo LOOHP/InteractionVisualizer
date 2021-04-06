@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.PlaceholderAPI;
+package com.loohp.interactionvisualizer.placeholderAPI;
 
 import java.util.Map;
 
@@ -6,9 +6,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
-import com.loohp.interactionvisualizer.Database.Database;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
+import com.loohp.interactionvisualizer.database.Database;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 

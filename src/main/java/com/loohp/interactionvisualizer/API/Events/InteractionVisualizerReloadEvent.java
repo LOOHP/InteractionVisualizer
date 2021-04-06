@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.API.Events;
+package com.loohp.interactionvisualizer.api.events;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

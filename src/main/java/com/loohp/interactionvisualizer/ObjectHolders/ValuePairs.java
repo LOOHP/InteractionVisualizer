@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.ObjectHolders;
+package com.loohp.interactionvisualizer.objectholders;
 
 public class ValuePairs<F, S> {
 	

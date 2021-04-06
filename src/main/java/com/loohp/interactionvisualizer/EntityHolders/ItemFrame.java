@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.EntityHolders;
+package com.loohp.interactionvisualizer.entityholders;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -8,7 +8,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.loohp.interactionvisualizer.Protocol.WatchableCollection;
+import com.loohp.interactionvisualizer.protocol.WatchableCollection;
 
 public class ItemFrame extends VisualizerEntity {
 

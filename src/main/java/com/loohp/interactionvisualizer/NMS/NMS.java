@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.NMS;
+package com.loohp.interactionvisualizer.nms;
 
 import java.util.List;
 
@@ -7,11 +7,11 @@ import org.bukkit.inventory.ItemStack;
 
 import com.comphenix.protocol.events.PacketContainer;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.ObjectHolders.BlockPosition;
-import com.loohp.interactionvisualizer.ObjectHolders.BoundingBox;
-import com.loohp.interactionvisualizer.ObjectHolders.ChunkPosition;
-import com.loohp.interactionvisualizer.ObjectHolders.TileEntity;
-import com.loohp.interactionvisualizer.ObjectHolders.ValuePairs;
+import com.loohp.interactionvisualizer.objectholders.BlockPosition;
+import com.loohp.interactionvisualizer.objectholders.BoundingBox;
+import com.loohp.interactionvisualizer.objectholders.ChunkPosition;
+import com.loohp.interactionvisualizer.objectholders.TileEntity;
+import com.loohp.interactionvisualizer.objectholders.ValuePairs;
 
 public abstract class NMS {
 	

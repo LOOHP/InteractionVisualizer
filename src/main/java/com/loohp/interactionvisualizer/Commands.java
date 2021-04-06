@@ -13,15 +13,15 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
-import com.loohp.interactionvisualizer.Database.Database;
-import com.loohp.interactionvisualizer.Managers.CustomBlockDataManager;
-import com.loohp.interactionvisualizer.Managers.MaterialManager;
-import com.loohp.interactionvisualizer.Managers.MusicManager;
-import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Updater.Updater;
-import com.loohp.interactionvisualizer.Updater.Updater.UpdaterResponse;
-import com.loohp.interactionvisualizer.Utils.ChatColorUtils;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
+import com.loohp.interactionvisualizer.database.Database;
+import com.loohp.interactionvisualizer.managers.CustomBlockDataManager;
+import com.loohp.interactionvisualizer.managers.MaterialManager;
+import com.loohp.interactionvisualizer.managers.MusicManager;
+import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.updater.Updater;
+import com.loohp.interactionvisualizer.updater.Updater.UpdaterResponse;
+import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;

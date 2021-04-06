@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Debug;
+package com.loohp.interactionvisualizer.debug;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Utils.MCVersion;
+import com.loohp.interactionvisualizer.utils.MCVersion;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;

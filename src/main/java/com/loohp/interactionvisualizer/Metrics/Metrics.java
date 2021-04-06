@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Metrics;
+package com.loohp.interactionvisualizer.metrics;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

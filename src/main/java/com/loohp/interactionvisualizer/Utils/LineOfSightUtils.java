@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Utils;
+package com.loohp.interactionvisualizer.utils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -11,8 +11,8 @@ import org.bukkit.Material;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.ObjectHolders.BlockPosition;
-import com.loohp.interactionvisualizer.ObjectHolders.BoundingBox;
+import com.loohp.interactionvisualizer.objectholders.BlockPosition;
+import com.loohp.interactionvisualizer.objectholders.BoundingBox;
 
 public class LineOfSightUtils {
 	

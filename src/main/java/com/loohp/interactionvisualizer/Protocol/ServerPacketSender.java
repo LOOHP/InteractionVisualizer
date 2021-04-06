@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Protocol;
+package com.loohp.interactionvisualizer.protocol;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -18,12 +18,12 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
-import com.loohp.interactionvisualizer.EntityHolders.Item;
-import com.loohp.interactionvisualizer.EntityHolders.ItemFrame;
-import com.loohp.interactionvisualizer.NMS.NMS;
-import com.loohp.interactionvisualizer.ObjectHolders.ValuePairs;
-import com.loohp.interactionvisualizer.Utils.MCVersion;
+import com.loohp.interactionvisualizer.entityholders.ArmorStand;
+import com.loohp.interactionvisualizer.entityholders.Item;
+import com.loohp.interactionvisualizer.entityholders.ItemFrame;
+import com.loohp.interactionvisualizer.nms.NMS;
+import com.loohp.interactionvisualizer.objectholders.ValuePairs;
+import com.loohp.interactionvisualizer.utils.MCVersion;
 
 public class ServerPacketSender {
 	

@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.ObjectHolders;
+package com.loohp.interactionvisualizer.objectholders;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -25,15 +25,15 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI;
-import com.loohp.interactionvisualizer.API.InteractionVisualizerAPI.Modules;
-import com.loohp.interactionvisualizer.EntityHolders.ArmorStand;
-import com.loohp.interactionvisualizer.EntityHolders.Item;
-import com.loohp.interactionvisualizer.Managers.PacketManager;
-import com.loohp.interactionvisualizer.Managers.SoundManager;
-import com.loohp.interactionvisualizer.Utils.CustomStringUtils;
-import com.loohp.interactionvisualizer.Utils.RomanNumberUtils;
-import com.loohp.interactionvisualizer.Utils.TranslationUtils;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
+import com.loohp.interactionvisualizer.entityholders.ArmorStand;
+import com.loohp.interactionvisualizer.entityholders.Item;
+import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.managers.SoundManager;
+import com.loohp.interactionvisualizer.utils.CustomStringUtils;
+import com.loohp.interactionvisualizer.utils.RomanNumberUtils;
+import com.loohp.interactionvisualizer.utils.TranslationUtils;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;

@@ -1,4 +1,4 @@
-package com.loohp.interactionvisualizer.Updater;
+package com.loohp.interactionvisualizer.updater;
 
 public class Version implements Comparable<Version> {
 

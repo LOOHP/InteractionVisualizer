@@ -1,10 +1,10 @@
-package com.loohp.interactionvisualizer.Utils;
+package com.loohp.interactionvisualizer.utils;
 
 import java.util.List;
 
-import com.loohp.interactionvisualizer.NMS.NMS;
-import com.loohp.interactionvisualizer.ObjectHolders.BlockPosition;
-import com.loohp.interactionvisualizer.ObjectHolders.BoundingBox;
+import com.loohp.interactionvisualizer.nms.NMS;
+import com.loohp.interactionvisualizer.objectholders.BlockPosition;
+import com.loohp.interactionvisualizer.objectholders.BoundingBox;
 
 public class BoundingBoxUtils {
 	
