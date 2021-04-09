@@ -247,67 +247,58 @@
 			<systemPath>${basedir}/lib/CMIAPI7.6.2.0.jar</systemPath>
 		</dependency>
 		<dependency>
-			<groupId>Spigot-1.11.2</groupId>
-			<artifactId>Spigot-1.11.2</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${basedir}/lib/spigot-1.11.2.jar</systemPath>
+			<groupId>org.bukkit</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>1.11.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>Spigot-1.12.2</groupId>
-			<artifactId>Spigot-1.12.2</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${basedir}/lib/spigot-1.12.2.jar</systemPath>
+			<groupId>org.bukkit.</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>1.12.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>Spigot-1.13</groupId>
-			<artifactId>Spigot-1.13</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${basedir}/lib/spigot-1.13.jar</systemPath>
+			<groupId>org.bukkit..</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>1.13-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>Spigot-1.13.2</groupId>
-			<artifactId>Spigot-1.13.2</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${basedir}/lib/spigot-1.13.2.jar</systemPath>
+			<groupId>org.bukkit...</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>1.13.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>Spigot-1.14.4</groupId>
-			<artifactId>Spigot-1.14.4</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${basedir}/lib/spigot-1.14.4.jar</systemPath>
+			<groupId>org.bukkit....</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>1.14.4-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>Spigot-1.15.2</groupId>
-			<artifactId>Spigot-1.15.2</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${basedir}/lib/spigot-1.15.2.jar</systemPath>
+			<groupId>org.bukkit.....</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>1.15.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>Spigot-1.16.1</groupId>
-			<artifactId>Spigot-1.16.1</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${basedir}/lib/spigot-1.16.1.jar</systemPath>
+			<groupId>org.bukkit......</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>1.16.1-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>Spigot-1.16.3</groupId>
-			<artifactId>Spigot-1.16.3</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${basedir}/lib/spigot-1.16.3.jar</systemPath>
+			<groupId>org.bukkit.......</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>1.16.3-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>Spigot-1.16.5</groupId>
-			<artifactId>Spigot-1.16.5</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${basedir}/lib/spigot-1.16.5.jar</systemPath>
+			<groupId>org.bukkit........</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>1.16.5-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
