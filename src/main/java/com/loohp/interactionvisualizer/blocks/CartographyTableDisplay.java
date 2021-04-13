@@ -2,6 +2,7 @@ package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.GameMode;
@@ -31,8 +32,8 @@ import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class CartographyTableDisplay extends VisualizerInteractDisplay implements Listener {
 	
-	public HashMap<Block, HashMap<String, Object>> openedCTable = new HashMap<Block, HashMap<String, Object>>();
-	public HashMap<Player, Block> playermap = new HashMap<Player, Block>();
+	public Map<Block, Map<String, Object>> openedCTable = new HashMap<>();
+	public Map<Player, Block> playermap = new HashMap<Player, Block>();
 	
 	@Override
 	public int run() {		
@@ -55,7 +56,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
 							if (!openedCTable.containsKey(block)) {
 								return;
 							}
-							HashMap<String, Object> map = openedCTable.get(block);
+							Map<String, Object> map = openedCTable.get(block);
 							if (block.getType().equals(Material.CARTOGRAPHY_TABLE)) {
 								Player player = (Player) map.get("Player");
 								if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
@@ -106,12 +107,12 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
 		Block block = playermap.get(player);
 		
 		if (!openedCTable.containsKey(block)) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
+			Map<String, Object> map = new HashMap<>();
 			map.put("Player", player);
 			map.put("Item", "N/A");
 			openedCTable.put(block, map);
 		}
-		HashMap<String, Object> map = openedCTable.get(block);
+		Map<String, Object> map = openedCTable.get(block);
 		
 		if (!map.get("Player").equals(player)) {
 			return;
@@ -211,7 +212,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
 			return;
 		}
 		
-		HashMap<String, Object> map = openedCTable.get(block);
+		Map<String, Object> map = openedCTable.get(block);
 		if (!map.get("Player").equals((Player) event.getPlayer())) {
 			return;
 		}

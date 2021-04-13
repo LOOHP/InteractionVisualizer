@@ -2,6 +2,7 @@ package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
@@ -37,8 +38,8 @@ import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class StonecutterDisplay extends VisualizerInteractDisplay implements Listener {
 	
-	public HashMap<Block, HashMap<String, Object>> openedStonecutter = new HashMap<Block, HashMap<String, Object>>();
-	public HashMap<Player, Block> playermap = new HashMap<Player, Block>();
+	public Map<Block, Map<String, Object>> openedStonecutter = new HashMap<>();
+	public Map<Player, Block> playermap = new HashMap<>();
 	
 	@Override
 	public int run() {		
@@ -61,7 +62,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 							if (!openedStonecutter.containsKey(block)) {
 								return;
 							}
-							HashMap<String, Object> map = openedStonecutter.get(block);
+							Map<String, Object> map = openedStonecutter.get(block);
 							if (block.getType().equals(Material.STONECUTTER)) {
 								Player player = (Player) map.get("Player");
 								if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
@@ -112,12 +113,12 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 		Block block = playermap.get(player);
 		Location loc = block.getLocation();
 		if (!openedStonecutter.containsKey(block)) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
+			Map<String, Object> map = new HashMap<>();
 			map.put("Player", player);
 			map.put("Item", "N/A");
 			openedStonecutter.put(block, map);
 		}
-		HashMap<String, Object> map = openedStonecutter.get(block);
+		Map<String, Object> map = openedStonecutter.get(block);
 		
 		if (!map.get("Player").equals(player)) {
 			return;
@@ -234,7 +235,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 			return;
 		}
 		
-		HashMap<String, Object> map = openedStonecutter.get(block);
+		Map<String, Object> map = openedStonecutter.get(block);
 		if (!map.get("Player").equals((Player) event.getWhoClicked())) {
 			return;
 		}
@@ -323,7 +324,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 			return;
 		}
 		
-		HashMap<String, Object> map = openedStonecutter.get(block);
+		Map<String, Object> map = openedStonecutter.get(block);
 		if (!map.get("Player").equals((Player) event.getPlayer())) {
 			return;
 		}

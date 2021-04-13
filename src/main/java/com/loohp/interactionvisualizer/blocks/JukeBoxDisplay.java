@@ -3,6 +3,7 @@ package com.loohp.interactionvisualizer.blocks;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,7 +38,7 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listener {
 	
-	public ConcurrentHashMap<Block, HashMap<String, Object>> jukeboxMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
+	public ConcurrentHashMap<Block, Map<String, Object>> jukeboxMap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
 	private int gcPeriod = 600;
 	
@@ -54,7 +55,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 	@Override
 	public int gc() {
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-			Iterator<Entry<Block, HashMap<String, Object>>> itr = jukeboxMap.entrySet().iterator();
+			Iterator<Entry<Block, Map<String, Object>>> itr = jukeboxMap.entrySet().iterator();
 			int count = 0;
 			int maxper = (int) Math.ceil((double) jukeboxMap.size() / (double) gcPeriod);
 			int delay = 1;
@@ -64,11 +65,11 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 					count = 0;
 					delay++;
 				}
-				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				Entry<Block, Map<String, Object>> entry = itr.next();
 				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 					Block block = entry.getKey();
 					if (!isActive(block.getLocation())) {
-						HashMap<String, Object> map = entry.getValue();
+						Map<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
 							PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
@@ -77,7 +78,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 						return;
 					}
 					if (!block.getType().equals(Material.JUKEBOX)) {
-						HashMap<String, Object> map = entry.getValue();
+						Map<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
 							PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
@@ -98,7 +99,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 				for (Block block : list) {
 					if (jukeboxMap.get(block) == null && isActive(block.getLocation())) {
 						if (block.getType().equals(Material.JUKEBOX)) {
-							HashMap<String, Object> map = new HashMap<String, Object>();
+							HashMap<String, Object> map = new HashMap<>();
 							map.put("Item", "N/A");
 							jukeboxMap.put(block, map);
 						}
@@ -106,12 +107,12 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 				}
 			});				
 			
-			Iterator<Entry<Block, HashMap<String, Object>>> itr = jukeboxMap.entrySet().iterator();
+			Iterator<Entry<Block, Map<String, Object>>> itr = jukeboxMap.entrySet().iterator();
 			int count = 0;
 			int maxper = (int) Math.ceil((double) jukeboxMap.size() / (double) checkingPeriod);
 			int delay = 1;
 			while (itr.hasNext()) {
-				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				Entry<Block, Map<String, Object>> entry = itr.next();
 				
 				count++;
 				if (count > maxper) {
@@ -195,7 +196,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 			return;
 		}
 
-		HashMap<String, Object> map = jukeboxMap.get(block);
+		Map<String, Object> map = jukeboxMap.get(block);
 		if (map.get("Item") instanceof Item) {
 			Item item = (Item) map.get("Item");
 			PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);

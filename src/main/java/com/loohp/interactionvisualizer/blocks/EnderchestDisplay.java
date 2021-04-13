@@ -39,8 +39,8 @@ import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class EnderchestDisplay implements Listener {
 	
-	public static ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<Player, List<Item>>();
-	public static ConcurrentHashMap<Player, Block> playermap = new ConcurrentHashMap<Player, Block>();
+	public static ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<>();
+	public static ConcurrentHashMap<Player, Block> playermap = new ConcurrentHashMap<>();
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onOpenEnderChest(InventoryOpenEvent event) {

@@ -3,6 +3,7 @@ package com.loohp.interactionvisualizer.blocks;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,7 +49,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener {
 	
-	public ConcurrentHashMap<Block, HashMap<String, Object>> smokerMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
+	public ConcurrentHashMap<Block, Map<String, Object>> smokerMap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
 	private int gcPeriod = 600;
 	private String progressBarCharacter = "";
@@ -77,7 +78,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 	@Override
 	public int gc() {
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-			Iterator<Entry<Block, HashMap<String, Object>>> itr = smokerMap.entrySet().iterator();
+			Iterator<Entry<Block, Map<String, Object>>> itr = smokerMap.entrySet().iterator();
 			int count = 0;
 			int maxper = (int) Math.ceil((double) smokerMap.size() / (double) gcPeriod);
 			int delay = 1;
@@ -87,11 +88,11 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 					count = 0;
 					delay++;
 				}
-				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				Entry<Block, Map<String, Object>> entry = itr.next();
 				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 					Block block = entry.getKey();
 					if (!isActive(block.getLocation())) {
-						HashMap<String, Object> map = entry.getValue();
+						Map<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
 							PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
@@ -104,7 +105,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 						return;
 					}
 					if (!block.getType().equals(Material.SMOKER)) {
-						HashMap<String, Object> map = entry.getValue();
+						Map<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
 							PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
@@ -129,7 +130,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 				for (Block block : list) {
 					if (smokerMap.get(block) == null && isActive(block.getLocation())) {
 						if (block.getType().equals(Material.SMOKER)) {
-							HashMap<String, Object> map = new HashMap<String, Object>();
+							Map<String, Object> map = new HashMap<>();
 							map.put("Item", "N/A");
 							map.putAll(spawnArmorStands(block));
 							smokerMap.put(block, map);
@@ -138,12 +139,12 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 				}
 			});
 			
-			Iterator<Entry<Block, HashMap<String, Object>>> itr = smokerMap.entrySet().iterator();
+			Iterator<Entry<Block, Map<String, Object>>> itr = smokerMap.entrySet().iterator();
 			int count = 0;
 			int maxper = (int) Math.ceil((double) smokerMap.size() / (double) checkingPeriod);
 			int delay = 1;
 			while (itr.hasNext()) {
-				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				Entry<Block, Map<String, Object>> entry = itr.next();
 				
 				count++;
 				if (count > maxper) {
@@ -331,7 +332,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 			return;
 		}
 		
-		HashMap<String, Object> map = smokerMap.get(block);
+		Map<String, Object> map = smokerMap.get(block);
 		
 		int slot = event.getRawSlot();
 		ItemStack itemstack = event.getCurrentItem().clone();
@@ -440,7 +441,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 			return;
 		}
 
-		HashMap<String, Object> map = smokerMap.get(block);
+		Map<String, Object> map = smokerMap.get(block);
 		if (map.get("Item") instanceof Item) {
 			Item item = (Item) map.get("Item");
 			PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
@@ -483,8 +484,8 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 		return PlayerLocationManager.hasPlayerNearby(loc);
 	}
 	
-	public HashMap<String, ArmorStand> spawnArmorStands(Block block) {
-		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
+	public Map<String, ArmorStand> spawnArmorStands(Block block) {
+		Map<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location origin = block.getLocation();	
 		
 		BlockData blockData = block.getState().getBlockData();

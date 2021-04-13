@@ -19,7 +19,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.util.EulerAngle;
-import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
@@ -27,7 +26,8 @@ import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.api.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
-import com.loohp.interactionvisualizer.managers.CustomBlockDataManager;
+import com.loohp.interactionvisualizer.entityholders.DynamicVisualizerEntity.PathType;
+import com.loohp.interactionvisualizer.entityholders.SurroundingPlaneArmorStand;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
@@ -42,8 +42,8 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener {
 	
-	public ConcurrentHashMap<Block, HashMap<String, Object>> beaconMap = new ConcurrentHashMap<Block, HashMap<String, Object>>();
-	public ConcurrentHashMap<Block, float[]> placemap = new ConcurrentHashMap<Block, float[]>();
+	public ConcurrentHashMap<Block, Map<String, Object>> beaconMap = new ConcurrentHashMap<>();
+	public ConcurrentHashMap<Block, float[]> placemap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
 	private int gcPeriod = 600;
 	
@@ -60,7 +60,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 	@Override
 	public int gc() {
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-			Iterator<Entry<Block, HashMap<String, Object>>> itr = beaconMap.entrySet().iterator();
+			Iterator<Entry<Block, Map<String, Object>>> itr = beaconMap.entrySet().iterator();
 			int count = 0;
 			int maxper = (int) Math.ceil((double) beaconMap.size() / (double) gcPeriod);
 			int delay = 1;
@@ -70,11 +70,11 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 					count = 0;
 					delay++;
 				}
-				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				Entry<Block, Map<String, Object>> entry = itr.next();
 				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 					Block block = entry.getKey();
 					if (!isActive(block.getLocation())) {
-						HashMap<String, Object> map = entry.getValue();
+						Map<String, Object> map = entry.getValue();
 						if (map.get("1") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("1");
 							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
@@ -91,7 +91,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 						return;
 					}
 					if (!block.getType().equals(Material.BEACON)) {
-						HashMap<String, Object> map = entry.getValue();
+						Map<String, Object> map = entry.getValue();
 						if (map.get("1") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("1");
 							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
@@ -105,7 +105,6 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 						}
 						beaconMap.remove(block);
-						CustomBlockDataManager.removeBlock(CustomBlockDataManager.locKey(block.getLocation()));
 						return;
 					}
 				}, delay);
@@ -121,41 +120,21 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 				for (Block block : list) {
 					if (beaconMap.get(block) == null && isActive(block.getLocation())) {
 						if (block.getType().equals(Material.BEACON)) {
-							HashMap<String, Object> map = new HashMap<String, Object>();
+							HashMap<String, Object> map = new HashMap<>();
 							map.put("Item", "N/A");
-							boolean done = false;
-							Map<String, Object> datamap = CustomBlockDataManager.getBlock(CustomBlockDataManager.locKey(block.getLocation()));
-							if (datamap != null) {
-								try {
-									String data = (String) datamap.get("Directional");
-									BlockFace face = BlockFace.valueOf(data);
-									map.putAll(spawnArmorStands(block, face));
-									done = true;
-								} catch (Exception | AbstractMethodError e) {
-									done = false;
-								}
-							}
-							if (!done) {
-								float[] dir = placemap.containsKey(block) ? placemap.remove(block) : new float[]{0.0F, 0.0F};
-								BlockFace face = getCardinalFacing(dir);
-								map.putAll(spawnArmorStands(block, face));
-								Map<String, Object> savemap = (datamap != null) ? datamap : new HashMap<String, Object>();
-								savemap.put("Directional", face.toString().toUpperCase());
-								savemap.put("BlockType", block.getType().toString().toUpperCase());
-								CustomBlockDataManager.setBlock(CustomBlockDataManager.locKey(block.getLocation()), savemap);
-							}
+							map.putAll(spawnArmorStands(block));
 							beaconMap.put(block, map);
 						}
 					}
 				}
 			});
 			
-			Iterator<Entry<Block, HashMap<String, Object>>> itr = beaconMap.entrySet().iterator();
+			Iterator<Entry<Block, Map<String, Object>>> itr = beaconMap.entrySet().iterator();
 			int count = 0;
 			int maxper = (int) Math.ceil((double) beaconMap.size() / (double) checkingPeriod);
 			int delay = 1;
 			while (itr.hasNext()) {
-				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				Entry<Block, Map<String, Object>> entry = itr.next();
 				
 				count++;
 				if (count > maxper) {
@@ -264,7 +243,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 			return;
 		}
 
-		HashMap<String, Object> map = beaconMap.get(block);
+		Map<String, Object> map = beaconMap.get(block);
 		if (map.get("1") instanceof ArmorStand) {
 			ArmorStand stand = (ArmorStand) map.get("1");
 			PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
@@ -278,7 +257,6 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 			PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
 		}
 		beaconMap.remove(block);
-		CustomBlockDataManager.removeBlock(CustomBlockDataManager.locKey(block.getLocation()));
 	}
 	
 	public List<Block> nearbyBeacon() {
@@ -289,19 +267,15 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 		return PlayerLocationManager.hasPlayerNearby(loc);
 	}
 	
-	public HashMap<String, ArmorStand> spawnArmorStands(Block block, BlockFace face) {
-		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
-		Location origin = block.getLocation();	
-					
-		Location target = block.getRelative(face).getLocation();
-		Vector direction = target.toVector().subtract(origin.toVector()).multiply(0.7);
+	public Map<String, ArmorStand> spawnArmorStands(Block block) {
+		Map<String, ArmorStand> map = new HashMap<String, ArmorStand>();
+		Location origin = block.getLocation().add(0.5, 0.25, 0.5);
 		
-		Location loc = block.getLocation().clone().add(direction).add(0.5, 0.25, 0.5);
-		ArmorStand line1 = new ArmorStand(loc.clone().add(0.0, 0.25, 0.0));
+		SurroundingPlaneArmorStand line1 = new SurroundingPlaneArmorStand(origin.clone().add(0.0, 0.25, 0.0), 0.7, PathType.SQUARE);
 		setStand(line1);
-		ArmorStand line2 = new ArmorStand(loc.clone());
+		SurroundingPlaneArmorStand line2 = new SurroundingPlaneArmorStand(origin.clone(), 0.7, PathType.SQUARE);
 		setStand(line2);
-		ArmorStand line3 = new ArmorStand(loc.clone().add(0.0, -0.25, 0.0));
+		SurroundingPlaneArmorStand line3 = new SurroundingPlaneArmorStand(origin.clone().add(0.0, -0.25, 0.0), 0.7, PathType.SQUARE);
 		setStand(line3);
 		
 		map.put("1", line1);

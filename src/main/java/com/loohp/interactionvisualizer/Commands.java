@@ -15,7 +15,6 @@ import org.bukkit.plugin.Plugin;
 
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.database.Database;
-import com.loohp.interactionvisualizer.managers.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.managers.MaterialManager;
 import com.loohp.interactionvisualizer.managers.MusicManager;
 import com.loohp.interactionvisualizer.managers.PacketManager;
@@ -49,8 +48,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		if (args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("interactionvisualizer.reload")) {
 				plugin.reloadConfig();
-				MusicManager.reloadConfig();
-				CustomBlockDataManager.setup();
+				MusicManager.reloadConfig();	
 				MaterialManager.reloadConfig();
 				sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfig().getString("Messages.Reload")));
 			} else {

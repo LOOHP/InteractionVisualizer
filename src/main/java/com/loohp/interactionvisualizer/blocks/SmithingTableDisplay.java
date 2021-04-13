@@ -1,6 +1,7 @@
 package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
@@ -44,8 +45,8 @@ import ru.beykerykt.lightapi.LightType;
 
 public class SmithingTableDisplay extends VisualizerInteractDisplay implements Listener {
 	
-	public HashMap<Block, HashMap<String, Object>> openedSTables = new HashMap<Block, HashMap<String, Object>>();
-	public HashMap<Player, Block> playermap = new HashMap<Player, Block>();
+	public Map<Block, Map<String, Object>> openedSTables = new HashMap<>();
+	public Map<Player, Block> playermap = new HashMap<>();
 	
 	@Override
 	public void process(Player player) {		
@@ -73,14 +74,14 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
 		Location loc = block.getLocation();
 		
 		if (!openedSTables.containsKey(block)) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
+			Map<String, Object> map = new HashMap<>();
 			map.put("Player", player);
 			map.put("2", "N/A");
 			map.putAll(spawnArmorStands(player, block));
 			openedSTables.put(block, map);
 		}
 		
-		HashMap<String, Object> map = openedSTables.get(block);
+		Map<String, Object> map = openedSTables.get(block);
 		
 		if (!map.get("Player").equals(player)) {
 			return;
@@ -210,7 +211,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
 			return;
 		}
 		
-		HashMap<String, Object> map = openedSTables.get(block);
+		Map<String, Object> map = openedSTables.get(block);
 		if (!map.get("Player").equals((Player) event.getWhoClicked())) {
 			return;
 		}
@@ -331,7 +332,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
 			return;
 		}
 		
-		HashMap<String, Object> map = openedSTables.get(block);
+		Map<String, Object> map = openedSTables.get(block);
 		if (!map.get("Player").equals((Player) event.getPlayer())) {
 			return;
 		}
@@ -429,8 +430,8 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
 		}
 	}
 	
-	public HashMap<String, ArmorStand> spawnArmorStands(Player player, Block block) { //.add(0.68, 0.600781, 0.35)
-		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
+	public Map<String, ArmorStand> spawnArmorStands(Player player, Block block) { //.add(0.68, 0.600781, 0.35)
+		Map<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location loc = block.getLocation().clone().add(0.5, 0.600781, 0.5);
 		ArmorStand center = new ArmorStand(loc);
 		float yaw = getCardinalDirection(player);

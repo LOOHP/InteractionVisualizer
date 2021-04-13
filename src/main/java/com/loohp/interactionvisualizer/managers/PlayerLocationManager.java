@@ -3,6 +3,7 @@ package com.loohp.interactionvisualizer.managers;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -14,6 +15,17 @@ import com.loohp.interactionvisualizer.entityholders.VisualizerEntity;
 import com.loohp.interactionvisualizer.objectholders.ChunkPosition;
 
 public class PlayerLocationManager {
+	
+	public static boolean hasPlayerNearby(Location location, double range, boolean eyeLocation, Predicate<Player> predicate) {
+		World world = location.getWorld();
+		for (Player player : world.getPlayers()) {
+			Location playerLocation = eyeLocation ? player.getEyeLocation() : player.getLocation();
+			if (playerLocation.getWorld().equals(world) && predicate.test(player) && playerLocation.distanceSquared(location) <= range * range) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	public static boolean hasPlayerNearby(Location location) {
 		World world = location.getWorld();

@@ -87,6 +87,17 @@ public class Charts {
 	        }
 	    }));
 		
+		metrics.addCustomChart(new Metrics.SimplePie("campfire_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Campfire.Enabled")) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
 		metrics.addCustomChart(new Metrics.SimplePie("cartographytable_enabled", new Callable<String>() {
 	        @Override
 	        public String call() throws Exception {
@@ -208,22 +219,22 @@ public class Charts {
 	        }
 	    }));
 		
-		metrics.addCustomChart(new Metrics.SimplePie("loom_enabled", new Callable<String>() {
+		metrics.addCustomChart(new Metrics.SimplePie("lectern_enabled", new Callable<String>() {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Loom.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Lectern.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
 	        }
 	    }));
 		
-		metrics.addCustomChart(new Metrics.SimplePie("smoker_enabled", new Callable<String>() {
+		metrics.addCustomChart(new Metrics.SimplePie("loom_enabled", new Callable<String>() {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Smoker.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Loom.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -246,6 +257,39 @@ public class Charts {
 	        public String call() throws Exception {
 	        	String string = "Disabled";
 	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.SmithingTable.Enabled")) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
+		metrics.addCustomChart(new Metrics.SimplePie("smoker_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Smoker.Enabled")) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
+		metrics.addCustomChart(new Metrics.SimplePie("soulcampfire_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.SoulCampfire.Enabled")) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
+		metrics.addCustomChart(new Metrics.SimplePie("spawner_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Spawner.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;

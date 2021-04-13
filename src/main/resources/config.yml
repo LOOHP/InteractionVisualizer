@@ -91,6 +91,14 @@ Blocks:
       FilledColor: "&6"
       NoFuelColor: "&c"
       ProgressBarLength: 10
+  Campfire:
+    Enabled: true
+    CheckingPeriod: 20
+    Options:
+      ProgressBarCharacter: "\uff5c"
+      EmptyColor: "&7"
+      FilledColor: "&e"
+      ProgressBarLength: 10
   CartographyTable:
     Enabled: true
   Chest:
@@ -124,9 +132,17 @@ Blocks:
   JukeBox:
     Enabled: true
     CheckingPeriod: 20
+  Lectern:
+    Enabled: true
+    CheckingPeriod: 20
+    Options:
+      Line1: "&e{Title}"
+      Line2: "&7&o- {Author}"
   Loom:
     Enabled: true
   NoteBlock:
+    Enabled: true
+  ShulkerBox:
     Enabled: true
   SmithingTable:
     Enabled: true
@@ -140,9 +156,24 @@ Blocks:
       NoFuelColor: "&c"
       ProgressBarLength: 10
       AmountPending: " &7+{Amount}"
-  Stonecutter:
+  SoulCampfire:
     Enabled: true
-  ShulkerBox:
+    CheckingPeriod: 20
+    Options:
+      ProgressBarCharacter: "\uff5c"
+      EmptyColor: "&7"
+      FilledColor: "&b"
+      ProgressBarLength: 10
+  Spawner:
+    Enabled: true
+    CheckingPeriod: 20
+    Options:
+      ProgressBarCharacter: "\u258e"
+      EmptyColor: "&c"
+      FilledColor: "&a"
+      ProgressBarLength: 10
+      SpawnRange: " &f{SpawnRange}m"
+  Stonecutter:
     Enabled: true
 
 Entities:

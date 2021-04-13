@@ -23,7 +23,6 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.database.Database;
 import com.loohp.interactionvisualizer.entityholders.VisualizerEntity;
-import com.loohp.interactionvisualizer.managers.CustomBlockDataManager;
 import com.loohp.interactionvisualizer.managers.LangManager;
 import com.loohp.interactionvisualizer.managers.MaterialManager;
 import com.loohp.interactionvisualizer.managers.MusicManager;
@@ -163,11 +162,10 @@ public class InteractionVisualizer extends JavaPlugin {
 		SoundManager.setup();
 		MusicManager.setup();
 		Database.setup();
-		CustomBlockDataManager.setup();
 		TaskManager.run();
 		TileEntityManager.run();
-		CustomBlockDataManager.intervalSaveToFile();
 		PacketManager.run();
+		PacketManager.dynamicEntity();
 		
 		MaterialManager.setup();
 		
@@ -193,6 +191,9 @@ public class InteractionVisualizer extends JavaPlugin {
 		exemptBlocks.add("WORKBENCH");
 		exemptBlocks.add("LOOM");
 		exemptBlocks.add("SMITHING_TABLE");
+		exemptBlocks.add("SPAWNER");
+		exemptBlocks.add("MOB_SPAWNER");
+		exemptBlocks.add("BEACON");
 		
 		try {
 			TextComponent test = new TextComponent("Legacy Bungeecord Chat API Test");
@@ -286,8 +287,6 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		CustomBlockDataManager.save();
-		
 		if (!Bukkit.getOnlinePlayers().isEmpty()) {
 			getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] Plugin reload detected, attempting to despawn all visual entities. If anything went wrong, please restart! (Reloads are always not recommended)");
 			int[] entityIdArray = PacketManager.active.keySet().stream().mapToInt(each -> each.getEntityId()).toArray();

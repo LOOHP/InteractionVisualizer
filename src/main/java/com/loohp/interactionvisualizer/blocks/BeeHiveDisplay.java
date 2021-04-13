@@ -3,6 +3,7 @@ package com.loohp.interactionvisualizer.blocks;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,7 +38,7 @@ import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 
 public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listener {
 	
-	public ConcurrentHashMap<Block, HashMap<String, Object>> beehiveMap = new ConcurrentHashMap<>();
+	public ConcurrentHashMap<Block, Map<String, Object>> beehiveMap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
 	private int gcPeriod = 600;
 	private String honeyLevelCharacter = "";
@@ -64,7 +65,7 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
 	@Override
 	public int gc() {
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-			Iterator<Entry<Block, HashMap<String, Object>>> itr = beehiveMap.entrySet().iterator();
+			Iterator<Entry<Block, Map<String, Object>>> itr = beehiveMap.entrySet().iterator();
 			int count = 0;
 			int maxper = (int) Math.ceil((double) beehiveMap.size() / (double) gcPeriod);
 			int delay = 1;
@@ -74,11 +75,11 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
 					count = 0;
 					delay++;
 				}
-				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				Entry<Block, Map<String, Object>> entry = itr.next();
 				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 					Block block = entry.getKey();
 					if (!isActive(block.getLocation())) {
-						HashMap<String, Object> map = entry.getValue();
+						Map<String, Object> map = entry.getValue();
 						if (map.get("0") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("0");
 							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
@@ -91,7 +92,7 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
 						return;
 					}
 					if (!block.getType().equals(Material.BEEHIVE)) {
-						HashMap<String, Object> map = entry.getValue();
+						Map<String, Object> map = entry.getValue();
 						if (map.get("0") instanceof ArmorStand) {
 							ArmorStand stand = (ArmorStand) map.get("0");
 							PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
@@ -116,7 +117,7 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
 				for (Block block : list) {
 					if (beehiveMap.get(block) == null && isActive(block.getLocation())) {
 						if (block.getType().equals(Material.BEEHIVE)) {
-							HashMap<String, Object> map = new HashMap<String, Object>();
+							Map<String, Object> map = new HashMap<>();
 							map.putAll(spawnArmorStands(block));
 							beehiveMap.put(block, map);
 						}
@@ -124,12 +125,12 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
 				}
 			});
 			
-			Iterator<Entry<Block, HashMap<String, Object>>> itr = beehiveMap.entrySet().iterator();
+			Iterator<Entry<Block, Map<String, Object>>> itr = beehiveMap.entrySet().iterator();
 			int count = 0;
 			int maxper = (int) Math.ceil((double) beehiveMap.size() / (double) checkingPeriod);
 			int delay = 1;
 			while (itr.hasNext()) {
-				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				Entry<Block, Map<String, Object>> entry = itr.next();
 				
 				count++;
 				if (count > maxper) {
@@ -184,7 +185,7 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
 			return;
 		}
 
-		HashMap<String, Object> map = beehiveMap.get(block);
+		Map<String, Object> map = beehiveMap.get(block);
 		if (map.get("0") instanceof ArmorStand) {
 			ArmorStand stand = (ArmorStand) map.get("0");
 			PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
@@ -207,7 +208,7 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
 			return;
 		}
 		
-		HashMap<String, Object> map = beehiveMap.get(block);
+		Map<String, Object> map = beehiveMap.get(block);
 		
 		org.bukkit.block.Beehive beehiveState = (org.bukkit.block.Beehive) block.getState();
 		org.bukkit.block.data.type.Beehive beehiveData = (org.bukkit.block.data.type.Beehive) block.getBlockData();
@@ -246,8 +247,8 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
 		return PlayerLocationManager.hasPlayerNearby(loc);
 	}
 	
-	public HashMap<String, ArmorStand> spawnArmorStands(Block block) {
-		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
+	public Map<String, ArmorStand> spawnArmorStands(Block block) {
+		Map<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location origin = block.getLocation();	
 		
 		BlockData blockData = block.getState().getBlockData();

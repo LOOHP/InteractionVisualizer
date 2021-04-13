@@ -1,6 +1,7 @@
 package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -38,7 +39,7 @@ import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class AnvilDisplay extends VisualizerInteractDisplay implements Listener {
 	
-	public HashMap<Block, HashMap<String, Object>> openedAnvil = new HashMap<Block, HashMap<String, Object>>();
+	public Map<Block, Map<String, Object>> openedAnvil = new HashMap<>();
 	
 	@Override
 	public void process(Player player) {		
@@ -63,14 +64,14 @@ public class AnvilDisplay extends VisualizerInteractDisplay implements Listener 
 		Location loc = block.getLocation();
 		
 		if (!openedAnvil.containsKey(block)) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
+			Map<String, Object> map = new HashMap<>();
 			map.put("Player", player);
 			map.put("2", "N/A");
 			map.putAll(spawnArmorStands(player, block));
 			openedAnvil.put(block, map);
 		}
 		
-		HashMap<String, Object> map = openedAnvil.get(block);
+		Map<String, Object> map = openedAnvil.get(block);
 		
 		if (!map.get("Player").equals(player)) {
 			return;
@@ -208,7 +209,7 @@ public class AnvilDisplay extends VisualizerInteractDisplay implements Listener 
 			return;
 		}
 		
-		HashMap<String, Object> map = openedAnvil.get(block);
+		Map<String, Object> map = openedAnvil.get(block);
 		if (!map.get("Player").equals((Player) event.getWhoClicked())) {
 			return;
 		}
@@ -362,7 +363,7 @@ public class AnvilDisplay extends VisualizerInteractDisplay implements Listener 
 			return;
 		}
 		
-		HashMap<String, Object> map = openedAnvil.get(block);
+		Map<String, Object> map = openedAnvil.get(block);
 		if (!map.get("Player").equals((Player) event.getPlayer())) {
 			return;
 		}
@@ -454,8 +455,8 @@ public class AnvilDisplay extends VisualizerInteractDisplay implements Listener 
 		}
 	}
 	
-	public HashMap<String, ArmorStand> spawnArmorStands(Player player, Block block) { //.add(0.68, 0.600781, 0.35)
-		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
+	public Map<String, ArmorStand> spawnArmorStands(Player player, Block block) { //.add(0.68, 0.600781, 0.35)
+		Map<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location loc = block.getLocation().clone().add(0.5, 0.600781, 0.5);
 		ArmorStand center = new ArmorStand(loc);
 		float yaw = getCardinalDirection(player);

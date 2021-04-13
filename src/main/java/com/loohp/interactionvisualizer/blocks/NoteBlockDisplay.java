@@ -29,7 +29,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Listener {
 	
-	public ConcurrentHashMap<Block, ConcurrentHashMap<String, Object>> displayingNotes = new ConcurrentHashMap<Block, ConcurrentHashMap<String, Object>>();
+	public ConcurrentHashMap<Block, ConcurrentHashMap<String, Object>> displayingNotes = new ConcurrentHashMap<>();
 	
 	@Override
 	public int gc() {

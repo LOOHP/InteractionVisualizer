@@ -3,6 +3,7 @@ package com.loohp.interactionvisualizer.managers;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -23,6 +24,7 @@ import org.bukkit.plugin.Plugin;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
+import com.loohp.interactionvisualizer.entityholders.DynamicVisualizerEntity;
 import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.entityholders.ItemFrame;
 import com.loohp.interactionvisualizer.entityholders.VisualizerEntity;
@@ -38,6 +40,8 @@ public class PacketManager implements Listener {
 	private static Map<VisualizerEntity, Integer> cache = new ConcurrentHashMap<>();
 	
 	public static Map<Player, Set<VisualizerEntity>> playerStatus = new ConcurrentHashMap<>();
+	
+	private static Map<DynamicVisualizerEntity, Set<Player>> dynamicTracking = new ConcurrentHashMap<>();
 	
 	public static void run() {
 		if (!plugin.isEnabled()) {
@@ -117,6 +121,30 @@ public class PacketManager implements Listener {
 			try {TimeUnit.MILLISECONDS.sleep(5);} catch (InterruptedException e) {}
 			run();
 		});
+	}
+	
+	public static void dynamicEntity() {
+		Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
+			Iterator<DynamicVisualizerEntity> itr = dynamicTracking.keySet().iterator();
+			while (itr.hasNext()) {
+				DynamicVisualizerEntity entity = itr.next();
+				Set<Player> players = dynamicTracking.get(entity);
+				if (players == null || players.isEmpty()) {
+					itr.remove();
+					continue;
+				}
+				Iterator<Player> itr2 = players.iterator();
+				while (itr2.hasNext()) {
+					Player player = itr2.next();
+					Location location = player.getEyeLocation();
+					if (!location.getWorld().equals(entity.getWorld())) {
+						itr.remove();
+						continue;
+					}
+					ServerPacketSender.teleportEntity(player, entity.getEntityId(), entity.getViewingLocation(location, location.getDirection()));
+				}
+			}
+		}, 0, 2);
 	}
 	
 	private static boolean isOccluding(Material material) {
@@ -218,6 +246,18 @@ public class PacketManager implements Listener {
 					list.add(entity);
 				}
 			});
+			if (entity instanceof DynamicVisualizerEntity) {
+				boolean absent = false;
+				Set<Player> tracking = dynamicTracking.get((DynamicVisualizerEntity) entity);
+				if (tracking == null) {
+					tracking = Collections.newSetFromMap(new ConcurrentHashMap<>());
+					absent = true;
+				}
+				tracking.addAll(playersInRange);
+				if (absent) {
+					dynamicTracking.put((DynamicVisualizerEntity) entity, tracking);
+				}
+			}
 		});
 	}
 	
@@ -306,6 +346,12 @@ public class PacketManager implements Listener {
 					list.remove(entity);
 				}
 			});
+			if (entity instanceof DynamicVisualizerEntity) {
+				Set<Player> tracking = dynamicTracking.get((DynamicVisualizerEntity) entity);
+				if (tracking != null) {
+					tracking.removeAll(playersInRange);
+				}
+			}
 		});
 	}
 	

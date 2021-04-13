@@ -38,7 +38,7 @@ import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class ChestDisplay implements Listener {
 	
-	public ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<Player, List<Item>>();
+	public ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<>();
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseChest(InventoryClickEvent event) {

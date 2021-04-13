@@ -2,6 +2,7 @@ package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -40,7 +41,7 @@ import ru.beykerykt.lightapi.LightType;
 
 public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 	
-	public HashMap<Block, HashMap<String, Object>> openedLooms = new HashMap<Block, HashMap<String, Object>>();
+	public Map<Block, Map<String, Object>> openedLooms = new HashMap<>();
 	
 	@Override
 	public int run() {		
@@ -63,7 +64,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 							if (!openedLooms.containsKey(block)) {
 								return;
 							}
-							HashMap<String, Object> map = openedLooms.get(block);
+							Map<String, Object> map = openedLooms.get(block);
 							if (block.getType().equals(Material.LOOM)) {
 								Player player = (Player) map.get("Player");
 								if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
@@ -111,12 +112,12 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 		InventoryView view = player.getOpenInventory();
 		Block block = view.getTopInventory().getLocation().getBlock();
 		if (!openedLooms.containsKey(block)) {
-			HashMap<String, Object> map = new HashMap<String, Object>();
+			Map<String, Object> map = new HashMap<>();
 			map.put("Player", player);
 			map.putAll(spawnArmorStands(player, block));
 			openedLooms.put(block, map);
 		}
-		HashMap<String, Object> map = openedLooms.get(block);
+		Map<String, Object> map = openedLooms.get(block);
 		
 		if (!map.get("Player").equals(player)) {
 			return;
@@ -257,7 +258,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 				return;
 			}
 		
-			HashMap<String, Object> map = openedLooms.get(block);
+			Map<String, Object> map = openedLooms.get(block);
 			if (!map.get("Player").equals((Player) event.getWhoClicked())) {
 				return;
 			}
@@ -365,7 +366,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 			return;
 		}
 		
-		HashMap<String, Object> map = openedLooms.get(block);
+		Map<String, Object> map = openedLooms.get(block);
 		if (!map.get("Player").equals((Player) event.getPlayer())) {
 			return;
 		}
@@ -399,8 +400,8 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 		openedLooms.remove(block);
 	}
 	
-	public HashMap<String, ArmorStand> spawnArmorStands(Player player, Block block) {
-		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
+	public Map<String, ArmorStand> spawnArmorStands(Player player, Block block) {
+		Map<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location loc = block.getLocation().clone().add(0.5, 0.01, 0.5);
 		Location temploc = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ()).setDirection(player.getLocation().getDirection().normalize().multiply(-1));
 		float yaw = temploc.getYaw();

@@ -3,6 +3,7 @@ package com.loohp.interactionvisualizer.blocks;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,8 +39,8 @@ import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 
 public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Listener {
 	
-	public ConcurrentHashMap<Block, HashMap<String, Object>> brewstand = new ConcurrentHashMap<Block, HashMap<String, Object>>();
-	public final int max = 20 * 20;
+	public ConcurrentHashMap<Block, Map<String, Object>> brewstand = new ConcurrentHashMap<>();
+	private final int max = 20 * 20;
 	private int checkingPeriod = 20;
 	private int gcPeriod = 600;
 	private String progressBarCharacter = "";
@@ -66,7 +67,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 	@Override
 	public int gc() {
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-			Iterator<Entry<Block, HashMap<String, Object>>> itr = brewstand.entrySet().iterator();
+			Iterator<Entry<Block, Map<String, Object>>> itr = brewstand.entrySet().iterator();
 			int count = 0;
 			int maxper = (int) Math.ceil((double) brewstand.size() / (double) gcPeriod);
 			int delay = 1;
@@ -76,11 +77,11 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 					count = 0;
 					delay++;
 				}
-				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				Entry<Block, Map<String, Object>> entry = itr.next();
 				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 					Block block = entry.getKey();
 					if (!isActive(block.getLocation())) {
-						HashMap<String, Object> map = entry.getValue();
+						Map<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
 							PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
@@ -93,7 +94,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 						return;
 					}
 					if (!block.getType().equals(Material.BREWING_STAND)) {
-						HashMap<String, Object> map = entry.getValue();
+						Map<String, Object> map = entry.getValue();
 						if (map.get("Item") instanceof Item) {
 							Item item = (Item) map.get("Item");
 							PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
@@ -118,7 +119,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 				for (Block block : list) {
 					if (brewstand.get(block) == null && isActive(block.getLocation())) {
 						if (block.getType().equals(Material.BREWING_STAND)) {
-							HashMap<String, Object> map = new HashMap<String, Object>();
+							Map<String, Object> map = new HashMap<>();
 							map.put("Item", "N/A");
 							map.putAll(spawnArmorStands(block));
 							brewstand.put(block, map);
@@ -127,12 +128,12 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 				}
 			});
 			
-			Iterator<Entry<Block, HashMap<String, Object>>> itr = brewstand.entrySet().iterator();
+			Iterator<Entry<Block, Map<String, Object>>> itr = brewstand.entrySet().iterator();
 			int count = 0;
 			int maxper = (int) Math.ceil((double) brewstand.size() / (double) checkingPeriod);
 			int delay = 1;
 			while (itr.hasNext()) {
-				Entry<Block, HashMap<String, Object>> entry = itr.next();
+				Entry<Block, Map<String, Object>> entry = itr.next();
 				
 				count++;
 				if (count > maxper) {
@@ -315,7 +316,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 			return;
 		}
 
-		HashMap<String, Object> map = brewstand.get(block);
+		Map<String, Object> map = brewstand.get(block);
 		if (map.get("Item") instanceof Item) {
 			Item item = (Item) map.get("Item");
 			PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
@@ -355,8 +356,8 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 		return PlayerLocationManager.hasPlayerNearby(loc);
 	}
 	
-	public HashMap<String, ArmorStand> spawnArmorStands(Block block) { //.add(0.68, 0.700781, 0.35)
-		HashMap<String, ArmorStand> map = new HashMap<String, ArmorStand>();
+	public Map<String, ArmorStand> spawnArmorStands(Block block) { //.add(0.68, 0.700781, 0.35)
+		Map<String, ArmorStand> map = new HashMap<String, ArmorStand>();
 		Location loc = block.getLocation().clone().add(0.5, 0.700781, 0.5);
 		ArmorStand slot1 = new ArmorStand(loc.clone());
 		setStand(slot1);

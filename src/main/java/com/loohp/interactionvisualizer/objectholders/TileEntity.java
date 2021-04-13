@@ -21,6 +21,11 @@ public class TileEntity {
 		TILE_ENTITY_TYPES.put("JUKEBOX", TileEntityType.JUKEBOX);
 		TILE_ENTITY_TYPES.put("BEE_NEST", TileEntityType.BEE_NEST);
 		TILE_ENTITY_TYPES.put("BEEHIVE", TileEntityType.BEEHIVE);
+		TILE_ENTITY_TYPES.put("LECTERN", TileEntityType.LECTERN);
+		TILE_ENTITY_TYPES.put("CAMPFIRE", TileEntityType.CAMPFIRE);
+		TILE_ENTITY_TYPES.put("SOUL_CAMPFIRE", TileEntityType.SOUL_CAMPFIRE);
+		TILE_ENTITY_TYPES.put("SPAWNER", TileEntityType.SPAWNER);
+		TILE_ENTITY_TYPES.put("MOB_SPAWNER", TileEntityType.SPAWNER);
 	}
 	
 	public static TileEntityType getTileEntityType(Material material) {
@@ -78,7 +83,11 @@ public class TileEntity {
 		BEACON,
 		JUKEBOX,
 		BEE_NEST,
-		BEEHIVE;
+		BEEHIVE,
+		LECTERN,
+		CAMPFIRE,
+		SOUL_CAMPFIRE,
+		SPAWNER;
 		
 	}
 

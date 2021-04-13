@@ -53,6 +53,27 @@ public class ServerPacketSender {
 		});
 	}
 	
+	public static void teleportEntity(Player player, int entityId, Location location) {
+		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
+        packet1.getIntegers().write(0, entityId);
+        packet1.getDoubles().write(0, location.getX());
+		packet1.getDoubles().write(1, location.getY());
+		packet1.getDoubles().write(2, location.getZ());
+		packet1.getBytes().write(0, (byte)(int) (location.getYaw() * 256.0F / 360.0F));
+		packet1.getBytes().write(1, (byte)(int) (location.getPitch() * 256.0F / 360.0F));
+        
+        if (!plugin.isEnabled()) {
+			return;
+		}
+        Bukkit.getScheduler().runTask(plugin, () -> {
+	        try {
+	        	protocolManager.sendServerPacket(player, packet1);
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+        });
+	}
+	
 	public static void spawnArmorStand(Collection<Player> players, ArmorStand entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
 		packet1.getIntegers().write(0, entity.getEntityId());

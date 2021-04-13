@@ -35,7 +35,7 @@ import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class HopperDisplay implements Listener {
 	
-	public ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<Player, List<Item>>();
+	public ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<>();
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseHopper(InventoryClickEvent event) {

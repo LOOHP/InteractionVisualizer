@@ -21,6 +21,7 @@ import com.loohp.interactionvisualizer.blocks.BeeHiveDisplay;
 import com.loohp.interactionvisualizer.blocks.BeeNestDisplay;
 import com.loohp.interactionvisualizer.blocks.BlastFurnaceDisplay;
 import com.loohp.interactionvisualizer.blocks.BrewingStandDisplay;
+import com.loohp.interactionvisualizer.blocks.CampfireDisplay;
 import com.loohp.interactionvisualizer.blocks.CartographyTableDisplay;
 import com.loohp.interactionvisualizer.blocks.ChestDisplay;
 import com.loohp.interactionvisualizer.blocks.CraftingTableDisplay;
@@ -33,11 +34,14 @@ import com.loohp.interactionvisualizer.blocks.FurnaceDisplay;
 import com.loohp.interactionvisualizer.blocks.GrindstoneDisplay;
 import com.loohp.interactionvisualizer.blocks.HopperDisplay;
 import com.loohp.interactionvisualizer.blocks.JukeBoxDisplay;
+import com.loohp.interactionvisualizer.blocks.LecternDisplay;
 import com.loohp.interactionvisualizer.blocks.LoomDisplay;
 import com.loohp.interactionvisualizer.blocks.NoteBlockDisplay;
 import com.loohp.interactionvisualizer.blocks.ShulkerBoxDisplay;
 import com.loohp.interactionvisualizer.blocks.SmithingTableDisplay;
 import com.loohp.interactionvisualizer.blocks.SmokerDisplay;
+import com.loohp.interactionvisualizer.blocks.SoulCampfireDisplay;
+import com.loohp.interactionvisualizer.blocks.SpawnerDisplay;
 import com.loohp.interactionvisualizer.blocks.StonecutterDisplay;
 import com.loohp.interactionvisualizer.debug.Debug;
 import com.loohp.interactionvisualizer.entities.VillagerDisplay;
@@ -56,6 +60,7 @@ public class TaskManager {
 	public static boolean beenest;
 	public static boolean blastfurnace;
 	public static boolean brewingstand;
+	public static boolean campfire;
 	public static boolean cartographytable;
 	public static boolean chest;
 	public static boolean craftingtable;
@@ -68,11 +73,14 @@ public class TaskManager {
 	public static boolean grindstone;
 	public static boolean hopper;
 	public static boolean jukebox;
+	public static boolean lectern;
 	public static boolean loom;
 	public static boolean noteblock;
-	public static boolean smoker;
-	public static boolean stonecutter;
 	public static boolean shulkerbox;
+	public static boolean smoker;
+	public static boolean soulcampfire;
+	public static boolean spawner;
+	public static boolean stonecutter;
 	public static boolean smithingtable;
 	
 	public static boolean villager;
@@ -89,6 +97,7 @@ public class TaskManager {
 		beenest = false;
 		blastfurnace = false;
 		brewingstand = false;
+		campfire = false;
 		cartographytable = false;
 		chest = false;
 		craftingtable = false;
@@ -101,11 +110,14 @@ public class TaskManager {
 		grindstone = false;
 		hopper = false;
 		jukebox = false;
+		lectern = false;
 		loom = false;
 		noteblock = false;
-		smoker = false;
-		stonecutter = false;
 		shulkerbox = false;
+		smoker = false;
+		soulcampfire = false;
+		spawner = false;
+		stonecutter = false;
 		smithingtable = false;
 		
 		villager = false;
@@ -288,6 +300,34 @@ public class TaskManager {
 			bhd.register();
 			Bukkit.getPluginManager().registerEvents(bhd, plugin);
 			beehive = true;
+		}
+		
+		if (getConfig().getBoolean("Blocks.Lectern.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
+			LecternDisplay ld = new LecternDisplay();
+			ld.register();
+			Bukkit.getPluginManager().registerEvents(ld, plugin);
+			lectern = true;
+		}
+		
+		if (getConfig().getBoolean("Blocks.Campfire.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
+			CampfireDisplay cd = new CampfireDisplay();
+			cd.register();
+			Bukkit.getPluginManager().registerEvents(cd, plugin);
+			campfire = true;
+		}
+		
+		if (getConfig().getBoolean("Blocks.SoulCampfire.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_16)) {
+			SoulCampfireDisplay scd = new SoulCampfireDisplay();
+			scd.register();
+			Bukkit.getPluginManager().registerEvents(scd, plugin);
+			soulcampfire = true;
+		}
+		
+		if (getConfig().getBoolean("Blocks.Spawner.Enabled")) {
+			SpawnerDisplay sd = new SpawnerDisplay();
+			sd.register();
+			Bukkit.getPluginManager().registerEvents(sd, plugin);
+			spawner = true;
 		}
 		
 		if (getConfig().getBoolean("Entities.Villager.Enabled")) {
