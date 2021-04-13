@@ -14,6 +14,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.type.Campfire;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -158,6 +159,7 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 						return;
 					}
 					org.bukkit.block.Campfire soulcampfire = (org.bukkit.block.Campfire) block.getState();
+					boolean isLit = ((Campfire) block.getBlockData()).isLit();
 					
 					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
 						ItemStack itemstack1 = soulcampfire.getItem(0);
@@ -190,7 +192,7 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 						ArmorStand stand3 = (ArmorStand) entry.getValue().get("3");
 						ArmorStand stand4 = (ArmorStand) entry.getValue().get("4");
 						
-						if (itemstack1 != null) {
+						if (isLit && itemstack1 != null) {
 							int time = soulcampfire.getCookTime(0);
 							int max = soulcampfire.getCookTimeTotal(0);
 							String symbol = "";
@@ -223,7 +225,7 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 								PacketManager.updateArmorStandOnlyMeta(stand1);
 							}
 						}
-						if (itemstack2 != null) {
+						if (isLit && itemstack2 != null) {
 							int time = soulcampfire.getCookTime(1);
 							int max = soulcampfire.getCookTimeTotal(1);
 							String symbol = "";
@@ -256,7 +258,7 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 								PacketManager.updateArmorStandOnlyMeta(stand2);
 							}
 						}
-						if (itemstack3 != null) {
+						if (isLit && itemstack3 != null) {
 							int time = soulcampfire.getCookTime(2);
 							int max = soulcampfire.getCookTimeTotal(2);
 							String symbol = "";
@@ -289,7 +291,7 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 								PacketManager.updateArmorStandOnlyMeta(stand3);
 							}
 						}
-						if (itemstack4 != null) {
+						if (isLit && itemstack4 != null) {
 							int time = soulcampfire.getCookTime(3);
 							int max = soulcampfire.getCookTimeTotal(3);
 							String symbol = "";
