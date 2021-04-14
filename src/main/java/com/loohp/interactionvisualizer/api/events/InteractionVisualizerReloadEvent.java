@@ -3,6 +3,11 @@ package com.loohp.interactionvisualizer.api.events;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * Called after InteractionVisualizer is reloaded.
+ * @author LOOHP
+ *
+ */
 public class InteractionVisualizerReloadEvent extends Event {
 	
 	public InteractionVisualizerReloadEvent() {

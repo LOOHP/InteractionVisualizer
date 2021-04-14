@@ -3,7 +3,6 @@ package com.loohp.interactionvisualizer.api;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -42,7 +41,7 @@ public class InteractionVisualizerAPI {
 	Gets the list of tile entity blocks that is within range of a player.
 	@return A list of blocks that is within range of at least one player.
 	*/
-	public static List<Block> getActiveTileEntityBlocks(TileEntityType type) {
+	public static Collection<Block> getActiveTileEntityBlocks(TileEntityType type) {
 		return TileEntityManager.getTileEntites(type);
 	}
 	

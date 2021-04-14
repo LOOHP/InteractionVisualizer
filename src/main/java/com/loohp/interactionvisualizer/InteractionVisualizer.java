@@ -75,9 +75,10 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	public static Double playerPickupYOffset = 0.0;
 	
-	public static Integer tileEntityChunkPerTick = 9;
 	public static Integer tileEntityCheckingRange = 1;
-	public static Boolean loadTileEntitiesAsync = true;
+	public static double ignoreWalkSquared = 0.0;
+	public static double ignoreFlySquared = 0.0;
+	public static double ignoreGlideSquared = 0.0;
 	
 	public static Boolean handMovementEnabled = true;
 	
@@ -163,7 +164,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		MusicManager.setup();
 		Database.setup();
 		TaskManager.run();
-		TileEntityManager.run();
+		TileEntityManager._init_();
 		PacketManager.run();
 		PacketManager.dynamicEntity();
 		
@@ -316,9 +317,13 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		playerPickupYOffset = getConfig().getDouble("Settings.PickupAnimationPlayerYOffset");
 		
-		tileEntityChunkPerTick = getConfig().getInt("TileEntityUpdate.ChunksPerTick");
-		loadTileEntitiesAsync = getConfig().getBoolean("TileEntityUpdate.LoadTileEntitiesAsync");
 		tileEntityCheckingRange = getConfig().getInt("TileEntityUpdate.CheckingRange");
+		ignoreWalkSquared =  getConfig().getDouble("TileEntityUpdate.IgnoreMovementSpeed.Normal");
+		ignoreWalkSquared *= ignoreWalkSquared;
+		ignoreFlySquared =  getConfig().getDouble("TileEntityUpdate.IgnoreMovementSpeed.Flying");
+		ignoreFlySquared *= ignoreFlySquared;
+		ignoreGlideSquared =  getConfig().getDouble("TileEntityUpdate.IgnoreMovementSpeed.Gliding");
+		ignoreGlideSquared *= ignoreGlideSquared;
 		
 		handMovementEnabled = getConfig().getBoolean("Settings.UseHandSwingAnimation");
 		

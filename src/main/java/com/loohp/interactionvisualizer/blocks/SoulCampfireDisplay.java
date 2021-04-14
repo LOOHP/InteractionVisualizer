@@ -2,9 +2,9 @@ package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -52,7 +52,7 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
 		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.SoulCampfire.CheckingPeriod");
-		gcPeriod = InteractionVisualizer.plugin.getConfig().getInt("GarbageCollector.Period");
+		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
 		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.SoulCampfire.Options.ProgressBarCharacter"));
 		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.SoulCampfire.Options.EmptyColor"));
 		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.SoulCampfire.Options.FilledColor"));
@@ -126,7 +126,7 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 	public int run() {		
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-				List<Block> list = nearbySoulCampfire();
+				Set<Block> list = nearbySoulCampfire();
 				for (Block block : list) {
 					if (soulcampfireMap.get(block) == null && isActive(block.getLocation())) {
 						if (block.getType().equals(Material.SOUL_CAMPFIRE)) {
@@ -332,9 +332,6 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onBreakSoulCampfire(BlockBreakEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
 		Block block = event.getBlock();
 		if (!soulcampfireMap.containsKey(block)) {
 			return;
@@ -360,7 +357,7 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 		soulcampfireMap.remove(block);
 	}
 	
-	public List<Block> nearbySoulCampfire() {
+	public Set<Block> nearbySoulCampfire() {
 		return TileEntityManager.getTileEntites(TileEntityType.SOUL_CAMPFIRE);
 	}
 	

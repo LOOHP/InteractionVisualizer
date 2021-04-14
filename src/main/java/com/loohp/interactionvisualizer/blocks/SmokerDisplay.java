@@ -2,9 +2,9 @@ package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -66,7 +66,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
 		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Smoker.CheckingPeriod");
-		gcPeriod = InteractionVisualizer.plugin.getConfig().getInt("GarbageCollector.Period");
+		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
 		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Smoker.Options.ProgressBarCharacter"));
 		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Smoker.Options.EmptyColor"));
 		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Smoker.Options.FilledColor"));
@@ -126,7 +126,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 	public int run() {		
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-				List<Block> list = nearbySmoker();
+				Set<Block> list = nearbySmoker();
 				for (Block block : list) {
 					if (smokerMap.get(block) == null && isActive(block.getLocation())) {
 						if (block.getType().equals(Material.SMOKER)) {
@@ -433,9 +433,6 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onBreakSmoker(BlockBreakEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
 		Block block = event.getBlock();
 		if (!smokerMap.containsKey(block)) {
 			return;
@@ -476,7 +473,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 		return false;
 	}
 	
-	public List<Block> nearbySmoker() {
+	public Set<Block> nearbySmoker() {
 		return TileEntityManager.getTileEntites(TileEntityType.SMOKER);
 	}
 	

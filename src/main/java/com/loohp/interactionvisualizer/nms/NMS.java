@@ -10,7 +10,7 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.objectholders.BlockPosition;
 import com.loohp.interactionvisualizer.objectholders.BoundingBox;
 import com.loohp.interactionvisualizer.objectholders.ChunkPosition;
-import com.loohp.interactionvisualizer.objectholders.TileEntity;
+import com.loohp.interactionvisualizer.objectholders.NMSTileEntitySet;
 import com.loohp.interactionvisualizer.objectholders.ValuePairs;
 
 public abstract class NMS {
@@ -59,6 +59,6 @@ public abstract class NMS {
 	
 	public abstract List<BoundingBox> getBoundingBoxes(BlockPosition pos);
 	
-	public abstract List<TileEntity> getTileEntities(ChunkPosition chunk, boolean load);
+	public abstract NMSTileEntitySet<?, ?> getTileEntities(ChunkPosition chunk, boolean load);
 	
 }

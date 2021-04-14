@@ -2,9 +2,9 @@ package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -17,7 +17,6 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -29,6 +28,7 @@ import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.api.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
+import com.loohp.interactionvisualizer.api.events.TileEntityRemovedEvent;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
@@ -53,7 +53,7 @@ public class LecternDisplay extends VisualizerRunnableDisplay implements Listene
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
 		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Lectern.CheckingPeriod");
-		gcPeriod = InteractionVisualizer.plugin.getConfig().getInt("GarbageCollector.Period");
+		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
 		format1 = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Lectern.Options.Line1"));
 		format2 = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Lectern.Options.Line2"));
 	}
@@ -109,7 +109,7 @@ public class LecternDisplay extends VisualizerRunnableDisplay implements Listene
 	public int run() {		
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-				List<Block> list = nearbyLectern();
+				Set<Block> list = nearbyLectern();
 				for (Block block : list) {
 					if (lecternMap.get(block) == null && isActive(block.getLocation())) {
 						if (block.getType().equals(Material.LECTERN)) {
@@ -209,10 +209,7 @@ public class LecternDisplay extends VisualizerRunnableDisplay implements Listene
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onBreakLectern(BlockBreakEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
+	public void onBreakLectern(TileEntityRemovedEvent event) {
 		Block block = event.getBlock();
 		if (!lecternMap.containsKey(block)) {
 			return;
@@ -230,7 +227,7 @@ public class LecternDisplay extends VisualizerRunnableDisplay implements Listene
 		lecternMap.remove(block);
 	}
 	
-	public List<Block> nearbyLectern() {
+	public Set<Block> nearbyLectern() {
 		return TileEntityManager.getTileEntites(TileEntityType.LECTERN);
 	}
 	

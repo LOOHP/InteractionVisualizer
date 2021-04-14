@@ -2,9 +2,9 @@ package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -15,7 +15,6 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.util.EulerAngle;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
@@ -23,9 +22,10 @@ import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.api.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
+import com.loohp.interactionvisualizer.api.events.TileEntityRemovedEvent;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
-import com.loohp.interactionvisualizer.entityholders.SurroundingPlaneArmorStand;
 import com.loohp.interactionvisualizer.entityholders.DynamicVisualizerEntity.PathType;
+import com.loohp.interactionvisualizer.entityholders.SurroundingPlaneArmorStand;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
@@ -50,7 +50,7 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
 		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Spawner.CheckingPeriod");
-		gcPeriod = InteractionVisualizer.plugin.getConfig().getInt("GarbageCollector.Period");
+		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
 		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Spawner.Options.ProgressBarCharacter"));
 		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Spawner.Options.EmptyColor"));
 		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Spawner.Options.FilledColor"));
@@ -101,7 +101,7 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
 	public int run() {		
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-				List<Block> list = nearbySpawner();
+				Set<Block> list = nearbySpawner();
 				for (Block block : list) {
 					if (spawnerMap.get(block) == null && isActive(block.getLocation())) {
 						if (isSpawner(block.getType())) {
@@ -182,10 +182,7 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onBreakSpawner(BlockBreakEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
+	public void onBreakSpawner(TileEntityRemovedEvent event) {
 		Block block = event.getBlock();
 		if (!spawnerMap.containsKey(block)) {
 			return;
@@ -199,7 +196,7 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
 		spawnerMap.remove(block);
 	}
 	
-	public List<Block> nearbySpawner() {
+	public Set<Block> nearbySpawner() {
 		return TileEntityManager.getTileEntites(TileEntityType.SPAWNER);
 	}
 	

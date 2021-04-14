@@ -2,9 +2,9 @@ package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -16,7 +16,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.util.EulerAngle;
 
@@ -25,6 +24,7 @@ import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.api.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
+import com.loohp.interactionvisualizer.api.events.TileEntityRemovedEvent;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.entityholders.DynamicVisualizerEntity.PathType;
 import com.loohp.interactionvisualizer.entityholders.SurroundingPlaneArmorStand;
@@ -55,7 +55,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
 		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Beacon.CheckingPeriod");
-		gcPeriod = InteractionVisualizer.plugin.getConfig().getInt("GarbageCollector.Period");
+		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
 	}
 		
 	@Override
@@ -117,7 +117,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 	public int run() {		
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-				List<Block> list = nearbyBeacon();
+				Set<Block> list = nearbyBeacon();
 				for (Block block : list) {
 					if (beaconMap.get(block) == null && isActive(block.getLocation())) {
 						if (block.getType().equals(Material.BEACON)) {
@@ -267,10 +267,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onBreakBeacon(BlockBreakEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
+	public void onBreakBeacon(TileEntityRemovedEvent event) {
 		Block block = event.getBlock();
 		if (!beaconMap.containsKey(block)) {
 			return;
@@ -292,7 +289,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 		beaconMap.remove(block);
 	}
 	
-	public List<Block> nearbyBeacon() {
+	public Set<Block> nearbyBeacon() {
 		return TileEntityManager.getTileEntites(TileEntityType.BEACON);
 	}
 	

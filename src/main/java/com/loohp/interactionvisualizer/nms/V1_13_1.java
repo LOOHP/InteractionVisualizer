@@ -1,6 +1,5 @@
 package com.loohp.interactionvisualizer.nms;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +18,7 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.objectholders.BlockPosition;
 import com.loohp.interactionvisualizer.objectholders.BoundingBox;
 import com.loohp.interactionvisualizer.objectholders.ChunkPosition;
+import com.loohp.interactionvisualizer.objectholders.NMSTileEntitySet;
 import com.loohp.interactionvisualizer.objectholders.TileEntity;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.objectholders.ValuePairs;
@@ -36,22 +36,21 @@ public class V1_13_1 extends NMS {
 	}
 	
 	@Override
-	public List<TileEntity> getTileEntities(ChunkPosition chunk, boolean load) {
-		List<TileEntity> list = new ArrayList<>();
+	public NMSTileEntitySet<?, ?> getTileEntities(ChunkPosition chunk, boolean load) {
 		if (!chunk.isLoaded() && !load) {
-			return list;
+			return null;
 		}
 		World world = chunk.getWorld();
-		
-		((CraftChunk) chunk.getChunk()).getHandle().tileEntities.entrySet().forEach(entry -> {
+		return new NMSTileEntitySet<net.minecraft.server.v1_13_R2.BlockPosition, net.minecraft.server.v1_13_R2.TileEntity>(((CraftChunk) chunk.getChunk()).getHandle().tileEntities, entry -> {
 			net.minecraft.server.v1_13_R2.BlockPosition pos = entry.getKey();
 			Material type = CraftMagicNumbers.getMaterial(entry.getValue().getBlock().getBlock());
 			TileEntityType tileEntityType = TileEntity.getTileEntityType(type);
 			if (tileEntityType != null) {
-				list.add(new TileEntity(world, pos.getX(), pos.getY(), pos.getZ(), tileEntityType));
+				return new TileEntity(world, pos.getX(), pos.getY(), pos.getZ(), tileEntityType);
+			} else {
+				return null;
 			}
 		});
-		return list;
 	}
 	
 	@Override

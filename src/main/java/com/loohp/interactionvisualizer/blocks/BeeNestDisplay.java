@@ -2,9 +2,9 @@ package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -17,7 +17,6 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityEnterBlockEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -29,6 +28,7 @@ import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.api.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
+import com.loohp.interactionvisualizer.api.events.TileEntityRemovedEvent;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
@@ -54,7 +54,7 @@ public class BeeNestDisplay extends VisualizerRunnableDisplay implements Listene
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
 		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.BeeNest.CheckingPeriod");
-		gcPeriod = InteractionVisualizer.plugin.getConfig().getInt("GarbageCollector.Period");
+		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
 		honeyLevelCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BeeNest.Options.HoneyLevelCharacter"));
 		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BeeNest.Options.EmptyColor"));
 		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BeeNest.Options.FilledColor"));
@@ -113,7 +113,7 @@ public class BeeNestDisplay extends VisualizerRunnableDisplay implements Listene
 	public int run() {		
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-				List<Block> list = nearbyBeenest();
+				Set<Block> list = nearbyBeenest();
 				for (Block block : list) {
 					if (beenestMap.get(block) == null && isActive(block.getLocation())) {
 						if (block.getType().equals(Material.BEE_NEST)) {
@@ -176,10 +176,7 @@ public class BeeNestDisplay extends VisualizerRunnableDisplay implements Listene
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onBreakBeenest(BlockBreakEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
+	public void onBreakBeenest(TileEntityRemovedEvent event) {
 		Block block = event.getBlock();
 		if (!beenestMap.containsKey(block)) {
 			return;
@@ -239,7 +236,7 @@ public class BeeNestDisplay extends VisualizerRunnableDisplay implements Listene
 		});
 	}
 	
-	public List<Block> nearbyBeenest() {
+	public Set<Block> nearbyBeenest() {
 		return TileEntityManager.getTileEntites(TileEntityType.BEE_NEST);
 	}
 	

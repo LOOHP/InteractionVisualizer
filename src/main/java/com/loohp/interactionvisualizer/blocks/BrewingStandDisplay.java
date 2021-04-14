@@ -2,9 +2,9 @@ package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -16,7 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
@@ -29,6 +28,7 @@ import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.api.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
+import com.loohp.interactionvisualizer.api.events.TileEntityRemovedEvent;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.PacketManager;
@@ -56,7 +56,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
 		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.BrewingStand.CheckingPeriod");
-		gcPeriod = InteractionVisualizer.plugin.getConfig().getInt("GarbageCollector.Period");
+		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
 		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BrewingStand.Options.ProgressBarCharacter"));
 		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BrewingStand.Options.EmptyColor"));
 		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BrewingStand.Options.FilledColor"));
@@ -115,7 +115,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 	public int run() {		
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-				List<Block> list = nearbyBrewingStand();
+				Set<Block> list = nearbyBrewingStand();
 				for (Block block : list) {
 					if (brewstand.get(block) == null && isActive(block.getLocation())) {
 						if (block.getType().equals(Material.BREWING_STAND)) {
@@ -307,10 +307,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onBreakBrewingStand(BlockBreakEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
+	public void onBreakBrewingStand(TileEntityRemovedEvent event) {
 		Block block = event.getBlock();
 		if (!brewstand.containsKey(block)) {
 			return;
@@ -348,7 +345,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 		return false;
 	}
 	
-	public List<Block> nearbyBrewingStand() {
+	public Set<Block> nearbyBrewingStand() {
 		return TileEntityManager.getTileEntites(TileEntityType.BREWING_STAND);
 	}
 	

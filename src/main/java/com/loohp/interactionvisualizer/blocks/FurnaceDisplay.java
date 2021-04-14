@@ -2,9 +2,9 @@ package com.loohp.interactionvisualizer.blocks;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -33,6 +32,7 @@ import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.api.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
+import com.loohp.interactionvisualizer.api.events.TileEntityRemovedEvent;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.PacketManager;
@@ -67,7 +67,7 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
 		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Furnace.CheckingPeriod");
-		gcPeriod = InteractionVisualizer.plugin.getConfig().getInt("GarbageCollector.Period");
+		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
 		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Furnace.Options.ProgressBarCharacter"));
 		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Furnace.Options.EmptyColor"));
 		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Furnace.Options.FilledColor"));
@@ -127,7 +127,7 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
 	public int run() {		
 		return Bukkit.getScheduler().runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
 			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-				List<Block> list = nearbyFurnace();
+				Set<Block> list = nearbyFurnace();
 				for (Block block : list) {
 					if (furnaceMap.get(block) == null && isActive(block.getLocation())) {
 						if (isFurnace(block.getType())) {
@@ -435,10 +435,7 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onBreakFurnace(BlockBreakEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
+	public void onBreakFurnace(TileEntityRemovedEvent event) {
 		Block block = event.getBlock();
 		if (!furnaceMap.containsKey(block)) {
 			return;
@@ -478,7 +475,7 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
 		return false;
 	}
 	
-	public List<Block> nearbyFurnace() {
+	public Set<Block> nearbyFurnace() {
 		return TileEntityManager.getTileEntites(TileEntityType.FURNACE);
 	}
 	
