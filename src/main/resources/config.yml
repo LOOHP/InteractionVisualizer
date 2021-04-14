@@ -53,6 +53,9 @@ Blocks:
     #Measured in ticks, 20 ticks = 1 second
     #Adjust this if your server is unable to handle fast updates / can handle faster updates
     CheckingPeriod: 20
+    #How should the display text follow the player
+    #Accepts FACE, SQUARE, CIRCLE
+    PathType: FACE
   BeeHive:
     Enabled: true
     CheckingPeriod: 20
@@ -105,6 +108,7 @@ Blocks:
   Conduit:
     Enabled: true
     CheckingPeriod: 20
+    PathType: CIRCLE
   CraftingTable:
     Enabled: true
   Dispenser:

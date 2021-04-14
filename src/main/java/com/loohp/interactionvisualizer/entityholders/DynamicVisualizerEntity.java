@@ -16,7 +16,7 @@ public interface DynamicVisualizerEntity extends IVisualizerEntity {
 	public void setPathType(PathType path);
 	
 	public static enum PathType {
-		CIRCLE, SQUARE;
+		CIRCLE, SQUARE, FACE;
 	}
 
 }

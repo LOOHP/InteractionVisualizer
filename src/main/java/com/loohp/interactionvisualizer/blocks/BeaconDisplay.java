@@ -47,6 +47,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 	public ConcurrentHashMap<Block, float[]> placemap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
 	private int gcPeriod = 600;
+	private PathType pathType = PathType.FACE;
 	
 	public BeaconDisplay() {
 		onReload(new InteractionVisualizerReloadEvent());
@@ -56,6 +57,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 	public void onReload(InteractionVisualizerReloadEvent event) {
 		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Beacon.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
+		pathType = PathType.valueOf(InteractionVisualizer.plugin.getConfig().getString("Blocks.Beacon.PathType"));
 	}
 		
 	@Override
@@ -301,11 +303,11 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 		Map<String, ArmorStand> map = new HashMap<>();
 		Location origin = block.getLocation().add(0.5, 0.25, 0.5);
 		
-		SurroundingPlaneArmorStand line1 = new SurroundingPlaneArmorStand(origin.clone().add(0.0, 0.25, 0.0), 0.7, PathType.SQUARE);
+		SurroundingPlaneArmorStand line1 = new SurroundingPlaneArmorStand(origin.clone().add(0.0, 0.25, 0.0), 0.7, pathType);
 		setStand(line1);
-		SurroundingPlaneArmorStand line2 = new SurroundingPlaneArmorStand(origin.clone(), 0.7, PathType.SQUARE);
+		SurroundingPlaneArmorStand line2 = new SurroundingPlaneArmorStand(origin.clone(), 0.7, pathType);
 		setStand(line2);
-		SurroundingPlaneArmorStand line3 = new SurroundingPlaneArmorStand(origin.clone().add(0.0, -0.25, 0.0), 0.7, PathType.SQUARE);
+		SurroundingPlaneArmorStand line3 = new SurroundingPlaneArmorStand(origin.clone().add(0.0, -0.25, 0.0), 0.7, pathType);
 		setStand(line3);
 		
 		map.put("1", line1);

@@ -70,12 +70,40 @@ public class SurroundingPlaneArmorStand extends ArmorStand implements DynamicVis
 				vector.multiply(length);
 				break;
 			case CIRCLE:
-			default:
 				vector = leveled.toVector().subtract(location.toVector()).normalize().multiply(radius);
+				break;
+			case FACE:
+			default:
+				Vector facing = leveled.toVector().subtract(location.toVector()).normalize();
+				Location origin = location.clone().setDirection(facing);
+				float yaw = getCardinalDirection(origin);
+				origin.setYaw(yaw);
+				vector = origin.getDirection().normalize().multiply(radius);
 				break;
 			}
 			return vector;
 		}
+	}
+	
+	public static float getCardinalDirection(Location location) {
+
+		double rotation = (location.getYaw() - 90.0F) % 360.0F;
+
+		if (rotation < 0.0D) {
+			rotation += 360.0D;
+		}
+		if ((0.0D <= rotation) && (rotation < 45.0D))
+			return 90.0F;
+		if ((45.0D <= rotation) && (rotation < 135.0D))
+			return 180.0F;
+		if ((135.0D <= rotation) && (rotation < 225.0D))
+			return -90.0F;
+		if ((225.0D <= rotation) && (rotation < 315.0D))
+			return 0.0F;
+		if ((315.0D <= rotation) && (rotation < 360.0D)) {
+			return 90.0F;
+		}
+		return 0.0F;
 	}
 
 }

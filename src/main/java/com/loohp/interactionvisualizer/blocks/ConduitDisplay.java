@@ -42,6 +42,7 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
 	public ConcurrentHashMap<Block, float[]> placemap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
 	private int gcPeriod = 600;
+	private PathType pathType = PathType.CIRCLE;
 	
 	public ConduitDisplay() {
 		onReload(new InteractionVisualizerReloadEvent());
@@ -51,6 +52,7 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
 	public void onReload(InteractionVisualizerReloadEvent event) {
 		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Conduit.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
+		pathType = PathType.valueOf(InteractionVisualizer.plugin.getConfig().getString("Blocks.Conduit.PathType"));
 	}
 		
 	@Override
@@ -223,9 +225,9 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
 		Map<String, ArmorStand> map = new HashMap<>();
 		Location origin = block.getLocation().add(0.5, 0.001, 0.5);
 		
-		SurroundingPlaneArmorStand line1 = new SurroundingPlaneArmorStand(origin.clone().add(0.0, 0.28, 0.0), 0.4, PathType.CIRCLE);
+		SurroundingPlaneArmorStand line1 = new SurroundingPlaneArmorStand(origin.clone().add(0.0, 0.28, 0.0), 0.4, pathType);
 		setStand(line1);
-		SurroundingPlaneArmorStand line2 = new SurroundingPlaneArmorStand(origin.clone(), 0.4, PathType.CIRCLE);
+		SurroundingPlaneArmorStand line2 = new SurroundingPlaneArmorStand(origin.clone(), 0.4, pathType);
 		setStand(line2);
 		
 		map.put("1", line1);
