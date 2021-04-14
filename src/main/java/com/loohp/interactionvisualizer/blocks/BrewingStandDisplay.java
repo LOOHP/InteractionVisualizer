@@ -357,7 +357,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 	}
 	
 	public Map<String, ArmorStand> spawnArmorStands(Block block) { //.add(0.68, 0.700781, 0.35)
-		Map<String, ArmorStand> map = new HashMap<String, ArmorStand>();
+		Map<String, ArmorStand> map = new HashMap<>();
 		Location loc = block.getLocation().clone().add(0.5, 0.700781, 0.5);
 		ArmorStand slot1 = new ArmorStand(loc.clone());
 		setStand(slot1);

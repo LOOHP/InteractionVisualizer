@@ -486,7 +486,7 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
 	}
 	
 	public Map<String, ArmorStand> spawnArmorStands(Block block) {
-		Map<String, ArmorStand> map = new HashMap<String, ArmorStand>();
+		Map<String, ArmorStand> map = new HashMap<>();
 		Location origin = block.getLocation();	
 		
 		BlockData blockData = block.getState().getBlockData();

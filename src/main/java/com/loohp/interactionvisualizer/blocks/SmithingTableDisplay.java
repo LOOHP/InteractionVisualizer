@@ -431,7 +431,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
 	}
 	
 	public Map<String, ArmorStand> spawnArmorStands(Player player, Block block) { //.add(0.68, 0.600781, 0.35)
-		Map<String, ArmorStand> map = new HashMap<String, ArmorStand>();
+		Map<String, ArmorStand> map = new HashMap<>();
 		Location loc = block.getLocation().clone().add(0.5, 0.600781, 0.5);
 		ArmorStand center = new ArmorStand(loc);
 		float yaw = getCardinalDirection(player);

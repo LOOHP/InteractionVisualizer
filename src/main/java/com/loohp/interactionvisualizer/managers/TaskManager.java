@@ -24,6 +24,7 @@ import com.loohp.interactionvisualizer.blocks.BrewingStandDisplay;
 import com.loohp.interactionvisualizer.blocks.CampfireDisplay;
 import com.loohp.interactionvisualizer.blocks.CartographyTableDisplay;
 import com.loohp.interactionvisualizer.blocks.ChestDisplay;
+import com.loohp.interactionvisualizer.blocks.ConduitDisplay;
 import com.loohp.interactionvisualizer.blocks.CraftingTableDisplay;
 import com.loohp.interactionvisualizer.blocks.DispenserDisplay;
 import com.loohp.interactionvisualizer.blocks.DoubleChestDisplay;
@@ -63,6 +64,7 @@ public class TaskManager {
 	public static boolean campfire;
 	public static boolean cartographytable;
 	public static boolean chest;
+	public static boolean conduit;
 	public static boolean craftingtable;
 	public static boolean dispenser;
 	public static boolean doublechest;
@@ -100,6 +102,7 @@ public class TaskManager {
 		campfire = false;
 		cartographytable = false;
 		chest = false;
+		conduit = false;
 		craftingtable = false;
 		dispenser = false;
 		doublechest = false;
@@ -328,6 +331,13 @@ public class TaskManager {
 			sd.register();
 			Bukkit.getPluginManager().registerEvents(sd, plugin);
 			spawner = true;
+		}
+		
+		if (getConfig().getBoolean("Blocks.Conduit.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_13)) {
+			ConduitDisplay cd = new ConduitDisplay();
+			cd.register();
+			Bukkit.getPluginManager().registerEvents(cd, plugin);
+			conduit = true;
 		}
 		
 		if (getConfig().getBoolean("Entities.Villager.Enabled")) {

@@ -103,6 +103,9 @@ Blocks:
     Enabled: true
   Chest:
     Enabled: true
+  Conduit:
+    Enabled: true
+    CheckingPeriod: 20
   CraftingTable:
     Enabled: true
   Dispenser:

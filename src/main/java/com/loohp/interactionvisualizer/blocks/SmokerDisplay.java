@@ -485,7 +485,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 	}
 	
 	public Map<String, ArmorStand> spawnArmorStands(Block block) {
-		Map<String, ArmorStand> map = new HashMap<String, ArmorStand>();
+		Map<String, ArmorStand> map = new HashMap<>();
 		Location origin = block.getLocation();	
 		
 		BlockData blockData = block.getState().getBlockData();

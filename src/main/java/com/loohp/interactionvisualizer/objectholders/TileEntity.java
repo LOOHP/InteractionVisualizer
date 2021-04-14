@@ -9,7 +9,7 @@ import org.bukkit.block.Block;
 
 public class TileEntity {
 	
-	private static Map<String, TileEntityType> TILE_ENTITY_TYPES = new HashMap<>();
+	private static final Map<String, TileEntityType> TILE_ENTITY_TYPES = new HashMap<>();
 	
 	static {
 		TILE_ENTITY_TYPES.put("BLAST_FURNACE", TileEntityType.BLAST_FURNACE);
@@ -26,6 +26,7 @@ public class TileEntity {
 		TILE_ENTITY_TYPES.put("SOUL_CAMPFIRE", TileEntityType.SOUL_CAMPFIRE);
 		TILE_ENTITY_TYPES.put("SPAWNER", TileEntityType.SPAWNER);
 		TILE_ENTITY_TYPES.put("MOB_SPAWNER", TileEntityType.SPAWNER);
+		TILE_ENTITY_TYPES.put("CONDUIT", TileEntityType.CONDUIT);
 	}
 	
 	public static TileEntityType getTileEntityType(Material material) {
@@ -87,7 +88,8 @@ public class TileEntity {
 		LECTERN,
 		CAMPFIRE,
 		SOUL_CAMPFIRE,
-		SPAWNER;
+		SPAWNER,
+		CONDUIT;
 		
 	}
 

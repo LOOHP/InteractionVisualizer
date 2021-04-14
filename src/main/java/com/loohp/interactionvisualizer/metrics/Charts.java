@@ -120,6 +120,17 @@ public class Charts {
 	        }
 	    }));
 		
+		metrics.addCustomChart(new Metrics.SimplePie("conduit_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Conduit.Enabled")) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
 		metrics.addCustomChart(new Metrics.SimplePie("craftingtable_enabled", new Callable<String>() {
 	        @Override
 	        public String call() throws Exception {

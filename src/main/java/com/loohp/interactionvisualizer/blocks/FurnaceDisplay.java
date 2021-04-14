@@ -487,7 +487,7 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
 	}
 	
 	public Map<String, ArmorStand> spawnArmorStands(Block block) {
-		Map<String, ArmorStand> map = new HashMap<String, ArmorStand>();
+		Map<String, ArmorStand> map = new HashMap<>();
 		Location origin = block.getLocation();	
 	
 		BlockFace facing = null;

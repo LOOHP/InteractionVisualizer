@@ -401,7 +401,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 	}
 	
 	public Map<String, ArmorStand> spawnArmorStands(Player player, Block block) {
-		Map<String, ArmorStand> map = new HashMap<String, ArmorStand>();
+		Map<String, ArmorStand> map = new HashMap<>();
 		Location loc = block.getLocation().clone().add(0.5, 0.01, 0.5);
 		Location temploc = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ()).setDirection(player.getLocation().getDirection().normalize().multiply(-1));
 		float yaw = temploc.getYaw();
