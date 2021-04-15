@@ -173,6 +173,7 @@ Blocks:
   Spawner:
     Enabled: true
     CheckingPeriod: 20
+    PathType: FACE
     Options:
       ProgressBarCharacter: "\u258e"
       EmptyColor: "&c"

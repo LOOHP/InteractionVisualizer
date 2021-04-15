@@ -42,6 +42,7 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
 	private String filledColor = "&e";
 	private int progressBarLength = 10;
 	private String spawnRange = "";
+	private PathType pathType = PathType.FACE;
 	
 	public SpawnerDisplay() {
 		onReload(new InteractionVisualizerReloadEvent());
@@ -56,6 +57,7 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
 		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Spawner.Options.FilledColor"));
 		progressBarLength = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Spawner.Options.ProgressBarLength");
 		spawnRange = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Spawner.Options.SpawnRange"));
+		pathType = PathType.valueOf(InteractionVisualizer.plugin.getConfig().getString("Blocks.Spawner.PathType"));
 	}
 	
 	@Override
@@ -210,7 +212,7 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
 		Location origin = block.getLocation();
 		
 		Location loc = origin.clone().add(0.5, 0.2, 0.5);
-		SurroundingPlaneArmorStand slot1 = new SurroundingPlaneArmorStand(loc.clone(), 0.7, PathType.SQUARE);
+		SurroundingPlaneArmorStand slot1 = new SurroundingPlaneArmorStand(loc.clone(), 0.7, pathType);
 		setStand(slot1);
 		
 		map.put("1", slot1);
