@@ -91,7 +91,8 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		World world = item.getWorld();
 		Location location = item.getLocation();
 		BoundingBox area = BoundingBox.of(item.getLocation(), 0.5, 0.5, 0.5);
-		if (item.getPickupDelay() > 100 || item.getTicksLived() < 0 || cramp >= 0 && items.stream().filter(each -> each.getWorld().equals(world) && area.contains(each.getLocation().toVector())).count() > cramp) {
+		int ticks = NBTUtils.getShort(item, "Age");
+		if (NBTUtils.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || cramp >= 0 && items.stream().filter(each -> each.getWorld().equals(world) && area.contains(each.getLocation().toVector())).count() > cramp) {
 			PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
 		    defaultPacket.getIntegers().write(0, item.getEntityId());
 		    defaultPacket.getWatchableCollectionModifier().write(0, WrappedDataWatcher.getEntityWatcher(item).getWatchableObjects());
@@ -129,7 +130,6 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 				durDisplay = color + durability + "/" + maxDur;
 		    }			    			 
 		    
-		    int ticks = item.getTicksLived();
 		    int despawnRate = NMS.getInstance().getItemDespawnRate(item);
 		    int ticksLeft = despawnRate - ticks;
 		    int secondsLeft = ticksLeft / 20;
