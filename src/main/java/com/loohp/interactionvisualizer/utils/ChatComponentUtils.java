@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.bukkit.entity.Player;
+import org.apache.commons.text.translate.UnicodeUnescaper;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 
@@ -18,15 +18,12 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention;
 import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.KeybindComponent;
-import net.md_5.bungee.api.chat.ScoreComponent;
-import net.md_5.bungee.api.chat.SelectorComponent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.api.chat.hover.content.Content;
 import net.md_5.bungee.api.chat.hover.content.Entity;
 import net.md_5.bungee.api.chat.hover.content.Item;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 public class ChatComponentUtils {
 	
@@ -268,7 +265,7 @@ public class ChatComponentUtils {
 								}
 							}
 						} else if (value instanceof String) {
-							contents.set(j, new Text(((String) value).replaceAll("\u00a7[0-9a-e]", "\u00a7f")));
+							contents.set(j, new Text(ChatColorUtils.stripColor((String) value)));
 						}
 					}
 					j++;
@@ -278,13 +275,29 @@ public class ChatComponentUtils {
 		return baseComponent;
 	}
 	
-	public static BaseComponent preventFurtherInheritanceFormatting(BaseComponent baseComponent) {
-		baseComponent.setBold(baseComponent.isBold());
-		baseComponent.setColor(baseComponent.getColor());
-		baseComponent.setItalic(baseComponent.isItalic());
-		baseComponent.setObfuscated(baseComponent.isObfuscated());
-		baseComponent.setStrikethrough(baseComponent.isStrikethrough());
-		baseComponent.setUnderlined(baseComponent.isUnderlined());
+	public static BaseComponent preventFurtherInheritanceFormatting(BaseComponent baseComponent, BaseComponent toPreventFrom) {
+		BaseComponent baseComponentClone = clone(baseComponent);
+		BaseComponent toPreventFromClone = clone(toPreventFrom);
+		toPreventFromClone.addExtra(baseComponentClone);
+		
+		if (baseComponentClone.isBold() != baseComponent.isBold()) {
+			baseComponent.setBold(baseComponent.isBold());
+		}
+		if (!baseComponentClone.getColor().equals(baseComponent.getColor())) {
+			baseComponent.setColor(baseComponent.getColor());
+		}
+		if (baseComponentClone.isItalic() != baseComponent.isItalic()) {
+			baseComponent.setItalic(baseComponent.isItalic());
+		}
+		if (baseComponentClone.isObfuscated() != baseComponent.isObfuscated()) {
+			baseComponent.setObfuscated(baseComponent.isObfuscated());
+		}
+		if (baseComponentClone.isStrikethrough() != baseComponent.isStrikethrough()) {
+			baseComponent.setStrikethrough(baseComponent.isStrikethrough());
+		}
+		if (baseComponentClone.isUnderlined() != baseComponent.isUnderlined()) {
+			baseComponent.setUnderlined(baseComponent.isUnderlined());
+		}
 		return baseComponent;
 	}
 	
@@ -300,21 +313,53 @@ public class ChatComponentUtils {
 		return baseComponent;
 	}
 	
-	public static BaseComponent cleanUpLegacyText(BaseComponent basecomponent, Player player) {
+	@SuppressWarnings("deprecation")
+	public static BaseComponent cleanUpLegacyText(BaseComponent basecomponent) {
 		List<BaseComponent> newlist = new LinkedList<BaseComponent>();
 		List<BaseComponent> list = CustomStringUtils.loadExtras(basecomponent);
 		if (list.isEmpty()) {
 			return new TextComponent("");
 		}
 		
+		for (BaseComponent base : list) {
+			if (base.getHoverEvent() != null) {
+				HoverEvent event = base.getHoverEvent();
+				if (event.getAction().equals(HoverEvent.Action.SHOW_TEXT)) {
+					if (InteractionVisualizer.legacyChatAPI) {
+						if (event.getValue() != null) {
+							BaseComponent hover = cleanUpLegacyText(join(event.getValue()));
+							base.setHoverEvent(new HoverEvent(event.getAction(), new BaseComponent[] {hover}));
+						}
+					} else {
+						List<Content> newContents = new ArrayList<>();
+						for (Content content : event.getContents()) {
+							if (content instanceof Text) {
+								Text text = (Text) content;
+								if (text.getValue() != null) {
+									if (text.getValue() instanceof BaseComponent[]) {
+										newContents.add(new Text(new BaseComponent[] {cleanUpLegacyText(join((BaseComponent[]) text.getValue()))}));
+									} else if (text.getValue() instanceof String) {
+										newContents.add(new Text(new BaseComponent[] {cleanUpLegacyText(new TextComponent((String) text.getValue()))}));
+									}
+								} else {
+									newContents.add(content);
+								}
+							}
+						}
+						base.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, newContents));
+					}
+				}
+			}
+		}
+		
 		BaseComponent current = null;
-		for (BaseComponent base : CustomStringUtils.loadExtras(basecomponent)) {
-			List<BaseComponent> thislist = new LinkedList<BaseComponent>();
+		for (BaseComponent base : list) {
+			List<BaseComponent> thislist = new LinkedList<>();
 			if (base instanceof TextComponent) {
-				List<TextComponent> texts = Stream.of(TextComponent.fromLegacyText(base.toLegacyText())).map(each -> (TextComponent) each).collect(Collectors.toList());
+				List<TextComponent> texts = Stream.of(TextComponent.fromLegacyText(new UnicodeUnescaper().translate(ChatColorUtils.filterIllegalColorCodes(base.toLegacyText())))).map(each -> (TextComponent) each).collect(Collectors.toList());
 				if (!texts.isEmpty()) {
 					TextComponent current2 = texts.get(0);
-					if (InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_12)) {
+					if (InteractionVisualizer.version.isLegacy()) {
 						current2 = (TextComponent) CustomStringUtils.copyFormattingEventsNoReplace(current2, base);
 	 	        	} else {
 	 	        		current2.copyFormatting(base, FormatRetention.EVENTS, false);
@@ -325,13 +370,13 @@ public class ChatComponentUtils {
 					
 					for (TextComponent each : texts.subList(1, texts.size())) {
 						if (areEventsSimilar(current2, each)) {
-							each = (TextComponent) preventFurtherInheritanceFormatting(each);
+							each = (TextComponent) preventFurtherInheritanceFormatting(each, current2);
 							current2.addExtra(each);
 						} else {
 							thislist.add(current2);
 							current2 = each;
 							
-							if (InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_12)) {
+							if (InteractionVisualizer.version.isLegacy()) {
 								current2 = (TextComponent) CustomStringUtils.copyFormattingEventsNoReplace(current2, base);
 			 	        	} else {
 			 	        		current2.copyFormatting(base, FormatRetention.EVENTS, false);
@@ -350,7 +395,7 @@ public class ChatComponentUtils {
 			
 			if (current == null) {
 				current = new TextComponent("");
-				if (InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_12)) {
+				if (InteractionVisualizer.version.isLegacy()) {
 					current = (TextComponent) CustomStringUtils.copyFormattingEventsNoReplace(current, base);
  	        	} else {
  	        		current.copyFormatting(base, FormatRetention.EVENTS, false);
@@ -362,21 +407,21 @@ public class ChatComponentUtils {
 				for (BaseComponent each : thislist) {
 					each.setClickEvent(null);
 					each.setHoverEvent(null);
-					each = preventFurtherInheritanceFormatting(each);
+					each = preventFurtherInheritanceFormatting(each, current);
 					current.addExtra(each);
 				}
 			} else if (areEventsSimilar(current, base)) {
 				for (BaseComponent each : thislist) {
 					each.setClickEvent(null);
 					each.setHoverEvent(null);
-					each = preventFurtherInheritanceFormatting(each);
+					each = preventFurtherInheritanceFormatting(each, current);
 					current.addExtra(each);
 				}
 			} else {
 				newlist.add(current);
 				
 				current = new TextComponent("");
-				if (InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_12)) {
+				if (InteractionVisualizer.version.isLegacy()) {
 					current = (TextComponent) CustomStringUtils.copyFormattingEventsNoReplace(current, base);
  	        	} else {
  	        		current.copyFormatting(base, FormatRetention.EVENTS, false);
@@ -388,7 +433,7 @@ public class ChatComponentUtils {
 				for (BaseComponent each : thislist) {
 					each.setClickEvent(null);
 					each.setHoverEvent(null);
-					each = preventFurtherInheritanceFormatting(each);
+					each = preventFurtherInheritanceFormatting(each, current);
 					current.addExtra(each);
 				}
 			}
@@ -403,23 +448,22 @@ public class ChatComponentUtils {
 			product.addExtra(each);
 		}
 
+
 		return product;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public static <T extends BaseComponent> T clone(T chatComponent) {
-		if (chatComponent instanceof TextComponent) {
-			return (T) new TextComponent((TextComponent) chatComponent);
-		} else if (chatComponent instanceof TranslatableComponent) {
-			return (T) new TranslatableComponent((TranslatableComponent) chatComponent);
-		} else if (chatComponent instanceof KeybindComponent) {
-			return (T) new KeybindComponent((KeybindComponent) chatComponent);
-		} else if (chatComponent instanceof ScoreComponent) {
-			return (T) new ScoreComponent((ScoreComponent) chatComponent);
-		} else if (chatComponent instanceof SelectorComponent) {
-			return (T) new SelectorComponent((SelectorComponent) chatComponent);
+		try {
+			Class<? extends BaseComponent> clazz = chatComponent.getClass();
+			return (T) clazz.getConstructor(clazz).newInstance(clazz.cast(chatComponent));
+		} catch (Throwable e) {
+			try {
+				return (T) ComponentSerializer.parse(ComponentSerializer.toString(chatComponent))[0];
+			} catch (Throwable e1) {
+				throw new UnsupportedOperationException(chatComponent.getClass() + " is not supported to be cloned.", e);
+			}
 		}
-		throw new UnsupportedOperationException(chatComponent.getClass() + " is not supported to be cloned.");
 	}
 	
 	public static BaseComponent join(BaseComponent... toJoin) {

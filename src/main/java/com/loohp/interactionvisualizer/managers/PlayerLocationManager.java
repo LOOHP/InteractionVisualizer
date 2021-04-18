@@ -70,12 +70,16 @@ public class PlayerLocationManager {
 	}
 	
 	public static Collection<Player> filterOutOfRange(Collection<Player> players, Location location) {
+		return filterOutOfRange(players, location, player -> true);
+	}
+	
+	public static Collection<Player> filterOutOfRange(Collection<Player> players, Location location, Predicate<Player> predicate) {
 		Collection<Player> playersInRange = new HashSet<>();
 		int range = InteractionVisualizer.playerTrackingRange.getOrDefault(location.getWorld(), 64);
 		range *= range;
 		for (Player player : players) {
 			Location playerLocation = PlayerLocationManager.getPlayerLocation(player);
-			if (playerLocation.getWorld().equals(location.getWorld()) && (playerLocation.distanceSquared(location) <= range)) {
+			if (playerLocation.getWorld().equals(location.getWorld()) && (playerLocation.distanceSquared(location) <= range) && predicate.test(player)) {
 				playersInRange.add(player);
 			}
 		}

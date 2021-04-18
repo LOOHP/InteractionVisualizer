@@ -8,6 +8,8 @@ import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_11_R1.CraftChunk;
 import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_11_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_11_R1.entity.CraftItem;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
@@ -25,6 +27,7 @@ import com.loohp.interactionvisualizer.objectholders.ValuePairs;
 
 import net.minecraft.server.v1_11_R1.AxisAlignedBB;
 import net.minecraft.server.v1_11_R1.WorldServer;
+import net.minecraft.server.v1_11_R1.EntityItem;
 
 public class V1_11 extends NMS {
 	
@@ -89,6 +92,21 @@ public class V1_11 extends NMS {
 			packets[i] = packet;
 		}
 		return packets;
+	}
+	
+	@Override
+	public int getItemDespawnRate(Item item) {
+		int despawnRate;
+		try {
+			Object spigotWorldConfig = net.minecraft.server.v1_11_R1.World.class.getField("spigotConfig").get(((CraftWorld) item.getWorld()).getHandle());
+			despawnRate = spigotWorldConfig.getClass().getField("itemDespawnRate").getInt(spigotWorldConfig);
+			try {
+				despawnRate = (int) EntityItem.class.getMethod("getDespawnRate").invoke(((CraftItem) item).getHandle());
+			} catch (Throwable ignore) {}
+		} catch (Throwable e) {
+			despawnRate = 6000;
+		}
+		return despawnRate;
 	}
 
 }

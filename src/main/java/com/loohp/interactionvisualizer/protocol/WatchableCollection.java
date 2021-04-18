@@ -15,6 +15,7 @@ import com.loohp.interactionvisualizer.entityholders.ItemFrame;
 import com.loohp.interactionvisualizer.utils.LanguageUtils;
 import com.loohp.interactionvisualizer.utils.MCVersion;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
 public class WatchableCollection {
@@ -179,6 +180,35 @@ public class WatchableCollection {
 			watcher.setObject(new WrappedDataWatcherObject(8, intSerializer), frame.getFrameRotation());
 			break;
 		}
+		return watcher;
+	}
+	
+	public static WrappedDataWatcher getWatchableCollection(org.bukkit.entity.Item item, BaseComponent name) {
+		WrappedDataWatcher watcher = new WrappedDataWatcher();
+			
+		byte bitmask = (byte) 0;
+		bitmask = item.isGlowing() ? (byte) (bitmask | 0x40) : bitmask;
+		watcher.setObject(new WrappedDataWatcherObject(0, byteSerializer), bitmask);
+		
+		boolean visible = name != null && !name.toPlainText().equals("");
+		
+		switch (metaversion) {
+		case 0:
+			if (visible) {
+				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), LanguageUtils.convert(name, InteractionVisualizer.language).toLegacyText());
+			} else {
+				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), "");
+			}
+			break;
+		case 1:
+		case 2:
+		case 3:
+			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(ComponentSerializer.toString(name)).getHandle()));
+			break;
+		}
+		
+		watcher.setObject(new WrappedDataWatcherObject(3, booleanSerializer), visible);
+		
 		return watcher;
 	}
 

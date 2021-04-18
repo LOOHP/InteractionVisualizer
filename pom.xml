@@ -5,7 +5,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>1.14.9.2</version>
+	<version>1.14.9.3</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -48,6 +48,10 @@
 							<relocations>
 								<relocation>
 									<pattern>com.cryptomorin.xseries</pattern>
+									<shadedPattern>com.loohp.interactionvisualizer.Utils</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.apache.commons.text</pattern>
 									<shadedPattern>com.loohp.interactionvisualizer.Utils</shadedPattern>
 								</relocation>
 							</relocations>
@@ -187,6 +191,12 @@
 			<groupId>com.github.cryptomorin</groupId>
 			<artifactId>XSeries</artifactId>
 			<version>7.9.0</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.9</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

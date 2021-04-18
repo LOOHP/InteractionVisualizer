@@ -184,7 +184,19 @@ Blocks:
     Enabled: true
 
 Entities:
-  Villager: 
+  Item:
+    Enabled: true
+    Options:
+      RegularFormat: "{Item} &bx{Amount} &6[{Timer}&6]"
+      SingularFormat: "{Item} &6[{Timer}&6]"
+      ToolsFormat: "{Item} &6[{Durability}&6]"
+      #Hide if there is more than this defined amount of item entities in one block
+      Cramping: 6
+      Color:
+        High: "&a"
+        Medium: "&e"
+        Low: "&c"
+  Villager:
     Enabled: true
 
 #Enable these modules for InteractionVisualizer displays

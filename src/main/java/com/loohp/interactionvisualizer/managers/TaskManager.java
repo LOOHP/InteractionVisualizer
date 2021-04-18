@@ -45,6 +45,7 @@ import com.loohp.interactionvisualizer.blocks.SoulCampfireDisplay;
 import com.loohp.interactionvisualizer.blocks.SpawnerDisplay;
 import com.loohp.interactionvisualizer.blocks.StonecutterDisplay;
 import com.loohp.interactionvisualizer.debug.Debug;
+import com.loohp.interactionvisualizer.entities.ItemDisplay;
 import com.loohp.interactionvisualizer.entities.VillagerDisplay;
 import com.loohp.interactionvisualizer.listeners.ChunkEvents;
 import com.loohp.interactionvisualizer.updater.Updater;
@@ -85,6 +86,7 @@ public class TaskManager {
 	public static boolean stonecutter;
 	public static boolean smithingtable;
 	
+	public static boolean item;
 	public static boolean villager;
 	
 	public static List<Integer> tasks = new ArrayList<Integer>();
@@ -123,6 +125,7 @@ public class TaskManager {
 		stonecutter = false;
 		smithingtable = false;
 		
+		item = false;
 		villager = false;
 		
 		version = InteractionVisualizer.version;
@@ -338,6 +341,13 @@ public class TaskManager {
 			cd.register();
 			Bukkit.getPluginManager().registerEvents(cd, plugin);
 			conduit = true;
+		}
+		
+		if (getConfig().getBoolean("Entities.Item.Enabled")) {
+			ItemDisplay id = new ItemDisplay();
+			id.register();
+			Bukkit.getPluginManager().registerEvents(id, plugin);
+			item = true;
 		}
 		
 		if (getConfig().getBoolean("Entities.Villager.Enabled")) {

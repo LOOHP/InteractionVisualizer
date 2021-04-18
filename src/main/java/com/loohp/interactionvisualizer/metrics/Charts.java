@@ -340,6 +340,17 @@ public class Charts {
 	        }
 	    }));
 		
+		metrics.addCustomChart(new Metrics.SimplePie("item_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Entities.Item.Enabled")) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
 		metrics.addCustomChart(new Metrics.SimplePie("villager_enabled", new Callable<String>() {
 	        @Override
 	        public String call() throws Exception {
@@ -350,7 +361,6 @@ public class Charts {
 	            return string;
 	        }
 	    }));
-		
 		
 		//----
 		metrics.addCustomChart(new Metrics.SingleLineChart("total_tile_entities_in_range_visualizing", new Callable<Integer>() {

@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,10 +21,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 
 import net.md_5.bungee.api.ChatColor;
@@ -31,6 +37,30 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class LanguageUtils {
+	
+	private static Class<?> craftItemStackClass;
+	private static Class<?> nmsItemStackClass;
+	private static Method asNMSCopyMethod;
+	private static Method getRawItemTypeNameMethod;
+	
+	static {
+		if (InteractionVisualizer.version.isLegacy()) {
+			try {
+				craftItemStackClass = getNMSClass("org.bukkit.craftbukkit.", "inventory.CraftItemStack");
+				nmsItemStackClass = getNMSClass("net.minecraft.server.", "ItemStack");
+				asNMSCopyMethod = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class);
+				getRawItemTypeNameMethod = nmsItemStackClass.getMethod("a");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private static Class<?> getNMSClass(String prefix, String nmsClassString) throws ClassNotFoundException {	
+        String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
+        String name = prefix + version + nmsClassString;
+        return Class.forName(name);
+    }
 	
 	public static final String VERSION_MANIFEST_URL = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
 	public static final String RESOURCES_URL = "http://resources.download.minecraft.net/";
@@ -212,6 +242,64 @@ public class LanguageUtils {
 	
 	public static Set<String> getSupportedLanguages() {
 		return Collections.unmodifiableSet(translations.keySet());
+	}
+	
+	public static String getTranslationKey(ItemStack itemStack) {
+		try {
+			if (InteractionVisualizer.version.isLegacy()) {
+				return getLegacyTranslationKey(itemStack);
+			} else {
+				return getModernTranslationKey(itemStack);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private static String getModernTranslationKey(ItemStack itemStack) {
+		Material material = itemStack.getType();
+		String path = "";
+		
+		if (material.isBlock()) {
+			path = "block." + material.getKey().getNamespace() + "." + material.getKey().getKey();
+		} else {
+			path = "item." + material.getKey().getNamespace() + "." + material.getKey().getKey();
+		}
+		
+		if (itemStack.getType().equals(Material.POTION) || itemStack.getType().equals(Material.SPLASH_POTION) || itemStack.getType().equals(Material.LINGERING_POTION) || itemStack.getType().equals(Material.TIPPED_ARROW)) {
+			PotionMeta meta = (PotionMeta) itemStack.getItemMeta();
+			String namespace = PotionUtils.getVanillaPotionName(meta.getBasePotionData().getType());
+			path += ".effect." + namespace;
+		}
+		
+		if (itemStack.getType().equals(Material.PLAYER_HEAD)) {
+			String owner = NBTUtils.getString(itemStack, "SkullOwner", "Name");
+			if (owner != null) {
+				path += ".named";
+			}
+		}
+	
+		return path;
+	}
+	
+	private static String getLegacyTranslationKey(ItemStack itemStack) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		if (itemStack.getType().equals(Material.AIR)) {
+			if (InteractionVisualizer.version.isOld()) {
+				return "Air";
+			} else if (InteractionVisualizer.version.isOlderThan(MCVersion.V1_11)) {
+				return "createWorld.customize.flat.air";
+			}
+		}
+		Object nmsItemStackObject = asNMSCopyMethod.invoke(null, itemStack);
+		String path = getRawItemTypeNameMethod.invoke(nmsItemStackObject).toString() + ".name";
+		if (XMaterial.matchXMaterial(itemStack).equals(XMaterial.PLAYER_HEAD)) {
+			String owner = NBTUtils.getString(itemStack, "SkullOwner", "Name");
+			if (owner != null) {
+				path = "item.skull.player.name";
+			}
+		}
+		return path;
 	}
 	
 	public static String getTranslation(String translationKey, String language) {

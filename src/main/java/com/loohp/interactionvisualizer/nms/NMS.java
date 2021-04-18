@@ -2,6 +2,7 @@ package com.loohp.interactionvisualizer.nms;
 
 import java.util.List;
 
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
@@ -60,5 +61,7 @@ public abstract class NMS {
 	public abstract List<BoundingBox> getBoundingBoxes(BlockPosition pos);
 	
 	public abstract NMSTileEntitySet<?, ?> getTileEntities(ChunkPosition chunk, boolean load);
+	
+	public abstract int getItemDespawnRate(Item item);
 	
 }
