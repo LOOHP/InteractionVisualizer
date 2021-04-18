@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -44,13 +43,12 @@ public class ServerPacketSender {
         if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTask(plugin, () -> {
-			try {
-				protocolManager.sendServerPacket(entity, packet1);
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			}
-		});
+		
+		try {
+			protocolManager.sendServerPacket(entity, packet1);
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}		
 	}
 	
 	public static void teleportEntity(Player player, int entityId, Location location) {
@@ -65,13 +63,12 @@ public class ServerPacketSender {
         if (!plugin.isEnabled()) {
 			return;
 		}
-        Bukkit.getScheduler().runTask(plugin, () -> {
-	        try {
-	        	protocolManager.sendServerPacket(player, packet1);
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			}
-        });
+        
+        try {
+        	protocolManager.sendServerPacket(player, packet1);
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}        
 	}
 	
 	public static void spawnArmorStand(Collection<Player> players, ArmorStand entity) {
@@ -101,19 +98,18 @@ public class ServerPacketSender {
         if (!plugin.isEnabled()) {
 			return;
 		}
-        Bukkit.getScheduler().runTask(plugin, () -> {
-	        try {
-	        	for (Player player : players) {
-					protocolManager.sendServerPacket(player, packet1);
-					protocolManager.sendServerPacket(player, packet2);
-					for (PacketContainer packet : packet3) {
-						protocolManager.sendServerPacket(player, packet);
-					}
+        
+        try {
+        	for (Player player : players) {
+				protocolManager.sendServerPacket(player, packet1);
+				protocolManager.sendServerPacket(player, packet2);
+				for (PacketContainer packet : packet3) {
+					protocolManager.sendServerPacket(player, packet);
 				}
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
 			}
-        });
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}        
 	}
 	
 	public static void updateArmorStand(Collection<Player> players, ArmorStand entity) {
@@ -138,19 +134,18 @@ public class ServerPacketSender {
         if (!plugin.isEnabled()) {
 			return;
 		}
-        Bukkit.getScheduler().runTask(plugin, () -> {
-	        try {
-	        	for (Player player : players) {
-					protocolManager.sendServerPacket(player, packet1);
-					protocolManager.sendServerPacket(player, packet2);
-					for (PacketContainer packet : packet3) {
-						protocolManager.sendServerPacket(player, packet);
-					}
+        
+        try {
+        	for (Player player : players) {
+				protocolManager.sendServerPacket(player, packet1);
+				protocolManager.sendServerPacket(player, packet2);
+				for (PacketContainer packet : packet3) {
+					protocolManager.sendServerPacket(player, packet);
 				}
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
 			}
-        });
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}       
 	}
 
 	public static void updateArmorStandOnlyMeta(Collection<Player> players, ArmorStand entity) {
@@ -162,15 +157,14 @@ public class ServerPacketSender {
         if (!plugin.isEnabled()) {
 			return;
 		}
-        Bukkit.getScheduler().runTask(plugin, () -> {
-	        try {
-	        	for (Player player : players) {
-					protocolManager.sendServerPacket(player, packet1);
-				}
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+        
+        try {
+        	for (Player player : players) {
+				protocolManager.sendServerPacket(player, packet1);
 			}
-        });
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}        
 	}
 	
 	public static void removeArmorStand(Collection<Player> players, ArmorStand entity) {
@@ -180,15 +174,14 @@ public class ServerPacketSender {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskLater(plugin, () -> {
-			try {
-				for (Player player : players) {
-					protocolManager.sendServerPacket(player, packet1);
-				}
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+
+		try {
+			for (Player player : players) {
+				protocolManager.sendServerPacket(player, packet1);
 			}
-		}, 1);
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void spawnItem(Collection<Player> players, Item entity) {
@@ -230,17 +223,16 @@ public class ServerPacketSender {
         if (!plugin.isEnabled()) {
 			return;
 		}
-        Bukkit.getScheduler().runTask(plugin, () -> {
-	        try {
-	        	for (Player player : players) {
-					protocolManager.sendServerPacket(player, packet1);
-					protocolManager.sendServerPacket(player, packet2);
-					protocolManager.sendServerPacket(player, packet3);
-				}
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+        
+        try {
+        	for (Player player : players) {
+				protocolManager.sendServerPacket(player, packet1);
+				protocolManager.sendServerPacket(player, packet2);
+				protocolManager.sendServerPacket(player, packet3);
 			}
-        });
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}       
 	}
 
 	public static void updateItem(Collection<Player> players, Item entity) {		
@@ -270,17 +262,16 @@ public class ServerPacketSender {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTask(plugin, () -> {
-	        try {
-	        	for (Player player : players) {
-					protocolManager.sendServerPacket(player, packet1);
-					protocolManager.sendServerPacket(player, packet2);
-					protocolManager.sendServerPacket(player, packet3);
-				}
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+		
+        try {
+        	for (Player player : players) {
+				protocolManager.sendServerPacket(player, packet1);
+				protocolManager.sendServerPacket(player, packet2);
+				protocolManager.sendServerPacket(player, packet3);
 			}
-		});
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}		
 	}
 	
 	public static void removeItem(Collection<Player> players, Item entity) {
@@ -290,15 +281,14 @@ public class ServerPacketSender {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskLater(plugin, () -> {
-			try {
-				for (Player player : players) {
-					protocolManager.sendServerPacket(player, packet1);
-				}
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+
+		try {
+			for (Player player : players) {
+				protocolManager.sendServerPacket(player, packet1);
 			}
-		}, 1);
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void spawnItemFrame(Collection<Player> players, ItemFrame entity) {
@@ -330,16 +320,15 @@ public class ServerPacketSender {
         if (!plugin.isEnabled()) {
 			return;
 		}
-        Bukkit.getScheduler().runTask(plugin, () -> {
-			try {
-				for (Player player : players) {
-					protocolManager.sendServerPacket(player, packet1);
-					protocolManager.sendServerPacket(player, packet2);
-				}
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+        
+		try {
+			for (Player player : players) {
+				protocolManager.sendServerPacket(player, packet1);
+				protocolManager.sendServerPacket(player, packet2);
 			}
-        });
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}       
 	}
 	
 	public static int getItemFrameData(ItemFrame frame) {
@@ -370,15 +359,14 @@ public class ServerPacketSender {
         if (!plugin.isEnabled()) {
 			return;
 		}
-        Bukkit.getScheduler().runTask(plugin, () -> {
-	        try {
-	        	for (Player player : players) {
-					protocolManager.sendServerPacket(player, packet1);
-				}
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+        
+        try {
+        	for (Player player : players) {
+				protocolManager.sendServerPacket(player, packet1);
 			}
-        });
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void removeItemFrame(Collection<Player> players, ItemFrame entity) {
@@ -388,14 +376,13 @@ public class ServerPacketSender {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskLater(plugin, () -> {
-			try {
-				for (Player player : players) {
-					protocolManager.sendServerPacket(player, packet1);
-				}
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+
+		try {
+			for (Player player : players) {
+				protocolManager.sendServerPacket(player, packet1);
 			}
-		}, 1);
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
 	}
 }
