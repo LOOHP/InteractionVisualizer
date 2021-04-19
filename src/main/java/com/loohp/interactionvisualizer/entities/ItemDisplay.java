@@ -1,6 +1,7 @@
 package com.loohp.interactionvisualizer.entities;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -216,11 +217,11 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 	    if (rawDisplayName != null && JsonUtils.isValid(rawDisplayName)) {
 	    	try {
 	    		if (item.getEnchantments().isEmpty()) {
-	    			name = ChatComponentUtils.join(ComponentSerializer.parse(rawDisplayName));								    			
+	    			name = ChatComponentUtils.join(ComponentSerializer.parse(rawDisplayName));
 	    		} else {							
 	    			TextComponent coloring = new TextComponent(ChatColor.AQUA + "");
 	    			coloring.setColor(ChatColor.AQUA);
-	    			coloring.setExtra(Arrays.asList(ComponentSerializer.parse(rawDisplayName)));
+	    			coloring.setExtra(new ArrayList<>(Arrays.asList(ComponentSerializer.parse(rawDisplayName))));
 	    			name = ChatComponentUtils.cleanUpLegacyText(coloring);
 	    		}
 	    	} catch (Throwable e) {
@@ -251,7 +252,9 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		    }
 	    }
 	    
-	    name.setColor(RarityUtils.getRarityColor(item));
+	    if (name.getColorRaw() == null) {
+	    	name.setColor(RarityUtils.getRarityColor(item));
+	    }
 	    
 	    return name;
 	}
