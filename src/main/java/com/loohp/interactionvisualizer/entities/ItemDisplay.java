@@ -19,7 +19,6 @@ import org.bukkit.inventory.meta.Damageable;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.cryptomorin.xseries.XMaterial;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
@@ -40,6 +39,7 @@ import com.loohp.interactionvisualizer.utils.RarityUtils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
 public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
@@ -211,8 +211,6 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 	private BaseComponent getDisplayName(ItemStack item) {
 		BaseComponent name = null;
 		
-		XMaterial xMaterial = XMaterial.matchXMaterial(item);
-		
 		String rawDisplayName = NBTUtils.getString(item, "display", "Name");
 	    if (rawDisplayName != null && JsonUtils.isValid(rawDisplayName)) {
 	    	try {
@@ -237,18 +235,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		    		name = new TextComponent(ChatColorUtils.filterIllegalColorCodes(ChatColor.AQUA + item.getItemMeta().getDisplayName()));
 		    	}
 		    } else {
-		    	String str = LanguageUtils.getTranslation(LanguageUtils.getTranslationKey(item), InteractionVisualizer.language);
-				if (xMaterial.equals(XMaterial.PLAYER_HEAD)) {
-					String owner = NBTUtils.getString(item, "SkullOwner", "Name");
-					if (owner != null) {
-						str = str.replaceFirst("%s", owner);
-					}
-				}
-				if (item.getEnchantments().isEmpty()) {
-		    		name = new TextComponent(ChatColorUtils.filterIllegalColorCodes(str));
-		    	} else {
-		    		name = new TextComponent(ChatColorUtils.filterIllegalColorCodes(ChatColor.AQUA + str));
-		    	}
+		    	name = new TranslatableComponent(LanguageUtils.getTranslationKey(item));
 		    }
 	    }
 	    
