@@ -76,7 +76,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		blacklist = InteractionVisualizer.plugin.getConfig().getList("Entities.Item.Options.Blacklist.List").stream().map(each -> {
 			@SuppressWarnings("unchecked")
 			List<String> entry = (List<String>) each;
-			Predicate<String> name = Pattern.compile(entry.get(0)).asMatchPredicate();
+			Predicate<String> name = str -> Pattern.compile(entry.get(0)).matcher(str).matches();
 			Predicate<Material> material;
 			if (entry.size() > 1 && !entry.get(1).equals("*")) {
 				try {
