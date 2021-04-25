@@ -78,7 +78,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 			List<String> entry = (List<String>) each;
 			Predicate<String> name = Pattern.compile(entry.get(0)).asMatchPredicate();
 			Predicate<Material> material;
-			if (entry.size() > 1 || entry.get(1).equals("*")) {
+			if (entry.size() > 1 && !entry.get(1).equals("*")) {
 				try {
 					Material m = Material.valueOf(entry.get(1).toUpperCase());
 					material = e -> e.equals(m);
