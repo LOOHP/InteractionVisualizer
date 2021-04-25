@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -55,7 +57,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 	private String lowColor = "";
 	private int cramp = 6;
 	private boolean stripColorBlacklist;
-	private Predicate<String> blacklist;
+	private BiPredicate<String, Material> blacklist;
 	
 	public ItemDisplay() {
 		onReload(new InteractionVisualizerReloadEvent());
@@ -71,7 +73,28 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		lowColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Entities.Item.Options.Color.Low"));
 		cramp = InteractionVisualizer.plugin.getConfig().getInt("Entities.Item.Options.Cramping");
 		stripColorBlacklist = InteractionVisualizer.plugin.getConfig().getBoolean("Entities.Item.Options.Blacklist.StripColorWhenMatching");
-		blacklist = InteractionVisualizer.plugin.getConfig().getStringList("Entities.Item.Options.Blacklist.List").stream().map(each -> Pattern.compile(each).asMatchPredicate()).reduce(Predicate::or).get();
+		blacklist = InteractionVisualizer.plugin.getConfig().getList("Entities.Item.Options.Blacklist.List").stream().map(each -> {
+			@SuppressWarnings("unchecked")
+			List<String> entry = (List<String>) each;
+			Predicate<String> name = Pattern.compile(entry.get(0)).asMatchPredicate();
+			Predicate<Material> material;
+			if (entry.size() > 1 || entry.get(1).equals("*")) {
+				try {
+					Material m = Material.valueOf(entry.get(1).toUpperCase());
+					material = e -> e.equals(m);
+				} catch (Exception er) {
+					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] " + entry.get(1).toUpperCase() + " is not a valid material");
+					material = e -> true;
+				}
+			} else {
+				material = e -> true;
+			}
+			Predicate<Material> finalmaterial = material;
+			BiPredicate<String, Material> bipredicate = (s, m) -> {
+				return name.test(s) && finalmaterial.test(m); 
+			};
+			return bipredicate;
+		}).reduce(BiPredicate::or).get();
 	}
 
 	@Override
@@ -108,7 +131,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		BaseComponent name = getDisplayName(itemstack);
 		String matchingname = getMatchingName(itemstack, stripColorBlacklist);
 		
-		if (blacklist.test(matchingname) || NBTUtils.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || cramp >= 0 && items.stream().filter(each -> each.getWorld().equals(world) && area.contains(each.getLocation().toVector())).count() > cramp) {
+		if (blacklist.test(matchingname, itemstack.getType()) || NBTUtils.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || cramp >= 0 && items.stream().filter(each -> each.getWorld().equals(world) && area.contains(each.getLocation().toVector())).count() > cramp) {
 			PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
 		    defaultPacket.getIntegers().write(0, item.getEntityId());
 		    defaultPacket.getWatchableCollectionModifier().write(0, WrappedDataWatcher.getEntityWatcher(item).getWatchableObjects());

@@ -192,12 +192,14 @@ Entities:
   Item:
     Enabled: true
     Options:
-      #Items with names that matches this list of regexes will not have the display shown
+      #Items that matches will not have the display shown
       Blacklist:
+        #Strip color codes when matching names
         StripColorWhenMatching: true
+        #Regex name match
         List:
-          - "^ALTAR Probe.*"
-          - "^Blacklisted Item$"
+          - ["^ALTAR Probe.*", "NETHER_STAR"]
+          - ["^Blacklisted Item$", "*"]
       RegularFormat: "{Item} &bx{Amount} &6[{Timer}&6]"
       SingularFormat: "{Item} &6[{Timer}&6]"
       ToolsFormat: "{Item} &6[{Durability}&6]"
