@@ -94,7 +94,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 				return name.test(s) && finalmaterial.test(m); 
 			};
 			return bipredicate;
-		}).reduce(BiPredicate::or).get();
+		}).reduce(BiPredicate::or).orElse((s, m) -> false);
 	}
 
 	@Override
