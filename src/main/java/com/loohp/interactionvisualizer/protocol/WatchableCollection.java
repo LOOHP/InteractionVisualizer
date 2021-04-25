@@ -183,14 +183,17 @@ public class WatchableCollection {
 		return watcher;
 	}
 	
-	public static WrappedDataWatcher getWatchableCollection(org.bukkit.entity.Item item, BaseComponent name) {
-		WrappedDataWatcher watcher = new WrappedDataWatcher();
-			
-		byte bitmask = (byte) 0;
-		bitmask = item.isGlowing() ? (byte) (bitmask | 0x40) : bitmask;
-		watcher.setObject(new WrappedDataWatcherObject(0, byteSerializer), bitmask);
+	public static WrappedDataWatcher getWatchableCollection(org.bukkit.entity.Item item, BaseComponent name, WrappedDataWatcher watcher) {
+		if (watcher == null) {
+			watcher = WrappedDataWatcher.getEntityWatcher(item);
+		}
 		
-		boolean visible = name != null && !name.toPlainText().equals("");
+		boolean visible;
+		try {
+			visible = name != null && !name.toPlainText().equals("");
+		} catch (Exception e) {
+			visible = false;
+		}
 		
 		switch (metaversion) {
 		case 0:

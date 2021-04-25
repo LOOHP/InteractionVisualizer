@@ -16,7 +16,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.util.EulerAngle;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
@@ -43,8 +42,7 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener {
 	
-	public ConcurrentHashMap<Block, Map<String, Object>> beaconMap = new ConcurrentHashMap<>();
-	public ConcurrentHashMap<Block, float[]> placemap = new ConcurrentHashMap<>();
+	public Map<Block, Map<String, Object>> beaconMap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
 	private int gcPeriod = 600;
 	private PathType pathType = PathType.FACE;
@@ -123,7 +121,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 				for (Block block : list) {
 					if (beaconMap.get(block) == null && isActive(block.getLocation())) {
 						if (block.getType().equals(Material.BEACON)) {
-							HashMap<String, Object> map = new HashMap<>();
+							Map<String, Object> map = new HashMap<>();
 							map.put("Item", "N/A");
 							map.putAll(spawnArmorStands(block));
 							beaconMap.put(block, map);
@@ -248,24 +246,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 					});
 				}, delay);
 			}
-		}, 0, checkingPeriod).getTaskId();		
-	}
-	
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onPlaceBeacon(BlockPlaceEvent event) {
-		if (event.isCancelled()) {
-			return;
-		}
-		Block block = event.getBlockPlaced();
-		if (beaconMap.containsKey(block)) {
-			return;
-		}
-
-		if (!block.getType().equals(Material.BEACON)) {
-			return;
-		}
-		
-		placemap.put(block, new float[]{event.getPlayer().getLocation().getYaw(), event.getPlayer().getLocation().getPitch()});
+		}, 0, checkingPeriod).getTaskId();
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)

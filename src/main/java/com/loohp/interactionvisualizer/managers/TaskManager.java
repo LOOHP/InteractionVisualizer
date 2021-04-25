@@ -16,6 +16,7 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.api.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.blocks.AnvilDisplay;
+import com.loohp.interactionvisualizer.blocks.BannerDisplay;
 import com.loohp.interactionvisualizer.blocks.BeaconDisplay;
 import com.loohp.interactionvisualizer.blocks.BeeHiveDisplay;
 import com.loohp.interactionvisualizer.blocks.BeeNestDisplay;
@@ -57,6 +58,7 @@ public class TaskManager {
 	public static MCVersion version;
 	
 	public static boolean anvil;
+	public static boolean banner;
 	public static boolean beacon;
 	public static boolean beehive;
 	public static boolean beenest;
@@ -96,6 +98,7 @@ public class TaskManager {
 	
 	public static void setup() {
 		anvil = false;
+		banner = false;
 		beacon = false;
 		beehive = false;
 		beenest = false;
@@ -341,6 +344,13 @@ public class TaskManager {
 			cd.register();
 			Bukkit.getPluginManager().registerEvents(cd, plugin);
 			conduit = true;
+		}
+		
+		if (getConfig().getBoolean("Blocks.Banner.Enabled")) {
+			BannerDisplay bd = new BannerDisplay();
+			bd.register();
+			Bukkit.getPluginManager().registerEvents(bd, plugin);
+			banner = true;
 		}
 		
 		if (getConfig().getBoolean("Entities.Item.Enabled")) {

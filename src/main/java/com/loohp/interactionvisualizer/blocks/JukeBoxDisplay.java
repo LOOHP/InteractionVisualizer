@@ -41,6 +41,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 	public ConcurrentHashMap<Block, Map<String, Object>> jukeboxMap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
 	private int gcPeriod = 600;
+	private boolean showDiscName = true;
 	
 	public JukeBoxDisplay() {
 		onReload(new InteractionVisualizerReloadEvent());
@@ -50,6 +51,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 	public void onReload(InteractionVisualizerReloadEvent event) {
 		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.JukeBox.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
+		showDiscName = InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.JukeBox.Options.ShowDiscName");
 	}
 	
 	@Override
@@ -135,22 +137,27 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 						Item item = null;
 						if (entry.getValue().get("Item") instanceof String) {
 							if (itemstack != null) {
+								item = new Item(jukebox.getLocation().clone().add(0.5, 1.0, 0.5));
+								
 								String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString()) : jukebox.getPlaying().toString();
 								BaseComponent text;
-								if (itemstack.getItemMeta().hasDisplayName()) {
-									text = new TextComponent(getColor(disc) + itemstack.getItemMeta().getDisplayName());
+								if (showDiscName) {
+									if (itemstack.getItemMeta().hasDisplayName()) {
+										text = new TextComponent(getColor(disc) + itemstack.getItemMeta().getDisplayName());
+									} else {
+										text = new TranslatableComponent(TranslationUtils.getRecord(disc));
+										text.setColor(getColor(disc));
+									}
+									item.setCustomName(text);
+									item.setCustomNameVisible(true);
 								} else {
-									text = new TranslatableComponent(TranslationUtils.getRecord(disc));
-									text.setColor(getColor(disc));
-								}
-								
-								item = new Item(jukebox.getLocation().clone().add(0.5, 1.0, 0.5));
+									item.setCustomName("");
+									item.setCustomNameVisible(false);
+								}								
 								item.setItemStack(itemstack);
 								item.setVelocity(new Vector(0, 0, 0));
 								item.setPickupDelay(32767);
 								item.setGravity(false);
-								item.setCustomName(text);
-								item.setCustomNameVisible(true);
 								entry.getValue().put("Item", item);
 								PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
 								PacketManager.updateItem(item);
@@ -164,15 +171,19 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 									item.setItemStack(itemstack);
 									String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString()) : jukebox.getPlaying().toString();
 									BaseComponent text;
-									if (itemstack.getItemMeta().hasDisplayName()) {
-										text = new TextComponent(getColor(disc) + itemstack.getItemMeta().getDisplayName());
+									if (showDiscName) {
+										if (itemstack.getItemMeta().hasDisplayName()) {
+											text = new TextComponent(getColor(disc) + itemstack.getItemMeta().getDisplayName());
+										} else {
+											text = new TranslatableComponent(TranslationUtils.getRecord(disc));
+											text.setColor(getColor(disc));
+										}
+										item.setCustomName(text);
+										item.setCustomNameVisible(true);
 									} else {
-										text = new TranslatableComponent(TranslationUtils.getRecord(disc));
-										text.setColor(getColor(disc));
+										item.setCustomName("");
+										item.setCustomNameVisible(false);
 									}
-									
-									item.setCustomName(text);
-									item.setCustomNameVisible(true);
 									PacketManager.updateItem(item);
 								}
 							} else {

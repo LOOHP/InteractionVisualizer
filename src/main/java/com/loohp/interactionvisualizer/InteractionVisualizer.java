@@ -38,6 +38,7 @@ import com.loohp.interactionvisualizer.updater.Updater;
 import com.loohp.interactionvisualizer.updater.Updater.UpdaterResponse;
 import com.loohp.interactionvisualizer.utils.LanguageUtils;
 import com.loohp.interactionvisualizer.utils.MCVersion;
+import com.loohp.interactionvisualizer.utils.PotionUtils;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -167,6 +168,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		TileEntityManager._init_();
 		PacketManager.run();
 		PacketManager.dynamicEntity();
+		PotionUtils.setupPotions();
 		
 		MaterialManager.setup();
 		

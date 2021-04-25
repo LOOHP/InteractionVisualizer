@@ -32,6 +32,17 @@ public class Charts {
 	        }
 	    }));
 		
+		metrics.addCustomChart(new Metrics.SimplePie("banner_enabled", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	        	String string = "Disabled";
+	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Banner.Enabled")) {
+	        		string = "Enabled";
+	        	}
+	            return string;
+	        }
+	    }));
+		
 		metrics.addCustomChart(new Metrics.SimplePie("beacon_enabled", new Callable<String>() {
 	        @Override
 	        public String call() throws Exception {

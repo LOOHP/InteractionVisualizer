@@ -47,6 +47,8 @@ LightUpdate:
 Blocks:
   Anvil:
     Enabled: true
+  Banner:
+    Enabled: true
   Beacon:
     Enabled: true
     #How often should the plugin check for block updates
@@ -138,6 +140,9 @@ Blocks:
   JukeBox:
     Enabled: true
     CheckingPeriod: 20
+    Options:
+      #Whether to have the name of the disc displayed or not
+      ShowDiscName: true
   Lectern:
     Enabled: true
     CheckingPeriod: 20
@@ -187,6 +192,12 @@ Entities:
   Item:
     Enabled: true
     Options:
+      #Items with names that matches this list of regexes will not have the display shown
+      Blacklist:
+        StripColorWhenMatching: true
+        List:
+          - "^ALTAR Probe.*"
+          - "^Blacklisted Item$"
       RegularFormat: "{Item} &bx{Amount} &6[{Timer}&6]"
       SingularFormat: "{Item} &6[{Timer}&6]"
       ToolsFormat: "{Item} &6[{Durability}&6]"

@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -15,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
@@ -51,6 +54,8 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 	private String mediumColor = "";
 	private String lowColor = "";
 	private int cramp = 6;
+	private boolean stripColorBlacklist;
+	private Predicate<String> blacklist;
 	
 	public ItemDisplay() {
 		onReload(new InteractionVisualizerReloadEvent());
@@ -65,6 +70,8 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		mediumColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Entities.Item.Options.Color.Medium"));
 		lowColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Entities.Item.Options.Color.Low"));
 		cramp = InteractionVisualizer.plugin.getConfig().getInt("Entities.Item.Options.Cramping");
+		stripColorBlacklist = InteractionVisualizer.plugin.getConfig().getBoolean("Entities.Item.Options.Blacklist.StripColorWhenMatching");
+		blacklist = InteractionVisualizer.plugin.getConfig().getStringList("Entities.Item.Options.Blacklist.List").stream().map(each -> Pattern.compile(each).asMatchPredicate()).reduce(Predicate::or).get();
 	}
 
 	@Override
@@ -93,7 +100,15 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		Location location = item.getLocation();
 		BoundingBox area = BoundingBox.of(item.getLocation(), 0.5, 0.5, 0.5);
 		int ticks = NBTUtils.getShort(item, "Age");
-		if (NBTUtils.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || cramp >= 0 && items.stream().filter(each -> each.getWorld().equals(world) && area.contains(each.getLocation().toVector())).count() > cramp) {
+		
+		ItemStack itemstack = item.getItemStack();
+		if (itemstack == null) {
+			itemstack = new ItemStack(Material.AIR);
+		}
+		BaseComponent name = getDisplayName(itemstack);
+		String matchingname = getMatchingName(itemstack, stripColorBlacklist);
+		
+		if (blacklist.test(matchingname) || NBTUtils.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || cramp >= 0 && items.stream().filter(each -> each.getWorld().equals(world) && area.contains(each.getLocation().toVector())).count() > cramp) {
 			PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
 		    defaultPacket.getIntegers().write(0, item.getEntityId());
 		    defaultPacket.getWatchableCollectionModifier().write(0, WrappedDataWatcher.getEntityWatcher(item).getWatchableObjects());
@@ -106,12 +121,6 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 				}
 		    }
 		} else {
-			ItemStack itemstack = item.getItemStack();
-			if (itemstack == null) {
-				itemstack = new ItemStack(Material.AIR);
-			}
-			
-			BaseComponent name = getDisplayName(itemstack);
 			int amount = itemstack.getAmount();
 		    String durDisplay = null;
 		    
@@ -177,8 +186,8 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		    	}
 		    }
 		    
-		    WrappedDataWatcher modifiedWatcher = WatchableCollection.getWatchableCollection(item, display);
 		    WrappedDataWatcher defaultWatcher = WrappedDataWatcher.getEntityWatcher(item);
+		    WrappedDataWatcher modifiedWatcher = WatchableCollection.getWatchableCollection(item, display, defaultWatcher.deepClone());
 		    
 		    PacketContainer modifiedPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
 		    PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
@@ -244,6 +253,20 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 	    }
 	    
 	    return name;
+	}
+	
+	private String getMatchingName(ItemStack item, boolean stripColor) {
+		if (item.hasItemMeta() && item.getItemMeta() != null) {
+			ItemMeta meta = item.getItemMeta();
+			if (meta.hasDisplayName() && meta.getDisplayName() != null) {
+				if (stripColor) {
+					return ChatColorUtils.stripColor(meta.getDisplayName());
+				} else {
+					return meta.getDisplayName();
+				}
+			}
+		}
+		return "";
 	}
 
 }
