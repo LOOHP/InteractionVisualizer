@@ -49,6 +49,7 @@ Blocks:
     Enabled: true
   Banner:
     Enabled: true
+    Options:
     #Banners that matches will not have the display shown
       Blacklist:
         #Strip color codes when matching names
