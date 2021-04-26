@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -31,6 +33,7 @@ import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
 import com.loohp.interactionvisualizer.objectholders.TileEntity;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
+import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.utils.ChatComponentUtils;
 import com.loohp.interactionvisualizer.utils.JsonUtils;
 import com.loohp.interactionvisualizer.utils.NBTUtils;
@@ -44,6 +47,8 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
 	public Map<Block, Map<String, Object>> bannerMap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
 	private int gcPeriod = 600;
+	private boolean stripColorBlacklist;
+	private Predicate<String> blacklist;
 	
 	public BannerDisplay() {
 		onReload(new InteractionVisualizerReloadEvent());
@@ -53,6 +58,12 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
 	public void onReload(InteractionVisualizerReloadEvent event) {
 		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Banner.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
+		stripColorBlacklist = InteractionVisualizer.plugin.getConfig().getBoolean("Entities.Item.Options.Blacklist.StripColorWhenMatching");
+		blacklist = InteractionVisualizer.plugin.getConfig().getStringList("Blocks.Banner.Options.Blacklist.List").stream().map(each -> {
+			Pattern pattern = Pattern.compile(each);
+			Predicate<String> predicate = str -> pattern.matcher(str).matches();
+			return predicate;
+		}).reduce(Predicate::or).orElse(s -> false);
 	}
 
 	@Override
@@ -151,10 +162,22 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
 							} else {
 								component = new TextComponent(name);
 							}
-							if (!ChatComponentUtils.areSimilar(line1.getCustomName(), component, true) || !line1.isCustomNameVisible()) {
-								line1.setCustomName(component);
-								line1.setCustomNameVisible(true);
-								PacketManager.updateArmorStandOnlyMeta(line1);
+							String matchingName = component.toLegacyText();
+							if (stripColorBlacklist) {
+								matchingName = ChatColorUtils.stripColor(matchingName);
+							}
+							if (blacklist.test(matchingName)) {
+								if (!line1.getCustomName().toPlainText().equals("") || line1.isCustomNameVisible()) {
+									line1.setCustomName("");
+									line1.setCustomNameVisible(false);
+									PacketManager.updateArmorStandOnlyMeta(line1);
+								}
+							} else {
+								if (!ChatComponentUtils.areSimilar(line1.getCustomName(), component, true) || !line1.isCustomNameVisible()) {
+									line1.setCustomName(component);
+									line1.setCustomNameVisible(true);
+									PacketManager.updateArmorStandOnlyMeta(line1);
+								}
 							}
 						}
 					});

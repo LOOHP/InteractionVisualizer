@@ -49,6 +49,13 @@ Blocks:
     Enabled: true
   Banner:
     Enabled: true
+    #Banners that matches will not have the display shown
+      Blacklist:
+        #Strip color codes when matching names
+        StripColorWhenMatching: true
+        #Regex name match
+        List:
+        - "Ominous Banner"
   Beacon:
     Enabled: true
     #How often should the plugin check for block updates
