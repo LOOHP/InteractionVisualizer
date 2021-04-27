@@ -2,6 +2,7 @@ package com.loohp.interactionvisualizer.nms;
 
 import java.util.List;
 
+import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -63,5 +64,7 @@ public abstract class NMS {
 	public abstract NMSTileEntitySet<?, ?> getTileEntities(ChunkPosition chunk, boolean load);
 	
 	public abstract int getItemDespawnRate(Item item);
+	
+	public abstract String getBannerCustomName(Block block);
 	
 }

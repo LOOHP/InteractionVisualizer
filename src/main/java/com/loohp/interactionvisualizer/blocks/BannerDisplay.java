@@ -31,12 +31,12 @@ import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.nms.NMS;
 import com.loohp.interactionvisualizer.objectholders.TileEntity;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.utils.ChatComponentUtils;
 import com.loohp.interactionvisualizer.utils.JsonUtils;
-import com.loohp.interactionvisualizer.utils.NBTUtils;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -142,10 +142,10 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
 					if (!isBanner(block.getType())) {
 						return;
 					}
-					String name = NBTUtils.getString(block, "CustomName");
+					String name = NMS.getInstance().getBannerCustomName(block);
 					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
 						ArmorStand line1 = (ArmorStand) entry.getValue().get("1");
-						if (name == null) {
+						if (name == null || name.equals("")) {
 							if (!line1.getCustomName().toPlainText().equals("") || line1.isCustomNameVisible()) {
 								line1.setCustomName("");
 								line1.setCustomNameVisible(false);

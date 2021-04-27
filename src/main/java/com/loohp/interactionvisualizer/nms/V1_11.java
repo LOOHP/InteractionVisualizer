@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_11_R1.CraftChunk;
 import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_11_R1.util.CraftMagicNumbers;
@@ -107,6 +108,11 @@ public class V1_11 extends NMS {
 			despawnRate = 6000;
 		}
 		return despawnRate;
+	}
+	
+	@Override
+	public String getBannerCustomName(Block block) {
+		return ((CraftWorld) block.getWorld()).getHandle().getTileEntity(new net.minecraft.server.v1_11_R1.BlockPosition(block.getX(), block.getY(), block.getZ())).d().getString("CustomName");
 	}
 
 }
