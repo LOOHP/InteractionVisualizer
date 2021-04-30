@@ -46,9 +46,7 @@ public class ServerPacketSender {
 		
 		try {
 			protocolManager.sendServerPacket(entity, packet1);
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}		
+		} catch (InvocationTargetException | IllegalArgumentException e) {}		
 	}
 	
 	public static void teleportEntity(Player player, int entityId, Location location) {
@@ -66,9 +64,7 @@ public class ServerPacketSender {
         
         try {
         	protocolManager.sendServerPacket(player, packet1);
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}        
+		} catch (InvocationTargetException | IllegalArgumentException e) {}        
 	}
 	
 	public static void spawnArmorStand(Collection<Player> players, ArmorStand entity) {
@@ -107,9 +103,7 @@ public class ServerPacketSender {
 					protocolManager.sendServerPacket(player, packet);
 				}
 			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}        
+		} catch (InvocationTargetException | IllegalArgumentException e) {}        
 	}
 	
 	public static void updateArmorStand(Collection<Player> players, ArmorStand entity) {
@@ -143,9 +137,7 @@ public class ServerPacketSender {
 					protocolManager.sendServerPacket(player, packet);
 				}
 			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}       
+		} catch (InvocationTargetException | IllegalArgumentException e) {}       
 	}
 
 	public static void updateArmorStandOnlyMeta(Collection<Player> players, ArmorStand entity) {
@@ -162,9 +154,7 @@ public class ServerPacketSender {
         	for (Player player : players) {
 				protocolManager.sendServerPacket(player, packet1);
 			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}        
+		} catch (InvocationTargetException | IllegalArgumentException e) {}        
 	}
 	
 	public static void removeArmorStand(Collection<Player> players, ArmorStand entity) {
@@ -179,9 +169,7 @@ public class ServerPacketSender {
 			for (Player player : players) {
 				protocolManager.sendServerPacket(player, packet1);
 			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		} catch (InvocationTargetException | IllegalArgumentException e) {}
 	}
 	
 	public static void spawnItem(Collection<Player> players, Item entity) {
@@ -230,9 +218,7 @@ public class ServerPacketSender {
 				protocolManager.sendServerPacket(player, packet2);
 				protocolManager.sendServerPacket(player, packet3);
 			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}       
+		} catch (InvocationTargetException | IllegalArgumentException e) {}       
 	}
 
 	public static void updateItem(Collection<Player> players, Item entity) {		
@@ -269,9 +255,7 @@ public class ServerPacketSender {
 				protocolManager.sendServerPacket(player, packet2);
 				protocolManager.sendServerPacket(player, packet3);
 			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}		
+		} catch (InvocationTargetException | IllegalArgumentException e) {}		
 	}
 	
 	public static void removeItem(Collection<Player> players, Item entity) {
@@ -286,9 +270,7 @@ public class ServerPacketSender {
 			for (Player player : players) {
 				protocolManager.sendServerPacket(player, packet1);
 			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		} catch (InvocationTargetException | IllegalArgumentException e) {}
 	}
 
 	public static void spawnItemFrame(Collection<Player> players, ItemFrame entity) {
@@ -326,9 +308,7 @@ public class ServerPacketSender {
 				protocolManager.sendServerPacket(player, packet1);
 				protocolManager.sendServerPacket(player, packet2);
 			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}       
+		} catch (InvocationTargetException | IllegalArgumentException e) {}       
 	}
 	
 	public static int getItemFrameData(ItemFrame frame) {
@@ -364,9 +344,7 @@ public class ServerPacketSender {
         	for (Player player : players) {
 				protocolManager.sendServerPacket(player, packet1);
 			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		} catch (InvocationTargetException | IllegalArgumentException e) {}
 	}
 	
 	public static void removeItemFrame(Collection<Player> players, ItemFrame entity) {
@@ -381,8 +359,6 @@ public class ServerPacketSender {
 			for (Player player : players) {
 				protocolManager.sendServerPacket(player, packet1);
 			}
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		} catch (InvocationTargetException | IllegalArgumentException e) {}
 	}
 }
