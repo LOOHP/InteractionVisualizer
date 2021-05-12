@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,6 +33,7 @@ import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEve
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.nms.NMS;
 import com.loohp.interactionvisualizer.objectholders.BoundingBox;
+import com.loohp.interactionvisualizer.objectholders.WrappedCollection;
 import com.loohp.interactionvisualizer.protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.utils.ChatComponentUtils;
@@ -107,19 +109,19 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 	public int run() {
 		return Bukkit.getScheduler().runTaskTimer(InteractionVisualizer.plugin, () -> {
 			for (World world : Bukkit.getWorlds()) {
-				Collection<Item> items = world.getEntitiesByClass(Item.class);
+				WrappedCollection<?, Entity> entities = NMS.getInstance().getEntities(world);
 				Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
-					for (Item item : items) {
-						if (item.isValid()) {
-							tick(item, items);
+					for (Entity entity : entities) {
+						if (entity.isValid() && entity instanceof Item) {
+							tick((Item) entity, entities);
 						}
 					}
-				});				
+				});
 			}
 		}, 0, 20).getTaskId();
 	}
 	
-	private void tick(Item item, Collection<Item> items) {
+	private void tick(Item item, WrappedCollection<?, Entity> items) {
 		World world = item.getWorld();
 		Location location = item.getLocation();
 		BoundingBox area = BoundingBox.of(item.getLocation(), 0.5, 0.5, 0.5);
@@ -132,7 +134,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		BaseComponent name = getDisplayName(itemstack);
 		String matchingname = getMatchingName(itemstack, stripColorBlacklist);
 		
-		if (blacklist.test(matchingname, itemstack.getType()) || NBTUtils.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || cramp >= 0 && items.stream().filter(each -> each.getWorld().equals(world) && area.contains(each.getLocation().toVector())).count() > cramp) {
+		if (blacklist.test(matchingname, itemstack.getType()) || NBTUtils.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || cramp >= 0 && items.stream().filter(each -> each.isValid() && each instanceof Item && each.getWorld().equals(world) && area.contains(each.getLocation().toVector())).count() > cramp) {
 			PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
 		    defaultPacket.getIntegers().write(0, item.getEntityId());
 		    defaultPacket.getWatchableCollectionModifier().write(0, WrappedDataWatcher.getEntityWatcher(item).getWatchableObjects());
