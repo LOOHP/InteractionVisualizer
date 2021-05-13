@@ -2,9 +2,7 @@ package com.loohp.interactionvisualizer.nms;
 
 import java.util.List;
 
-import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -15,7 +13,6 @@ import com.loohp.interactionvisualizer.objectholders.BlockPosition;
 import com.loohp.interactionvisualizer.objectholders.BoundingBox;
 import com.loohp.interactionvisualizer.objectholders.ChunkPosition;
 import com.loohp.interactionvisualizer.objectholders.NMSTileEntitySet;
-import com.loohp.interactionvisualizer.objectholders.WrappedCollection;
 import com.loohp.interactionvisualizer.objectholders.ValuePairs;
 
 public abstract class NMS {
@@ -69,7 +66,5 @@ public abstract class NMS {
 	public abstract int getItemDespawnRate(Item item);
 	
 	public abstract String getBannerCustomName(Block block);
-	
-	public abstract WrappedCollection<?, Entity> getEntities(World world);
 	
 }

@@ -10,7 +10,6 @@ import org.bukkit.craftbukkit.v1_12_R1.CraftChunk;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_12_R1.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftItem;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -23,7 +22,6 @@ import com.loohp.interactionvisualizer.objectholders.BlockPosition;
 import com.loohp.interactionvisualizer.objectholders.BoundingBox;
 import com.loohp.interactionvisualizer.objectholders.ChunkPosition;
 import com.loohp.interactionvisualizer.objectholders.NMSTileEntitySet;
-import com.loohp.interactionvisualizer.objectholders.WrappedCollection;
 import com.loohp.interactionvisualizer.objectholders.TileEntity;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.objectholders.ValuePairs;
@@ -115,11 +113,6 @@ public class V1_12 extends NMS {
 	@Override
 	public String getBannerCustomName(Block block) {
 		return ((CraftWorld) block.getWorld()).getHandle().getTileEntity(new net.minecraft.server.v1_12_R1.BlockPosition(block.getX(), block.getY(), block.getZ())).d().getString("CustomName");
-	}
-	
-	@Override
-	public WrappedCollection<?, Entity> getEntities(World world) {
-		return new WrappedCollection<net.minecraft.server.v1_12_R1.Entity, Entity>(((CraftWorld) world).getHandle().entityList, entry -> entry.getBukkitEntity());
 	}
 
 }
