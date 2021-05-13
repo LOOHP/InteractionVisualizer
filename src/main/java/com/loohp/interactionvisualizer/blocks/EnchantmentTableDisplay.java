@@ -77,8 +77,16 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 			if (!animation.isEnchanting()) {
 				animation.queueSetItem(itemstack, a -> {
-					ItemStack stack = a.getItemStack();
-					return stack == null || !stack.isSimilar(itemstack);
+					InventoryView inventory = player.getOpenInventory();
+					if (inventory.equals(view)) {
+						if (inventory.countSlots() > 0) {
+							ItemStack current = view.getItem(0) != null && !view.getItem(0).getType().equals(Material.AIR) ? view.getItem(0).clone() : null;
+							if (current.isSimilar(itemstack)) {
+								return true;
+							}
+						}
+					}
+					return false;
 				});
 			}
 		}, 2);
