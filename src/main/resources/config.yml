@@ -129,6 +129,76 @@ Blocks:
     Enabled: true
   EnchantmentTable:
     Enabled: true
+    Options:
+      TranslatableEnchantments:
+        - enchantment.damage.all
+        - enchantment.damage.undead
+        - enchantment.damage.arthropods
+        - enchantment.knockback
+        - enchantment.fire
+        - enchantment.sweeping
+        - enchantment.protect.all
+        - enchantment.protect.fire
+        - enchantment.protect.fall
+        - enchantment.protect.explosion
+        - enchantment.protect.projectile
+        - enchantment.oxygen
+        - enchantment.waterWorker
+        - enchantment.waterWalker
+        - enchantment.frostWalker
+        - enchantment.digging
+        - enchantment.untouching
+        - enchantment.durability
+        - enchantment.lootBonus
+        - enchantment.lootBonusDigger
+        - enchantment.lootBonusFishing
+        - enchantment.fishingSpeed
+        - enchantment.arrowDamage
+        - enchantment.arrowFire
+        - enchantment.arrowKnockback
+        - enchantment.arrowInfinite
+        - enchantment.thorns
+        - enchantment.mending
+        - enchantment.binding_curse
+        - enchantment.vanishing_curse
+        - enchantment.minecraft.sharpness
+        - enchantment.minecraft.smite
+        - enchantment.minecraft.bane_of_arthropods
+        - enchantment.minecraft.knockback
+        - enchantment.minecraft.fire_aspect
+        - enchantment.minecraft.sweeping
+        - enchantment.minecraft.protection
+        - enchantment.minecraft.fire_protection
+        - enchantment.minecraft.feather_falling
+        - enchantment.minecraft.blast_protection
+        - enchantment.minecraft.projectile_protection
+        - enchantment.minecraft.respiration
+        - enchantment.minecraft.aqua_affinity
+        - enchantment.minecraft.depth_strider
+        - enchantment.minecraft.frost_walker
+        - enchantment.minecraft.soul_speed
+        - enchantment.minecraft.efficiency
+        - enchantment.minecraft.silk_touch
+        - enchantment.minecraft.unbreaking
+        - enchantment.minecraft.looting
+        - enchantment.minecraft.fortune
+        - enchantment.minecraft.luck_of_the_sea
+        - enchantment.minecraft.lure
+        - enchantment.minecraft.power
+        - enchantment.minecraft.flame
+        - enchantment.minecraft.punch
+        - enchantment.minecraft.infinity
+        - enchantment.minecraft.thorns
+        - enchantment.minecraft.mending
+        - enchantment.minecraft.binding_curse
+        - enchantment.minecraft.vanishing_curse
+        - enchantment.minecraft.loyalty
+        - enchantment.minecraft.impaling
+        - enchantment.minecraft.riptide
+        - enchantment.minecraft.channeling
+        - enchantment.minecraft.multishot
+        - enchantment.minecraft.quick_charge
+        - enchantment.minecraft.piercing
   EnderChest:
     Enabled: true
   Furnace:

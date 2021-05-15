@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -44,9 +45,11 @@ public class ServerPacketSender {
 			return;
 		}
 		
-		try {
-			protocolManager.sendServerPacket(entity, packet1);
-		} catch (InvocationTargetException | IllegalArgumentException e) {}		
+        Bukkit.getScheduler().runTask(plugin, () -> {
+			try {
+				protocolManager.sendServerPacket(entity, packet1);
+			} catch (InvocationTargetException | IllegalArgumentException e) {}
+        });
 	}
 	
 	public static void teleportEntity(Player player, int entityId, Location location) {
@@ -62,9 +65,11 @@ public class ServerPacketSender {
 			return;
 		}
         
-        try {
-        	protocolManager.sendServerPacket(player, packet1);
-		} catch (InvocationTargetException | IllegalArgumentException e) {}        
+        Bukkit.getScheduler().runTask(plugin, () -> {
+	        try {
+	        	protocolManager.sendServerPacket(player, packet1);
+			} catch (InvocationTargetException | IllegalArgumentException e) {}
+        });
 	}
 	
 	public static void spawnArmorStand(Collection<Player> players, ArmorStand entity) {
@@ -95,15 +100,17 @@ public class ServerPacketSender {
 			return;
 		}
         
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-				protocolManager.sendServerPacket(player, packet2);
-				for (PacketContainer packet : packet3) {
-					protocolManager.sendServerPacket(player, packet);
+        Bukkit.getScheduler().runTask(plugin, () -> {
+	        try {
+	        	for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+					protocolManager.sendServerPacket(player, packet2);
+					for (PacketContainer packet : packet3) {
+						protocolManager.sendServerPacket(player, packet);
+					}
 				}
-			}
-		} catch (InvocationTargetException | IllegalArgumentException e) {}        
+			} catch (InvocationTargetException | IllegalArgumentException e) {}
+        });
 	}
 	
 	public static void updateArmorStand(Collection<Player> players, ArmorStand entity) {
@@ -129,15 +136,17 @@ public class ServerPacketSender {
 			return;
 		}
         
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-				protocolManager.sendServerPacket(player, packet2);
-				for (PacketContainer packet : packet3) {
-					protocolManager.sendServerPacket(player, packet);
+        Bukkit.getScheduler().runTask(plugin, () -> {
+	        try {
+	        	for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+					protocolManager.sendServerPacket(player, packet2);
+					for (PacketContainer packet : packet3) {
+						protocolManager.sendServerPacket(player, packet);
+					}
 				}
-			}
-		} catch (InvocationTargetException | IllegalArgumentException e) {}       
+			} catch (InvocationTargetException | IllegalArgumentException e) {}
+        });
 	}
 
 	public static void updateArmorStandOnlyMeta(Collection<Player> players, ArmorStand entity) {
@@ -150,11 +159,13 @@ public class ServerPacketSender {
 			return;
 		}
         
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-			}
-		} catch (InvocationTargetException | IllegalArgumentException e) {}        
+        Bukkit.getScheduler().runTask(plugin, () -> {
+	        try {
+	        	for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+				}
+			} catch (InvocationTargetException | IllegalArgumentException e) {}
+        });
 	}
 	
 	public static void removeArmorStand(Collection<Player> players, ArmorStand entity) {
@@ -165,11 +176,13 @@ public class ServerPacketSender {
 			return;
 		}
 
-		try {
-			for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-			}
-		} catch (InvocationTargetException | IllegalArgumentException e) {}
+		Bukkit.getScheduler().runTask(plugin, () -> {
+			try {
+				for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+				}
+			} catch (InvocationTargetException | IllegalArgumentException e) {}
+		});
 	}
 	
 	public static void spawnItem(Collection<Player> players, Item entity) {
@@ -212,13 +225,15 @@ public class ServerPacketSender {
 			return;
 		}
         
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-				protocolManager.sendServerPacket(player, packet2);
-				protocolManager.sendServerPacket(player, packet3);
-			}
-		} catch (InvocationTargetException | IllegalArgumentException e) {}       
+        Bukkit.getScheduler().runTask(plugin, () -> {
+	        try {
+	        	for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+					protocolManager.sendServerPacket(player, packet2);
+					protocolManager.sendServerPacket(player, packet3);
+				}
+			} catch (InvocationTargetException | IllegalArgumentException e) {}
+        });
 	}
 
 	public static void updateItem(Collection<Player> players, Item entity) {		
@@ -249,13 +264,15 @@ public class ServerPacketSender {
 			return;
 		}
 		
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-				protocolManager.sendServerPacket(player, packet2);
-				protocolManager.sendServerPacket(player, packet3);
-			}
-		} catch (InvocationTargetException | IllegalArgumentException e) {}		
+		Bukkit.getScheduler().runTask(plugin, () -> {
+	        try {
+	        	for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+					protocolManager.sendServerPacket(player, packet2);
+					protocolManager.sendServerPacket(player, packet3);
+				}
+			} catch (InvocationTargetException | IllegalArgumentException e) {}
+		});
 	}
 	
 	public static void removeItem(Collection<Player> players, Item entity) {
@@ -266,11 +283,13 @@ public class ServerPacketSender {
 			return;
 		}
 
-		try {
-			for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-			}
-		} catch (InvocationTargetException | IllegalArgumentException e) {}
+		Bukkit.getScheduler().runTask(plugin, () -> {
+			try {
+				for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+				}
+			} catch (InvocationTargetException | IllegalArgumentException e) {}
+		});
 	}
 
 	public static void spawnItemFrame(Collection<Player> players, ItemFrame entity) {
@@ -303,12 +322,14 @@ public class ServerPacketSender {
 			return;
 		}
         
-		try {
-			for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-				protocolManager.sendServerPacket(player, packet2);
-			}
-		} catch (InvocationTargetException | IllegalArgumentException e) {}       
+        Bukkit.getScheduler().runTask(plugin, () -> {
+			try {
+				for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+					protocolManager.sendServerPacket(player, packet2);
+				}
+			} catch (InvocationTargetException | IllegalArgumentException e) {}
+        });
 	}
 	
 	public static int getItemFrameData(ItemFrame frame) {
@@ -340,11 +361,13 @@ public class ServerPacketSender {
 			return;
 		}
         
-        try {
-        	for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-			}
-		} catch (InvocationTargetException | IllegalArgumentException e) {}
+        Bukkit.getScheduler().runTask(plugin, () -> {
+	        try {
+	        	for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+				}
+			} catch (InvocationTargetException | IllegalArgumentException e) {}
+        });
 	}
 	
 	public static void removeItemFrame(Collection<Player> players, ItemFrame entity) {
@@ -355,10 +378,12 @@ public class ServerPacketSender {
 			return;
 		}
 
-		try {
-			for (Player player : players) {
-				protocolManager.sendServerPacket(player, packet1);
-			}
-		} catch (InvocationTargetException | IllegalArgumentException e) {}
+		Bukkit.getScheduler().runTask(plugin, () -> {
+			try {
+				for (Player player : players) {
+					protocolManager.sendServerPacket(player, packet1);
+				}
+			} catch (InvocationTargetException | IllegalArgumentException e) {}
+		});
 	}
 }

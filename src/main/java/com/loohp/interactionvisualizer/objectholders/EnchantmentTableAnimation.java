@@ -27,6 +27,7 @@ import org.bukkit.util.Vector;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
+import com.loohp.interactionvisualizer.blocks.EnchantmentTableDisplay;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.PacketManager;
@@ -152,6 +153,9 @@ public class EnchantmentTableAnimation {
 				Enchantment ench = entry.getKey();
 				int level = entry.getValue();
 				String str = TranslationUtils.getEnchantment(ench);
+				if (!EnchantmentTableDisplay.getTranslatableEnchantments().contains(str)) {
+					str = null;
+				}
 				BaseComponent enchantmentName = (str == null || str.equals("")) ? new TextComponent(CustomStringUtils.capitalize(ench.getName().toLowerCase().replace("_", " "))) : new TranslatableComponent(str);
 				ArmorStand stand = new ArmorStand(standloc);
 				if (ench.getMaxLevel() != 1 || level != 1) {

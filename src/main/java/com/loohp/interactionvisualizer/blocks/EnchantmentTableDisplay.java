@@ -1,7 +1,10 @@
 package com.loohp.interactionvisualizer.blocks;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
@@ -25,6 +28,7 @@ import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.api.VisualizerInteractDisplay;
+import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.objectholders.EnchantmentTableAnimation;
 import com.loohp.interactionvisualizer.utils.CustomMapUtils;
@@ -33,7 +37,21 @@ import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class EnchantmentTableDisplay extends VisualizerInteractDisplay implements Listener {
 	
+	private static Set<String> translatableEnchantments = Collections.unmodifiableSet(new HashSet<>());
 	public Map<Player, Block> playermap = new ConcurrentHashMap<>();
+	
+	public EnchantmentTableDisplay() {
+		onReload(new InteractionVisualizerReloadEvent());
+	}
+	
+	@EventHandler
+	public void onReload(InteractionVisualizerReloadEvent event) {
+		translatableEnchantments = Collections.unmodifiableSet(new HashSet<>(InteractionVisualizer.plugin.getConfig().getStringList("Blocks.EnchantmentTable.Options.TranslatableEnchantments")));
+	}
+	
+	public static Set<String> getTranslatableEnchantments() {
+		return translatableEnchantments;
+	}
 	
 	@Override
 	public void process(Player player) {		
