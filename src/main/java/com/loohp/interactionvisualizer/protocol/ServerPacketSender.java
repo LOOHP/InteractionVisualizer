@@ -275,6 +275,39 @@ public class ServerPacketSender {
 		});
 	}
 	
+	public static void updateItemAsync(Collection<Player> players, Item entity) {		
+		if (entity.getItemStack().getType().equals(Material.AIR)) {
+			return;
+		}
+
+		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+		packet1.getIntegers().write(0, entity.getEntityId());
+        WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
+        packet1.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
+        
+        PacketContainer packet2 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
+        packet2.getIntegers().write(0, entity.getEntityId());
+        packet2.getDoubles().write(0, entity.getLocation().getX());
+        packet2.getDoubles().write(1, entity.getLocation().getY());
+        packet2.getDoubles().write(2, entity.getLocation().getZ());
+        packet2.getBytes().write(0, (byte)(int) (entity.getLocation().getYaw() * 256.0F / 360.0F));
+        packet2.getBytes().write(1, (byte)(int) (entity.getLocation().getPitch() * 256.0F / 360.0F));
+		
+		PacketContainer packet3 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_VELOCITY);
+		packet3.getIntegers().write(0, entity.getEntityId());
+		packet3.getIntegers().write(1, (int) (entity.getVelocity().getX() * 8000));
+		packet3.getIntegers().write(2, (int) (entity.getVelocity().getY() * 8000));
+		packet3.getIntegers().write(3, (int) (entity.getVelocity().getZ() * 8000));
+		
+        try {
+        	for (Player player : players) {
+				protocolManager.sendServerPacket(player, packet1);
+				protocolManager.sendServerPacket(player, packet2);
+				protocolManager.sendServerPacket(player, packet3);
+			}
+		} catch (InvocationTargetException | IllegalArgumentException e) {}
+	}
+	
 	public static void removeItem(Collection<Player> players, Item entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
 		packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});

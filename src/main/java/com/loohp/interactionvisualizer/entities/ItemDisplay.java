@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -107,19 +108,19 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 	public int run() {
 		return Bukkit.getScheduler().runTaskTimer(InteractionVisualizer.plugin, () -> {
 			for (World world : Bukkit.getWorlds()) {
-				Collection<Item> items = world.getEntitiesByClass(Item.class);
-				Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
-					for (Item item : items) {
-						if (item.isValid()) {
-							tick(item, items);
+				Collection<Entity> entities = NMS.getInstance().getEntities(world);
+				for (Entity entity : entities) {
+					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+						if (entity.isValid() && entity instanceof Item) {
+							tick((Item) entity, entities);
 						}
-					}
-				});				
+					});
+				}
 			}
 		}, 0, 20).getTaskId();
 	}
 	
-	private void tick(Item item, Collection<Item> items) {
+	private void tick(Item item, Collection<Entity> items) {
 		World world = item.getWorld();
 		Location location = item.getLocation();
 		BoundingBox area = BoundingBox.of(item.getLocation(), 0.5, 0.5, 0.5);

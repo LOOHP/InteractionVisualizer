@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
@@ -32,6 +33,8 @@ import com.loohp.interactionvisualizer.protocol.ServerPacketSender;
 import com.loohp.interactionvisualizer.utils.LineOfSightUtils;
 
 public class PacketManager implements Listener {
+	
+	private static final Vector VECTOR_ZERO = new Vector(0.0, 0.0, 0.0);
 	
 	private static Plugin plugin = InteractionVisualizer.plugin;
 	
@@ -78,6 +81,9 @@ public class PacketManager implements Listener {
 						if (entry.getValue()) {
 							Collection<Player> players = active.get(entity);
 							if (players != null) {
+								if (item.getVelocity().equals(VECTOR_ZERO)) {
+									updateItemAsync(item, true);
+								}
 								if (isOccluding(item.getLocation().getBlock().getType())) {
 									removeItem(InteractionVisualizerAPI.getPlayers(), item, false, false);
 									loaded.put(entity, false);
@@ -411,6 +417,35 @@ public class PacketManager implements Listener {
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 			Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, entity);
 			ServerPacketSender.updateItem(playersInRange, entity);
+		});
+		
+		cache.put(entity, entity.cacheCode());
+	}
+	
+	public static void updateItemAsync(Item entity, boolean bypasscache) {
+		Collection<Player> players = active.get(entity);
+		if (players == null) {
+			return;
+		}
+		updateItemAsync(players, entity, bypasscache);
+	}
+	
+	public static void updateItemAsync(Collection<Player> players, Item entity, boolean bypasscache) {		
+		if (!bypasscache) {
+			Integer lastCode = cache.get(entity);
+			if (lastCode != null) {
+				if (lastCode == entity.cacheCode()) {
+					return;
+				}
+			}
+		}
+		
+		if (!plugin.isEnabled()) {
+			return;
+		}
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+			Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, entity);
+			ServerPacketSender.updateItemAsync(playersInRange, entity);
 		});
 		
 		cache.put(entity, entity.cacheCode());
