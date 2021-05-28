@@ -226,11 +226,12 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		    Location entityCenter = location.clone();
 			entityCenter.setY(entityCenter.getY() + item.getHeight() * 1.7);
 		    
-		    Collection<Player> players = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM);
+		    Collection<Player> players = location.getWorld().getPlayers();
+		    Collection<Player> enabledPlayers = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM);
 		    Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, location, player -> !InteractionVisualizer.hideIfObstructed || LineOfSightUtils.hasLineOfSight(player.getEyeLocation(), entityCenter));
 		    for (Player player : players) {
 	    		try {
-	    			if (playersInRange.contains(player)) {
+	    			if (playersInRange.contains(player) && enabledPlayers.contains(player)) {
 	    				InteractionVisualizer.protocolManager.sendServerPacket(player, modifiedPacket);
 	    			} else {
 	    				InteractionVisualizer.protocolManager.sendServerPacket(player, defaultPacket);
