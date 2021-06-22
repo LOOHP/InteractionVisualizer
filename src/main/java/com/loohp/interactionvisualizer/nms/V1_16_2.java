@@ -22,7 +22,7 @@ import com.loohp.interactionvisualizer.objectholders.BlockPosition;
 import com.loohp.interactionvisualizer.objectholders.BoundingBox;
 import com.loohp.interactionvisualizer.objectholders.ChunkPosition;
 import com.loohp.interactionvisualizer.objectholders.NMSTileEntitySet;
-import com.loohp.interactionvisualizer.objectholders.WrappedCollection;
+import com.loohp.interactionvisualizer.objectholders.WrappedIterable;
 import com.loohp.interactionvisualizer.objectholders.TileEntity;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.objectholders.ValuePairs;
@@ -116,8 +116,8 @@ public class V1_16_2 extends NMS {
 	
 	@SuppressWarnings("resource")
 	@Override
-	public WrappedCollection<?, Entity> getEntities(World world) {
-		return new WrappedCollection<net.minecraft.server.v1_16_R2.Entity, Entity>(((CraftWorld) world).getHandle().entitiesById.values(), entry -> entry.getBukkitEntity());
+	public WrappedIterable<?, Entity> getEntities(World world) {
+		return new WrappedIterable<net.minecraft.server.v1_16_R2.Entity, Entity>(((CraftWorld) world).getHandle().entitiesById.values(), entry -> entry.getBukkitEntity());
 	}
 	
 }

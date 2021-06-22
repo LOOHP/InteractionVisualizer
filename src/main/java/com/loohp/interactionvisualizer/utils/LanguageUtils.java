@@ -46,8 +46,8 @@ public class LanguageUtils {
 	static {
 		if (InteractionVisualizer.version.isLegacy()) {
 			try {
-				craftItemStackClass = getNMSClass("org.bukkit.craftbukkit.", "inventory.CraftItemStack");
-				nmsItemStackClass = getNMSClass("net.minecraft.server.", "ItemStack");
+				craftItemStackClass = NMSUtils.getNMSClass("org.bukkit.craftbukkit.%s.inventory.CraftItemStack");
+				nmsItemStackClass = NMSUtils.getNMSClass("net.minecraft.server.%s.ItemStack", "net.minecraft.world.item.ItemStack");
 				asNMSCopyMethod = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class);
 				getRawItemTypeNameMethod = nmsItemStackClass.getMethod("a");
 			} catch (Exception e) {
@@ -55,12 +55,6 @@ public class LanguageUtils {
 			}
 		}
 	}
-	
-	private static Class<?> getNMSClass(String prefix, String nmsClassString) throws ClassNotFoundException {	
-        String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
-        String name = prefix + version + nmsClassString;
-        return Class.forName(name);
-    }
 	
 	public static final String VERSION_MANIFEST_URL = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
 	public static final String RESOURCES_URL = "http://resources.download.minecraft.net/";

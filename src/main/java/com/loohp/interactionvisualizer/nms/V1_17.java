@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_16_R3.CraftChunk;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftItem;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_17_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftItem;
+import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_17_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
@@ -22,25 +22,25 @@ import com.loohp.interactionvisualizer.objectholders.BlockPosition;
 import com.loohp.interactionvisualizer.objectholders.BoundingBox;
 import com.loohp.interactionvisualizer.objectholders.ChunkPosition;
 import com.loohp.interactionvisualizer.objectholders.NMSTileEntitySet;
-import com.loohp.interactionvisualizer.objectholders.WrappedIterable;
 import com.loohp.interactionvisualizer.objectholders.TileEntity;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.objectholders.ValuePairs;
+import com.loohp.interactionvisualizer.objectholders.WrappedIterable;
 import com.mojang.datafixers.util.Pair;
 
-import net.minecraft.server.v1_16_R3.EntityItem;
-import net.minecraft.server.v1_16_R3.EnumItemSlot;
-import net.minecraft.server.v1_16_R3.PacketPlayOutEntityEquipment;
-import net.minecraft.server.v1_16_R3.VoxelShape;
-import net.minecraft.server.v1_16_R3.WorldServer;
+import net.minecraft.network.protocol.game.PacketPlayOutEntityEquipment;
+import net.minecraft.server.level.WorldServer;
+import net.minecraft.world.entity.EnumItemSlot;
+import net.minecraft.world.entity.item.EntityItem;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class V1_16_4 extends NMS {
+public class V1_17 extends NMS {
 	
 	public List<BoundingBox> getBoundingBoxes(BlockPosition pos) {
-		net.minecraft.server.v1_16_R3.BlockPosition blockpos = new net.minecraft.server.v1_16_R3.BlockPosition(pos.getX(), pos.getY(), pos.getZ());
+		net.minecraft.core.BlockPosition blockpos = new net.minecraft.core.BlockPosition(pos.getX(), pos.getY(), pos.getZ());
 		WorldServer world = ((CraftWorld) pos.getWorld()).getHandle();
 		VoxelShape shape = world.getType(blockpos).getShape(world, blockpos);
-		return shape.d().stream().map(each -> new BoundingBox(each.minX + pos.getX(), each.minY + pos.getY(), each.minZ + pos.getZ(), each.maxX + pos.getX(), each.maxY + pos.getY(), each.maxZ + pos.getZ())).collect(Collectors.toList());
+		return shape.d().stream().map(each -> new BoundingBox(each.a + pos.getX(), each.b + pos.getY(), each.c + pos.getZ(), each.d + pos.getX(), each.e + pos.getY(), each.f + pos.getZ())).collect(Collectors.toList());
 	}
 
 	@Override
@@ -49,8 +49,8 @@ public class V1_16_4 extends NMS {
 			return null;
 		}
 		World world = chunk.getWorld();
-		return new NMSTileEntitySet<net.minecraft.server.v1_16_R3.BlockPosition, net.minecraft.server.v1_16_R3.TileEntity>(((CraftChunk) chunk.getChunk()).getHandle().tileEntities, entry -> {
-			net.minecraft.server.v1_16_R3.BlockPosition pos = entry.getKey();
+		return new NMSTileEntitySet<net.minecraft.core.BlockPosition, net.minecraft.world.level.block.entity.TileEntity>(((CraftChunk) chunk.getChunk()).getHandle().l, entry -> {
+			net.minecraft.core.BlockPosition pos = entry.getKey();
 			Material type = CraftMagicNumbers.getMaterial(entry.getValue().getBlock().getBlock());
 			TileEntityType tileEntityType = TileEntity.getTileEntityType(type);
 			if (tileEntityType != null) {
@@ -63,31 +63,31 @@ public class V1_16_4 extends NMS {
 	
 	@Override
 	public PacketContainer[] createEntityEquipmentPacket(int entityId, List<ValuePairs<EquipmentSlot, ItemStack>> equipments) {
-		List<Pair<EnumItemSlot, net.minecraft.server.v1_16_R3.ItemStack>> nmsList = new ArrayList<>();
+		List<Pair<EnumItemSlot, net.minecraft.world.item.ItemStack>> nmsList = new ArrayList<>();
 		for (ValuePairs<EquipmentSlot, ItemStack> pair : equipments) {
 			EnumItemSlot nmsSlot;
 			switch (pair.getFirst()) {
 			case CHEST:
-				nmsSlot = EnumItemSlot.CHEST;
+				nmsSlot = EnumItemSlot.e;
 				break;
 			case FEET:
-				nmsSlot = EnumItemSlot.FEET;
+				nmsSlot = EnumItemSlot.c;
 				break;
 			case HEAD:
-				nmsSlot = EnumItemSlot.HEAD;
+				nmsSlot = EnumItemSlot.f;
 				break;
 			case LEGS:
-				nmsSlot = EnumItemSlot.LEGS;
+				nmsSlot = EnumItemSlot.d;
 				break;
 			case OFF_HAND:
-				nmsSlot = EnumItemSlot.OFFHAND;
+				nmsSlot = EnumItemSlot.b;
 				break;
 			case HAND:
 			default:
-				nmsSlot = EnumItemSlot.MAINHAND;
+				nmsSlot = EnumItemSlot.a;
 				break;
 			}
-			net.minecraft.server.v1_16_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(pair.getSecond());
+			net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(pair.getSecond());
 			nmsList.add(new Pair<>(nmsSlot, nmsItem));
 		}
 		PacketPlayOutEntityEquipment packet = new PacketPlayOutEntityEquipment(entityId, nmsList);
@@ -98,7 +98,7 @@ public class V1_16_4 extends NMS {
 	public int getItemDespawnRate(Item item) {
 		int despawnRate;
 		try {
-			Object spigotWorldConfig = net.minecraft.server.v1_16_R3.World.class.getField("spigotConfig").get(((CraftWorld) item.getWorld()).getHandle());
+			Object spigotWorldConfig = net.minecraft.world.level.World.class.getField("spigotConfig").get(((CraftWorld) item.getWorld()).getHandle());
 			despawnRate = spigotWorldConfig.getClass().getField("itemDespawnRate").getInt(spigotWorldConfig);
 			try {
 				despawnRate = (int) EntityItem.class.getMethod("getDespawnRate").invoke(((CraftItem) item).getHandle());
@@ -111,13 +111,12 @@ public class V1_16_4 extends NMS {
 	
 	@Override
 	public String getBannerCustomName(Block block) {
-		return ((CraftWorld) block.getWorld()).getHandle().getTileEntity(new net.minecraft.server.v1_16_R3.BlockPosition(block.getX(), block.getY(), block.getZ())).b().getString("CustomName");
+		return ((CraftWorld) block.getWorld()).getHandle().getTileEntity(new net.minecraft.core.BlockPosition(block.getX(), block.getY(), block.getZ())).Z_().getString("CustomName");
 	}
 
-	@SuppressWarnings("resource")
 	@Override
 	public WrappedIterable<?, Entity> getEntities(World world) {
-		return new WrappedIterable<net.minecraft.server.v1_16_R3.Entity, Entity>(((CraftWorld) world).getHandle().entitiesById.values(), entry -> entry.getBukkitEntity());
+		return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(((CraftWorld) world).getHandle().getEntities().a(), entry -> entry.getBukkitEntity());
 	}
 
 }

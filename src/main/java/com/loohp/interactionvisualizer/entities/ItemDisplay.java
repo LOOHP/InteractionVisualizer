@@ -33,6 +33,7 @@ import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEve
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.nms.NMS;
 import com.loohp.interactionvisualizer.objectholders.BoundingBox;
+import com.loohp.interactionvisualizer.objectholders.WrappedIterable;
 import com.loohp.interactionvisualizer.protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.utils.ChatComponentUtils;
@@ -108,7 +109,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 	public int run() {
 		return Bukkit.getScheduler().runTaskTimer(InteractionVisualizer.plugin, () -> {
 			for (World world : Bukkit.getWorlds()) {
-				Collection<Entity> entities = NMS.getInstance().getEntities(world);
+				WrappedIterable<?, Entity> entities = NMS.getInstance().getEntities(world);
 				for (Entity entity : entities) {
 					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
 						if (entity.isValid() && entity instanceof Item) {
@@ -120,7 +121,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		}, 0, 20).getTaskId();
 	}
 	
-	private void tick(Item item, Collection<Entity> items) {
+	private void tick(Item item, WrappedIterable<?, Entity> items) {
 		World world = item.getWorld();
 		Location location = item.getLocation();
 		BoundingBox area = BoundingBox.of(item.getLocation(), 0.5, 0.5, 0.5);
@@ -133,7 +134,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		BaseComponent name = getDisplayName(itemstack);
 		String matchingname = getMatchingName(itemstack, stripColorBlacklist);
 		
-		if (blacklist.test(matchingname, itemstack.getType()) || NBTUtils.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || cramp >= 0 && items.stream().filter(each -> each.getWorld().equals(world) && area.contains(each.getLocation().toVector())).count() > cramp) {
+		if (blacklist.test(matchingname, itemstack.getType()) || NBTUtils.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || cramp >= 0 && items.stream().filter(each -> each != null && each.getWorld().equals(world) && area.contains(each.getLocation().toVector())).count() > cramp) {
 			PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
 		    defaultPacket.getIntegers().write(0, item.getEntityId());
 		    defaultPacket.getWatchableCollectionModifier().write(0, WrappedDataWatcher.getEntityWatcher(item).getWatchableObjects());

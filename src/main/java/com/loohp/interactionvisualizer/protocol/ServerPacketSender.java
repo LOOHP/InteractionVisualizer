@@ -75,10 +75,13 @@ public class ServerPacketSender {
 	public static void spawnArmorStand(Collection<Player> players, ArmorStand entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
 		packet1.getIntegers().write(0, entity.getEntityId());
+		if (packet1.getUUIDs().size() > 0) {
+			packet1.getUUIDs().write(0, entity.getUniqueId());
+		}
 		packet1.getIntegers().write(1, version.isLegacy() ? 30 : 1);
 		packet1.getIntegers().write(2, (int) (entity.getVelocity().getX() * 8000));
 		packet1.getIntegers().write(3, (int) (entity.getVelocity().getY() * 8000));
-		packet1.getIntegers().write(4, (int) (entity.getVelocity().getZ() * 8000));		
+		packet1.getIntegers().write(4, (int) (entity.getVelocity().getZ() * 8000));
 		packet1.getDoubles().write(0, entity.getLocation().getX());
 		packet1.getDoubles().write(1, entity.getLocation().getY());
 		packet1.getDoubles().write(2, entity.getLocation().getZ());
@@ -170,7 +173,11 @@ public class ServerPacketSender {
 	
 	public static void removeArmorStand(Collection<Player> players, ArmorStand entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-		packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+		if (version.isNewerOrEqualTo(MCVersion.V1_17)) {
+			packet1.getIntegers().write(0, entity.getEntityId());
+		} else {
+			packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+		}
 		
 		if (!plugin.isEnabled()) {
 			return;
@@ -192,6 +199,9 @@ public class ServerPacketSender {
 
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
         packet1.getIntegers().write(0, entity.getEntityId());
+        if (packet1.getUUIDs().size() > 0) {
+			packet1.getUUIDs().write(0, entity.getUniqueId());
+		}
         packet1.getIntegers().write(1, (int) (entity.getVelocity().getX() * 8000));
         packet1.getIntegers().write(2, (int) (entity.getVelocity().getY() * 8000));
         packet1.getIntegers().write(3, (int) (entity.getVelocity().getZ() * 8000));
@@ -310,7 +320,11 @@ public class ServerPacketSender {
 	
 	public static void removeItem(Collection<Player> players, Item entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-		packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+		if (version.isNewerOrEqualTo(MCVersion.V1_17)) {
+			packet1.getIntegers().write(0, entity.getEntityId());
+		} else {
+			packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+		}
 		
 		if (!plugin.isEnabled()) {
 			return;
@@ -328,6 +342,9 @@ public class ServerPacketSender {
 	public static void spawnItemFrame(Collection<Player> players, ItemFrame entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY);
         packet1.getIntegers().write(0, entity.getEntityId());
+        if (packet1.getUUIDs().size() > 0) {
+			packet1.getUUIDs().write(0, entity.getUniqueId());
+		}
         packet1.getIntegers().write(1, 0);
         packet1.getIntegers().write(2, 0);
         packet1.getIntegers().write(3, 0);
@@ -405,7 +422,11 @@ public class ServerPacketSender {
 	
 	public static void removeItemFrame(Collection<Player> players, ItemFrame entity) {
 		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-		packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+		if (version.isNewerOrEqualTo(MCVersion.V1_17)) {
+			packet1.getIntegers().write(0, entity.getEntityId());
+		} else {
+			packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
+		}
 		
 		if (!plugin.isEnabled()) {
 			return;

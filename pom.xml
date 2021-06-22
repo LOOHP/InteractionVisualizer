@@ -5,7 +5,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>1.14.10.12</version>
+	<version>1.15.0.0</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -50,11 +50,11 @@
 							<relocations>
 								<relocation>
 									<pattern>com.cryptomorin.xseries</pattern>
-									<shadedPattern>com.loohp.interactionvisualizer.Utils</shadedPattern>
+									<shadedPattern>com.loohp.interactionvisualizer.libs.com.cryptomorin.xseries</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>org.apache.commons.text</pattern>
-									<shadedPattern>com.loohp.interactionvisualizer.Utils</shadedPattern>
+									<shadedPattern>com.loohp.interactionvisualizer.libs.org.apache.commons.text</shadedPattern>
 								</relocation>
 							</relocations>
 						</configuration>
@@ -192,7 +192,7 @@
 		<dependency>
 			<groupId>com.github.cryptomorin</groupId>
 			<artifactId>XSeries</artifactId>
-			<version>7.9.0</version>
+			<version>8.1.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -216,7 +216,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.16.4-R0.1-SNAPSHOT</version>
+			<version>1.17-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -249,7 +249,7 @@
 			<artifactId>LightAPI-Fork</artifactId>
 			<scope>system</scope>
 			<version>1.0</version>
-			<systemPath>${basedir}/lib/LightAPI-fork-3.4.4.jar</systemPath>
+			<systemPath>${basedir}/lib/LightAPI-fork-3.5.0.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>CMIAPI</groupId>
@@ -310,6 +310,12 @@
 			<groupId>org.bukkit........</groupId>
 			<artifactId>craftbukkit</artifactId>
 			<version>1.16.5-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.bukkit.........</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>1.17-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

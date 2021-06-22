@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffectType;
 
@@ -26,10 +25,10 @@ public class TranslationUtils {
 		if (InteractionVisualizer.version.isLegacy()) {
 			try {
 				bukkitEnchantmentGetIdMethod = Enchantment.class.getMethod("getId");
-				nmsEnchantmentClass = getNMSClass("net.minecraft.server.", "Enchantment");
+				nmsEnchantmentClass = NMSUtils.getNMSClass("net.minecraft.server.%s.Enchantment", "net.minecraft.world.item.enchantment.Enchantment");
 				getEnchantmentByIdMethod = nmsEnchantmentClass.getMethod("c", int.class);
 				getEnchantmentKeyMethod = nmsEnchantmentClass.getMethod("a");
-				nmsMobEffectListClass = getNMSClass("net.minecraft.server.", "MobEffectList");
+				nmsMobEffectListClass = NMSUtils.getNMSClass("net.minecraft.server.%s.MobEffectList", "net.minecraft.world.effect.MobEffectList");
 				if (InteractionVisualizer.version.isOlderOrEqualTo(MCVersion.V1_8_4)) {
 					nmsMobEffectByIdField = nmsMobEffectListClass.getField("byId");
 				} else {
@@ -41,8 +40,12 @@ public class TranslationUtils {
 			}
 		} else {
 			try {
-				nmsMobEffectListClass = getNMSClass("net.minecraft.server.", "MobEffectList");
-				getEffectFromIdMethod = nmsMobEffectListClass.getMethod("fromId", int.class);
+				nmsMobEffectListClass = NMSUtils.getNMSClass("net.minecraft.server.%s.MobEffectList", "net.minecraft.world.effect.MobEffectList");
+				try {
+					getEffectFromIdMethod = nmsMobEffectListClass.getMethod("fromId", int.class);
+				} catch (Exception e) {
+					getEffectFromIdMethod = nmsMobEffectListClass.getMethod("byId", int.class);
+				}
 				getEffectKeyMethod = nmsMobEffectListClass.getMethod("c");
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -50,12 +53,6 @@ public class TranslationUtils {
 		}
 	}
 	
-	private static Class<?> getNMSClass(String prefix, String nmsClassString) throws ClassNotFoundException {	
-        String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3] + ".";
-        String name = prefix + version + nmsClassString;
-        return Class.forName(name);
-    }
-
 	@SuppressWarnings("deprecation")
 	public static String getEffect(PotionEffectType type) {
 		if (!InteractionVisualizer.version.isLegacy()) {

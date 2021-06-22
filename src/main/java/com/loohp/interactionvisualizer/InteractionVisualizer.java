@@ -124,6 +124,9 @@ public class InteractionVisualizer extends JavaPlugin {
 		version = MCVersion.fromPackageName(getServer().getClass().getPackage().getName());
 		
 		switch (version) {
+		case V1_17:
+			metaversion = 4;
+			break;
 		case V1_16_4:
 		case V1_16_2:
 		case V1_16:
@@ -292,17 +295,31 @@ public class InteractionVisualizer extends JavaPlugin {
 	public void onDisable() {
 		if (!Bukkit.getOnlinePlayers().isEmpty()) {
 			getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] Plugin reload detected, attempting to despawn all visual entities. If anything went wrong, please restart! (Reloads are always not recommended)");
-			int[] entityIdArray = PacketManager.active.keySet().stream().mapToInt(each -> each.getEntityId()).toArray();
-			
-			PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-			packet1.getIntegerArrays().write(0, entityIdArray);
-			
-			try {
-				for (Player player : Bukkit.getOnlinePlayers()) {
-					protocolManager.sendServerPacket(player, packet1);
+			if (version.isNewerOrEqualTo(MCVersion.V1_17)) {
+				for (VisualizerEntity entity : PacketManager.active.keySet()) {
+					PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
+					packet1.getIntegers().write(0, entity.getEntityId());
+					
+					try {
+						for (Player player : Bukkit.getOnlinePlayers()) {
+							protocolManager.sendServerPacket(player, packet1);
+						}
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					}
 				}
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+			} else {
+				PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
+				int[] entityIdArray = PacketManager.active.keySet().stream().mapToInt(each -> each.getEntityId()).toArray();
+				packet1.getIntegerArrays().write(0, entityIdArray);
+				
+				try {
+					for (Player player : Bukkit.getOnlinePlayers()) {
+						protocolManager.sendServerPacket(player, packet1);
+					}
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		

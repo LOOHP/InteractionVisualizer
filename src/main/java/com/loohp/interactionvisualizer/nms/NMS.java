@@ -15,7 +15,7 @@ import com.loohp.interactionvisualizer.objectholders.BlockPosition;
 import com.loohp.interactionvisualizer.objectholders.BoundingBox;
 import com.loohp.interactionvisualizer.objectholders.ChunkPosition;
 import com.loohp.interactionvisualizer.objectholders.NMSTileEntitySet;
-import com.loohp.interactionvisualizer.objectholders.WrappedCollection;
+import com.loohp.interactionvisualizer.objectholders.WrappedIterable;
 import com.loohp.interactionvisualizer.objectholders.ValuePairs;
 
 public abstract class NMS {
@@ -25,6 +25,9 @@ public abstract class NMS {
 	public static NMS getInstance() {
 		if (instance == null) {
 			switch (InteractionVisualizer.version) {
+			case V1_17:
+				instance = new V1_17();
+				break;
 			case V1_16_4:
 				instance = new V1_16_4();
 				break;
@@ -70,6 +73,6 @@ public abstract class NMS {
 	
 	public abstract String getBannerCustomName(Block block);
 	
-	public abstract WrappedCollection<?, Entity> getEntities(World world);
+	public abstract WrappedIterable<?, Entity> getEntities(World world);
 	
 }

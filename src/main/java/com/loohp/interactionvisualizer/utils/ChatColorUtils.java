@@ -14,39 +14,42 @@ import net.md_5.bungee.api.chat.BaseComponent;
 
 public class ChatColorUtils {
 	
-	private static Set<Character> colors = new HashSet<Character>();
-	private static Pattern colorFormating = Pattern.compile("(?=(?<!\\\\)|(?<=\\\\\\\\))\\[[^\\]]*?color=#[0-9a-fA-F]{6}[^\\[]*?\\]");
-	private static Pattern colorEscape = Pattern.compile("\\\\\\[ *?color=#[0-9a-fA-F]{6} *?\\]");
+	public static final char COLOR_CHAR = '\u00a7';
 	
-	private static String validColorHex = "^#[0-9a-fA-F]{6}$";
+	private static final Set<Character> COLORS = new HashSet<>();
+	private static final Pattern COLOR_FORMATTING = Pattern.compile("(?=(?<!\\\\)|(?<=\\\\\\\\))\\[[^\\]]*?color=#[0-9a-fA-F]{6}[^\\[]*?\\]");
+	private static final Pattern COLOR_ESCAPE = Pattern.compile("\\\\\\[ *?color=#[0-9a-fA-F]{6} *?\\]");
+	
+	private static final Pattern COLOR_CODE_FORMAT = Pattern.compile("\u00a7[0-9A-Fa-fk-orx]");
+	private static final Pattern COLOR_HEX_FORMAT_BUKKIT = Pattern.compile("^#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])$");
 	
 	static {
-		colors.add('0');
-		colors.add('1');
-		colors.add('2');
-		colors.add('3');
-		colors.add('4');
-		colors.add('5');
-		colors.add('6');
-		colors.add('7');
-		colors.add('8');
-		colors.add('9');
-		colors.add('a');
-		colors.add('b');
-		colors.add('c');
-		colors.add('d');
-		colors.add('e');
-		colors.add('f');
-		colors.add('k');
-		colors.add('l');
-		colors.add('m');
-		colors.add('n');
-		colors.add('o');
-		colors.add('r');
+		COLORS.add('0');
+		COLORS.add('1');
+		COLORS.add('2');
+		COLORS.add('3');
+		COLORS.add('4');
+		COLORS.add('5');
+		COLORS.add('6');
+		COLORS.add('7');
+		COLORS.add('8');
+		COLORS.add('9');
+		COLORS.add('a');
+		COLORS.add('b');
+		COLORS.add('c');
+		COLORS.add('d');
+		COLORS.add('e');
+		COLORS.add('f');
+		COLORS.add('k');
+		COLORS.add('l');
+		COLORS.add('m');
+		COLORS.add('n');
+		COLORS.add('o');
+		COLORS.add('r');
 	}
 	
 	public static String stripColor(String string) {
-		return string.replaceAll("\u00a7[0-9A-Fa-fk-orx]", "");
+		return string.replaceAll(COLOR_CODE_FORMAT.pattern(), "");
 	}
 	
 	public static String filterIllegalColorCodes(String string) {
@@ -175,7 +178,6 @@ public class ChatColorUtils {
     		int pos = text.indexOf(" ") + 1;
     		pos = pos <= 0 ? text.length() : pos;
     		String before = leadingColor + text.substring(0, pos);
-    		//Bukkit.getConsoleSender().sendMessage(leadingColor.replace("\u00a7", "&") + " " + text.replace("\u00a7", "&") + " " + before.replace("\u00a7", "&"));
     		sb.append(before);
     		text = text.substring(pos);
     		leadingColor = getLastColors(before);
@@ -188,16 +190,17 @@ public class ChatColorUtils {
     		return hex;
     	}
     	
-    	int pos = hex.indexOf("#");
-    	if (!hex.matches(validColorHex) || pos < 0 || hex.length() < (pos + 7)) {
-    		return "\u00a7x\u00a7F\u00a7F\u00a7F\u00a7F\u00a7F\u00a7F";
+    	Matcher matcher = COLOR_HEX_FORMAT_BUKKIT.matcher(hex);
+    	if (matcher.find()) {
+    		return COLOR_CHAR + "x" + COLOR_CHAR + matcher.group(1) + COLOR_CHAR + matcher.group(2) + COLOR_CHAR + matcher.group(3) + COLOR_CHAR + matcher.group(4) + COLOR_CHAR + matcher.group(5) + COLOR_CHAR + matcher.group(6);
+    	} else {
+    		return COLOR_CHAR + "x" + COLOR_CHAR + "F" + COLOR_CHAR + "F" + COLOR_CHAR + "F" + COLOR_CHAR + "F" + COLOR_CHAR + "F" + COLOR_CHAR + "F";
     	}
-    	return "\u00a7x\u00a7" + String.valueOf(hex.charAt(1)) + "\u00a7" + String.valueOf(hex.charAt(2)) + "\u00a7" + String.valueOf(hex.charAt(3)) + "\u00a7" + String.valueOf(hex.charAt(4)) + "\u00a7" + String.valueOf(hex.charAt(5)) + "\u00a7" + String.valueOf(hex.charAt(6));
     }
     
     public static String translatePluginColorFormatting(String text) {
     	while (true) {
-    		Matcher matcher = colorFormating.matcher(text);
+    		Matcher matcher = COLOR_FORMATTING.matcher(text);
     		
     		if (matcher.find()) {
 	    	    String foramtedColor = matcher.group().toLowerCase();
@@ -242,7 +245,7 @@ public class ChatColorUtils {
     	}
     	
     	while (true) {
-    		Matcher matcher = colorEscape.matcher(text);  		
+    		Matcher matcher = COLOR_ESCAPE.matcher(text);  		
     		if (matcher.find()) {
 	    	    StringBuilder sb = new StringBuilder(text);
 	    	    sb.deleteCharAt(matcher.start());
@@ -274,7 +277,7 @@ public class ChatColorUtils {
         			String section = text.substring(i, i + 14);
         			String translated = section.replace(code, '\u00a7');
         			text = text.replace(section, translated);
-        		} else if (colors.contains(text.charAt(i + 1))) {
+        		} else if (COLORS.contains(text.charAt(i + 1))) {
         			StringBuilder sb = new StringBuilder(text);
         			sb.setCharAt(i, '\u00a7');
         			text = sb.toString();
