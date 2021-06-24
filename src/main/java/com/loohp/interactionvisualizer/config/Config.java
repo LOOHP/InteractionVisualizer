@@ -33,7 +33,7 @@ public class Config {
 		}
 	}
 	
-	public static Config loadConfig(String id, File file, InputStream ifNotFound, InputStream def, CommentType... refreshCommentType) {
+	public static Config loadConfig(String id, File file, InputStream ifNotFound, InputStream def, boolean refreshComments) {
 		try {
 			if (CONFIGS.containsKey(id)) {
 				throw new IllegalArgumentException("Duplicate config id");
@@ -43,7 +43,7 @@ public class Config {
 				FileUtils.copy(ifNotFound, file);
 			}
 			
-			Config config = new Config(file, def, refreshCommentType);
+			Config config = new Config(file, def, refreshComments);
 			CONFIGS.put(id, config);
 			return config;
 		} catch (IOException e) {
@@ -85,7 +85,7 @@ public class Config {
 	private YamlFile defConfig;
 	private YamlFile config;
 	
-	private Config(File file, InputStream def, CommentType... refreshCommentType) {
+	private Config(File file, InputStream def, boolean refreshComments) {
 		this.file = file;
 		
 		defConfig = YamlFile.loadConfiguration(def, true);
@@ -93,14 +93,12 @@ public class Config {
 		
 		for (String path : defConfig.getValues(true).keySet()) {
 			if (config.contains(path)) {
-				for (CommentType commentType : refreshCommentType) {
-					config.setComment(path, defConfig.getComment(path, commentType), commentType);
+				if (refreshComments) {
+					config.setComment(path, defConfig.getComment(path, CommentType.BLOCK), CommentType.BLOCK);
 				}
 			} else if (!defConfig.isConfigurationSection(path)) {
 				config.set(path, defConfig.get(path));
-				for (CommentType commentType : CommentType.values()) {
-					config.setComment(path, defConfig.getComment(path, commentType), commentType);
-				}
+				config.setComment(path, defConfig.getComment(path, CommentType.BLOCK), CommentType.BLOCK);
 			}
 		}
 		
@@ -114,6 +112,9 @@ public class Config {
 	
 	public void save() {
 		try {
+			for (String path : config.getValues(true).keySet()) {
+				config.setComment(path, null, CommentType.SIDE);
+			}
 			config.save();
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -16,7 +16,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.simpleyaml.configuration.comments.CommentType;
 import org.simpleyaml.configuration.file.FileConfiguration;
 
 import com.comphenix.protocol.PacketType;
@@ -157,7 +156,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		if (!getDataFolder().exists()) {
 			getDataFolder().mkdirs();
 		}
-		Config.loadConfig(CONFIG_ID, new File(getDataFolder(), "config.yml"), getClass().getClassLoader().getResourceAsStream("config.yml"), getClass().getClassLoader().getResourceAsStream("config.yml"), CommentType.BLOCK);
+		Config.loadConfig(CONFIG_ID, new File(getDataFolder(), "config.yml"), getClass().getClassLoader().getResourceAsStream("config.yml"), getClass().getClassLoader().getResourceAsStream("config.yml"), true);
 		
 		defaultworld = getServer().getWorlds().get(0);
 		defaultlocation = new Location(defaultworld, 0, 0, 0);
