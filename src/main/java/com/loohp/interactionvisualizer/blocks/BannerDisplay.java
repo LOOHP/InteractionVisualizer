@@ -56,10 +56,10 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
 	
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
-		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Banner.CheckingPeriod");
+		checkingPeriod = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.Banner.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
-		stripColorBlacklist = InteractionVisualizer.plugin.getConfig().getBoolean("Entities.Item.Options.Blacklist.StripColorWhenMatching");
-		blacklist = InteractionVisualizer.plugin.getConfig().getStringList("Blocks.Banner.Options.Blacklist.List").stream().map(each -> {
+		stripColorBlacklist = InteractionVisualizer.plugin.getConfiguration().getBoolean("Entities.Item.Options.Blacklist.StripColorWhenMatching");
+		blacklist = InteractionVisualizer.plugin.getConfiguration().getStringList("Blocks.Banner.Options.Blacklist.List").stream().map(each -> {
 			Pattern pattern = Pattern.compile(each);
 			Predicate<String> predicate = str -> pattern.matcher(str).matches();
 			return predicate;

@@ -50,14 +50,14 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
 	
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
-		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Spawner.CheckingPeriod");
+		checkingPeriod = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.Spawner.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
-		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Spawner.Options.ProgressBarCharacter"));
-		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Spawner.Options.EmptyColor"));
-		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Spawner.Options.FilledColor"));
-		progressBarLength = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Spawner.Options.ProgressBarLength");
-		spawnRange = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Spawner.Options.SpawnRange"));
-		pathType = PathType.valueOf(InteractionVisualizer.plugin.getConfig().getString("Blocks.Spawner.PathType"));
+		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Spawner.Options.ProgressBarCharacter"));
+		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Spawner.Options.EmptyColor"));
+		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Spawner.Options.FilledColor"));
+		progressBarLength = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.Spawner.Options.ProgressBarLength");
+		spawnRange = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Spawner.Options.SpawnRange"));
+		pathType = PathType.valueOf(InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Spawner.PathType"));
 	}
 	
 	@Override

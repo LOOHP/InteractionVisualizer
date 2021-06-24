@@ -34,7 +34,7 @@ public class InteractionVisualizerAPI {
 	@return The GC period in ticks.
 	*/
 	public static int getGCPeriod() {
-		return InteractionVisualizer.plugin.getConfig().getInt("GarbageCollector.Period");
+		return InteractionVisualizer.plugin.getConfiguration().getInt("GarbageCollector.Period");
 	}
 	
 	/**

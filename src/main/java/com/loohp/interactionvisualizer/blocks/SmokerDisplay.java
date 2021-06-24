@@ -65,14 +65,14 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 	
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
-		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Smoker.CheckingPeriod");
+		checkingPeriod = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.Smoker.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
-		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Smoker.Options.ProgressBarCharacter"));
-		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Smoker.Options.EmptyColor"));
-		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Smoker.Options.FilledColor"));
-		noFuelColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Smoker.Options.NoFuelColor"));
-		progressBarLength = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Smoker.Options.ProgressBarLength");
-		amountPending = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Smoker.Options.AmountPending"));
+		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Smoker.Options.ProgressBarCharacter"));
+		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Smoker.Options.EmptyColor"));
+		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Smoker.Options.FilledColor"));
+		noFuelColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Smoker.Options.NoFuelColor"));
+		progressBarLength = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.Smoker.Options.ProgressBarLength");
+		amountPending = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Smoker.Options.AmountPending"));
 	}
 	
 	@Override

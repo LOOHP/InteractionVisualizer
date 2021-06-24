@@ -5,7 +5,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>1.15.0.0</version>
+	<version>1.15.0.1</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -55,6 +55,18 @@
 								<relocation>
 									<pattern>org.apache.commons.text</pattern>
 									<shadedPattern>com.loohp.interactionvisualizer.libs.org.apache.commons.text</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.apache.commons.text</pattern>
+									<shadedPattern>com.loohp.interactionvisualizer.libs.org.apache.commons.text</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.simpleyaml</pattern>
+									<shadedPattern>com.loohp.interactionvisualizer.libs.org.simpleyaml</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.yaml</pattern>
+									<shadedPattern>com.loohp.interactionvisualizer.libs.org.yaml</shadedPattern>
 								</relocation>
 							</relocations>
 						</configuration>
@@ -189,6 +201,12 @@
 	</repositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>me.carleslc.Simple-YAML</groupId>
+			<artifactId>Simple-Yaml</artifactId>
+			<version>1.7.2</version>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.github.cryptomorin</groupId>
 			<artifactId>XSeries</artifactId>

@@ -53,13 +53,13 @@ public class BeeNestDisplay extends VisualizerRunnableDisplay implements Listene
 	
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
-		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.BeeNest.CheckingPeriod");
+		checkingPeriod = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.BeeNest.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
-		honeyLevelCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BeeNest.Options.HoneyLevelCharacter"));
-		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BeeNest.Options.EmptyColor"));
-		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BeeNest.Options.FilledColor"));
-		noCampfireColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BeeNest.Options.NoCampfireColor"));
-		beeCountText = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.BeeNest.Options.BeeCountText"));
+		honeyLevelCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.BeeNest.Options.HoneyLevelCharacter"));
+		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.BeeNest.Options.EmptyColor"));
+		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.BeeNest.Options.FilledColor"));
+		noCampfireColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.BeeNest.Options.NoCampfireColor"));
+		beeCountText = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.BeeNest.Options.BeeCountText"));
 	}
 	
 	@Override

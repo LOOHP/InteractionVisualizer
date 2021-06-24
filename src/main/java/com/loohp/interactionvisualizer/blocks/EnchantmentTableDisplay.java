@@ -46,7 +46,7 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
 	
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
-		translatableEnchantments = Collections.unmodifiableSet(new HashSet<>(InteractionVisualizer.plugin.getConfig().getStringList("Blocks.EnchantmentTable.Options.TranslatableEnchantments")));
+		translatableEnchantments = Collections.unmodifiableSet(new HashSet<>(InteractionVisualizer.plugin.getConfiguration().getStringList("Blocks.EnchantmentTable.Options.TranslatableEnchantments")));
 	}
 	
 	public static Set<String> getTranslatableEnchantments() {

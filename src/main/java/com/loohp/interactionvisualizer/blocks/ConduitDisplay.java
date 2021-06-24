@@ -50,9 +50,9 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
 	
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
-		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Conduit.CheckingPeriod");
+		checkingPeriod = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.Conduit.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
-		pathType = PathType.valueOf(InteractionVisualizer.plugin.getConfig().getString("Blocks.Conduit.PathType"));
+		pathType = PathType.valueOf(InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Conduit.PathType"));
 	}
 		
 	@Override

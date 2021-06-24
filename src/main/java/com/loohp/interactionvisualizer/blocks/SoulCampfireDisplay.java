@@ -51,12 +51,12 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 	
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
-		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.SoulCampfire.CheckingPeriod");
+		checkingPeriod = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.SoulCampfire.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
-		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.SoulCampfire.Options.ProgressBarCharacter"));
-		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.SoulCampfire.Options.EmptyColor"));
-		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.SoulCampfire.Options.FilledColor"));
-		progressBarLength = InteractionVisualizer.plugin.getConfig().getInt("Blocks.SoulCampfire.Options.ProgressBarLength");
+		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.SoulCampfire.Options.ProgressBarCharacter"));
+		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.SoulCampfire.Options.EmptyColor"));
+		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.SoulCampfire.Options.FilledColor"));
+		progressBarLength = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.SoulCampfire.Options.ProgressBarLength");
 	}
 	
 	@Override

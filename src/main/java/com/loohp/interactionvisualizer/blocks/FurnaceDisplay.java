@@ -66,14 +66,14 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
 	
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
-		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Furnace.CheckingPeriod");
+		checkingPeriod = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.Furnace.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
-		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Furnace.Options.ProgressBarCharacter"));
-		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Furnace.Options.EmptyColor"));
-		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Furnace.Options.FilledColor"));
-		noFuelColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Furnace.Options.NoFuelColor"));
-		progressBarLength = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Furnace.Options.ProgressBarLength");
-		amountPending = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Blocks.Furnace.Options.AmountPending"));
+		progressBarCharacter = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Furnace.Options.ProgressBarCharacter"));
+		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Furnace.Options.EmptyColor"));
+		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Furnace.Options.FilledColor"));
+		noFuelColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Furnace.Options.NoFuelColor"));
+		progressBarLength = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.Furnace.Options.ProgressBarLength");
+		amountPending = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Furnace.Options.AmountPending"));
 	}
 	
 	@Override

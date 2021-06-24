@@ -67,15 +67,15 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 	
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
-		regularFormatting = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Entities.Item.Options.RegularFormat")).split("\\{Item\\}", -1);
-		singularFormatting = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Entities.Item.Options.SingularFormat")).split("\\{Item\\}", -1);
-		toolsFormatting = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Entities.Item.Options.ToolsFormat")).split("\\{Item\\}", -1);
-		highColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Entities.Item.Options.Color.High"));
-		mediumColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Entities.Item.Options.Color.Medium"));
-		lowColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfig().getString("Entities.Item.Options.Color.Low"));
-		cramp = InteractionVisualizer.plugin.getConfig().getInt("Entities.Item.Options.Cramping");
-		stripColorBlacklist = InteractionVisualizer.plugin.getConfig().getBoolean("Entities.Item.Options.Blacklist.StripColorWhenMatching");
-		blacklist = InteractionVisualizer.plugin.getConfig().getList("Entities.Item.Options.Blacklist.List").stream().map(each -> {
+		regularFormatting = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.RegularFormat")).split("\\{Item\\}", -1);
+		singularFormatting = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.SingularFormat")).split("\\{Item\\}", -1);
+		toolsFormatting = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.ToolsFormat")).split("\\{Item\\}", -1);
+		highColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.Color.High"));
+		mediumColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.Color.Medium"));
+		lowColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.Color.Low"));
+		cramp = InteractionVisualizer.plugin.getConfiguration().getInt("Entities.Item.Options.Cramping");
+		stripColorBlacklist = InteractionVisualizer.plugin.getConfiguration().getBoolean("Entities.Item.Options.Blacklist.StripColorWhenMatching");
+		blacklist = InteractionVisualizer.plugin.getConfiguration().getList("Entities.Item.Options.Blacklist.List").stream().map(each -> {
 			@SuppressWarnings("unchecked")
 			List<String> entry = (List<String>) each;
 			Pattern pattern = Pattern.compile(entry.get(0));

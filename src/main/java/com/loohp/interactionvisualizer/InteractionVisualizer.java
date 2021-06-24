@@ -1,5 +1,6 @@
 package com.loohp.interactionvisualizer;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,12 +16,15 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.simpleyaml.configuration.comments.CommentType;
+import org.simpleyaml.configuration.file.FileConfiguration;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
+import com.loohp.interactionvisualizer.config.Config;
 import com.loohp.interactionvisualizer.database.Database;
 import com.loohp.interactionvisualizer.entityholders.VisualizerEntity;
 import com.loohp.interactionvisualizer.managers.LangManager;
@@ -47,6 +51,9 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 
 public class InteractionVisualizer extends JavaPlugin {
+	
+	public static final int BSTATS_PLUGIN_ID = 7024;
+	public static final String CONFIG_ID = "config";
 	
 	public static InteractionVisualizer plugin = null;
 	public static ProtocolManager protocolManager;
@@ -115,10 +122,8 @@ public class InteractionVisualizer extends JavaPlugin {
 			hookMessage("Essentials");
 			ess3 = true;
 		}
-		
-		int pluginId = 7024;
 
-		Metrics metrics = new Metrics(this, pluginId);
+		Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 		
 		exactMinecraftVersion = Bukkit.getVersion().substring(Bukkit.getVersion().indexOf("(") + 5, Bukkit.getVersion().indexOf(")"));
 		version = MCVersion.fromPackageName(getServer().getClass().getPackage().getName());
@@ -149,9 +154,10 @@ public class InteractionVisualizer extends JavaPlugin {
 			break;
 		}
 		
-		getConfig().options().header("For information on what each option does. Please refer to https://github.com/LOOHP/InteractionVisualizer/blob/master/src/main/resources/config.yml");
-		getConfig().options().copyDefaults(true);
-		saveConfig();
+		if (!getDataFolder().exists()) {
+			getDataFolder().mkdirs();
+		}
+		Config.loadConfig(CONFIG_ID, new File(getDataFolder(), "config.yml"), getClass().getClassLoader().getResourceAsStream("config.yml"), getClass().getClassLoader().getResourceAsStream("config.yml"), CommentType.BLOCK);
 		
 		defaultworld = getServer().getWorlds().get(0);
 		defaultlocation = new Location(defaultworld, 0, 0, 0);
@@ -159,7 +165,7 @@ public class InteractionVisualizer extends JavaPlugin {
 			defaultworld.setChunkForceLoaded(0, 0, true);
 		}
 		
-		if (getConfig().getBoolean("Options.DownloadLanguageFiles")) {
+		if (getConfiguration().getBoolean("Options.DownloadLanguageFiles")) {
 			getServer().getScheduler().runTaskAsynchronously(this, () -> LangManager.generate());
 		}
 		
@@ -326,34 +332,39 @@ public class InteractionVisualizer extends JavaPlugin {
 		getServer().getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] InteractionVisualizer has been disabled!");
 	}
 	
+	public FileConfiguration getConfiguration() {
+		return Config.getConfig(CONFIG_ID).getConfiguration();
+	}
+	
 	@Override
 	public void reloadConfig() {
-		super.reloadConfig();
+		Config config = Config.getConfig(CONFIG_ID);
+		config.reload();
 		
-		itemStandEnabled = getConfig().getBoolean("Modules.ItemStand.Enabled");
-		itemDropEnabled = getConfig().getBoolean("Modules.ItemDrop.Enabled");
-		hologramsEnabled = getConfig().getBoolean("Modules.Hologram.Enabled");
+		itemStandEnabled = getConfiguration().getBoolean("Modules.ItemStand.Enabled");
+		itemDropEnabled = getConfiguration().getBoolean("Modules.ItemDrop.Enabled");
+		hologramsEnabled = getConfiguration().getBoolean("Modules.Hologram.Enabled");
 		
-		playerPickupYOffset = getConfig().getDouble("Settings.PickupAnimationPlayerYOffset");
+		playerPickupYOffset = getConfiguration().getDouble("Settings.PickupAnimationPlayerYOffset");
 		
-		tileEntityCheckingRange = getConfig().getInt("TileEntityUpdate.CheckingRange");
-		ignoreWalkSquared =  getConfig().getDouble("TileEntityUpdate.IgnoreMovementSpeed.Normal");
+		tileEntityCheckingRange = getConfiguration().getInt("TileEntityUpdate.CheckingRange");
+		ignoreWalkSquared =  getConfiguration().getDouble("TileEntityUpdate.IgnoreMovementSpeed.Normal");
 		ignoreWalkSquared *= ignoreWalkSquared;
-		ignoreFlySquared =  getConfig().getDouble("TileEntityUpdate.IgnoreMovementSpeed.Flying");
+		ignoreFlySquared =  getConfiguration().getDouble("TileEntityUpdate.IgnoreMovementSpeed.Flying");
 		ignoreFlySquared *= ignoreFlySquared;
-		ignoreGlideSquared =  getConfig().getDouble("TileEntityUpdate.IgnoreMovementSpeed.Gliding");
+		ignoreGlideSquared =  getConfiguration().getDouble("TileEntityUpdate.IgnoreMovementSpeed.Gliding");
 		ignoreGlideSquared *= ignoreGlideSquared;
 		
-		handMovementEnabled = getConfig().getBoolean("Settings.UseHandSwingAnimation");
+		handMovementEnabled = getConfiguration().getBoolean("Settings.UseHandSwingAnimation");
 		
-		disabledWorlds = getConfig().getStringList("Settings.DisabledWorlds").stream().collect(Collectors.toSet());
-		hideIfObstructed = getConfig().getBoolean("Settings.HideIfViewObstructed");
+		disabledWorlds = getConfiguration().getStringList("Settings.DisabledWorlds").stream().collect(Collectors.toSet());
+		hideIfObstructed = getConfiguration().getBoolean("Settings.HideIfViewObstructed");
 		
-		lightUpdatePeriod = getConfig().getInt("LightUpdate.Period");
+		lightUpdatePeriod = getConfiguration().getInt("LightUpdate.Period");
 		
-		updaterEnabled = getConfig().getBoolean("Options.Updater");
+		updaterEnabled = getConfiguration().getBoolean("Options.Updater");
 		
-		language = getConfig().getString("Settings.Language");
+		language = getConfiguration().getString("Settings.Language");
 		
 		playerTrackingRange.clear();
 		int defaultRange = getServer().spigot().getConfig().getInt("world-settings.default.entity-tracking-range.players", 64);

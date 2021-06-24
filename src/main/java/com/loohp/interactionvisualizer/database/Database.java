@@ -30,7 +30,7 @@ public class Database {
     private static Object syncdb = new Object();
 	
 	public static void setup() {
-		String type = InteractionVisualizer.plugin.getConfig().getString("Database.Type");
+		String type = InteractionVisualizer.plugin.getConfiguration().getString("Database.Type");
 		if (type.equalsIgnoreCase("MYSQL")) {
 			isMYSQL = true;
 		} else {
@@ -65,11 +65,11 @@ public class Database {
 	}
 	
 	public static void mysqlSetup(boolean echo) {
-        host = InteractionVisualizer.plugin.getConfig().getString("Database.MYSQL.Host");
-        port =  InteractionVisualizer.plugin.getConfig().getInt("Database.MYSQL.Port");
-        database = InteractionVisualizer.plugin.getConfig().getString("Database.MYSQL.Database");
-        username = InteractionVisualizer.plugin.getConfig().getString("Database.MYSQL.Username");
-        password = InteractionVisualizer.plugin.getConfig().getString("Database.MYSQL.Password");
+        host = InteractionVisualizer.plugin.getConfiguration().getString("Database.MYSQL.Host");
+        port =  InteractionVisualizer.plugin.getConfiguration().getInt("Database.MYSQL.Port");
+        database = InteractionVisualizer.plugin.getConfiguration().getString("Database.MYSQL.Database");
+        username = InteractionVisualizer.plugin.getConfiguration().getString("Database.MYSQL.Username");
+        password = InteractionVisualizer.plugin.getConfiguration().getString("Database.MYSQL.Password");
 
         try {
 			if (getConnection() != null && !getConnection().isClosed()) {

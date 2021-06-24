@@ -81,8 +81,8 @@ public class Debug implements Listener {
 			Bukkit.removeRecipe(new NamespacedKey(InteractionVisualizer.plugin, "nana_bone"));
 		}
 		
-		if (InteractionVisualizer.plugin.getConfig().contains("Special.b")) {
-			if (!InteractionVisualizer.plugin.getConfig().getBoolean("Special.b")) {
+		if (InteractionVisualizer.plugin.getConfiguration().contains("Special.b")) {
+			if (!InteractionVisualizer.plugin.getConfiguration().getBoolean("Special.b")) {
 				return;
 			}
 		}

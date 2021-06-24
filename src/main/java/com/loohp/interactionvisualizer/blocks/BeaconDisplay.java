@@ -53,9 +53,9 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 	
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
-		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.Beacon.CheckingPeriod");
+		checkingPeriod = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.Beacon.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
-		pathType = PathType.valueOf(InteractionVisualizer.plugin.getConfig().getString("Blocks.Beacon.PathType"));
+		pathType = PathType.valueOf(InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Beacon.PathType"));
 	}
 		
 	@Override

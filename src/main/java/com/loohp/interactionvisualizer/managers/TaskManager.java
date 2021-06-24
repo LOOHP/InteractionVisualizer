@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
+import org.simpleyaml.configuration.file.FileConfiguration;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.VisualizerInteractDisplay;
@@ -404,7 +404,7 @@ public class TaskManager {
 	}
 	
 	private static FileConfiguration getConfig() {
-		return InteractionVisualizer.plugin.getConfig();
-	}
+		return InteractionVisualizer.plugin.getConfiguration();
+	}	
 
 }

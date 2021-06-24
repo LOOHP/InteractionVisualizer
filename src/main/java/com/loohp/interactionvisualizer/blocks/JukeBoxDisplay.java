@@ -49,9 +49,9 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 	
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
-		checkingPeriod = InteractionVisualizer.plugin.getConfig().getInt("Blocks.JukeBox.CheckingPeriod");
+		checkingPeriod = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.JukeBox.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
-		showDiscName = InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.JukeBox.Options.ShowDiscName");
+		showDiscName = InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.JukeBox.Options.ShowDiscName");
 	}
 	
 	@Override

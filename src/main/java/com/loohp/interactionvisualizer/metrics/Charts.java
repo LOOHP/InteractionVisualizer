@@ -25,7 +25,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Anvil.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Anvil.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -36,7 +36,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Banner.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Banner.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -47,7 +47,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Beacon.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Beacon.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -58,7 +58,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.BeeHive.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.BeeHive.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -69,7 +69,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.BeeNest.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.BeeNest.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -80,7 +80,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.BlastFurnace.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.BlastFurnace.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -91,7 +91,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.BrewingStand.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.BrewingStand.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -102,7 +102,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Campfire.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Campfire.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -113,7 +113,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.CartographyTable.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.CartographyTable.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -124,7 +124,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Chest.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Chest.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -135,7 +135,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Conduit.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Conduit.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -146,7 +146,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.CraftingTable.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.CraftingTable.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -157,7 +157,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Dispenser.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Dispenser.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -168,7 +168,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.DoubleChest.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.DoubleChest.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -179,7 +179,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Dropper.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Dropper.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -190,7 +190,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.EnchantmentTable.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.EnchantmentTable.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -201,7 +201,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.EnderChest.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.EnderChest.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -212,7 +212,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Furnace.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Furnace.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -223,7 +223,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Grindstone.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Grindstone.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -234,7 +234,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Hopper.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Hopper.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -245,7 +245,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Lectern.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Lectern.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -256,7 +256,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Loom.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Loom.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -267,7 +267,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.ShulkerBox.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.ShulkerBox.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -278,7 +278,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.SmithingTable.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.SmithingTable.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -289,7 +289,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Smoker.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Smoker.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -300,7 +300,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.SoulCampfire.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.SoulCampfire.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -311,7 +311,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Spawner.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Spawner.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -322,7 +322,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.Stonecutter.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.Stonecutter.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -333,7 +333,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.NoteBlock.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.NoteBlock.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -344,7 +344,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Blocks.JukeBox.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.JukeBox.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -355,7 +355,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Entities.Item.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Entities.Item.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
@@ -366,7 +366,7 @@ public class Charts {
 	        @Override
 	        public String call() throws Exception {
 	        	String string = "Disabled";
-	        	if (InteractionVisualizer.plugin.getConfig().getBoolean("Entities.Villager.Enabled")) {
+	        	if (InteractionVisualizer.plugin.getConfiguration().getBoolean("Entities.Villager.Enabled")) {
 	        		string = "Enabled";
 	        	}
 	            return string;
