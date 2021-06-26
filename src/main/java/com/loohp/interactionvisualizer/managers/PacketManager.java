@@ -144,10 +144,10 @@ public class PacketManager implements Listener {
 					Player player = itr2.next();
 					Location location = player.getEyeLocation();
 					if (!location.getWorld().equals(entity.getWorld())) {
-						itr.remove();
-						continue;
+						itr2.remove();
+					} else {
+						ServerPacketSender.teleportEntity(player, entity.getEntityId(), entity.getViewingLocation(location, location.getDirection()));
 					}
-					ServerPacketSender.teleportEntity(player, entity.getEntityId(), entity.getViewingLocation(location, location.getDirection()));
 				}
 			}
 		}, 0, 2);

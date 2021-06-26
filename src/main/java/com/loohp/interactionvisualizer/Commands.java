@@ -46,7 +46,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		
 		if (args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("interactionvisualizer.reload")) {
-				plugin.reloadConfig();
+				plugin.loadConfig();
 				MusicManager.reloadConfig();	
 				MaterialManager.reloadConfig();
 				sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.Reload")));

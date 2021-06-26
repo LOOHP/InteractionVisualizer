@@ -157,6 +157,7 @@ public class InteractionVisualizer extends JavaPlugin {
 			getDataFolder().mkdirs();
 		}
 		Config.loadConfig(CONFIG_ID, new File(getDataFolder(), "config.yml"), getClass().getClassLoader().getResourceAsStream("config.yml"), getClass().getClassLoader().getResourceAsStream("config.yml"), true);
+		loadConfig();
 		
 		defaultworld = getServer().getWorlds().get(0);
 		defaultlocation = new Location(defaultworld, 0, 0, 0);
@@ -335,8 +336,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		return Config.getConfig(CONFIG_ID).getConfiguration();
 	}
 	
-	@Override
-	public void reloadConfig() {
+	public void loadConfig() {
 		Config config = Config.getConfig(CONFIG_ID);
 		config.reload();
 		

@@ -1,22 +1,18 @@
 package com.loohp.interactionvisualizer.managers;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.simpleyaml.configuration.file.FileConfiguration;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-
-import net.md_5.bungee.api.ChatColor;
+import com.loohp.interactionvisualizer.config.Config;
 
 public class MaterialManager {
+	
+	public static final String MATERIAL_CONFIG_ID = "material";
 
 	public static FileConfiguration config;
 	public static File file;
@@ -31,36 +27,20 @@ public class MaterialManager {
 		if (!InteractionVisualizer.plugin.getDataFolder().exists()) {
 			InteractionVisualizer.plugin.getDataFolder().mkdir();
 		}
-		file = new File(InteractionVisualizer.plugin.getDataFolder(), "material.yml");
-		if (!file.exists()) {
-			try {
-				InputStream in = InteractionVisualizer.plugin.getClass().getClassLoader().getResourceAsStream("material.yml");
-	            Files.copy(in, file.toPath());
-				Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "The material.yml file has been created");
-			} catch (IOException e) {
-				Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Could not create the material.yml file");
-			}
-		}
-        
-        config = YamlConfiguration.loadConfiguration(file);
-        reload();
-        saveConfig();
+		Config.loadConfig(MATERIAL_CONFIG_ID, new File(InteractionVisualizer.plugin.getDataFolder(), "material.yml"), InteractionVisualizer.plugin.getClass().getClassLoader().getResourceAsStream("material.yml"), InteractionVisualizer.plugin.getClass().getClassLoader().getResourceAsStream("material.yml"), true);
+		reload();
 	}
 
 	public static FileConfiguration getMaterialConfig() {
-		return config;
+		return Config.getConfig(MATERIAL_CONFIG_ID).getConfiguration();
 	}
 
 	public static void saveConfig() {
-		try {
-			config.save(file);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Config.getConfig(MATERIAL_CONFIG_ID).save();
 	}
 
 	public static void reloadConfig() {
-		config = YamlConfiguration.loadConfiguration(file);
+		Config.getConfig(MATERIAL_CONFIG_ID).reload();
 		reload();
 	}
 	

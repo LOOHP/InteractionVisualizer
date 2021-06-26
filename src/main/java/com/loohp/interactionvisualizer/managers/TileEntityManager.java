@@ -240,7 +240,7 @@ public class TileEntityManager implements Listener {
 	private boolean isMovingTooFast(Player player, Location from, Location to) {
 		double changeX = Math.abs(from.getX() - to.getX());
 		double changeZ = Math.abs(from.getZ() - to.getZ());
-		double horizontalDistanceSquared = changeX * changeX + changeZ + changeZ;
+		double horizontalDistanceSquared = changeX * changeX + changeZ * changeZ;
 		if (player != null && player.isGliding()) {
 			return horizontalDistanceSquared > InteractionVisualizer.ignoreGlideSquared;
 		}

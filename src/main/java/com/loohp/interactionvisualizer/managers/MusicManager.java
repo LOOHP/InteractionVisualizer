@@ -1,55 +1,32 @@
 package com.loohp.interactionvisualizer.managers;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.simpleyaml.configuration.file.FileConfiguration;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-
-import net.md_5.bungee.api.ChatColor;
+import com.loohp.interactionvisualizer.config.Config;
 
 public class MusicManager {
 
-	public static FileConfiguration config;
-	public static File file;
+	public static final String MUSIC_CONFIG_ID = "music";
 
 	public static void setup() {
 		if (!InteractionVisualizer.plugin.getDataFolder().exists()) {
 			InteractionVisualizer.plugin.getDataFolder().mkdir();
 		}
-		file = new File(InteractionVisualizer.plugin.getDataFolder(), "music.yml");
-		if (!file.exists()) {
-			try {
-				InputStream in = InteractionVisualizer.plugin.getClass().getClassLoader().getResourceAsStream("music.yml");
-	            Files.copy(in, file.toPath());
-				Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "The music.yml file has been created");
-			} catch (IOException e) {
-				Bukkit.getServer().getConsoleSender().sendMessage(ChatColor.RED + "Could not create the music.yml file");
-			}
-		}
-        
-        config = YamlConfiguration.loadConfiguration(file);
-        saveConfig();
+		Config.loadConfig(MUSIC_CONFIG_ID, new File(InteractionVisualizer.plugin.getDataFolder(), "music.yml"), InteractionVisualizer.plugin.getClass().getClassLoader().getResourceAsStream("music.yml"), InteractionVisualizer.plugin.getClass().getClassLoader().getResourceAsStream("music.yml"), true);
 	}
 
 	public static FileConfiguration getMusicConfig() {
-		return config;
+		return Config.getConfig(MUSIC_CONFIG_ID).getConfiguration();
 	}
 
 	public static void saveConfig() {
-		try {
-			config.save(file);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Config.getConfig(MUSIC_CONFIG_ID).save();
 	}
 
 	public static void reloadConfig() {
-		config = YamlConfiguration.loadConfiguration(file);
+		Config.getConfig(MUSIC_CONFIG_ID).reload();
 	}
 }
