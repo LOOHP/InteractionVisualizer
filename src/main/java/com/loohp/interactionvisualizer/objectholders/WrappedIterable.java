@@ -1,6 +1,7 @@
 package com.loohp.interactionvisualizer.objectholders;
 
 import java.util.Iterator;
+import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -35,7 +36,8 @@ public class WrappedIterable<I, O> implements Iterable<O> {
 	}
 	
 	public Stream<O> stream() {
-		return StreamSupport.stream(backingIterable.spliterator(), false).map(each -> each == null ? null : converter.apply(each));
+		Spliterator<I> spliterator = backingIterable.spliterator();
+		return StreamSupport.stream(() -> spliterator, spliterator.characteristics(), false).map(each -> each == null ? null : converter.apply(each));
 	}
 	
 	public Iterable<I> getHandle() {

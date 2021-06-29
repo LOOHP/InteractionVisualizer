@@ -33,6 +33,7 @@ import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEve
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.nms.NMS;
 import com.loohp.interactionvisualizer.objectholders.BoundingBox;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.WrappedIterable;
 import com.loohp.interactionvisualizer.protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
@@ -50,6 +51,8 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
 public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
+	
+	public static final EntryKey KEY = new EntryKey("item");
 	
 	private String[] regularFormatting;
 	private String[] singularFormatting;
@@ -99,6 +102,11 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 			return bipredicate;
 		}).reduce(BiPredicate::or).orElse((s, m) -> false);
 	}
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
+	}
 
 	@Override
 	public int gc() {
@@ -134,11 +142,11 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		BaseComponent name = getDisplayName(itemstack);
 		String matchingname = getMatchingName(itemstack, stripColorBlacklist);
 		
-		if (blacklist.test(matchingname, itemstack.getType()) || NBTUtils.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || cramp >= 0 && items.stream().filter(each -> each != null && each.getWorld().equals(world) && area.contains(each.getLocation().toVector())).count() > cramp) {
+		if (blacklist.test(matchingname, itemstack.getType()) || NBTUtils.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || isCramping(world, area, items)) {
 			PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
 		    defaultPacket.getIntegers().write(0, item.getEntityId());
 		    defaultPacket.getWatchableCollectionModifier().write(0, WrappedDataWatcher.getEntityWatcher(item).getWatchableObjects());
-		    Collection<Player> players = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM);
+		    Collection<Player> players = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY);
 		    for (Player player : players) {
 	    		try {
 	    			InteractionVisualizer.protocolManager.sendServerPacket(player, defaultPacket);
@@ -228,7 +236,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 			entityCenter.setY(entityCenter.getY() + item.getHeight() * 1.7);
 		    
 		    Collection<Player> players = location.getWorld().getPlayers();
-		    Collection<Player> enabledPlayers = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM);
+		    Collection<Player> enabledPlayers = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY);
 		    Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, location, player -> !InteractionVisualizer.hideIfObstructed || LineOfSightUtils.hasLineOfSight(player.getEyeLocation(), entityCenter));
 		    for (Player player : players) {
 	    		try {
@@ -294,6 +302,17 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 			}
 		}
 		return "";
+	}
+	
+	private boolean isCramping(World world, BoundingBox area, WrappedIterable<?, Entity> items) {
+		if (cramp <= 0) {
+			return false;
+		}
+		try {
+			return items.stream().filter(each -> each != null && each.getWorld().equals(world) && area.contains(each.getLocation().toVector())).count() > cramp;
+		} catch (Throwable e) {
+			return false;
+		}
 	}
 
 }

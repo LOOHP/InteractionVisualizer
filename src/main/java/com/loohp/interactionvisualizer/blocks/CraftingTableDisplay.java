@@ -37,6 +37,7 @@ import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.LightManager;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.SoundManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
 import com.loohp.interactionvisualizer.utils.MCVersion;
 import com.loohp.interactionvisualizer.utils.MaterialUtils;
@@ -47,8 +48,15 @@ import ru.beykerykt.lightapi.LightType;
 
 public class CraftingTableDisplay extends VisualizerInteractDisplay implements Listener {
 	
+	public static final EntryKey KEY = new EntryKey("crafting_table");
+	
 	public Map<Block, Map<String, Object>> openedBenches = new HashMap<>();
 	public Map<Player, Block> playermap = new HashMap<Player, Block>();
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
+	}
 	
 	@Override
 	public int run() {		
@@ -216,7 +224,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
 					item.setPickupDelay(32767);
 					item.setGravity(false);
 					map.put("0", item);
-					PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
+					PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
 					PacketManager.updateItem(item);
 				} else {
 					map.put("0", "N/A");
@@ -402,7 +410,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
 			PacketManager.updateArmorStand(slot9);
 			
 			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-				for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP)) {
+				for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY)) {
 					each.spawnParticle(Particle.CLOUD, loc.clone().add(0.5, 1.1, 0.5), 10, 0.05, 0.05, 0.05, 0.05);
 				}
 			}, 6);
@@ -417,7 +425,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
 				PacketManager.updateItem(item);
 				
 				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-					SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
+					SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY));
 					PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot1);
 					PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot2);
 					PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot3);
@@ -617,15 +625,15 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
 		map.put("8", slot8);
 		map.put("9", slot9);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), slot1);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), slot2);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), slot3);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), slot4);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), slot5);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), slot6);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), slot7);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), slot8);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), slot9);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot2);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot3);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot4);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot5);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot6);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot7);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot8);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot9);
 		
 		return map;
 	}

@@ -43,6 +43,8 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class EnchantmentTableAnimation {
 	
+	public static final EntryKey KEY = new EntryKey("enchantment_table");
+	
 	public static final int SET_ITEM = 0;
 	public static final int PLAY_ENCHANTMENT = 1;
 	public static final int PLAY_PICKUP = 2;
@@ -125,7 +127,7 @@ public class EnchantmentTableAnimation {
 		
 		if (!this.item.isPresent()) {
 			this.item = Optional.of(new Item(location.clone().add(0.5, 1.3, 0.5)));
-			PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item.get());
+			PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item.get());
 		}
 		
 		Item item = this.item.get();
@@ -135,7 +137,7 @@ public class EnchantmentTableAnimation {
 		item.setLocked(true);
 		item.setVelocity(new Vector(0.0, 0.05, 0.0));
 		PacketManager.updateItem(item);
-		for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP)) {
+		for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY)) {
 			each.spawnParticle(Particle.PORTAL, location.clone().add(0.5, 2.6, 0.5), 200);
 		}
 		
@@ -169,7 +171,7 @@ public class EnchantmentTableAnimation {
 				stand.setCustomName(enchantmentName);
 				stand.setCustomNameVisible(true);
 				setStand(stand);
-				PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), stand);
+				PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), stand);
 				stands.add(stand);
 				standloc.add(0.0, 0.3, 0.0);
 			}
@@ -183,7 +185,7 @@ public class EnchantmentTableAnimation {
 			stand.setCustomName(levelTrans);
 			stand.setCustomNameVisible(true);
 			setStand(stand);
-			PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), stand);
+			PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), stand);
 			stands.add(stand);
 			
 			PacketManager.updateItem(item);
@@ -233,7 +235,7 @@ public class EnchantmentTableAnimation {
 		PacketManager.updateItem(item);
 		
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
-			SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
+			SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY));
 			PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 		    this.item = Optional.empty();
 		    future.complete(PLAY_PICKUP);
@@ -267,7 +269,7 @@ public class EnchantmentTableAnimation {
 			} else {
 				this.item = Optional.of(new Item(location.clone().add(0.5, 1.3, 0.5)));
 				this.item.get().setItemStack(itemstack);
-				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item.get());
+				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item.get());
 				PacketManager.updateItem(item.get());
 			}
 			future.complete(SET_ITEM);

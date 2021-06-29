@@ -1,14 +1,11 @@
 package com.loohp.interactionvisualizer.placeholderAPI;
 
-import java.util.Map;
-
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
-import com.loohp.interactionvisualizer.database.Database;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 
@@ -26,7 +23,7 @@ public class Placeholders extends PlaceholderExpansion {
 
 	@Override
 	public String getVersion() {
-		return "1.0.0";
+		return "2.0.0";
 	}
 	
 	@Override
@@ -42,49 +39,28 @@ public class Placeholders extends PlaceholderExpansion {
 	@Override
     public String onRequest(OfflinePlayer offlineplayer, String identifier){
   
-        if (identifier.equals("itemstand")) {
-        	if (offlineplayer.isOnline()) {
-        		Player player = offlineplayer.getPlayer();
-        		if (InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND).contains(player)) {
-        			return "enabled";
-        		}
-        		return "disabled";
-        	}
-        	Map<Modules, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
-        	if (map.get(Modules.ITEMSTAND)) {
-        		return "enabled";
-        	}
-        	return "disabled";
+        if (identifier.startsWith("itemstand_")) {
+        	EntryKey entry = new EntryKey(identifier.substring(10));
+    		if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.ITEMSTAND, entry)) {
+    			return "enabled";
+    		}
+    		return "disabled";
         }
 
-        if (identifier.equals("itemdrop")) {
-        	if (offlineplayer.isOnline()) {
-        		Player player = offlineplayer.getPlayer();
-        		if (InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP).contains(player)) {
-        			return "enabled";
-        		}
-        		return "disabled";
-        	}
-        	Map<Modules, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
-        	if (map.get(Modules.ITEMDROP)) {
-        		return "enabled";
-        	}
-        	return "disabled";
+        if (identifier.startsWith("itemdrop_")) {
+        	EntryKey entry = new EntryKey(identifier.substring(9));
+        	if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.ITEMDROP, entry)) {
+    			return "enabled";
+    		}
+    		return "disabled";
         }
         
-        if (identifier.equals("hologram")) {
-        	if (offlineplayer.isOnline()) {
-        		Player player = offlineplayer.getPlayer();
-        		if (InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM).contains(player)) {
-        			return "enabled";
-        		}
-        		return "disabled";
-        	}
-        	Map<Modules, Boolean> map = Database.getPlayerInfo(offlineplayer.getUniqueId());
-        	if (map.get(Modules.HOLOGRAM)) {
-        		return "enabled";
-        	}
-        	return "disabled";
+        if (identifier.startsWith("hologram_")) {
+        	EntryKey entry = new EntryKey(identifier.substring(9));
+        	if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.HOLOGRAM, entry)) {
+    			return "enabled";
+    		}
+    		return "disabled";
         }
 
         return null;

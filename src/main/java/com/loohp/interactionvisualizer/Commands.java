@@ -2,8 +2,6 @@ package com.loohp.interactionvisualizer;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -13,10 +11,10 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
-import com.loohp.interactionvisualizer.database.Database;
 import com.loohp.interactionvisualizer.managers.MaterialManager;
 import com.loohp.interactionvisualizer.managers.MusicManager;
 import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.updater.Updater;
 import com.loohp.interactionvisualizer.updater.Updater.UpdaterResponse;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
@@ -94,38 +92,36 @@ public class Commands implements CommandExecutor, TabCompleter {
 		
 		if (args[0].equalsIgnoreCase("toggle")) {
 			if (sender.hasPermission("interactionvisualizer.toggle")) {
-				if (args.length == 2) {
+				if (args.length == 4) {
 					if (!(sender instanceof Player)) {
 						sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.Toggle.Console")));
 						return true;
 					}
 					Player player = (Player) sender;
 					Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+						EntryKey[] entries;
+						if (args[2].equalsIgnoreCase("all")) {
+							entries = InteractionVisualizer.preferenceManager.getRegisteredEntries().toArray(new EntryKey[0]);
+						} else {
+							entries = new EntryKey[] {new EntryKey(args[2])};
+						}
+						boolean value = false;
+						if (args[3].equalsIgnoreCase("true")) {
+							value = true;
+						}
 						switch (args[1].toLowerCase()) {
 						case "itemstand":
-							Toggle.toggle(sender, player, Modules.ITEMSTAND);
+							Toggle.toggle(sender, player, Modules.ITEMSTAND, value, entries);
 							break;
 						case "itemdrop":
-							Toggle.toggle(sender, player, Modules.ITEMDROP);
+							Toggle.toggle(sender, player, Modules.ITEMDROP, value, entries);
 							break;
 						case "hologram":
-							Toggle.toggle(sender, player, Modules.HOLOGRAM);
+							Toggle.toggle(sender, player, Modules.HOLOGRAM, value, entries);
 							break;
 						case "all":
-							Map<Modules, Boolean> info = Database.getPlayerInfo(player);
-							boolean toggle = true;
-							int truecount = 0;
-							for (boolean value : info.values()) {
-								truecount = value ? truecount + 1 : truecount;
-								if ((double) truecount > ((double) info.size() / 2.0)) {
-									toggle = false;
-									break;
-								}
-							}
-							for (Entry<Modules, Boolean> entry : info.entrySet()) {
-								if (entry.getValue() != toggle) {
-									Toggle.toggle(sender, player, entry.getKey());
-								}
+							for (Modules modules : Modules.values()) {
+								Toggle.toggle(sender, player, modules, value, entries);
 							}
 							break;
 						default:
@@ -133,10 +129,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 						}
 					});
 					return true;
-				} else if (args.length == 3) {
+				} else if (args.length == 5) {
 					if (sender instanceof Player) {
-						if (Bukkit.getPlayer(args[2]) != null) {
-							if (!Bukkit.getPlayer(args[2]).equals((Player) sender)) {
+						if (Bukkit.getPlayer(args[4]) != null) {
+							if (!Bukkit.getPlayer(args[4]).equals((Player) sender)) {
 								if (!sender.hasPermission("interactionvisualizer.toggle.others")) {
 									sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.NoPermission")));
 									return true;
@@ -144,37 +140,35 @@ public class Commands implements CommandExecutor, TabCompleter {
 							}
 						}
 					}
-					if (Bukkit.getPlayer(args[2]) == null) {
+					if (Bukkit.getPlayer(args[4]) == null) {
 						sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.Toggle.PlayerNotFound")));
 						return true;
 					}
-					Player player = Bukkit.getPlayer(args[2]);
+					Player player = Bukkit.getPlayer(args[4]);
 					Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+						EntryKey[] entries;
+						if (args[2].equalsIgnoreCase("all")) {
+							entries = InteractionVisualizer.preferenceManager.getRegisteredEntries().toArray(new EntryKey[0]);
+						} else {
+							entries = new EntryKey[] {new EntryKey(args[2])};
+						}
+						boolean value = false;
+						if (args[3].equalsIgnoreCase("true")) {
+							value = true;
+						}
 						switch (args[1].toLowerCase()) {
 						case "itemstand":
-							Toggle.toggle(sender, player, Modules.ITEMSTAND);
+							Toggle.toggle(sender, player, Modules.ITEMSTAND, value, entries);
 							break;
 						case "itemdrop":
-							Toggle.toggle(sender, player, Modules.ITEMDROP);
+							Toggle.toggle(sender, player, Modules.ITEMDROP, value, entries);
 							break;
 						case "hologram":
-							Toggle.toggle(sender, player, Modules.HOLOGRAM);
+							Toggle.toggle(sender, player, Modules.HOLOGRAM, value, entries);
 							break;
 						case "all":
-							Map<Modules, Boolean> info = Database.getPlayerInfo(player);
-							boolean toggle = true;
-							int truecount = 0;
-							for (boolean value : info.values()) {
-								truecount = value ? truecount + 1 : truecount;
-								if ((double) truecount > ((double) info.size() / 2.0)) {
-									toggle = false;
-									break;
-								}
-							}
-							for (Entry<Modules, Boolean> entry : info.entrySet()) {
-								if (entry.getValue() != toggle) {
-									Toggle.toggle(sender, player, entry.getKey());
-								}
+							for (Modules modules : Modules.values()) {
+								Toggle.toggle(sender, player, modules, value, entries);
 							}
 							break;
 						default:
@@ -270,10 +264,40 @@ public class Commands implements CommandExecutor, TabCompleter {
 		case 3:
 			if (args[0].equalsIgnoreCase("toggle")) {
 				if (sender.hasPermission("interactionvisualizer.toggle")) {
+					if (args[1].toLowerCase().equals("itemstand") || args[1].toLowerCase().equals("itemdrop") || args[1].toLowerCase().equals("hologram") || args[1].toLowerCase().equals("all")) {
+						for (EntryKey each : InteractionVisualizer.preferenceManager.getRegisteredEntries()) {
+							if (each.toSimpleString().toLowerCase().startsWith(args[2].toLowerCase())) {
+								tab.add(each.toSimpleString());
+							}
+						}
+						if ("all".startsWith(args[2].toLowerCase())) {
+							tab.add("all");
+						}
+					}
+				}
+			}
+			return tab;
+		case 4:
+			if (args[0].equalsIgnoreCase("toggle")) {
+				if (sender.hasPermission("interactionvisualizer.toggle")) {
+					if (args[1].toLowerCase().equals("itemstand") || args[1].toLowerCase().equals("itemdrop") || args[1].toLowerCase().equals("hologram") || args[1].toLowerCase().equals("all")) {					
+						if (Boolean.TRUE.toString().toLowerCase().startsWith(args[3].toLowerCase())) {
+							tab.add(Boolean.TRUE.toString());
+						}
+						if (Boolean.FALSE.toString().toLowerCase().startsWith(args[3].toLowerCase())) {
+							tab.add(Boolean.FALSE.toString());
+						}
+					}
+				}
+			}
+			return tab;
+		case 5:
+			if (args[0].equalsIgnoreCase("toggle")) {
+				if (sender.hasPermission("interactionvisualizer.toggle")) {
 					if (args[1].toLowerCase().equals("itemstand") || args[1].toLowerCase().equals("itemdrop") || args[1].toLowerCase().equals("hologram")) {
 						if (sender.hasPermission("interactionvisualizer.toggle.others")) {
 							for (Player each : Bukkit.getOnlinePlayers()) {
-								if (each.getName().toLowerCase().startsWith(args[2].toLowerCase())) {
+								if (each.getName().toLowerCase().startsWith(args[4].toLowerCase())) {
 									tab.add(each.getName());
 								}
 							}

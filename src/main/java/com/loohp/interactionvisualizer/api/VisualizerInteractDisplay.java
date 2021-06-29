@@ -12,7 +12,7 @@ import com.loohp.interactionvisualizer.managers.TaskManager;
 /**
 This class is used for Displays which are shown when a player interact with a certain interface
 */
-public abstract class VisualizerInteractDisplay {
+public abstract class VisualizerInteractDisplay implements VisualizerDisplay {
 	
 	/**
 	DO NOT CHANGE THESE FIELD
@@ -33,9 +33,18 @@ public abstract class VisualizerInteractDisplay {
 	}
 	
 	/**
+	<b>Use register(InventoryType) instead</b>
+	*/
+	@Deprecated
+	public final void register() {
+		throw new UnsupportedOperationException("Use register(InventoryType) instead");
+	}
+	
+	/**
 	Register this custom display to InteractionVisualizer.
 	*/
 	public final void register(InventoryType type) {
+		InteractionVisualizerAPI.getPreferenceManager().registerEntry(key());
 		this.type = type;
 		TaskManager.processes.get(type).add(this);
 		this.tasks = new HashSet<Integer>();

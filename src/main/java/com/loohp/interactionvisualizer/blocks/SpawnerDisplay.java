@@ -29,10 +29,13 @@ import com.loohp.interactionvisualizer.entityholders.SurroundingPlaneArmorStand;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 
 public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listener {
+	
+	public static final EntryKey KEY = new EntryKey("spawner");
 	
 	public ConcurrentHashMap<Block, Map<String, Object>> spawnerMap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
@@ -58,6 +61,11 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
 		progressBarLength = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.Spawner.Options.ProgressBarLength");
 		spawnRange = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Spawner.Options.SpawnRange"));
 		pathType = PathType.valueOf(InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Spawner.PathType"));
+	}
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
 	}
 	
 	@Override
@@ -217,7 +225,7 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
 		
 		map.put("1", slot1);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), slot1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), slot1);
 		
 		return map;
 	}

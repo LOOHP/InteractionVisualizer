@@ -32,11 +32,14 @@ import com.loohp.interactionvisualizer.entityholders.SurroundingPlaneArmorStand;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 
 import net.md_5.bungee.api.ChatColor;
 
 public class ConduitDisplay extends VisualizerRunnableDisplay implements Listener {
+	
+	public static final EntryKey KEY = new EntryKey("conduit");
 	
 	public ConcurrentHashMap<Block, Map<String, Object>> conduitMap = new ConcurrentHashMap<>();
 	public ConcurrentHashMap<Block, float[]> placemap = new ConcurrentHashMap<>();
@@ -53,6 +56,11 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
 		checkingPeriod = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.Conduit.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
 		pathType = PathType.valueOf(InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Conduit.PathType"));
+	}
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
 	}
 		
 	@Override
@@ -233,8 +241,8 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
 		map.put("1", line1);
 		map.put("2", line2);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), line1);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), line2);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), line1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), line2);
 		
 		return map;
 	}

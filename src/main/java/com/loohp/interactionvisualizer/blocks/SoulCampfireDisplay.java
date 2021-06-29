@@ -32,10 +32,13 @@ import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 
 public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Listener {
+	
+	public static final EntryKey KEY = new EntryKey("soul_campfire");
 	
 	public ConcurrentHashMap<Block, Map<String, Object>> soulcampfireMap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
@@ -57,6 +60,11 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 		emptyColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.SoulCampfire.Options.EmptyColor"));
 		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.SoulCampfire.Options.FilledColor"));
 		progressBarLength = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.SoulCampfire.Options.ProgressBarLength");
+	}
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
 	}
 	
 	@Override
@@ -389,10 +397,10 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 		map.put("3", slot3);
 		map.put("4", slot4);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), slot1);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), slot2);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), slot3);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), slot4);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), slot1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), slot2);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), slot3);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), slot4);
 		
 		return map;
 	}

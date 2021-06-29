@@ -12,11 +12,12 @@ Messages:
   NoPermission: "&cYou do not have permission to use that command!"
   Reload: "&aInteractionVisualizer sucessfully reloaded!"
   Toggle:
-    Usage: "&cUsage: /interactionvisualizer toggle <itemstand/itemdrop/hologram>"
+    Usage: "&cUsage: /interactionvisualizer toggle <itemstand/itemdrop/hologram> <block/entry> <true/false>"
     Modes: "&cToggle Modes: itemstand, itemdrop, hologram"
-    Console: "&cPlease provide a player name: /interactionvisualizer toggle <mode> [player]"
-    ToggleOn: "&aToggled %s on"
-    ToggleOff: "&eToggled %s off"
+    Entries: "&cToggle Entries: %s"
+    Console: "&cPlease provide a player name: /interactionvisualizer toggle <mode> <block/entry> <true/false> [player]"
+    ToggleOn: "&aToggled %m of %e on"
+    ToggleOff: "&eToggled %m of %e off"
     PlayerNotFound: "&cThe player is not online!"
 
 GarbageCollector:

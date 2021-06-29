@@ -32,6 +32,7 @@ import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
 import com.loohp.interactionvisualizer.nms.NMS;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
@@ -43,6 +44,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
 public class BannerDisplay extends VisualizerRunnableDisplay implements Listener {
+	
+	public static final EntryKey KEY = new EntryKey("banner");
 	
 	public Map<Block, Map<String, Object>> bannerMap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
@@ -64,6 +67,11 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
 			Predicate<String> predicate = str -> pattern.matcher(str).matches();
 			return predicate;
 		}).reduce(Predicate::or).orElse(s -> false);
+	}
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
 	}
 
 	@Override
@@ -228,7 +236,7 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
 			
 			map.put("1", line1);
 			
-			PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), line1);
+			PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), line1);
 		} else {
 			Location origin = block.getLocation().add(0.5, 1.0, 0.5);
 			Vector vector;
@@ -245,7 +253,7 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
 			
 			map.put("1", line1);
 			
-			PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), line1);
+			PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), line1);
 		}
 		
 		return map;

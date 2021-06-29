@@ -32,6 +32,7 @@ import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.SoundManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
 import com.loohp.interactionvisualizer.utils.MaterialUtils;
 import com.loohp.interactionvisualizer.utils.MaterialUtils.MaterialMode;
@@ -39,7 +40,14 @@ import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class AnvilDisplay extends VisualizerInteractDisplay implements Listener {
 	
+	public static final EntryKey KEY = new EntryKey("anvil");
+	
 	public Map<Block, Map<String, Object>> openedAnvil = new HashMap<>();
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
+	}
 	
 	@Override
 	public void process(Player player) {		
@@ -94,7 +102,7 @@ public class AnvilDisplay extends VisualizerInteractDisplay implements Listener 
 					item.setCustomName(itemstack.getItemMeta().getDisplayName());
 					item.setCustomNameVisible(true);
 					map.put("2", item);
-					PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
+					PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
 					PacketManager.updateItem(item);
 				} else {
 					map.put("2", "N/A");
@@ -254,7 +262,7 @@ public class AnvilDisplay extends VisualizerInteractDisplay implements Listener 
 			PacketManager.updateArmorStand(slot1);
 			
 			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-				for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP)) {
+				for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY)) {
 					each.spawnParticle(Particle.CLOUD, loc.clone().add(0.5, 1.1, 0.5), 10, 0.05, 0.05, 0.05, 0.05);
 				}
 			}, 6);
@@ -269,7 +277,7 @@ public class AnvilDisplay extends VisualizerInteractDisplay implements Listener 
 				PacketManager.updateItem(item);
 					
 					Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-						SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
+						SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY));
 						PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot0);
 						PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot1);
 						PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
@@ -474,8 +482,8 @@ public class AnvilDisplay extends VisualizerInteractDisplay implements Listener 
 		map.put("0", slot0);
 		map.put("1", slot1);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), slot0);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), slot1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot0);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot1);
 		
 		return map;
 	}

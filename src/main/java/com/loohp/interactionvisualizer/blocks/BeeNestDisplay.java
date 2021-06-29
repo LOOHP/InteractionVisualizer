@@ -33,10 +33,13 @@ import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 
 public class BeeNestDisplay extends VisualizerRunnableDisplay implements Listener {
+	
+	public static final EntryKey KEY = new EntryKey("bee_nest");
 	
 	public ConcurrentHashMap<Block, Map<String, Object>> beenestMap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
@@ -60,6 +63,11 @@ public class BeeNestDisplay extends VisualizerRunnableDisplay implements Listene
 		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.BeeNest.Options.FilledColor"));
 		noCampfireColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.BeeNest.Options.NoCampfireColor"));
 		beeCountText = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.BeeNest.Options.BeeCountText"));
+	}
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
 	}
 	
 	@Override
@@ -264,8 +272,8 @@ public class BeeNestDisplay extends VisualizerRunnableDisplay implements Listene
 		map.put("0", line0);
 		map.put("1", line1);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), line0);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), line1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), line0);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), line1);
 		
 		return map;
 	}

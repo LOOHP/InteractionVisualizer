@@ -34,6 +34,7 @@ import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.LightManager;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.SoundManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
 import com.loohp.interactionvisualizer.utils.VanishUtils;
 
@@ -41,7 +42,14 @@ import ru.beykerykt.lightapi.LightType;
 
 public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 	
+	public static final EntryKey KEY = new EntryKey("loom");
+	
 	public Map<Block, Map<String, Object>> openedLooms = new HashMap<>();
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
+	}
 	
 	@Override
 	public int run() {		
@@ -271,11 +279,11 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 			Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector().subtract(loc.clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
 			item.setVelocity(pickup);
 			item.setPickupDelay(32767);
-			PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
+			PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
 			PacketManager.updateItem(item);
 			
 			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
+				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY));
 				PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 			}, 8);
 		}, 1);
@@ -382,7 +390,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 				Vector pickup = player.getEyeLocation().add(0.0, -0.5, 0.0).add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector().subtract(block.getLocation().clone().add(0.5, 1.2, 0.5).toVector()).multiply(0.15).add(lift);
 				item.setVelocity(pickup);
 				item.setPickupDelay(32767);
-				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
+				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
 				PacketManager.updateItem(item);
 				new BukkitRunnable() {
 					public void run() {
@@ -410,7 +418,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 		
 		map.put("Banner", banner);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), banner);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), banner);
 		
 		return map;
 	}

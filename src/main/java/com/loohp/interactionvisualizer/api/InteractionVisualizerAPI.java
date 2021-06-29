@@ -18,13 +18,13 @@ import org.bukkit.util.Vector;
 
 import com.google.common.collect.Collections2;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.Toggle;
-import com.loohp.interactionvisualizer.database.Database;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.managers.PreferenceManager;
 import com.loohp.interactionvisualizer.managers.SoundManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 
 public class InteractionVisualizerAPI {
@@ -55,36 +55,25 @@ public class InteractionVisualizerAPI {
 	Gets all players that has a module enabled for themselves, excluding players in disabled worlds.
 	@return A set of players.
 	*/
-	public static Collection<Player> getPlayerModuleList(Modules module) {
-		return getPlayerModuleList(module, true);
+	public static Collection<Player> getPlayerModuleList(Modules module, EntryKey entry) {
+		return getPlayerModuleList(module, entry, true);
 	}
 	
 	/**
 	Gets all players that has a module enabled for themselves, excluding the provided players and players in disabled worlds.
 	@return A set of players.
 	*/
-	public static Collection<Player> getPlayerModuleList(Modules module, Player... excludes) {
-		return getPlayerModuleList(module, true, excludes);
+	public static Collection<Player> getPlayerModuleList(Modules module, EntryKey entry, Player... excludes) {
+		return getPlayerModuleList(module, entry, true, excludes);
 	}
 	
 	/**
 	Gets all players that has a module enabled for themselves, excluding the provided players.
 	@return A set of players.
 	*/
-	public static Collection<Player> getPlayerModuleList(Modules module, boolean excludeDisabledWorlds, Player... excludes) {
-		Collection<Player> players = null;
+	public static Collection<Player> getPlayerModuleList(Modules module, EntryKey entry, boolean excludeDisabledWorlds, Player... excludes) {
+		Collection<Player> players = InteractionVisualizer.preferenceManager.getPlayerList(module, entry);
 		Set<Player> excludedPlayers = Stream.of(excludes).collect(Collectors.toSet());
-		switch (module) {
-		case HOLOGRAM:
-			players = InteractionVisualizer.holograms;
-			break;
-		case ITEMDROP:
-			players = InteractionVisualizer.itemDrop;
-			break;
-		case ITEMSTAND:
-			players = InteractionVisualizer.itemStand;
-			break;
-		}
 		if (excludeDisabledWorlds) {
 			Set<String> disabledWorlds = getDisabledWorlds();
 			players = Collections2.filter(players, each -> !excludedPlayers.contains(each) && !disabledWorlds.contains(each.getWorld().getName()));
@@ -120,14 +109,14 @@ public class InteractionVisualizerAPI {
 	Check if an online player has a module enabled.
 	@return true/false.
 	*/
-	public static boolean hasPlayerEnabledModule(Player player, Modules module) {
+	public static boolean hasPlayerEnabledModule(Player player, Modules module, EntryKey entry) {
 		switch (module) {
 		case HOLOGRAM:
-			return InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM).contains(player);
+			return InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, entry).contains(player);
 		case ITEMDROP:
-			return InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP).contains(player);
+			return InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, entry).contains(player);
 		case ITEMSTAND:
-			return InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND).contains(player);
+			return InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, entry).contains(player);
 		}
 		return false;
 	}
@@ -136,12 +125,15 @@ public class InteractionVisualizerAPI {
 	Check if player has a module enabled.
 	@return true/false.
 	*/
-	public static boolean hasPlayerEnabledModule(UUID uuid, Modules module) {
+	public static boolean hasPlayerEnabledModule(UUID uuid, Modules module, EntryKey entry) {
 		Player player = Bukkit.getPlayer(uuid);
 		if (player != null) {
-			return hasPlayerEnabledModule(player, module);
+			return hasPlayerEnabledModule(player, module, entry);
 		} else {
-			return Database.getPlayerInfo(uuid).get(module);
+			InteractionVisualizer.preferenceManager.loadPlayer(uuid, "", false);
+			boolean value = hasPlayerEnabledModule(player, module, entry);
+			InteractionVisualizer.preferenceManager.unloadPlayer(uuid);
+			return value;
 		}
 	}
 	
@@ -154,11 +146,11 @@ public class InteractionVisualizerAPI {
 	}
 	
 	/**
-	Toggle a module for an online player.
-	@return true/false - the new toggle status.
-	*/
-	public static boolean togglePlayerModule(Player player, Modules module) {
-		return Toggle.toggle(player, module);
+	 * Get the PreferenceManager
+	 * @return PreferenceManager
+	 */
+	public static PreferenceManager getPreferenceManager() {
+		return InteractionVisualizer.preferenceManager;
 	}
 	
 	public static enum ConfiguationType {
@@ -192,7 +184,7 @@ public class InteractionVisualizerAPI {
 	Play a throw item animation from location1 to location2.
 	If the boolean "pickupSound" is true, a pickup item sound will be played.
 	*/
-	public static void playFakeItemThrowAnimation(Location from, Location to, ItemStack itemstack, boolean pickupSound) {
+	public static void playFakeItemThrowAnimation(EntryKey entry, Location from, Location to, ItemStack itemstack, boolean pickupSound) {
 		Item item = new Item(from.clone());
 		item.setItemStack(itemstack);
 		item.setLocked(true);
@@ -201,12 +193,12 @@ public class InteractionVisualizerAPI {
 		Vector pickup = to.clone().toVector().subtract(from.clone().toVector()).multiply(0.15).add(lift);
 		item.setVelocity(pickup);
 		item.setPickupDelay(32767);
-		PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
+		PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, entry), item);
 		PacketManager.updateItem(item);
 		
 		Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 			if (pickupSound) {
-				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
+				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, entry));
 			}
 			PacketManager.removeItem(getPlayers(), item);
 		}, 8);
@@ -400,8 +392,8 @@ public class InteractionVisualizerAPI {
 	Spawns the given InteractionVisualizer ArmorStand object to all players.
 	@return The InteractionVisualizer ArmorStand object.
 	*/
-	public static ArmorStand spawnFakeArmorStand(ArmorStand stand) {
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), stand);
+	public static ArmorStand spawnFakeArmorStand(ArmorStand stand, EntryKey entry) {
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, entry), stand);
 		return stand;
 	}
 	
@@ -409,8 +401,8 @@ public class InteractionVisualizerAPI {
 	Updates the given InteractionVisualizer ArmorStand object to all players.
 	@return The InteractionVisualizer ArmorStand object.
 	*/
-	public static ArmorStand updateFakeArmorStand(ArmorStand stand) {
-		PacketManager.updateArmorStand(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), stand);
+	public static ArmorStand updateFakeArmorStand(ArmorStand stand, EntryKey entry) {
+		PacketManager.updateArmorStand(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, entry), stand);
 		return stand;
 	}
 	
@@ -418,8 +410,8 @@ public class InteractionVisualizerAPI {
 	Remove the given InteractionVisualizer ArmorStand object from all players.
 	@return The InteractionVisualizer ArmorStand object.
 	*/
-	public static ArmorStand removeFakeArmorStand(ArmorStand stand) {
-		PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), stand);
+	public static ArmorStand removeFakeArmorStand(ArmorStand stand, EntryKey entry) {
+		PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, entry), stand);
 		return stand;
 	}
 	
@@ -436,8 +428,8 @@ public class InteractionVisualizerAPI {
 	Spawns the given InteractionVisualizer Item object to all players.
 	@return The InteractionVisualizer Item object.
 	*/
-	public static Item spawnFakeItem(Item item) {
-		PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
+	public static Item spawnFakeItem(Item item, EntryKey entry) {
+		PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, entry), item);
 		return item;
 	}
 	
@@ -445,8 +437,8 @@ public class InteractionVisualizerAPI {
 	Updates the given InteractionVisualizer Item object to all players.
 	@return The InteractionVisualizer Item object.
 	*/
-	public static Item updateItem(Item item) {
-		PacketManager.updateItem(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
+	public static Item updateItem(Item item, EntryKey entry) {
+		PacketManager.updateItem(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, entry), item);
 		return item;
 	}
 	
@@ -454,8 +446,8 @@ public class InteractionVisualizerAPI {
 	Remove the given InteractionVisualizer Item object from all players.
 	@return The InteractionVisualizer Item object.
 	*/
-	public static Item removeItem(Item item) {
-		PacketManager.removeItem(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
+	public static Item removeItem(Item item, EntryKey entry) {
+		PacketManager.removeItem(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, entry), item);
 		return item;
 	}
 }

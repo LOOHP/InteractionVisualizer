@@ -30,6 +30,7 @@ import com.loohp.interactionvisualizer.entityholders.SurroundingPlaneArmorStand;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatComponentUtils;
 import com.loohp.interactionvisualizer.utils.RomanNumberUtils;
@@ -41,6 +42,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener {
+	
+	public static final EntryKey KEY = new EntryKey("beacon");
 	
 	public Map<Block, Map<String, Object>> beaconMap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
@@ -56,6 +59,11 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 		checkingPeriod = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.Beacon.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
 		pathType = PathType.valueOf(InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Beacon.PathType"));
+	}
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
 	}
 		
 	@Override
@@ -295,9 +303,9 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 		map.put("2", line2);
 		map.put("3", line3);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), line1);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), line2);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), line3);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), line1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), line2);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), line3);
 		
 		return map;
 	}

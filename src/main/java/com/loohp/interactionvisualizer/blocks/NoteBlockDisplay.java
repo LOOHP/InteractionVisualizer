@@ -23,13 +23,21 @@ import com.loohp.interactionvisualizer.api.VisualizerRunnableDisplay;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.managers.MusicManager;
 import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.utils.LegacyInstrumentUtils;
 
 import net.md_5.bungee.api.ChatColor;
 
 public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Listener {
 	
+	public static final EntryKey KEY = new EntryKey("note_block");
+	
 	public ConcurrentHashMap<Block, ConcurrentHashMap<String, Object>> displayingNotes = new ConcurrentHashMap<>();
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
+	}
 	
 	@Override
 	public int gc() {
@@ -102,7 +110,7 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
 			
 			stand.setCustomName(text);
 			
-			PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), stand);
+			PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), stand);
 			PacketManager.updateArmorStand(stand);
 		}, 1);
 	}

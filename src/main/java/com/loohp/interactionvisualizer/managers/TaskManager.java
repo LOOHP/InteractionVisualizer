@@ -212,12 +212,16 @@ public class TaskManager {
 		}
 		
 		if (getConfig().getBoolean("Blocks.Chest.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new ChestDisplay(), plugin);
+			ChestDisplay cd = new ChestDisplay();
+			cd.register();
+			Bukkit.getPluginManager().registerEvents(cd, plugin);
 			chest = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.DoubleChest.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new DoubleChestDisplay(), plugin);
+			DoubleChestDisplay dcd = new DoubleChestDisplay();
+			dcd.register();
+			Bukkit.getPluginManager().registerEvents(dcd, plugin);
 			doublechest = true;
 		}
 		
@@ -243,29 +247,37 @@ public class TaskManager {
 		}
 		
 		if (getConfig().getBoolean("Blocks.EnderChest.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new EnderchestDisplay(), plugin);
+			EnderchestDisplay ed = new EnderchestDisplay();
+			ed.register();
+			Bukkit.getPluginManager().registerEvents(ed, plugin);
 			enderchest = true;
 		}
 		
-		if (getConfig().getBoolean("Blocks.ShulkerBox.Enabled") &&
-				   (!version.isOld())
-				) {
-			Bukkit.getPluginManager().registerEvents(new ShulkerBoxDisplay(), plugin);
+		if (getConfig().getBoolean("Blocks.ShulkerBox.Enabled") && (!version.isOld())) {
+			ShulkerBoxDisplay sbd = new ShulkerBoxDisplay();
+			sbd.register();
+			Bukkit.getPluginManager().registerEvents(sbd, plugin);
 			shulkerbox = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Dispenser.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new DispenserDisplay(), plugin);
+			DispenserDisplay dd = new DispenserDisplay();
+			dd.register();
+			Bukkit.getPluginManager().registerEvents(dd, plugin);
 			dispenser = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Dropper.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new DropperDisplay(), plugin);
+			DropperDisplay dd = new DropperDisplay();
+			dd.register();
+			Bukkit.getPluginManager().registerEvents(dd, plugin);
 			dropper = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Hopper.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new HopperDisplay(), plugin);
+			HopperDisplay hd = new HopperDisplay();
+			hd.register();
+			Bukkit.getPluginManager().registerEvents(hd, plugin);
 			hopper = true;
 		}
 		
@@ -361,7 +373,9 @@ public class TaskManager {
 		}
 		
 		if (getConfig().getBoolean("Entities.Villager.Enabled")) {
-			Bukkit.getPluginManager().registerEvents(new VillagerDisplay(), plugin);
+			VillagerDisplay vd = new VillagerDisplay();
+			vd.register();
+			Bukkit.getPluginManager().registerEvents(vd, plugin);
 			villager = true;
 		}
 		

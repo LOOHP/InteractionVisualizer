@@ -30,6 +30,7 @@ import com.loohp.interactionvisualizer.managers.LangManager;
 import com.loohp.interactionvisualizer.managers.MaterialManager;
 import com.loohp.interactionvisualizer.managers.MusicManager;
 import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.managers.PreferenceManager;
 import com.loohp.interactionvisualizer.managers.SoundManager;
 import com.loohp.interactionvisualizer.managers.TaskManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
@@ -66,10 +67,6 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static Boolean cmi = false;
 	public static Boolean ess3 = false;
 	
-	public static Set<Player> itemStand = Collections.newSetFromMap(new ConcurrentHashMap<>());
-	public static Set<Player> itemDrop = Collections.newSetFromMap(new ConcurrentHashMap<>());
-	public static Set<Player> holograms = Collections.newSetFromMap(new ConcurrentHashMap<>());
-	
 	public static Set<String> exemptBlocks = new HashSet<>();
 	public static Set<String> disabledWorlds = new HashSet<>();
 	
@@ -98,6 +95,8 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static Map<World, Integer> playerTrackingRange = new HashMap<>();
 	public static boolean hideIfObstructed = false;
 	public static String language = "en_us";
+	
+	public static PreferenceManager preferenceManager;
 	
 	@Override
 	public void onEnable() {
@@ -173,6 +172,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		SoundManager.setup();
 		MusicManager.setup();
 		Database.setup();
+		preferenceManager = new PreferenceManager(this);
 		TaskManager.run();
 		TileEntityManager._init_();
 		PacketManager.run();
@@ -221,14 +221,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		Bukkit.getScheduler().runTask(this, () -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				PacketManager.playerStatus.put(player, Collections.newSetFromMap(new ConcurrentHashMap<VisualizerEntity, Boolean>()));
-				
-				Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
-					if (!Database.playerExists(player)) {
-						Database.createPlayer(player);
-					}
-					Database.loadPlayer(player, true);
-				});
+				PacketManager.playerStatus.put(player, Collections.newSetFromMap(new ConcurrentHashMap<>()));
 			}
 		});
 		
@@ -299,6 +292,8 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
+		preferenceManager.close();
+		
 		if (!Bukkit.getOnlinePlayers().isEmpty()) {
 			getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] Plugin reload detected, attempting to despawn all visual entities. If anything went wrong, please restart! (Reloads are always not recommended)");
 			if (version.isNewerOrEqualTo(MCVersion.V1_17)) {

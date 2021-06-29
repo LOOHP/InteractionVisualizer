@@ -27,6 +27,7 @@ import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.LegacyRecordsUtils;
 import com.loohp.interactionvisualizer.utils.TranslationUtils;
@@ -37,6 +38,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listener {
+	
+	public static final EntryKey KEY = new EntryKey("jukebox");
 	
 	public ConcurrentHashMap<Block, Map<String, Object>> jukeboxMap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
@@ -52,6 +55,11 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 		checkingPeriod = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.JukeBox.CheckingPeriod");
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
 		showDiscName = InteractionVisualizer.plugin.getConfiguration().getBoolean("Blocks.JukeBox.Options.ShowDiscName");
+	}
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
 	}
 	
 	@Override
@@ -159,7 +167,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 								item.setPickupDelay(32767);
 								item.setGravity(false);
 								entry.getValue().put("Item", item);
-								PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
+								PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
 								PacketManager.updateItem(item);
 							} else {
 								entry.getValue().put("Item", "N/A");

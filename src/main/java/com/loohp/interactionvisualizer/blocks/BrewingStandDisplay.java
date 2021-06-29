@@ -34,10 +34,13 @@ import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 
 public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Listener {
+	
+	public static final EntryKey KEY = new EntryKey("brewing_stand");
 	
 	public ConcurrentHashMap<Block, Map<String, Object>> brewstand = new ConcurrentHashMap<>();
 	private final int max = 20 * 20;
@@ -62,6 +65,11 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 		filledColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.BrewingStand.Options.FilledColor"));
 		noFuelColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.BrewingStand.Options.NoFuelColor"));
 		progressBarLength = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.BrewingStand.Options.ProgressBarLength");
+	}
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
 	}
 	
 	@Override
@@ -168,7 +176,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 								item.setPickupDelay(32767);
 								item.setGravity(false);
 								entry.getValue().put("Item", item);
-								PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
+								PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
 								PacketManager.updateItem(item);
 							} else {
 								entry.getValue().put("Item", "N/A");
@@ -361,7 +369,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 		
 		map.put("Stand", slot1);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), slot1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), slot1);
 		
 		return map;
 	}

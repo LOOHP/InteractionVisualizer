@@ -33,13 +33,21 @@ import com.loohp.interactionvisualizer.api.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.SoundManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
 import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class StonecutterDisplay extends VisualizerInteractDisplay implements Listener {
 	
+	public static final EntryKey KEY = new EntryKey("stonecutter");
+	
 	public Map<Block, Map<String, Object>> openedStonecutter = new HashMap<>();
 	public Map<Player, Block> playermap = new HashMap<>();
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
+	}
 	
 	@Override
 	public int run() {		
@@ -169,7 +177,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 				item.setPickupDelay(32767);
 				item.setGravity(false);
 				map.put("Item", item);
-				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
+				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
 				PacketManager.updateItem(item);
 			} else {
 				map.put("Item", "N/A");
@@ -275,7 +283,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
 			PacketManager.updateItem(item);
 			
 			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
+				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY));
 				PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 			}, 8);
 		}, 1);

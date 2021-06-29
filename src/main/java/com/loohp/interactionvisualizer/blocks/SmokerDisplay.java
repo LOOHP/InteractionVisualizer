@@ -39,6 +39,7 @@ import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.SoundManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
@@ -48,6 +49,8 @@ import com.loohp.interactionvisualizer.utils.VanishUtils;
 import net.md_5.bungee.api.ChatColor;
 
 public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener {
+	
+	public static final EntryKey KEY = new EntryKey("smoker");
 	
 	public ConcurrentHashMap<Block, Map<String, Object>> smokerMap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
@@ -73,6 +76,11 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 		noFuelColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Smoker.Options.NoFuelColor"));
 		progressBarLength = InteractionVisualizer.plugin.getConfiguration().getInt("Blocks.Smoker.Options.ProgressBarLength");
 		amountPending = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Smoker.Options.AmountPending"));
+	}
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
 	}
 	
 	@Override
@@ -188,7 +196,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 								item.setPickupDelay(32767);
 								item.setGravity(false);
 								entry.getValue().put("Item", item);
-								PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
+								PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
 								PacketManager.updateItem(item);
 							} else {
 								entry.getValue().put("Item", "N/A");
@@ -362,7 +370,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 			PacketManager.updateItem(item);
 			
 			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP));
+				SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY));
 				PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
 			}, 8);
 		}, 1);
@@ -496,7 +504,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 		
 		map.put("Stand", slot1);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), slot1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), slot1);
 		
 		return map;
 	}

@@ -14,13 +14,22 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.api.VisualizerDisplay;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
 import com.loohp.interactionvisualizer.utils.VanishUtils;
 
-public class VillagerDisplay implements Listener {
+public class VillagerDisplay implements Listener, VisualizerDisplay {
+	
+	public static final EntryKey KEY = new EntryKey("villager");
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
+	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onVillageTrade(InventoryClickEvent event) {
@@ -81,7 +90,7 @@ public class VillagerDisplay implements Listener {
 			in.setItemStack(item0);
 			in.setGravity(true);
 			in.setVelocity(vector);
-			PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), in);
+			PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), in);
 			PacketManager.updateItem(in);
 			
 			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), in), 14);
@@ -95,7 +104,7 @@ public class VillagerDisplay implements Listener {
 				in.setItemStack(item1final);
 				in.setGravity(true);
 				in.setVelocity(vector);
-				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), in);
+				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), in);
 				PacketManager.updateItem(in);
 				
 				Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), in), 14);
@@ -108,7 +117,7 @@ public class VillagerDisplay implements Listener {
 			out.setItemStack(item2);
 			out.setGravity(true);
 			out.setVelocity(vector);
-			PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), out);
+			PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), out);
 			PacketManager.updateItem(out);
 			
 			Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), out), 12);

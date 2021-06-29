@@ -31,6 +31,7 @@ import com.loohp.interactionvisualizer.api.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.objectholders.EnchantmentTableAnimation;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.utils.CustomMapUtils;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
 import com.loohp.interactionvisualizer.utils.VanishUtils;
@@ -47,6 +48,11 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
 	@EventHandler
 	public void onReload(InteractionVisualizerReloadEvent event) {
 		translatableEnchantments = Collections.unmodifiableSet(new HashSet<>(InteractionVisualizer.plugin.getConfiguration().getStringList("Blocks.EnchantmentTable.Options.TranslatableEnchantments")));
+	}
+	
+	@Override
+	public EntryKey key() {
+		return EnchantmentTableAnimation.KEY;
 	}
 	
 	public static Set<String> getTranslatableEnchantments() {

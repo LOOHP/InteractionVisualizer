@@ -33,12 +33,15 @@ import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.utils.MCVersion;
 import com.loohp.interactionvisualizer.utils.NBTUtils;
 
 public class LecternDisplay extends VisualizerRunnableDisplay implements Listener {
+	
+	public static final EntryKey KEY = new EntryKey("lectern");
 	
 	public ConcurrentHashMap<Block, Map<String, Object>> lecternMap = new ConcurrentHashMap<>();
 	private int checkingPeriod = 20;
@@ -56,6 +59,11 @@ public class LecternDisplay extends VisualizerRunnableDisplay implements Listene
 		gcPeriod = InteractionVisualizerAPI.getGCPeriod();
 		format1 = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Lectern.Options.Line1"));
 		format2 = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Blocks.Lectern.Options.Line2"));
+	}
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
 	}
 	
 	@Override
@@ -253,8 +261,8 @@ public class LecternDisplay extends VisualizerRunnableDisplay implements Listene
 		map.put("1", slot1);
 		map.put("2", slot2);
 		
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), slot1);
-		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM), slot2);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), slot1);
+		PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), slot2);
 		
 		return map;
 	}

@@ -6,25 +6,30 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
-import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
+import com.loohp.interactionvisualizer.utils.ArrayUtils;
 
 public class Database {
+	
+	public static final String EMPTY_BITSET_BASE64 = ArrayUtils.toBase64String(new BitSet().toByteArray());
 	
 	public static boolean isMYSQL = false;
 	
 	private static Connection connection;
 	private static String host, database, username, password;
-	private static String table = "InteractionVisualizer_USER_PERFERENCES";
+	private static String preferenceTable = "USER_PERFERENCES";
+	private static String indexMappingTable = "INDEX_MAPPING";
 	private static int port;
     
     private static Object syncdb = new Object();
@@ -99,15 +104,15 @@ public class Database {
 	        	Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] Opened Sqlite database successfully");
 	        }
 
-	        Statement stmt = connection.createStatement();
-	        String sql = "CREATE TABLE IF NOT EXISTS " + table + " " +
-	                      "(UUID TEXT PRIMARY KEY, " +
-	                       "NAME TEXT NOT NULL, " + 
-	                       "ITEMSTAND BOOLEAN, " + 
-	                       "ITEMDROP BOOLEAN, " + 
-	                       "HOLOGRAM BOOLEAN);"; 
-	        stmt.executeUpdate(sql);
-	        stmt.close(); 
+	        Statement stmt0 = connection.createStatement();
+	        String sql0 = "CREATE TABLE IF NOT EXISTS " + preferenceTable + " (UUID TEXT PRIMARY KEY, NAME TEXT NOT NULL, ITEMSTAND TEXT, ITEMDROP TEXT, HOLOGRAM TEXT);"; 
+	        stmt0.executeUpdate(sql0);
+	        stmt0.close();
+	        
+	        Statement stmt1 = connection.createStatement();
+	        String sql1 = "CREATE TABLE IF NOT EXISTS " + indexMappingTable + " (ENTRY TEXT PRIMARY KEY, BITMASK_INDEX INTEGER);";
+	        stmt1.executeUpdate(sql1);
+	        stmt1.close(); 
 	    } catch (Exception e) {
 	    	Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] Unable to connect to sqlite database!!!");
 	    	e.printStackTrace();
@@ -127,9 +132,11 @@ public class Database {
     	synchronized (syncdb) {
 	    	open();
 	        try {
-	        	PreparedStatement statement = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + table + " (UUID Text, NAME Text, ITEMSTAND BOOLEAN, ITEMDROP BOOLEAN, HOLOGRAM BOOLEAN)");
-	
-	            statement.execute();
+	        	PreparedStatement statement0 = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + preferenceTable + " (UUID Text, NAME Text, ITEMSTAND Text, ITEMDROP Text, HOLOGRAM Text)");
+	            statement0.execute();
+	            
+	            PreparedStatement statement1 = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + indexMappingTable + " (ENTRY Text, BITMASK_INDEX INT)");
+	            statement1.execute();
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
@@ -141,8 +148,57 @@ public class Database {
     	}
     }
     
-    public static boolean playerExists(Player player) {
-    	return playerExists(player.getUniqueId());
+    public static Map<Integer, EntryKey> getBitIndex() {
+    	Map<Integer, EntryKey> index = new HashMap<>();
+    	synchronized (syncdb) {
+			open();
+			try {
+				PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + indexMappingTable);
+				ResultSet results = statement.executeQuery();
+				while (results.next()) {
+					index.put(results.getInt("BITMASK_INDEX"), new EntryKey(results.getString("ENTRY")));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return index;
+		}
+    }
+    
+    public static void setBitIndex(Map<Integer, EntryKey> index) {
+    	synchronized (syncdb) {
+			open();
+			try {
+				for (Entry<Integer, EntryKey> entry : index.entrySet()) {
+					PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + indexMappingTable + " WHERE ENTRY=?");
+					statement.setString(1, entry.getValue().toString());
+					ResultSet results = statement.executeQuery();
+					if (results.next()) {
+						PreparedStatement statement1 = getConnection().prepareStatement("UPDATE " + indexMappingTable + " SET BITMASK_INDEX=? WHERE ENTRY=?");
+						statement1.setInt(1, entry.getKey());
+						statement1.setString(2, entry.getValue().toString());
+						statement1.executeUpdate();
+					} else {
+						PreparedStatement insert = getConnection().prepareStatement("INSERT INTO " + indexMappingTable + " (BITMASK_INDEX,ENTRY) VALUES (?,?)");
+						insert.setInt(1, entry.getKey());
+						insert.setString(2, entry.getValue().toString());
+						insert.executeUpdate();
+					}
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
     }
     
 	public static boolean playerExists(UUID uuid) {
@@ -150,7 +206,7 @@ public class Database {
 			boolean exist = false;
 			open();
 			try {
-				PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE UUID=?");
+				PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + preferenceTable + " WHERE UUID=?");
 				statement.setString(1, uuid.toString());
 	
 				ResultSet results = statement.executeQuery();
@@ -169,16 +225,16 @@ public class Database {
 		}
 	}
 
-	public static void createPlayer(Player player) {
+	public static void createPlayer(UUID uuid, String name) {
 		synchronized (syncdb) {
 			open();
 			try {
-				PreparedStatement insert = getConnection().prepareStatement("INSERT INTO " + table + " (UUID,NAME,ITEMSTAND,ITEMDROP,HOLOGRAM) VALUES (?,?,?,?,?)");
-				insert.setString(1, player.getUniqueId().toString());
-				insert.setString(2, player.getName());
-				insert.setBoolean(3, true);
-				insert.setBoolean(4, true);
-				insert.setBoolean(5, true);
+				PreparedStatement insert = getConnection().prepareStatement("INSERT INTO " + preferenceTable + " (UUID,NAME,ITEMSTAND,ITEMDROP,HOLOGRAM) VALUES (?,?,?,?,?)");
+				insert.setString(1, uuid.toString());
+				insert.setString(2, name);
+				insert.setString(3, EMPTY_BITSET_BASE64);
+				insert.setString(4, EMPTY_BITSET_BASE64);
+				insert.setString(5, EMPTY_BITSET_BASE64);
 				insert.executeUpdate();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -191,20 +247,13 @@ public class Database {
 		}
 	}
 	
-	public static boolean toggleItemStand(Player player) {
+	public static void setItemStand(UUID uuid, BitSet bitset) {
 		synchronized (syncdb) {
 			open();
-			boolean newvalue = true;
-			if (InteractionVisualizer.itemStand.contains(player)) {
-				newvalue = false;
-				InteractionVisualizer.itemStand.remove(player);
-			} else {
-				InteractionVisualizer.itemStand.add(player);
-			}
 			try {
-				PreparedStatement statement = getConnection().prepareStatement("UPDATE " + table + " SET ITEMSTAND=? WHERE UUID=?");
-				statement.setBoolean(1, newvalue);
-				statement.setString(2, player.getUniqueId().toString());
+				PreparedStatement statement = getConnection().prepareStatement("UPDATE " + preferenceTable + " SET ITEMSTAND=? WHERE UUID=?");
+				statement.setString(1, ArrayUtils.toBase64String(bitset.toByteArray()));
+				statement.setString(2, uuid.toString());
 				statement.executeUpdate();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -214,25 +263,16 @@ public class Database {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.reset(player));
-			return newvalue;
 		}
 	}
 	
-	public static boolean toggleItemDrop(Player player) {
+	public static void setItemDrop(UUID uuid, BitSet bitset) {
 		synchronized (syncdb) {
 			open();
-			boolean newvalue = true;
-			if (InteractionVisualizer.itemDrop.contains(player)) {
-				newvalue = false;
-				InteractionVisualizer.itemDrop.remove(player);
-			} else {
-				InteractionVisualizer.itemDrop.add(player);
-			}
 			try {
-				PreparedStatement statement = getConnection().prepareStatement("UPDATE " + table + " SET ITEMDROP=? WHERE UUID=?");
-				statement.setBoolean(1, newvalue);
-				statement.setString(2, player.getUniqueId().toString());
+				PreparedStatement statement = getConnection().prepareStatement("UPDATE " + preferenceTable + " SET ITEMDROP=? WHERE UUID=?");
+				statement.setString(1, ArrayUtils.toBase64String(bitset.toByteArray()));
+				statement.setString(2, uuid.toString());
 				statement.executeUpdate();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -242,25 +282,16 @@ public class Database {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.reset(player));
-			return newvalue;
 		}
 	}
 	
-	public static boolean toggleHologram(Player player) {
+	public static void setHologram(UUID uuid, BitSet bitset) {
 		synchronized (syncdb) {
 			open();
-			boolean newvalue = true;
-			if (InteractionVisualizer.holograms.contains(player)) {
-				newvalue = false;
-				InteractionVisualizer.holograms.remove(player);
-			} else {
-				InteractionVisualizer.holograms.add(player);
-			}
 			try {
-				PreparedStatement statement = getConnection().prepareStatement("UPDATE " + table + " SET HOLOGRAM=? WHERE UUID=?");
-				statement.setBoolean(1, newvalue);
-				statement.setString(2, player.getUniqueId().toString());
+				PreparedStatement statement = getConnection().prepareStatement("UPDATE " + preferenceTable + " SET HOLOGRAM=? WHERE UUID=?");
+				statement.setString(1, ArrayUtils.toBase64String(bitset.toByteArray()));
+				statement.setString(2, uuid.toString());
 				statement.executeUpdate();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -270,24 +301,22 @@ public class Database {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.reset(player));
-			return newvalue;
 		}
 	}
 	
-	public static Map<Modules, Boolean> getPlayerInfo(UUID uuid) {
-		Map<Modules, Boolean> map = new HashMap<>();
+	public static Map<Modules, BitSet> getPlayerInfo(UUID uuid) {
+		Map<Modules, BitSet> map = new HashMap<>();
 		synchronized (syncdb) {
 			open();
 			try {
-				PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE UUID=?");
+				PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + preferenceTable + " WHERE UUID=?");
 				statement.setString(1, uuid.toString());
 				ResultSet results = statement.executeQuery();
 				results.next();
 				
-				map.put(Modules.ITEMSTAND, results.getBoolean("ITEMSTAND"));
-				map.put(Modules.ITEMDROP, results.getBoolean("ITEMDROP"));
-				map.put(Modules.HOLOGRAM, results.getBoolean("HOLOGRAM"));				
+				map.put(Modules.ITEMSTAND, BitSet.valueOf(ArrayUtils.fromBase64String(results.getString("ITEMSTAND"))));
+				map.put(Modules.ITEMDROP, BitSet.valueOf(ArrayUtils.fromBase64String(results.getString("ITEMDROP"))));
+				map.put(Modules.HOLOGRAM, BitSet.valueOf(ArrayUtils.fromBase64String(results.getString("HOLOGRAM"))));				
 				
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -299,66 +328,6 @@ public class Database {
 			}
 		}
 		return map;
-	}
-	
-	public static Map<Modules, Boolean> getPlayerInfo(Player player) {
-		return getPlayerInfo(player.getUniqueId());
-	}
-	
-	public static void loadPlayer(Player player, boolean justJoined) {
-		synchronized (syncdb) {
-			open();
-			try {
-				PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + table + " WHERE UUID=?");
-				statement.setString(1, player.getUniqueId().toString());
-				ResultSet results = statement.executeQuery();
-				results.next();
-				
-				boolean itemstand = results.getBoolean("ITEMSTAND");
-				boolean itemdrop = results.getBoolean("ITEMDROP");
-				boolean hologram = results.getBoolean("HOLOGRAM");
-				
-				if (InteractionVisualizer.itemStandEnabled) {
-					if (itemstand) {
-						if (!InteractionVisualizer.itemStand.contains(player)) {
-							InteractionVisualizer.itemStand.add(player);
-						}
-					} else {
-						InteractionVisualizer.itemStand.remove(player);
-					}
-				}
-				if (InteractionVisualizer.itemDropEnabled) {
-					if (itemdrop) {
-						if (!InteractionVisualizer.itemDrop.contains(player)) {
-							InteractionVisualizer.itemDrop.add(player);
-						}
-					} else {
-						InteractionVisualizer.itemDrop.remove(player);
-					}
-				}
-				if (InteractionVisualizer.hologramsEnabled) {
-					if (hologram) {
-						if (!InteractionVisualizer.holograms.contains(player)) {
-							InteractionVisualizer.holograms.add(player);
-						}
-					} else {
-						InteractionVisualizer.holograms.remove(player);
-					}
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		if (justJoined) {
-			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.sendPlayerPackets(player));
-		} else {
-			Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> PacketManager.reset(player));
-		}
 	}
 
 }

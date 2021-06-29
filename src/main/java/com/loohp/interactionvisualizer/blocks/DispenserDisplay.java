@@ -26,16 +26,25 @@ import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
+import com.loohp.interactionvisualizer.api.VisualizerDisplay;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
 import com.loohp.interactionvisualizer.utils.OpenInvUtils;
 import com.loohp.interactionvisualizer.utils.VanishUtils;
 
-public class DispenserDisplay implements Listener {
+public class DispenserDisplay implements Listener, VisualizerDisplay {
+	
+	public static final EntryKey KEY = new EntryKey("dispenser");
 	
 	public ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<>();
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
+	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseDispenser(InventoryClickEvent event) {
@@ -173,7 +182,7 @@ public class DispenserDisplay implements Listener {
 					vector = loc.clone().add(0.5, 0.5, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.13).add(offset);
 					item.setVelocity(vector);
 				}
-				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
+				PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
 				item.setItemStack(itemstack);
 				item.setPickupDelay(32767);
 				item.setGravity(true);
@@ -270,7 +279,7 @@ public class DispenserDisplay implements Listener {
 					Vector offset = new Vector(0.0, 0.15, 0.0);
 					Vector vector = loc.clone().add(0.5, 0.5, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.13).add(offset);
 					item.setVelocity(vector);
-					PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP), item);
+					PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
 					item.setItemStack(itemstack);
 					item.setCustomName(System.currentTimeMillis() + "");
 					item.setPickupDelay(32767);

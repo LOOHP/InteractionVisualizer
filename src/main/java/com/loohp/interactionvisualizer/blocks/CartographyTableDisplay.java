@@ -28,12 +28,20 @@ import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.api.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.entityholders.ItemFrame;
 import com.loohp.interactionvisualizer.managers.PacketManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class CartographyTableDisplay extends VisualizerInteractDisplay implements Listener {
 	
+	public static final EntryKey KEY = new EntryKey("cartography_table");
+	
 	public Map<Block, Map<String, Object>> openedCTable = new HashMap<>();
 	public Map<Player, Block> playermap = new HashMap<Player, Block>();
+	
+	@Override
+	public EntryKey key() {
+		return KEY;
+	}
 	
 	@Override
 	public int run() {		
@@ -149,7 +157,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
 					item.setFacingDirection(BlockFace.UP);
 					item.setSilent(true);
 					map.put("Item", item);
-					PacketManager.sendItemFrameSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND), item);
+					PacketManager.sendItemFrameSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), item);
 					PacketManager.updateItemFrame(item);
 				} else {
 					map.put("Item", "N/A");
