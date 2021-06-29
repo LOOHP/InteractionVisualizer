@@ -10,8 +10,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.awaitility.Awaitility;
+import org.awaitility.core.ConditionTimeoutException;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -48,14 +51,14 @@ public class PreferenceManager implements Listener, AutoCloseable {
 			loadPlayer(player.getUniqueId(), player.getName(), true);
 		}
 	}
-
+	
 	@Override
 	public synchronized void close() {
 		backingPlayerList.clear();
 		for (UUID uuid : preferences.keySet()) {
-			unloadPlayer(uuid);
+			savePlayer(uuid, true);
 		}
-		Database.setBitIndex(ArrayUtils.putToMap(entries, new HashMap<>()));
+		saveBitmaskIndex();
 		valid.set(false);
 	}
 	
@@ -63,11 +66,33 @@ public class PreferenceManager implements Listener, AutoCloseable {
 		return valid.get();
 	}
 	
+	public void saveBitmaskIndex() {
+		try {
+			Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).pollDelay(0, TimeUnit.MILLISECONDS).until(() -> !Database.isLocked());
+			Database.setLocked(true);
+			Database.setBitIndex(ArrayUtils.putToMap(entries, new HashMap<>()));
+			Database.setLocked(false);
+		} catch (ConditionTimeoutException e) {
+			new RuntimeException("Tried to save player preference but database is locked for more than 5 secionds", e).printStackTrace();
+		}
+	}
+	
 	public void registerEntry(EntryKey entry) {
-		synchronized (entries) {
-			if (!entries.contains(entry)) {
-				entries.add(entry);
+		try {
+			synchronized (entries) {
+				Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).pollDelay(0, TimeUnit.MILLISECONDS).until(() -> !Database.isLocked());
+				Database.setLocked(true);
+				List<EntryKey> updatedEntries = ArrayUtils.putToArrayList(Database.getBitIndex(), new ArrayList<>());
+				entries.clear();
+				entries.addAll(updatedEntries);
+				if (!entries.contains(entry)) {
+					entries.add(entry);
+					Database.setBitIndex(ArrayUtils.putToMap(entries, new HashMap<>()));
+				}
+				Database.setLocked(false);
 			}
+		} catch (ConditionTimeoutException e) {
+			new RuntimeException("Tried to save player preference but database is locked for more than 5 secionds", e).printStackTrace();
 		}
 	}
 	
@@ -86,7 +111,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
 		Player player = event.getPlayer();
 		backingPlayerList.remove(player);
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-			unloadPlayer(event.getPlayer().getUniqueId());
+			savePlayer(event.getPlayer().getUniqueId(), true);
 		});
 	}
 	
@@ -105,8 +130,8 @@ public class PreferenceManager implements Listener, AutoCloseable {
 		}
 	}
 	
-	public void unloadPlayer(UUID uuid) {
-		Map<Modules, BitSet> info = preferences.remove(uuid);
+	public void savePlayer(UUID uuid, boolean unload) {
+		Map<Modules, BitSet> info = unload ? preferences.remove(uuid) : preferences.get(uuid);
 		if (info != null) {
 			for (Entry<Modules, BitSet> entry : info.entrySet()) {
 				switch (entry.getKey()) {
@@ -138,7 +163,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
 	}
 	
 	public List<EntryKey> getRegisteredEntries() {
-		return Collections.unmodifiableList(entries);
+		return new ArrayList<>(entries);
 	}
 	
 	public boolean getPlayerPreference(UUID uuid, Modules module, EntryKey entry) {

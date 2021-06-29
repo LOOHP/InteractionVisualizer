@@ -30,6 +30,7 @@ public class Database {
 	private static String host, database, username, password;
 	private static String preferenceTable = "USER_PERFERENCES";
 	private static String indexMappingTable = "INDEX_MAPPING";
+	private static String statusLockTable = "STATUS_LOCK";
 	private static int port;
     
     private static Object syncdb = new Object();
@@ -112,7 +113,12 @@ public class Database {
 	        Statement stmt1 = connection.createStatement();
 	        String sql1 = "CREATE TABLE IF NOT EXISTS " + indexMappingTable + " (ENTRY TEXT PRIMARY KEY, BITMASK_INDEX INTEGER);";
 	        stmt1.executeUpdate(sql1);
-	        stmt1.close(); 
+	        stmt1.close();
+	        
+	        Statement stmt2 = connection.createStatement();
+	        String sql2 = "CREATE TABLE IF NOT EXISTS " + statusLockTable + " (LOCK BOOLEAN PRIMARY KEY);";
+	        stmt2.executeUpdate(sql2);
+	        stmt2.close();
 	    } catch (Exception e) {
 	    	Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] Unable to connect to sqlite database!!!");
 	    	e.printStackTrace();
@@ -137,6 +143,9 @@ public class Database {
 	            
 	            PreparedStatement statement1 = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + indexMappingTable + " (ENTRY Text, BITMASK_INDEX INT)");
 	            statement1.execute();
+	            
+	            PreparedStatement statement2 = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + statusLockTable + " (LOCK Boolean)");
+	            statement2.execute();
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
@@ -146,6 +155,56 @@ public class Database {
 				e.printStackTrace();
 			}
     	}
+    }
+    
+    public static boolean isLocked() {
+    	synchronized (syncdb) {
+    		boolean value = false;
+			open();
+			try {
+				PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + statusLockTable);
+				ResultSet results = statement.executeQuery();
+				if (results.next()) {
+					value = results.getBoolean("LOCK");
+				} else {
+					value = false;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return value;
+		}
+    }
+    
+    public static void setLocked(boolean value) {
+    	synchronized (syncdb) {
+			open();
+			try {
+				PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + statusLockTable);
+				ResultSet results = statement.executeQuery();
+				if (results.next()) {
+					PreparedStatement statement1 = getConnection().prepareStatement("UPDATE " + statusLockTable + " SET LOCK=?");
+					statement1.setBoolean(1, value);
+					statement1.executeUpdate();
+				} else {
+					PreparedStatement insert = getConnection().prepareStatement("INSERT INTO " + statusLockTable + " (LOCK) VALUES (?)");
+					insert.setBoolean(1, value);
+					insert.executeUpdate();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
     }
     
     public static Map<Integer, EntryKey> getBitIndex() {

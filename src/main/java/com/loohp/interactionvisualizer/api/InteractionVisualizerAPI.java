@@ -132,7 +132,7 @@ public class InteractionVisualizerAPI {
 		} else {
 			InteractionVisualizer.preferenceManager.loadPlayer(uuid, "", false);
 			boolean value = hasPlayerEnabledModule(player, module, entry);
-			InteractionVisualizer.preferenceManager.unloadPlayer(uuid);
+			InteractionVisualizer.preferenceManager.savePlayer(uuid, true);
 			return value;
 		}
 	}

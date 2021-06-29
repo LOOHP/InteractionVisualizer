@@ -68,6 +68,10 @@
 									<pattern>org.yaml</pattern>
 									<shadedPattern>com.loohp.interactionvisualizer.libs.org.yaml</shadedPattern>
 								</relocation>
+								<relocation>
+									<pattern>org.awaitility</pattern>
+									<shadedPattern>com.loohp.interactionvisualizer.libs.org.awaitility</shadedPattern>
+								</relocation>
 							</relocations>
 						</configuration>
 					</execution>
@@ -201,6 +205,12 @@
 	</repositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
+			<version>4.1.0</version>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>me.carleslc.Simple-YAML</groupId>
 			<artifactId>Simple-Yaml</artifactId>
