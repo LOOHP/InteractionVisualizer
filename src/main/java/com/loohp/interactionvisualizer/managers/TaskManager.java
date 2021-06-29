@@ -49,6 +49,7 @@ import com.loohp.interactionvisualizer.debug.Debug;
 import com.loohp.interactionvisualizer.entities.ItemDisplay;
 import com.loohp.interactionvisualizer.entities.VillagerDisplay;
 import com.loohp.interactionvisualizer.listeners.ChunkEvents;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.updater.Updater;
 import com.loohp.interactionvisualizer.utils.MCVersion;
 
@@ -96,6 +97,7 @@ public class TaskManager {
 	public static HashMap<InventoryType, List<VisualizerInteractDisplay>> processes = new HashMap<InventoryType, List<VisualizerInteractDisplay>>();
 	public static List<VisualizerRunnableDisplay> runnables = new ArrayList<VisualizerRunnableDisplay>();
 	
+	@SuppressWarnings("deprecation")
 	public static void setup() {
 		anvil = false;
 		banner = false;
@@ -141,6 +143,8 @@ public class TaskManager {
 		tasks.clear();
 		*/
 		
+		List<EntryKey> keys = new ArrayList<>();
+		
 		Bukkit.getPluginManager().registerEvents(new Debug(), plugin);
 		Bukkit.getPluginManager().registerEvents(new Updater(), plugin);
 		Bukkit.getPluginManager().registerEvents(new com.loohp.interactionvisualizer.listeners.Events(), plugin);
@@ -157,228 +161,229 @@ public class TaskManager {
 		
 		if (getConfig().getBoolean("Blocks.CraftingTable.Enabled")) {
 			CraftingTableDisplay ctd = new CraftingTableDisplay();
-			ctd.register(InventoryType.WORKBENCH);
+			keys.add(ctd.registerNative(InventoryType.WORKBENCH));
 			Bukkit.getPluginManager().registerEvents(ctd, plugin);
 			craftingtable = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Loom.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			LoomDisplay ld = new LoomDisplay();
-			ld.register(InventoryType.LOOM);
+			keys.add(ld.registerNative(InventoryType.LOOM));
 			Bukkit.getPluginManager().registerEvents(ld, plugin);
 			loom = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.EnchantmentTable.Enabled")) {
 			EnchantmentTableDisplay etd = new EnchantmentTableDisplay();
-			etd.register(InventoryType.ENCHANTING);
+			keys.add(etd.registerNative(InventoryType.ENCHANTING));
 			Bukkit.getPluginManager().registerEvents(etd, plugin);
 			enchantmenttable = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.CartographyTable.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			CartographyTableDisplay ctd = new CartographyTableDisplay();
-			ctd.register(InventoryType.CARTOGRAPHY);
+			keys.add(ctd.registerNative(InventoryType.CARTOGRAPHY));
 			Bukkit.getPluginManager().registerEvents(ctd, plugin);
 			cartographytable = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Anvil.Enabled")) {
 			AnvilDisplay ad = new AnvilDisplay();
-			ad.register(InventoryType.ANVIL);
+			keys.add(ad.registerNative(InventoryType.ANVIL));
 			Bukkit.getPluginManager().registerEvents(ad, plugin);
 			anvil = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Grindstone.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			GrindstoneDisplay gd = new GrindstoneDisplay();
-			gd.register(InventoryType.GRINDSTONE);
+			keys.add(gd.registerNative(InventoryType.GRINDSTONE));
 			Bukkit.getPluginManager().registerEvents(gd, plugin);
 			grindstone = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Stonecutter.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			StonecutterDisplay sd = new StonecutterDisplay();
-			sd.register(InventoryType.STONECUTTER);
+			keys.add(sd.registerNative(InventoryType.STONECUTTER));
 			Bukkit.getPluginManager().registerEvents(sd, plugin);
 			stonecutter = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.BrewingStand.Enabled")) {
 			BrewingStandDisplay bsd = new BrewingStandDisplay();
-			bsd.register();
+			keys.add(bsd.registerNative());
 			Bukkit.getPluginManager().registerEvents(bsd, plugin);
 			brewingstand = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Chest.Enabled")) {
 			ChestDisplay cd = new ChestDisplay();
-			cd.register();
+			keys.add(cd.registerNative());
 			Bukkit.getPluginManager().registerEvents(cd, plugin);
 			chest = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.DoubleChest.Enabled")) {
 			DoubleChestDisplay dcd = new DoubleChestDisplay();
-			dcd.register();
+			keys.add(dcd.registerNative());
 			Bukkit.getPluginManager().registerEvents(dcd, plugin);
 			doublechest = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Furnace.Enabled")) {
 			FurnaceDisplay fd = new FurnaceDisplay();
-			fd.register();
+			keys.add(fd.registerNative());
 			Bukkit.getPluginManager().registerEvents(fd, plugin);
 			furnace = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.BlastFurnace.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			BlastFurnaceDisplay bfd = new BlastFurnaceDisplay();
-			bfd.register();
+			keys.add(bfd.registerNative());
 			Bukkit.getPluginManager().registerEvents(bfd, plugin);
 			blastfurnace = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Smoker.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			SmokerDisplay sd = new SmokerDisplay();
-			sd.register();
+			keys.add(sd.registerNative());
 			Bukkit.getPluginManager().registerEvents(sd, plugin);
 			smoker = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.EnderChest.Enabled")) {
 			EnderchestDisplay ed = new EnderchestDisplay();
-			ed.register();
+			keys.add(ed.registerNative());
 			Bukkit.getPluginManager().registerEvents(ed, plugin);
 			enderchest = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.ShulkerBox.Enabled") && (!version.isOld())) {
 			ShulkerBoxDisplay sbd = new ShulkerBoxDisplay();
-			sbd.register();
+			keys.add(sbd.registerNative());
 			Bukkit.getPluginManager().registerEvents(sbd, plugin);
 			shulkerbox = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Dispenser.Enabled")) {
 			DispenserDisplay dd = new DispenserDisplay();
-			dd.register();
+			keys.add(dd.registerNative());
 			Bukkit.getPluginManager().registerEvents(dd, plugin);
 			dispenser = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Dropper.Enabled")) {
 			DropperDisplay dd = new DropperDisplay();
-			dd.register();
+			keys.add(dd.registerNative());
 			Bukkit.getPluginManager().registerEvents(dd, plugin);
 			dropper = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Hopper.Enabled")) {
 			HopperDisplay hd = new HopperDisplay();
-			hd.register();
+			keys.add(hd.registerNative());
 			Bukkit.getPluginManager().registerEvents(hd, plugin);
 			hopper = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Beacon.Enabled")) {
 			BeaconDisplay bd = new BeaconDisplay();
-			bd.register();
+			keys.add(bd.registerNative());
 			Bukkit.getPluginManager().registerEvents(bd, plugin);
 			beacon = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.NoteBlock.Enabled")) {
 			NoteBlockDisplay nbd = new NoteBlockDisplay();
-			nbd.register();
+			keys.add(nbd.registerNative());
 			Bukkit.getPluginManager().registerEvents(nbd, plugin);
 			noteblock = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.JukeBox.Enabled")) {
 			JukeBoxDisplay jbd = new JukeBoxDisplay();
-			jbd.register();
+			keys.add(jbd.registerNative());
 			Bukkit.getPluginManager().registerEvents(jbd, plugin);
 			jukebox = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.SmithingTable.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_16)) {
 			SmithingTableDisplay std = new SmithingTableDisplay();
-			std.register(InventoryType.SMITHING);
+			keys.add(std.registerNative(InventoryType.SMITHING));
 			Bukkit.getPluginManager().registerEvents(std, plugin);
 			smithingtable = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.BeeNest.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_15)) {
 			BeeNestDisplay bnd = new BeeNestDisplay();
-			bnd.register();
+			keys.add(bnd.registerNative());
 			Bukkit.getPluginManager().registerEvents(bnd, plugin);
 			beenest = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.BeeHive.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_15)) {
 			BeeHiveDisplay bhd = new BeeHiveDisplay();
-			bhd.register();
+			keys.add(bhd.registerNative());
 			Bukkit.getPluginManager().registerEvents(bhd, plugin);
 			beehive = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Lectern.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			LecternDisplay ld = new LecternDisplay();
-			ld.register();
+			keys.add(ld.registerNative());
 			Bukkit.getPluginManager().registerEvents(ld, plugin);
 			lectern = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Campfire.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {
 			CampfireDisplay cd = new CampfireDisplay();
-			cd.register();
+			keys.add(cd.registerNative());
 			Bukkit.getPluginManager().registerEvents(cd, plugin);
 			campfire = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.SoulCampfire.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_16)) {
 			SoulCampfireDisplay scd = new SoulCampfireDisplay();
-			scd.register();
+			keys.add(scd.registerNative());
 			Bukkit.getPluginManager().registerEvents(scd, plugin);
 			soulcampfire = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Spawner.Enabled")) {
 			SpawnerDisplay sd = new SpawnerDisplay();
-			sd.register();
+			keys.add(sd.registerNative());
 			Bukkit.getPluginManager().registerEvents(sd, plugin);
 			spawner = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Conduit.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_13)) {
 			ConduitDisplay cd = new ConduitDisplay();
-			cd.register();
+			keys.add(cd.registerNative());
 			Bukkit.getPluginManager().registerEvents(cd, plugin);
 			conduit = true;
 		}
 		
 		if (getConfig().getBoolean("Blocks.Banner.Enabled")) {
 			BannerDisplay bd = new BannerDisplay();
-			bd.register();
+			keys.add(bd.registerNative());
 			Bukkit.getPluginManager().registerEvents(bd, plugin);
 			banner = true;
 		}
 		
 		if (getConfig().getBoolean("Entities.Item.Enabled")) {
 			ItemDisplay id = new ItemDisplay();
-			id.register();
+			keys.add(id.registerNative());
 			Bukkit.getPluginManager().registerEvents(id, plugin);
 			item = true;
 		}
 		
 		if (getConfig().getBoolean("Entities.Villager.Enabled")) {
 			VillagerDisplay vd = new VillagerDisplay();
-			vd.register();
+			keys.add(vd.registerNative());
 			Bukkit.getPluginManager().registerEvents(vd, plugin);
 			villager = true;
 		}
 		
+		InteractionVisualizer.preferenceManager.registerEntry(keys.toArray(new EntryKey[keys.size()]));
 		tasks.add(LightManager.run());
 		PacketManager.update();
 	}

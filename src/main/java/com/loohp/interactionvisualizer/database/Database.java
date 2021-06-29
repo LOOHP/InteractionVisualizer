@@ -30,7 +30,7 @@ public class Database {
 	private static String host, database, username, password;
 	private static String preferenceTable = "USER_PERFERENCES";
 	private static String indexMappingTable = "INDEX_MAPPING";
-	private static String statusLockTable = "STATUS_LOCK";
+	private static String statusLockTable = "USE_LOCK";
 	private static int port;
     
     private static Object syncdb = new Object();
@@ -97,7 +97,7 @@ public class Database {
 		}
 	}
 	
-	public static void sqliteSetup(boolean echo) {	   
+	private static void sqliteSetup(boolean echo) {	   
 		try {
 			Class.forName("org.sqlite.JDBC");
 	        connection = DriverManager.getConnection("jdbc:sqlite:plugins/InteractionVisualizer/database.db");
@@ -116,7 +116,7 @@ public class Database {
 	        stmt1.close();
 	        
 	        Statement stmt2 = connection.createStatement();
-	        String sql2 = "CREATE TABLE IF NOT EXISTS " + statusLockTable + " (LOCK BOOLEAN PRIMARY KEY);";
+	        String sql2 = "CREATE TABLE IF NOT EXISTS " + statusLockTable + " (STATUS_LOCK BOOLEAN PRIMARY KEY);";
 	        stmt2.executeUpdate(sql2);
 	        stmt2.close();
 	    } catch (Exception e) {
@@ -134,27 +134,25 @@ public class Database {
 		Database.connection = connection;
 	}
 	
-    public static void createTable() {
-    	synchronized (syncdb) {
-	    	open();
-	        try {
-	        	PreparedStatement statement0 = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + preferenceTable + " (UUID Text, NAME Text, ITEMSTAND Text, ITEMDROP Text, HOLOGRAM Text)");
-	            statement0.execute();
-	            
-	            PreparedStatement statement1 = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + indexMappingTable + " (ENTRY Text, BITMASK_INDEX INT)");
-	            statement1.execute();
-	            
-	            PreparedStatement statement2 = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + statusLockTable + " (LOCK Boolean)");
-	            statement2.execute();
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	        try {
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-    	}
+    private static void createTable() {
+    	open();
+        try {
+        	PreparedStatement statement0 = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + preferenceTable + " (UUID Text, NAME Text, ITEMSTAND Text, ITEMDROP Text, HOLOGRAM Text)");
+            statement0.execute();
+            
+            PreparedStatement statement1 = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + indexMappingTable + " (ENTRY Text, BITMASK_INDEX INT)");
+            statement1.execute();
+            
+            PreparedStatement statement2 = getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + statusLockTable + " (STATUS_LOCK BOOLEAN)");
+            statement2.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
     }
     
     public static boolean isLocked() {
@@ -165,7 +163,7 @@ public class Database {
 				PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + statusLockTable);
 				ResultSet results = statement.executeQuery();
 				if (results.next()) {
-					value = results.getBoolean("LOCK");
+					value = results.getBoolean("STATUS_LOCK");
 				} else {
 					value = false;
 				}
@@ -188,11 +186,11 @@ public class Database {
 				PreparedStatement statement = getConnection().prepareStatement("SELECT * FROM " + statusLockTable);
 				ResultSet results = statement.executeQuery();
 				if (results.next()) {
-					PreparedStatement statement1 = getConnection().prepareStatement("UPDATE " + statusLockTable + " SET LOCK=?");
+					PreparedStatement statement1 = getConnection().prepareStatement("UPDATE " + statusLockTable + " SET STATUS_LOCK=?");
 					statement1.setBoolean(1, value);
 					statement1.executeUpdate();
 				} else {
-					PreparedStatement insert = getConnection().prepareStatement("INSERT INTO " + statusLockTable + " (LOCK) VALUES (?)");
+					PreparedStatement insert = getConnection().prepareStatement("INSERT INTO " + statusLockTable + " (STATUS_LOCK) VALUES (?)");
 					insert.setBoolean(1, value);
 					insert.executeUpdate();
 				}

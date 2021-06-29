@@ -1,6 +1,7 @@
 package com.loohp.interactionvisualizer.managers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -77,22 +78,37 @@ public class PreferenceManager implements Listener, AutoCloseable {
 		}
 	}
 	
-	public void registerEntry(EntryKey entry) {
-		try {
-			synchronized (entries) {
-				Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).pollDelay(0, TimeUnit.MILLISECONDS).until(() -> !Database.isLocked());
-				Database.setLocked(true);
-				List<EntryKey> updatedEntries = ArrayUtils.putToArrayList(Database.getBitIndex(), new ArrayList<>());
-				entries.clear();
-				entries.addAll(updatedEntries);
-				if (!entries.contains(entry)) {
-					entries.add(entry);
-					Database.setBitIndex(ArrayUtils.putToMap(entries, new HashMap<>()));
+	public void registerEntry(EntryKey entryKey, EntryKey... entryKeys) {
+		EntryKey[] keys = new EntryKey[entryKeys.length + 1];
+		keys[0] = entryKey;
+		System.arraycopy(entryKeys, 0, keys, 1, entryKeys.length);
+		registerEntry(keys);
+	}
+	
+	public void registerEntry(EntryKey[] entryKeys) {
+		if (entryKeys.length > 0) {
+			try {
+				synchronized (entries) {
+					Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).pollDelay(0, TimeUnit.MILLISECONDS).until(() -> !Database.isLocked());
+					Database.setLocked(true);
+					List<EntryKey> updatedEntries = ArrayUtils.putToArrayList(Database.getBitIndex(), new ArrayList<>());
+					entries.clear();
+					entries.addAll(updatedEntries);
+					boolean changes = false;
+					for (EntryKey entry : entryKeys) {
+						if (!entries.contains(entry)) {
+							changes = true;
+							entries.add(entry);
+						}
+					}
+					if (changes) {
+						Database.setBitIndex(ArrayUtils.putToMap(entries, new HashMap<>()));
+					}
+					Database.setLocked(false);
 				}
-				Database.setLocked(false);
+			} catch (ConditionTimeoutException e) {
+				new RuntimeException("Tried to save player preference but database is locked for more than 5 secionds", e).printStackTrace();
 			}
-		} catch (ConditionTimeoutException e) {
-			new RuntimeException("Tried to save player preference but database is locked for more than 5 secionds", e).printStackTrace();
 		}
 	}
 	

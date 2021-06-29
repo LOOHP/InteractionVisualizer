@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 
 import com.loohp.interactionvisualizer.managers.TaskManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 
 /**
 This class is used for Displays which are shown when a player interact with a certain interface
@@ -40,6 +41,11 @@ public abstract class VisualizerInteractDisplay implements VisualizerDisplay {
 		throw new UnsupportedOperationException("Use register(InventoryType) instead");
 	}
 	
+	@Deprecated
+	public final EntryKey registerNative() {
+		throw new UnsupportedOperationException("Use register(InventoryType) instead");
+	}
+	
 	/**
 	Register this custom display to InteractionVisualizer.
 	*/
@@ -47,11 +53,26 @@ public abstract class VisualizerInteractDisplay implements VisualizerDisplay {
 		InteractionVisualizerAPI.getPreferenceManager().registerEntry(key());
 		this.type = type;
 		TaskManager.processes.get(type).add(this);
-		this.tasks = new HashSet<Integer>();
+		this.tasks = new HashSet<>();
 		int run = run();
 		if (run >= 0) {
 			this.tasks.add(run);
 		}
+	}
+	
+	/**
+	<b>Only use if this is a native built-in display</b>
+	*/
+	@Deprecated
+	public final EntryKey registerNative(InventoryType type) {
+		this.type = type;
+		TaskManager.processes.get(type).add(this);
+		this.tasks = new HashSet<>();
+		int run = run();
+		if (run >= 0) {
+			this.tasks.add(run);
+		}
+		return key();
 	}
 	
 	/**

@@ -173,7 +173,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		MusicManager.setup();
 		Database.setup();
 		preferenceManager = new PreferenceManager(this);
-		TaskManager.run();
+		TaskManager.setup();
 		TileEntityManager._init_();
 		PacketManager.run();
 		PacketManager.dynamicEntity();
@@ -183,7 +183,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		getCommand("interactionvisualizer").setExecutor(new Commands());
 		
-		TaskManager.setup();
+		TaskManager.run();
 		
 		Charts.registerCharts(metrics);
 		
