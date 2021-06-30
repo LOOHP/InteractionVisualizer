@@ -1,3 +1,4 @@
+#These instrument names will be used in the noteblock display
 Instruments:
   BANJO: Banjo
   BASS_DRUM: Base Drum
