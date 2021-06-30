@@ -45,6 +45,7 @@ LightUpdate:
   Period: 10
 
 #Enable InteractionVisualizer for these blocks
+#You might have to restart for changes to take effect
 Blocks:
   Anvil:
     Enabled: true
