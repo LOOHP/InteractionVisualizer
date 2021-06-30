@@ -81,7 +81,7 @@ public class PacketManager implements Listener {
 						if (entry.getValue()) {
 							Collection<Player> players = active.get(entity);
 							if (players != null) {
-								if (item.getVelocity().equals(VECTOR_ZERO)) {
+								if (item.getVelocity().equals(VECTOR_ZERO) && !item.hasGravity()) {
 									updateItemAsync(item, true);
 								}
 								if (isOccluding(item.getLocation().getBlock().getType())) {

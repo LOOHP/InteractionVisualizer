@@ -171,7 +171,7 @@ public class EnchantmentTableAnimation {
 				stand.setCustomName(enchantmentName);
 				stand.setCustomNameVisible(true);
 				setStand(stand);
-				PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), stand);
+				PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), stand);
 				stands.add(stand);
 				standloc.add(0.0, 0.3, 0.0);
 			}
@@ -185,7 +185,7 @@ public class EnchantmentTableAnimation {
 			stand.setCustomName(levelTrans);
 			stand.setCustomNameVisible(true);
 			setStand(stand);
-			PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), stand);
+			PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), stand);
 			stands.add(stand);
 			
 			PacketManager.updateItem(item);
