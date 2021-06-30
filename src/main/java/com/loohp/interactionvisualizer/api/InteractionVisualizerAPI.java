@@ -3,6 +3,7 @@ package com.loohp.interactionvisualizer.api;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -135,6 +136,22 @@ public class InteractionVisualizerAPI {
 			InteractionVisualizer.preferenceManager.savePlayer(uuid, true);
 			return value;
 		}
+	}
+	
+	/**
+	Check if an entry is registered.
+	@return true/false.
+	*/
+	public static boolean isRegisteredEntry(EntryKey entry) {
+		return InteractionVisualizer.preferenceManager.getRegisteredEntries().contains(entry);
+	}
+	
+	/**
+	Get all registered entries.
+	@return true/false.
+	*/
+	public static List<EntryKey> getRegisteredEntries() {
+		return Collections.unmodifiableList(InteractionVisualizer.preferenceManager.getRegisteredEntries());
 	}
 	
 	/**

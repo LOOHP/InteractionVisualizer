@@ -41,26 +41,35 @@ public class Placeholders extends PlaceholderExpansion {
   
         if (identifier.startsWith("itemstand_")) {
         	EntryKey entry = new EntryKey(identifier.substring(10));
-    		if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.ITEMSTAND, entry)) {
-    			return "enabled";
-    		}
-    		return "disabled";
+        	if (InteractionVisualizerAPI.isRegisteredEntry(entry)) {
+	    		if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.ITEMSTAND, entry)) {
+	    			return "enabled";
+	    		}
+	    		return "disabled";
+        	}
+        	return "invalid";
         }
 
         if (identifier.startsWith("itemdrop_")) {
         	EntryKey entry = new EntryKey(identifier.substring(9));
-        	if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.ITEMDROP, entry)) {
-    			return "enabled";
-    		}
-    		return "disabled";
+        	if (InteractionVisualizerAPI.isRegisteredEntry(entry)) {
+	        	if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.ITEMDROP, entry)) {
+	    			return "enabled";
+	    		}
+	    		return "disabled";
+        	}
+        	return "invalid";
         }
         
         if (identifier.startsWith("hologram_")) {
         	EntryKey entry = new EntryKey(identifier.substring(9));
-        	if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.HOLOGRAM, entry)) {
-    			return "enabled";
-    		}
-    		return "disabled";
+        	if (InteractionVisualizerAPI.isRegisteredEntry(entry)) {
+	        	if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.HOLOGRAM, entry)) {
+	    			return "enabled";
+	    		}
+	    		return "disabled";
+        	}
+        	return "invalid";
         }
 
         return null;
