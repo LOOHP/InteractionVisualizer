@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
@@ -299,6 +300,33 @@ public class PreferenceManager implements Listener, AutoCloseable {
 	}
 	
 	public Collection<Player> getPlayerList(Modules module, EntryKey entry) {
+		Supplier<Boolean> serverSetting;
+		switch (module) {
+		case HOLOGRAM:
+			serverSetting = () -> InteractionVisualizer.hologramsEnabled;
+			break;
+		case ITEMDROP:
+			serverSetting = () -> InteractionVisualizer.itemDropEnabled;
+			break;
+		case ITEMSTAND:
+			serverSetting = () -> InteractionVisualizer.itemStandEnabled;
+			break;
+		default:
+			serverSetting = () -> true;
+			break;
+		}
+		return Collections2.filter(backingPlayerList, player -> {
+			if (!serverSetting.get()) {
+				return false;
+			}
+			if (!isRegistryEntry(entry)) {
+				return false;
+			}
+			return getPlayerPreference(player.getUniqueId(), module, entry);
+		});
+	}
+	
+	public Collection<Player> getPlayerListIgnoreServerSetting(Modules module, EntryKey entry) {
 		return Collections2.filter(backingPlayerList, player -> {
 			if (!isRegistryEntry(entry)) {
 				return false;
