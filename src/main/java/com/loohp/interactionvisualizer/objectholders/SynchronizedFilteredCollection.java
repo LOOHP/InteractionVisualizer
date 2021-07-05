@@ -4,8 +4,10 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Spliterator;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SynchronizedFilteredCollection<E> implements Collection<E> {
 	
@@ -48,7 +50,30 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
 	@Override
 	public Iterator<E> iterator() {
 		synchronized (backingCollection) {
-			return backingCollection.stream().filter(predicate).collect(Collectors.toList()).iterator();
+			return new Iterator<E>() {
+
+				private Iterator<E> itr = backingCollection.stream().filter(predicate).iterator();
+				private E currentElement = null;
+
+				@Override
+				public boolean hasNext() {
+					return itr.hasNext();
+				}
+
+				@Override
+				public E next() {
+					return currentElement = itr.next();
+				}
+				
+				@Override
+				public void remove() {
+					if (currentElement == null) {
+						throw new IllegalStateException("Call itr.next() first");
+					}
+					backingCollection.remove(currentElement);
+			    }
+				
+			};
 		}
 	}
 
@@ -108,6 +133,23 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
 	public boolean removeAll(Collection<?> c) {
 		return backingCollection.removeAll(c);
 	}
+	
+	@Override
+	public boolean removeIf(Predicate<? super E> filter) {
+		Predicate<E> test = predicate.and(filter);
+		boolean flag = false;
+		synchronized (backingCollection) {
+			Iterator<E> itr = backingCollection.iterator();
+			while (itr.hasNext()) {
+				E e = itr.next();
+				if (test.test(e)) {
+					itr.remove();
+					flag = true;
+				}
+			}
+		}
+		return flag;
+    }
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
@@ -137,5 +179,20 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
 			}
 		}
 	}
+	
+	@Override
+	public Spliterator<E> spliterator() {
+		return backingCollection.stream().filter(predicate).spliterator();
+    }
+
+	@Override
+	public Stream<E> stream() {
+        return backingCollection.stream().filter(predicate);
+    }
+
+	@Override
+	public Stream<E> parallelStream() {
+        return backingCollection.parallelStream().filter(predicate);
+    }
 
 }
