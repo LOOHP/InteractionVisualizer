@@ -17,7 +17,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
-import com.google.common.collect.Collections2;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.entityholders.Item;
@@ -26,6 +25,7 @@ import com.loohp.interactionvisualizer.managers.PreferenceManager;
 import com.loohp.interactionvisualizer.managers.SoundManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
+import com.loohp.interactionvisualizer.objectholders.SynchronizedFilteredCollection;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 
 public class InteractionVisualizerAPI {
@@ -77,9 +77,9 @@ public class InteractionVisualizerAPI {
 		Set<Player> excludedPlayers = Stream.of(excludes).collect(Collectors.toSet());
 		if (excludeDisabledWorlds) {
 			Set<String> disabledWorlds = getDisabledWorlds();
-			players = Collections2.filter(players, each -> !excludedPlayers.contains(each) && !disabledWorlds.contains(each.getWorld().getName()));
+			players = SynchronizedFilteredCollection.filterSynchronized(players, each -> !excludedPlayers.contains(each) && !disabledWorlds.contains(each.getWorld().getName()));
 		} else {
-			players = Collections2.filter(players, each -> !excludedPlayers.contains(each));
+			players = SynchronizedFilteredCollection.filterSynchronized(players, each -> !excludedPlayers.contains(each));
 		}
 		return Collections.unmodifiableCollection(players);
 	}

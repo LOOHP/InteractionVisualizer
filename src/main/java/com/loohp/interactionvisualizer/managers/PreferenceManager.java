@@ -23,11 +23,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.google.common.collect.Collections2;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.database.Database;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
+import com.loohp.interactionvisualizer.objectholders.SynchronizedFilteredCollection;
 import com.loohp.interactionvisualizer.utils.ArrayUtils;
 
 public class PreferenceManager implements Listener, AutoCloseable {
@@ -36,7 +36,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
 	private List<EntryKey> entries;
 	private Map<UUID, Map<Modules, BitSet>> preferences;
 	
-	private List<Player> backingPlayerList;
+	private Collection<Player> backingPlayerList;
 	
 	private AtomicBoolean valid;
 	
@@ -45,7 +45,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
 		this.valid = new AtomicBoolean(true);
 		this.entries = Collections.synchronizedList(ArrayUtils.putToArrayList(Database.getBitIndex(), new ArrayList<>()));
 		this.preferences = new ConcurrentHashMap<>();
-		this.backingPlayerList = new ArrayList<>();
+		this.backingPlayerList = Collections.synchronizedCollection(new ArrayList<>());
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			backingPlayerList.add(player);
@@ -315,7 +315,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
 			serverSetting = () -> true;
 			break;
 		}
-		return Collections2.filter(backingPlayerList, player -> {
+		return SynchronizedFilteredCollection.filterSynchronized(backingPlayerList, player -> {
 			if (!serverSetting.get()) {
 				return false;
 			}
@@ -327,7 +327,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
 	}
 	
 	public Collection<Player> getPlayerListIgnoreServerSetting(Modules module, EntryKey entry) {
-		return Collections2.filter(backingPlayerList, player -> {
+		return SynchronizedFilteredCollection.filterSynchronized(backingPlayerList, player -> {
 			if (!isRegistryEntry(entry)) {
 				return false;
 			}

@@ -5,7 +5,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>1.16.0.5</version>
+	<version>1.16.0.6</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -227,12 +227,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
 			<version>1.9</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>30.1-jre</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

@@ -64,6 +64,7 @@ public abstract class VisualizerRunnableDisplay implements VisualizerDisplay {
 	Unregister this custom display to InteractionVisualizer.
 	You don't have to use this normally.
 	*/
+	@Deprecated
 	public final void unregister() {
 		TaskManager.runnables.remove(this);
 		this.tasks.forEach(each -> Bukkit.getScheduler().cancelTask(each));
