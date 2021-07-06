@@ -1,5 +1,6 @@
 package com.loohp.interactionvisualizer.nms;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,15 +33,37 @@ import net.minecraft.network.protocol.game.PacketPlayOutEntityEquipment;
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.world.entity.EnumItemSlot;
 import net.minecraft.world.entity.item.EntityItem;
+import net.minecraft.world.phys.AxisAlignedBB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class V1_17 extends NMS {
 	
+	private static Method voxelShapeGetAABBList;
+	
+	static {
+		try {
+			try {
+				voxelShapeGetAABBList = VoxelShape.class.getMethod("d");
+			} catch (NoSuchMethodException | SecurityException e) {
+				voxelShapeGetAABBList = VoxelShape.class.getMethod("toList");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
 	public List<BoundingBox> getBoundingBoxes(BlockPosition pos) {
 		net.minecraft.core.BlockPosition blockpos = new net.minecraft.core.BlockPosition(pos.getX(), pos.getY(), pos.getZ());
 		WorldServer world = ((CraftWorld) pos.getWorld()).getHandle();
 		VoxelShape shape = world.getType(blockpos).getShape(world, blockpos);
-		return shape.d().stream().map(each -> new BoundingBox(each.a + pos.getX(), each.b + pos.getY(), each.c + pos.getZ(), each.d + pos.getX(), each.e + pos.getY(), each.f + pos.getZ())).collect(Collectors.toList());
+		try {
+			return ((List<AxisAlignedBB>) voxelShapeGetAABBList.invoke(shape)).stream().map(each -> new BoundingBox(each.a + pos.getX(), each.b + pos.getY(), each.c + pos.getZ(), each.d + pos.getX(), each.e + pos.getY(), each.f + pos.getZ())).collect(Collectors.toList());
+		} catch (Exception e) {
+			List<BoundingBox> boxes = new ArrayList<>();
+			boxes.add(BoundingBox.of(pos.getBlock()));
+			return boxes;
+		}
 	}
 
 	@Override

@@ -5,7 +5,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>1.16.0.7</version>
+	<version>1.16.1.0</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -337,7 +337,7 @@
 		<dependency>
 			<groupId>org.bukkit.........</groupId>
 			<artifactId>craftbukkit</artifactId>
-			<version>1.17-R0.1-SNAPSHOT</version>
+			<version>1.17.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
