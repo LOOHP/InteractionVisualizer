@@ -18,14 +18,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.simpleyaml.configuration.file.FileConfiguration;
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.config.Config;
 import com.loohp.interactionvisualizer.database.Database;
-import com.loohp.interactionvisualizer.entityholders.VisualizerEntity;
 import com.loohp.interactionvisualizer.managers.LangManager;
 import com.loohp.interactionvisualizer.managers.MaterialManager;
 import com.loohp.interactionvisualizer.managers.MusicManager;
@@ -36,6 +34,7 @@ import com.loohp.interactionvisualizer.managers.TaskManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
 import com.loohp.interactionvisualizer.metrics.Charts;
 import com.loohp.interactionvisualizer.metrics.Metrics;
+import com.loohp.interactionvisualizer.nms.NMS;
 import com.loohp.interactionvisualizer.placeholderAPI.Placeholders;
 import com.loohp.interactionvisualizer.protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.updater.Updater;
@@ -296,31 +295,17 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		if (!Bukkit.getOnlinePlayers().isEmpty()) {
 			getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] Plugin reload detected, attempting to despawn all visual entities. If anything went wrong, please restart! (Reloads are always not recommended)");
-			if (version.isNewerOrEqualTo(MCVersion.V1_17)) {
-				for (VisualizerEntity entity : PacketManager.active.keySet()) {
-					PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-					packet1.getIntegers().write(0, entity.getEntityId());
-					
-					try {
-						for (Player player : Bukkit.getOnlinePlayers()) {
-							protocolManager.sendServerPacket(player, packet1);
-						}
-					} catch (InvocationTargetException e) {
-						e.printStackTrace();
+			int[] entityIdArray = PacketManager.active.keySet().stream().mapToInt(each -> each.getEntityId()).toArray();
+			PacketContainer[] packets = NMS.getInstance().createEntityDestoryPacket(entityIdArray);
+			
+			try {
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					for (PacketContainer packet : packets) {
+						protocolManager.sendServerPacket(player, packet);
 					}
 				}
-			} else {
-				PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-				int[] entityIdArray = PacketManager.active.keySet().stream().mapToInt(each -> each.getEntityId()).toArray();
-				packet1.getIntegerArrays().write(0, entityIdArray);
-				
-				try {
-					for (Player player : Bukkit.getOnlinePlayers()) {
-						protocolManager.sendServerPacket(player, packet1);
-					}
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
 			}
 		}
 		

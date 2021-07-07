@@ -172,12 +172,7 @@ public class ServerPacketSender {
 	}
 	
 	public static void removeArmorStand(Collection<Player> players, ArmorStand entity) {
-		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-		if (version.isNewerOrEqualTo(MCVersion.V1_17)) {
-			packet1.getIntegers().write(0, entity.getEntityId());
-		} else {
-			packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
-		}
+		PacketContainer[] packets = NMS.getInstance().createEntityDestoryPacket(entity.getEntityId());
 		
 		if (!plugin.isEnabled()) {
 			return;
@@ -186,7 +181,9 @@ public class ServerPacketSender {
 		Bukkit.getScheduler().runTask(plugin, () -> {
 			try {
 				for (Player player : players) {
-					protocolManager.sendServerPacket(player, packet1);
+					for (PacketContainer packet : packets) {
+						protocolManager.sendServerPacket(player, packet);
+					}
 				}
 			} catch (InvocationTargetException | IllegalArgumentException e) {}
 		});
@@ -319,12 +316,7 @@ public class ServerPacketSender {
 	}
 	
 	public static void removeItem(Collection<Player> players, Item entity) {
-		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-		if (version.isNewerOrEqualTo(MCVersion.V1_17)) {
-			packet1.getIntegers().write(0, entity.getEntityId());
-		} else {
-			packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
-		}
+		PacketContainer[] packets = NMS.getInstance().createEntityDestoryPacket(entity.getEntityId());
 		
 		if (!plugin.isEnabled()) {
 			return;
@@ -333,7 +325,9 @@ public class ServerPacketSender {
 		Bukkit.getScheduler().runTask(plugin, () -> {
 			try {
 				for (Player player : players) {
-					protocolManager.sendServerPacket(player, packet1);
+					for (PacketContainer packet : packets) {
+						protocolManager.sendServerPacket(player, packet);
+					}
 				}
 			} catch (InvocationTargetException | IllegalArgumentException e) {}
 		});
@@ -421,12 +415,7 @@ public class ServerPacketSender {
 	}
 	
 	public static void removeItemFrame(Collection<Player> players, ItemFrame entity) {
-		PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-		if (version.isNewerOrEqualTo(MCVersion.V1_17)) {
-			packet1.getIntegers().write(0, entity.getEntityId());
-		} else {
-			packet1.getIntegerArrays().write(0, new int[]{entity.getEntityId()});
-		}
+		PacketContainer[] packets = NMS.getInstance().createEntityDestoryPacket(entity.getEntityId());
 		
 		if (!plugin.isEnabled()) {
 			return;
@@ -435,7 +424,9 @@ public class ServerPacketSender {
 		Bukkit.getScheduler().runTask(plugin, () -> {
 			try {
 				for (Player player : players) {
-					protocolManager.sendServerPacket(player, packet1);
+					for (PacketContainer packet : packets) {
+						protocolManager.sendServerPacket(player, packet);
+					}
 				}
 			} catch (InvocationTargetException | IllegalArgumentException e) {}
 		});

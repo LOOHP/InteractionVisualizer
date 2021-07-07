@@ -18,7 +18,9 @@ import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.objectholders.BlockPosition;
 import com.loohp.interactionvisualizer.objectholders.BoundingBox;
 import com.loohp.interactionvisualizer.objectholders.ChunkPosition;
@@ -29,6 +31,7 @@ import com.loohp.interactionvisualizer.objectholders.ValuePairs;
 import com.loohp.interactionvisualizer.objectholders.WrappedIterable;
 import com.mojang.datafixers.util.Pair;
 
+import net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityEquipment;
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.world.entity.EnumItemSlot;
@@ -39,6 +42,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class V1_17 extends NMS {
 	
 	private static Method voxelShapeGetAABBList;
+	private static boolean entityDestoryIsInt;
 	
 	static {
 		try {
@@ -46,6 +50,12 @@ public class V1_17 extends NMS {
 				voxelShapeGetAABBList = VoxelShape.class.getMethod("d");
 			} catch (NoSuchMethodException | SecurityException e) {
 				voxelShapeGetAABBList = VoxelShape.class.getMethod("toList");
+			}
+			try {
+				PacketPlayOutEntityDestroy.class.getConstructor(int.class);
+				entityDestoryIsInt = true;
+			} catch (NoSuchMethodException e) {
+				entityDestoryIsInt = false;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -115,6 +125,21 @@ public class V1_17 extends NMS {
 		}
 		PacketPlayOutEntityEquipment packet = new PacketPlayOutEntityEquipment(entityId, nmsList);
 		return new PacketContainer[] {PacketContainer.fromPacket(packet)};
+	}
+	
+	@Override
+	public PacketContainer[] createEntityDestoryPacket(int... entityIds) {
+		if (entityDestoryIsInt) {
+			PacketContainer[] packets = new PacketContainer[entityIds.length];
+			for (int i = 0; i < entityIds.length; i++) {
+				PacketContainer packet = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
+				packet.getIntegers().write(0, entityIds[i]);
+				packets[i] = packet;
+			}
+			return packets;
+		} else {
+			return new PacketContainer[] {PacketContainer.fromPacket(new PacketPlayOutEntityDestroy(entityIds))};
+		}
 	}
 	
 	@Override

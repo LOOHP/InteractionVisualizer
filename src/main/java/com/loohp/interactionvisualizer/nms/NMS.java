@@ -9,6 +9,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.objectholders.BlockPosition;
@@ -64,6 +65,12 @@ public abstract class NMS {
 	}
 	
 	public abstract PacketContainer[] createEntityEquipmentPacket(int entityId, List<ValuePairs<EquipmentSlot, ItemStack>> equipments);
+	
+	public PacketContainer[] createEntityDestoryPacket(int... entityIds) {
+		PacketContainer packet = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
+		packet.getIntegerArrays().write(0, entityIds);
+		return new PacketContainer[] {packet};
+	}
 	
 	public abstract List<BoundingBox> getBoundingBoxes(BlockPosition pos);
 	

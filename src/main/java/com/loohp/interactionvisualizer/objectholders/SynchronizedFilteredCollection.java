@@ -20,36 +20,46 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
 
 	private Collection<E> backingCollection;
 	private Predicate<E> predicate;
+	private Object lock;
 	
 	private SynchronizedFilteredCollection(Collection<E> backingCollection, Predicate<E> predicate) {
 		this.backingCollection = backingCollection;
 		this.predicate = predicate;
+		this.lock = aquireLock();
+	}
+	
+	private Object aquireLock() {
+		if (backingCollection instanceof SynchronizedFilteredCollection) {
+			return ((SynchronizedFilteredCollection<E>) backingCollection).aquireLock();
+		} else {
+			return backingCollection;
+		}
 	}
 
 	@Override
 	public int size() {
-		synchronized (backingCollection) {
+		synchronized (lock) {
 			return (int) Math.min(backingCollection.stream().filter(predicate).count(), Integer.MAX_VALUE);
 		}
 	}
 
 	@Override
 	public boolean isEmpty() {
-		synchronized (backingCollection) {
+		synchronized (lock) {
 			return backingCollection.stream().filter(predicate).count() <= 0;
 		}
 	}
 
 	@Override
 	public boolean contains(Object o) {
-		synchronized (backingCollection) {
+		synchronized (lock) {
 			return backingCollection.stream().filter(predicate).anyMatch(each -> Objects.equals(each, o));
 		}
 	}
 
 	@Override
 	public Iterator<E> iterator() {
-		synchronized (backingCollection) {
+		synchronized (lock) {
 			return new Iterator<E>() {
 
 				private Iterator<E> itr = backingCollection.stream().filter(predicate).iterator();
@@ -79,7 +89,7 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
 
 	@Override
 	public Object[] toArray() {
-		synchronized (backingCollection) {
+		synchronized (lock) {
 			return backingCollection.stream().filter(predicate).toArray();
 		}
 	}
@@ -87,7 +97,7 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T[] toArray(T[] a) {
-		synchronized (backingCollection) {
+		synchronized (lock) {
 			return backingCollection.stream().filter(predicate).toArray(size -> a.length >= size ? a : (T[]) Array.newInstance(a.getClass().getComponentType(), size));
 		}
 	}
@@ -107,7 +117,7 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		synchronized (backingCollection) {
+		synchronized (lock) {
 			Collection<E> list = backingCollection.stream().filter(predicate).collect(Collectors.toList());
 			for (Object o : c) {
 				if (!list.contains(o)) {
@@ -138,7 +148,7 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
 	public boolean removeIf(Predicate<? super E> filter) {
 		Predicate<E> test = predicate.and(filter);
 		boolean flag = false;
-		synchronized (backingCollection) {
+		synchronized (lock) {
 			Iterator<E> itr = backingCollection.iterator();
 			while (itr.hasNext()) {
 				E e = itr.next();
@@ -154,7 +164,7 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
 	@Override
 	public boolean retainAll(Collection<?> c) {
 		boolean flag = false;
-		synchronized (backingCollection) {
+		synchronized (lock) {
 			Iterator<E> itr = backingCollection.iterator();
 			while (itr.hasNext()) {
 				E e = itr.next();
@@ -169,7 +179,7 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
 
 	@Override
 	public void clear() {
-		synchronized (backingCollection) {
+		synchronized (lock) {
 			Iterator<E> itr = backingCollection.iterator();
 			while (itr.hasNext()) {
 				E e = itr.next();
