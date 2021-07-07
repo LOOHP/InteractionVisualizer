@@ -12,6 +12,9 @@ public class EntryKey {
 	private String namespace;
 	private String key;
 
+	/**
+	 * <b>You are encouraged to use {@link EntryKey#EntryKey(Plugin, String)}.</b>
+	 */
 	public EntryKey(String namespacedKey) {
 		int index = namespacedKey.indexOf(":");
 		if (index >= 0) {
@@ -26,6 +29,9 @@ public class EntryKey {
 		}
 	}
 
+	/**
+	 * <b>You are encouraged to use {@link EntryKey#EntryKey(Plugin, String)}.</b>
+	 */
 	public EntryKey(String namespace, String key) {
 		this.namespace = namespace;
 		this.key = key;
@@ -49,6 +55,10 @@ public class EntryKey {
 	public String getKey() {
 		return key;
 	}
+	
+	public boolean isNative() {
+		return namespace.equals(NATIVE);
+	}
 
 	@Override
 	public String toString() {
@@ -56,7 +66,7 @@ public class EntryKey {
 	}
 	
 	public String toSimpleString() {
-		if (namespace.equals(NATIVE)) {
+		if (isNative()) {
 			return key;
 		} else {
 			return toString();

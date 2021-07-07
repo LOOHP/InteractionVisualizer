@@ -1,9 +1,13 @@
 package com.loohp.interactionvisualizer.metrics;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 
 public class Charts {
@@ -384,6 +388,28 @@ public class Charts {
                 return total;
             }
         }));
+		
+		metrics.addCustomChart(new Metrics.DrilldownPie("visualizer_displays_from_addons", new Callable<Map<String, Map<String, Integer>>>() {
+			@Override
+			public Map<String, Map<String, Integer>> call() throws Exception {
+				Map<String, Map<String, Integer>> map = new HashMap<>();
+				for (EntryKey entryKey : InteractionVisualizerAPI.getRegisteredEntries()) {
+					if (!entryKey.isNative()) {
+						Map<String, Integer> entry = map.get(entryKey.getNamespace());
+						if (entry == null) {
+							map.put(entryKey.getNamespace(), entry = new HashMap<>());
+						}
+						Integer value = entry.get(entryKey.getKey());
+						if (value == null) {
+							entry.put(entryKey.getKey(), 1);
+						} else {
+							entry.put(entryKey.getKey(), value + 1);
+						}
+					}
+				}
+				return map;
+			}
+		}));
 		
 	}
 

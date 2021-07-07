@@ -18,6 +18,7 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.config.Config;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.PacketManager;
@@ -29,6 +30,22 @@ import com.loohp.interactionvisualizer.objectholders.SynchronizedFilteredCollect
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 
 public class InteractionVisualizerAPI {
+	
+	/**
+	Get the user friendly names of a module
+	@return The user friendly name of the module, or the internal name, if not found.
+	*/
+	public static String getUserFriendlyName(Modules module) {
+		return Config.getConfig(InteractionVisualizer.CONFIG_ID).getConfiguration().getString("Messages.ModuleName." + module.toString().toLowerCase(), module.toString().toLowerCase());
+	}
+	
+	/**
+	Get the user friendly names of an entry
+	@return The user friendly name of the entry, or the internal name, if not found.
+	*/
+	public static String getUserFriendlyName(EntryKey entry) {
+		return Config.getConfig(InteractionVisualizer.CONFIG_ID).getConfiguration().getString("Messages.EntryName." + entry.toString().toLowerCase(), entry.toString().toLowerCase());
+	}
 	
 	/**
 	Gets the GC period in ticks defined in the config.

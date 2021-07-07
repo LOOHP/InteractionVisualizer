@@ -100,8 +100,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 					Player player = (Player) sender;
 					Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 						EntryKey[] entries;
+						String verboseEntry = null;
 						if (args[2].equalsIgnoreCase("all")) {
 							entries = InteractionVisualizer.preferenceManager.getRegisteredEntries().toArray(new EntryKey[0]);
+							verboseEntry = ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.Toggle.All"));
 						} else {
 							entries = new EntryKey[] {new EntryKey(args[2])};
 						}
@@ -111,17 +113,17 @@ public class Commands implements CommandExecutor, TabCompleter {
 						}
 						switch (args[1].toLowerCase()) {
 						case "itemstand":
-							Toggle.toggle(sender, player, Modules.ITEMSTAND, value, entries);
+							Toggle.toggle(sender, player, Modules.ITEMSTAND, value, true, verboseEntry, entries);
 							break;
 						case "itemdrop":
-							Toggle.toggle(sender, player, Modules.ITEMDROP, value, entries);
+							Toggle.toggle(sender, player, Modules.ITEMDROP, value, true, verboseEntry, entries);
 							break;
 						case "hologram":
-							Toggle.toggle(sender, player, Modules.HOLOGRAM, value, entries);
+							Toggle.toggle(sender, player, Modules.HOLOGRAM, value, true, verboseEntry, entries);
 							break;
 						case "all":
 							for (Modules modules : Modules.values()) {
-								Toggle.toggle(sender, player, modules, value, entries);
+								Toggle.toggle(sender, player, modules, value, true, verboseEntry, entries);
 							}
 							break;
 						default:
@@ -147,8 +149,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 					Player player = Bukkit.getPlayer(args[4]);
 					Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
 						EntryKey[] entries;
+						String verboseEntry = null;
 						if (args[2].equalsIgnoreCase("all")) {
 							entries = InteractionVisualizer.preferenceManager.getRegisteredEntries().toArray(new EntryKey[0]);
+							verboseEntry = ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.Toggle.All"));
 						} else {
 							entries = new EntryKey[] {new EntryKey(args[2])};
 						}
@@ -158,17 +162,17 @@ public class Commands implements CommandExecutor, TabCompleter {
 						}
 						switch (args[1].toLowerCase()) {
 						case "itemstand":
-							Toggle.toggle(sender, player, Modules.ITEMSTAND, value, entries);
+							Toggle.toggle(sender, player, Modules.ITEMSTAND, value, true, verboseEntry, entries);
 							break;
 						case "itemdrop":
-							Toggle.toggle(sender, player, Modules.ITEMDROP, value, entries);
+							Toggle.toggle(sender, player, Modules.ITEMDROP, value, true, verboseEntry, entries);
 							break;
 						case "hologram":
-							Toggle.toggle(sender, player, Modules.HOLOGRAM, value, entries);
+							Toggle.toggle(sender, player, Modules.HOLOGRAM, value, true, verboseEntry, entries);
 							break;
 						case "all":
 							for (Modules modules : Modules.values()) {
-								Toggle.toggle(sender, player, modules, value, entries);
+								Toggle.toggle(sender, player, modules, value, true, verboseEntry, entries);
 							}
 							break;
 						default:
