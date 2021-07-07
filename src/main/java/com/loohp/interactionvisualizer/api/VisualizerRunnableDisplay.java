@@ -32,6 +32,9 @@ public abstract class VisualizerRunnableDisplay implements VisualizerDisplay {
 	Register this custom display to InteractionVisualizer.
 	*/
 	public final void register() {
+		if (key().isNative()) {
+			throw new IllegalStateException("EntryKey must not have the default interactionvisualizer namespace");
+		}
 		InteractionVisualizerAPI.getPreferenceManager().registerEntry(key());
 		TaskManager.runnables.add(this);
 		this.tasks = new HashSet<>();

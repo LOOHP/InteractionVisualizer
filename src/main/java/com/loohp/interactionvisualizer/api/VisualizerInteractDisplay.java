@@ -50,6 +50,9 @@ public abstract class VisualizerInteractDisplay implements VisualizerDisplay {
 	Register this custom display to InteractionVisualizer.
 	*/
 	public final void register(InventoryType type) {
+		if (key().isNative()) {
+			throw new IllegalStateException("EntryKey must not have the default interactionvisualizer namespace");
+		}
 		InteractionVisualizerAPI.getPreferenceManager().registerEntry(key());
 		this.type = type;
 		TaskManager.processes.get(type).add(this);

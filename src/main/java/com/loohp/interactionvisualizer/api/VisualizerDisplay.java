@@ -10,6 +10,9 @@ public interface VisualizerDisplay {
 	public EntryKey key();
 	
 	default void register() {
+		if (key().isNative()) {
+			throw new IllegalStateException("EntryKey must not have the default interactionvisualizer namespace");
+		}
 		InteractionVisualizerAPI.getPreferenceManager().registerEntry(key());
 	}
 	

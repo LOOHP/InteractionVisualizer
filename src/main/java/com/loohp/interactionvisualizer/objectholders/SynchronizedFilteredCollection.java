@@ -71,7 +71,7 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
 		synchronized (lock) {
 			return new Iterator<E>() {
 
-				private Iterator<E> itr = backingCollection.stream().filter(predicate).iterator();
+				private Iterator<E> itr = backingCollection.stream().filter(predicate).collect(Collectors.toList()).iterator();
 				private E currentElement = null;
 
 				@Override
