@@ -12,7 +12,12 @@ import java.util.stream.Stream;
 public class SynchronizedFilteredCollection<E> implements Collection<E> {
 	
 	/**
-	 * The provided Collection should already be synchronized
+	 * The provided Collection should already be synchronized.<br>
+	 * <br>
+	 * The predicate is evaluated for all elements once only for methods that return an iteration of elements.
+	 * Meaning it will not return a live view of the underlying collection.<br>
+	 * <br>
+	 * However, the SynchronizedFilteredCollection itself is a filtered live view of the underlying collection.
 	 */
 	public static <E> SynchronizedFilteredCollection<E> filterSynchronized(Collection<E> backingCollection, Predicate<E> predicate) {
 		return new SynchronizedFilteredCollection<E>(backingCollection, predicate);
@@ -34,6 +39,10 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
 		} else {
 			return backingCollection;
 		}
+	}
+	
+	public Object getLock() {
+		return lock;
 	}
 
 	@Override
@@ -192,17 +201,23 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
 	
 	@Override
 	public Spliterator<E> spliterator() {
-		return backingCollection.stream().filter(predicate).spliterator();
+		synchronized (lock) {
+			return backingCollection.stream().filter(predicate).collect(Collectors.toList()).spliterator();
+		}
     }
 
 	@Override
 	public Stream<E> stream() {
-        return backingCollection.stream().filter(predicate);
+		synchronized (lock) {
+			return backingCollection.stream().filter(predicate).collect(Collectors.toList()).stream();
+		}
     }
 
 	@Override
 	public Stream<E> parallelStream() {
-        return backingCollection.parallelStream().filter(predicate);
+		synchronized (lock) {
+			return backingCollection.parallelStream().filter(predicate).collect(Collectors.toList()).parallelStream();
+		}
     }
 
 }
