@@ -35,7 +35,7 @@ public class LightManager {
 			return new LightData(location, lightlevel, lightType);
 		}
 		
-		private LightData (Location location, int lightlevel, LightType lightType) {
+		private LightData(Location location, int lightlevel, LightType lightType) {
 			this.location = location;
 			this.lightType = lightType;
 			this.LightLevel = lightlevel;
@@ -55,6 +55,10 @@ public class LightManager {
 		
 		public int getLightLevel() {
 			return LightLevel;
+		}
+		
+		public boolean isLocationLoaded() {
+			return location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4);
 		}
 
 		@Override
@@ -126,13 +130,16 @@ public class LightManager {
 			}
 			Iterator<LightData> itr0 = deletequeue.iterator();
 			while (itr0.hasNext()) {
-				Location location = itr0.next().getLocation();
-				if (LightAPI.isSupported(location.getWorld(), LightType.SKY)) {
-					LightAPI.deleteLight(location, LightType.SKY, false);
+				LightData lightdata = itr0.next();
+				if (lightdata.isLocationLoaded()) {
+					Location location = lightdata.getLocation();
+					if (LightAPI.isSupported(location.getWorld(), LightType.SKY)) {
+						LightAPI.deleteLight(location, LightType.SKY, false);
+					}
+					LightAPI.deleteLight(location, LightType.BLOCK, false);
+					updateQueue.add(LightData.of(location, 14, LightType.SKY));
+					updateQueue.add(LightData.of(location, 14, LightType.BLOCK));
 				}
-				LightAPI.deleteLight(location, LightType.BLOCK, false);
-				updateQueue.add(LightData.of(location, 14, LightType.SKY));
-				updateQueue.add(LightData.of(location, 14, LightType.BLOCK));
 				itr0.remove();
 			}
 			
@@ -142,11 +149,13 @@ public class LightManager {
 			Iterator<LightData> itr1 = addqueue.iterator();
 			while (itr1.hasNext()) {
 				LightData lightdata = itr1.next();
-				Location location = lightdata.getLocation();
-				int lightlevel = lightdata.getLightLevel();
-				if (LightAPI.isSupported(location.getWorld(), lightdata.getLightType())) {
-					LightAPI.createLight(location, lightdata.getLightType(), lightlevel, false);
-					updateQueue.add(lightdata);
+				if (lightdata.isLocationLoaded()) {
+					Location location = lightdata.getLocation();
+					int lightlevel = lightdata.getLightLevel();
+					if (LightAPI.isSupported(location.getWorld(), lightdata.getLightType())) {
+						LightAPI.createLight(location, lightdata.getLightType(), lightlevel, false);
+						updateQueue.add(lightdata);
+					}
 				}
 				itr1.remove();
 			}
