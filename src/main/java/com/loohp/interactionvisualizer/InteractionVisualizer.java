@@ -95,6 +95,8 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static boolean hideIfObstructed = false;
 	public static String language = "en_us";
 	
+	public static boolean allPacketsSync = false;
+	
 	public static PreferenceManager preferenceManager;
 	
 	@Override
@@ -351,6 +353,8 @@ public class InteractionVisualizer extends JavaPlugin {
 			int range = getServer().spigot().getConfig().getInt("world-settings." + world.getName() + ".entity-tracking-range.players", defaultRange);
 			playerTrackingRange.put(world, range);
 		}
+		
+		allPacketsSync = getConfiguration().getBoolean("Settings.SendAllPacketsInSync");
 		
 		LanguageUtils.loadTranslations(language);
 		

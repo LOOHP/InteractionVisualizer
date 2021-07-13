@@ -346,6 +346,8 @@ Modules:
     Enabled: true
 
 Settings:
+  #Set to true if you are having async issues
+  SendAllPacketsInSync: false
   UseHandSwingAnimation: true
   PickupAnimationPlayerYOffset: 0
   DisabledWorlds: []

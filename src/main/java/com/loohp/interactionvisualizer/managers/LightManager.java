@@ -20,7 +20,7 @@ public class LightManager {
 	public static class LightData {
 		
 		private Location location;
-		private int LightLevel;
+		private int lightLevel;
 		private LightType lightType;
 		
 		public static LightData of(Location location) {
@@ -38,7 +38,7 @@ public class LightManager {
 		private LightData(Location location, int lightlevel, LightType lightType) {
 			this.location = location;
 			this.lightType = lightType;
-			this.LightLevel = lightlevel;
+			this.lightLevel = lightlevel;
 		}
 		
 		public Location getLocation() {
@@ -54,7 +54,7 @@ public class LightManager {
 		}
 		
 		public int getLightLevel() {
-			return LightLevel;
+			return lightLevel;
 		}
 		
 		public boolean isLocationLoaded() {
@@ -65,7 +65,7 @@ public class LightManager {
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + LightLevel;
+			result = prime * result + lightLevel;
 			result = prime * result + ((lightType == null) ? 0 : lightType.hashCode());
 			result = prime * result + ((location == null) ? 0 : location.hashCode());
 			return result;
@@ -83,7 +83,7 @@ public class LightManager {
 				return false;
 			}
 			LightData other = (LightData) obj;
-			if (LightLevel != other.LightLevel) {
+			if (lightLevel != other.lightLevel) {
 				return false;
 			}
 			if (lightType != other.lightType) {

@@ -443,10 +443,17 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		
+		Runnable task = () -> {
 			Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, entity);
 			ServerPacketSender.updateItemAsync(playersInRange, entity);
-		});
+		};
+		
+		if (InteractionVisualizer.allPacketsSync) {
+			Bukkit.getScheduler().runTask(plugin, task);
+		} else {
+			Bukkit.getScheduler().runTaskAsynchronously(plugin, task);
+		}
 		
 		cache.put(entity, entity.cacheCode());
 	}
