@@ -10,6 +10,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -19,10 +20,12 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.utils.ArrayUtils;
+import com.loohp.interactionvisualizer.utils.BitSetUtils;
 
 public class Database {
 	
-	public static final String EMPTY_BITSET_BASE64 = ArrayUtils.toBase64String(new BitSet().toByteArray());
+	public static final String EMPTY_BITSET = "0";
+	public static final Pattern VALID_BITSET = Pattern.compile("^[01]*$");
 	
 	public static boolean isMYSQL = false;
 	
@@ -289,9 +292,9 @@ public class Database {
 				PreparedStatement insert = getConnection().prepareStatement("INSERT INTO " + preferenceTable + " (UUID,NAME,ITEMSTAND,ITEMDROP,HOLOGRAM) VALUES (?,?,?,?,?)");
 				insert.setString(1, uuid.toString());
 				insert.setString(2, name);
-				insert.setString(3, EMPTY_BITSET_BASE64);
-				insert.setString(4, EMPTY_BITSET_BASE64);
-				insert.setString(5, EMPTY_BITSET_BASE64);
+				insert.setString(3, EMPTY_BITSET);
+				insert.setString(4, EMPTY_BITSET);
+				insert.setString(5, EMPTY_BITSET);
 				insert.executeUpdate();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -309,7 +312,7 @@ public class Database {
 			open();
 			try {
 				PreparedStatement statement = getConnection().prepareStatement("UPDATE " + preferenceTable + " SET ITEMSTAND=? WHERE UUID=?");
-				statement.setString(1, ArrayUtils.toBase64String(bitset.toByteArray()));
+				statement.setString(1, BitSetUtils.toNumberString(bitset));
 				statement.setString(2, uuid.toString());
 				statement.executeUpdate();
 			} catch (SQLException e) {
@@ -328,7 +331,7 @@ public class Database {
 			open();
 			try {
 				PreparedStatement statement = getConnection().prepareStatement("UPDATE " + preferenceTable + " SET ITEMDROP=? WHERE UUID=?");
-				statement.setString(1, ArrayUtils.toBase64String(bitset.toByteArray()));
+				statement.setString(1, BitSetUtils.toNumberString(bitset));
 				statement.setString(2, uuid.toString());
 				statement.executeUpdate();
 			} catch (SQLException e) {
@@ -347,7 +350,7 @@ public class Database {
 			open();
 			try {
 				PreparedStatement statement = getConnection().prepareStatement("UPDATE " + preferenceTable + " SET HOLOGRAM=? WHERE UUID=?");
-				statement.setString(1, ArrayUtils.toBase64String(bitset.toByteArray()));
+				statement.setString(1, BitSetUtils.toNumberString(bitset));
 				statement.setString(2, uuid.toString());
 				statement.executeUpdate();
 			} catch (SQLException e) {
@@ -371,9 +374,34 @@ public class Database {
 				ResultSet results = statement.executeQuery();
 				results.next();
 				
-				map.put(Modules.ITEMSTAND, BitSet.valueOf(ArrayUtils.fromBase64String(results.getString("ITEMSTAND"))));
-				map.put(Modules.ITEMDROP, BitSet.valueOf(ArrayUtils.fromBase64String(results.getString("ITEMDROP"))));
-				map.put(Modules.HOLOGRAM, BitSet.valueOf(ArrayUtils.fromBase64String(results.getString("HOLOGRAM"))));				
+				String itemstand = results.getString("ITEMSTAND");
+				String itemdrop = results.getString("ITEMDROP");
+				String hologram = results.getString("HOLOGRAM");
+				
+				try {
+					if (VALID_BITSET.matcher(itemstand).matches()) {
+						map.put(Modules.ITEMSTAND, BitSetUtils.fromNumberString(itemstand));
+					} else {
+						map.put(Modules.ITEMSTAND, BitSet.valueOf(ArrayUtils.fromBase64String(itemstand)));
+					}
+					
+					if (VALID_BITSET.matcher(itemdrop).matches()) {
+						map.put(Modules.ITEMDROP, BitSetUtils.fromNumberString(itemdrop));
+					} else {
+						map.put(Modules.ITEMDROP, BitSet.valueOf(ArrayUtils.fromBase64String(itemdrop)));
+					}
+	
+					if (VALID_BITSET.matcher(hologram).matches()) {
+						map.put(Modules.HOLOGRAM, BitSetUtils.fromNumberString(hologram));
+					} else {
+						map.put(Modules.HOLOGRAM, BitSet.valueOf(ArrayUtils.fromBase64String(hologram)));
+					}
+				} catch (Throwable e) {
+					new RuntimeException("Unable to load player preference (" + uuid + ")", e).printStackTrace();
+					map.put(Modules.ITEMSTAND, new BitSet());
+					map.put(Modules.ITEMDROP, new BitSet());
+					map.put(Modules.HOLOGRAM, new BitSet());
+				}
 				
 			} catch (SQLException e) {
 				e.printStackTrace();

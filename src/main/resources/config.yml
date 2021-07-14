@@ -47,7 +47,7 @@ Messages:
     "interactionvisualizer:hopper": "Hopper"
     "interactionvisualizer:beacon": "Beacon"
     "interactionvisualizer:note_block": "Note Block"
-    "interactionvisualizer:jukebox": "Jukeboxe"
+    "interactionvisualizer:jukebox": "Jukebox"
     "interactionvisualizer:smithing_table": "Smithing Table"
     "interactionvisualizer:bee_nest": "Bee Nest"
     "interactionvisualizer:beehive": "Beehive"
@@ -346,6 +346,8 @@ Modules:
     Enabled: true
 
 Settings:
+  #Whether everything should be disabled to the player by default
+  DefaultDisableAll: false
   #Set to true if you are having async issues
   SendAllPacketsInSync: false
   UseHandSwingAnimation: true

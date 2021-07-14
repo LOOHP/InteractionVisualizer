@@ -15,6 +15,15 @@ public class ArrayUtils {
 		return Base64.getDecoder().decode(base64);
 	}
 	
+	public static byte[] reverse(byte[] bytes) {
+	    for (int i = 0; i < bytes.length / 2; i++) {
+	        byte temp = bytes[i];
+	        bytes[i] = bytes[bytes.length - i - 1];
+	        bytes[bytes.length - i - 1] = temp;
+	    }
+	    return bytes;
+	}
+	
 	public static <T> List<T> putToArrayList(Map<Integer, T> mapping, List<T> list) {
 		int size = mapping.keySet().stream().max(Comparator.naturalOrder()).orElse(-1) + 1;
 		for (int i = 0; i < size; i++) {

@@ -133,11 +133,17 @@ public class PreferenceManager implements Listener, AutoCloseable {
 	
 	public void loadPlayer(UUID uuid, String name, boolean createIfNotFound) {
 		if (createIfNotFound) {
+			boolean newPlayer = false;
 			if (!Database.playerExists(uuid)) {
 				Database.createPlayer(uuid, name);
+				newPlayer = true;
 			}
 			Map<Modules, BitSet> info = Database.getPlayerInfo(uuid);
 			preferences.put(uuid, info);
+			if (newPlayer && InteractionVisualizer.defaultDisabledAll) {
+				setPlayerAllPreference(uuid, false, false);
+				savePlayer(uuid, false);
+			}
 		} else {
 			if (Database.playerExists(uuid)) {
 				Map<Modules, BitSet> info = Database.getPlayerInfo(uuid);
@@ -215,10 +221,8 @@ public class PreferenceManager implements Listener, AutoCloseable {
 	}
 	
 	public void setPlayerAllPreference(UUID uuid, Modules module, boolean enabled, boolean update) {
-		Map<Modules, BitSet> info = preferences.get(uuid);
-		if (info != null) {
-			BitSet bitset = info.get(module);
-			bitset.set(0, entries.size() - 1, !enabled);
+		for (EntryKey entry : getRegisteredEntries()) {
+			setPlayerPreference(uuid, module, entry, enabled, false);
 		}
 		if (update) {
 			Player player = Bukkit.getPlayer(uuid);
@@ -229,15 +233,8 @@ public class PreferenceManager implements Listener, AutoCloseable {
 	}
 	
 	public void setPlayerAllPreference(UUID uuid, EntryKey entry, boolean enabled, boolean update) {
-		int i = entries.indexOf(entry);
-		if (i < 0) {
-			return;
-		}
-		Map<Modules, BitSet> info = preferences.get(uuid);
-		if (info != null) {
-			for (BitSet bitset : info.values()) {
-				bitset.set(i, !enabled);
-			}
+		for (Modules module : Modules.values()) {
+			setPlayerPreference(uuid, module, entry, enabled, false);
 		}
 		if (update) {
 			Player player = Bukkit.getPlayer(uuid);
@@ -248,10 +245,9 @@ public class PreferenceManager implements Listener, AutoCloseable {
 	}
 	
 	public void setPlayerAllPreference(UUID uuid, boolean enabled, boolean update) {
-		Map<Modules, BitSet> info = preferences.get(uuid);
-		if (info != null) {
-			for (BitSet bitset : info.values()) {
-				bitset.set(0, entries.size() - 1, !enabled);
+		for (Modules module : Modules.values()) {
+			for (EntryKey entry : getRegisteredEntries()) {
+				setPlayerPreference(uuid, module, entry, enabled, false);
 			}
 		}
 		if (update) {

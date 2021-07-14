@@ -96,6 +96,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static String language = "en_us";
 	
 	public static boolean allPacketsSync = false;
+	public static boolean defaultDisabledAll = false;
 	
 	public static PreferenceManager preferenceManager;
 	
@@ -355,6 +356,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		}
 		
 		allPacketsSync = getConfiguration().getBoolean("Settings.SendAllPacketsInSync");
+		defaultDisabledAll = getConfiguration().getBoolean("Settings.DefaultDisableAll");
 		
 		LanguageUtils.loadTranslations(language);
 		
