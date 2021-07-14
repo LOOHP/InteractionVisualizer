@@ -25,7 +25,7 @@ import com.loohp.interactionvisualizer.utils.BitSetUtils;
 public class Database {
 	
 	public static final String EMPTY_BITSET = "0";
-	public static final Pattern VALID_BITSET = Pattern.compile("^[01]*$");
+	public static final Pattern VALID_BITSET = Pattern.compile("^[0-9]*$");
 	
 	public static boolean isMYSQL = false;
 	
