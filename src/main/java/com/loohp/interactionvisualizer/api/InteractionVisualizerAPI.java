@@ -160,7 +160,7 @@ public class InteractionVisualizerAPI {
 	@return true/false.
 	*/
 	public static boolean isRegisteredEntry(EntryKey entry) {
-		return InteractionVisualizer.preferenceManager.getRegisteredEntries().contains(entry);
+		return InteractionVisualizer.preferenceManager.isRegisteredEntry(entry);
 	}
 	
 	/**
@@ -168,7 +168,7 @@ public class InteractionVisualizerAPI {
 	@return true/false.
 	*/
 	public static List<EntryKey> getRegisteredEntries() {
-		return Collections.unmodifiableList(InteractionVisualizer.preferenceManager.getRegisteredEntries());
+		return InteractionVisualizer.preferenceManager.getRegisteredEntries();
 	}
 	
 	/**

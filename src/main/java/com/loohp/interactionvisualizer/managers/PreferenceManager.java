@@ -179,13 +179,12 @@ public class PreferenceManager implements Listener, AutoCloseable {
 		}
 	}
 	
-	public boolean isRegistryEntry(EntryKey entry) {
-		int i = entries.indexOf(entry);
-		return !(i < 0);
+	public boolean isRegisteredEntry(EntryKey entry) {
+		return entries.indexOf(entry) >= 0;
 	}
 	
 	public List<EntryKey> getRegisteredEntries() {
-		return new ArrayList<>(entries);
+		return Collections.unmodifiableList(entries);
 	}
 	
 	public boolean getPlayerPreference(UUID uuid, Modules module, EntryKey entry) {
@@ -200,6 +199,18 @@ public class PreferenceManager implements Listener, AutoCloseable {
 		} else {
 			return false;
 		}
+	}
+	
+	public Map<Modules, Map<EntryKey, Boolean>> getPlayerPreferences(UUID uuid) {
+		Map<Modules, Map<EntryKey, Boolean>> preferences = new HashMap<>();
+		for (Modules module : Modules.values()) {
+			Map<EntryKey, Boolean> entryPreference = new HashMap<>();
+			for (EntryKey entry : getRegisteredEntries()) {
+				entryPreference.put(entry, getPlayerPreference(uuid, module, entry));
+			}
+			preferences.put(module, entryPreference);
+		}
+		return preferences;
 	}
 	
 	public void setPlayerPreference(UUID uuid, Modules module, EntryKey entry, boolean enabled, boolean update) {
@@ -315,7 +326,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
 			if (!serverSetting.get()) {
 				return false;
 			}
-			if (!isRegistryEntry(entry)) {
+			if (!isRegisteredEntry(entry)) {
 				return false;
 			}
 			return getPlayerPreference(player.getUniqueId(), module, entry);
@@ -324,11 +335,15 @@ public class PreferenceManager implements Listener, AutoCloseable {
 	
 	public Collection<Player> getPlayerListIgnoreServerSetting(Modules module, EntryKey entry) {
 		return SynchronizedFilteredCollection.filterSynchronized(backingPlayerList, player -> {
-			if (!isRegistryEntry(entry)) {
+			if (!isRegisteredEntry(entry)) {
 				return false;
 			}
 			return getPlayerPreference(player.getUniqueId(), module, entry);
 		});
+	}
+	
+	public Collection<Player> getPlayerList() {
+		return Collections.unmodifiableCollection(backingPlayerList);
 	}
 
 }

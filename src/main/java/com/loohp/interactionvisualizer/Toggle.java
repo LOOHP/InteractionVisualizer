@@ -18,7 +18,7 @@ public class Toggle {
 	
 	public static boolean toggle(CommandSender sender, Player player, Modules mode, boolean value, boolean verbose, String entryGroupName, EntryKey... entries) {
 		for (EntryKey entry : entries) {
-			if (!InteractionVisualizer.preferenceManager.getRegisteredEntries().contains(entry)) {
+			if (!InteractionVisualizerAPI.isRegisteredEntry(entry)) {
 				return false;
 			}
 		}
