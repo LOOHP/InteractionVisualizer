@@ -20,13 +20,15 @@ public class SyncUtils {
 			} catch (Exception e) {
 				return def;
 			}
-		} else {
+		} else if (InteractionVisualizer.plugin.isEnabled()) {
 			Future<T> future = Bukkit.getScheduler().callSyncMethod(InteractionVisualizer.plugin, task);
 			try {
 				return future.get(timeout, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException | ExecutionException | TimeoutException e) {
 				return def;
 			}
+		} else {
+			return def;
 		}
 	}
 	
