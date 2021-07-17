@@ -30,6 +30,8 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.SynchronizedFilteredCollection;
 import com.loohp.interactionvisualizer.utils.ArrayUtils;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class PreferenceManager implements Listener, AutoCloseable {
 	
 	private InteractionVisualizer plugin;
@@ -68,13 +70,14 @@ public class PreferenceManager implements Listener, AutoCloseable {
 	}
 	
 	public void saveBitmaskIndex() {
+		Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "[InteractionVisualizer] Saving player preferences bitmask index, do not halt the server.");
 		try {
-			Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).pollDelay(0, TimeUnit.MILLISECONDS).until(() -> !Database.isLocked());
+			Awaitility.await().atMost(30, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).pollDelay(0, TimeUnit.MILLISECONDS).until(() -> !Database.isLocked());
 			Database.setLocked(true);
 			Database.setBitIndex(ArrayUtils.putToMap(entries, new HashMap<>()));
 			Database.setLocked(false);
 		} catch (ConditionTimeoutException e) {
-			new RuntimeException("Tried to save player preference but database is locked for more than 5 secionds", e).printStackTrace();
+			new RuntimeException("Tried to save player preference but database is locked for more than 30 secionds", e).printStackTrace();
 		}
 	}
 	
@@ -89,7 +92,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
 		if (entryKeys.length > 0) {
 			try {
 				synchronized (entries) {
-					Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).pollDelay(0, TimeUnit.MILLISECONDS).until(() -> !Database.isLocked());
+					Awaitility.await().atMost(30, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).pollDelay(0, TimeUnit.MILLISECONDS).until(() -> !Database.isLocked());
 					Database.setLocked(true);
 					List<EntryKey> updatedEntries = ArrayUtils.putToArrayList(Database.getBitIndex(), new ArrayList<>());
 					entries.clear();
@@ -107,7 +110,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
 					Database.setLocked(false);
 				}
 			} catch (ConditionTimeoutException e) {
-				new RuntimeException("Tried to save player preference but database is locked for more than 5 secionds", e).printStackTrace();
+				new RuntimeException("Tried to save player preference but database is locked for more than 30 secionds", e).printStackTrace();
 			}
 		}
 	}
