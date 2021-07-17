@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import com.loohp.interactionvisualizer.utils.LocationUtils;
 
 import ru.beykerykt.lightapi.LightAPI;
 import ru.beykerykt.lightapi.LightType;
@@ -58,7 +59,7 @@ public class LightManager {
 		}
 		
 		public boolean isLocationLoaded() {
-			return location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4);
+			return LocationUtils.isLoaded(location);
 		}
 
 		@Override

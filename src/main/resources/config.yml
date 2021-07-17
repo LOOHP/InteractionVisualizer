@@ -353,6 +353,7 @@ Settings:
   UseHandSwingAnimation: true
   PickupAnimationPlayerYOffset: 0
   DisabledWorlds: []
+  #Might be resource intensive
   HideIfViewObstructed: false
   #The default language
   #Doesn't do anything on Minecraft 1.13+

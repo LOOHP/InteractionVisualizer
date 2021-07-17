@@ -31,6 +31,8 @@ import com.loohp.interactionvisualizer.entityholders.ItemFrame;
 import com.loohp.interactionvisualizer.entityholders.VisualizerEntity;
 import com.loohp.interactionvisualizer.protocol.ServerPacketSender;
 import com.loohp.interactionvisualizer.utils.LineOfSightUtils;
+import com.loohp.interactionvisualizer.utils.LocationUtils;
+import com.loohp.interactionvisualizer.utils.SyncUtils;
 
 public class PacketManager implements Listener {
 	
@@ -59,19 +61,23 @@ public class PacketManager implements Listener {
 						if (entry.getValue()) {
 							Collection<Player> players = active.get(entity);
 							if (players != null) {
-								if (isOccluding(stand.getLocation().getBlock().getType())) {
-									removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand, false, false);
-									loaded.put(entity, false);
-								}
+								SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(stand.getLocation()) && isOccluding(stand.getLocation().getBlock().getType()), 200, () -> {
+									if (active.containsKey(entity)) {
+										removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand, false, false);
+										loaded.put(entity, false);
+									}
+								});
 							}
 						} else {
 							Collection<Player> players = active.get(entity);
 							if (players != null) {
-								if (!isOccluding(stand.getLocation().getBlock().getType())) {
-									sendArmorStandSpawn(players, stand);
-									updateArmorStand(stand);
-									loaded.put(entity, true);
-								}
+								SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(stand.getLocation()) && !isOccluding(stand.getLocation().getBlock().getType()), 200, () -> {
+									if (active.containsKey(entity)) {
+										sendArmorStandSpawn(players, stand);
+										updateArmorStand(stand);
+										loaded.put(entity, true);
+									}
+								});
 							}
 						}
 					}
@@ -84,19 +90,23 @@ public class PacketManager implements Listener {
 								if (item.getVelocity().equals(VECTOR_ZERO) && !item.hasGravity()) {
 									updateItemAsync(item, true);
 								}
-								if (isOccluding(item.getLocation().getBlock().getType())) {
-									removeItem(InteractionVisualizerAPI.getPlayers(), item, false, false);
-									loaded.put(entity, false);
-								}
+								SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(item.getLocation()) && isOccluding(item.getLocation().getBlock().getType()), 200, () -> {
+									if (active.containsKey(entity)) {
+										removeItem(InteractionVisualizerAPI.getPlayers(), item, false, false);
+										loaded.put(entity, false);
+									}
+								});
 							}
 						} else {
 							Collection<Player> players = active.get(entity);
 							if (players != null) {
-								if (!isOccluding(item.getLocation().getBlock().getType())) {
-									sendItemSpawn(players, item);
-									updateItem(item);
-									loaded.put(entity, true);
-								}
+								SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(item.getLocation()) && !isOccluding(item.getLocation().getBlock().getType()), 200, () -> {
+									if (active.containsKey(entity)) {
+										sendItemSpawn(players, item);
+										updateItem(item);
+										loaded.put(entity, true);
+									}
+								});
 							}
 						}
 					}
@@ -106,19 +116,23 @@ public class PacketManager implements Listener {
 						if (entry.getValue()) {
 							Collection<Player> players = active.get(entity);
 							if (players != null) {
-								if (isOccluding(frame.getLocation().getBlock().getType())) {
-									removeItemFrame(InteractionVisualizerAPI.getPlayers(), frame, false, false);
-									loaded.put(entity, false);
-								}
+								SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(frame.getLocation()) && isOccluding(frame.getLocation().getBlock().getType()), 200, () -> {
+									if (active.containsKey(entity)) {
+										removeItemFrame(InteractionVisualizerAPI.getPlayers(), frame, false, false);
+										loaded.put(entity, false);
+									}
+								});
 							}
 						} else {
 							Collection<Player> players = active.get(entity);
 							if (players != null) {
-								if (!isOccluding(frame.getLocation().getBlock().getType())) {
-									sendItemFrameSpawn(players, frame);
-									updateItemFrame(frame);
-									loaded.put(entity, true);
-								}
+								SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(frame.getLocation()) && !isOccluding(frame.getLocation().getBlock().getType()), 200, () -> {
+									if (active.containsKey(entity)) {
+										sendItemFrameSpawn(players, frame);
+										updateItemFrame(frame);
+										loaded.put(entity, true);
+									}
+								});
 							}
 						}
 					}
