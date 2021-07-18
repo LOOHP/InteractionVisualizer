@@ -174,6 +174,10 @@ public class PreferenceManager implements Listener, AutoCloseable {
 		}
 	}
 	
+	public void unloadPlayerWithoutSaving(UUID uuid) {
+		preferences.remove(uuid);
+	}
+	
 	public void updatePlayer(Player player, boolean reset) {
 		if (reset) {
 			PacketManager.reset(player);

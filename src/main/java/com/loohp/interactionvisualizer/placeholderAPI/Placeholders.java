@@ -37,7 +37,7 @@ public class Placeholders extends PlaceholderExpansion {
     }
 	
 	@Override
-    public String onRequest(OfflinePlayer offlineplayer, String identifier){
+    public String onRequest(OfflinePlayer offlineplayer, String identifier) {
   
         if (identifier.startsWith("itemstand_")) {
         	EntryKey entry = new EntryKey(identifier.substring(10));

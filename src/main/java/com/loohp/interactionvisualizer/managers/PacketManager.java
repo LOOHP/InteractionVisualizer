@@ -631,7 +631,8 @@ public class PacketManager implements Listener {
 			for (Entry<VisualizerEntity, Collection<Player>> entry : active.entrySet()) {
 				VisualizerEntity entity = entry.getKey();
 				if (entry.getValue().contains(theplayer)) {
-					if (loaded.get(entity)) {
+					Boolean isLoaded = loaded.get(entity);
+					if (isLoaded != null && isLoaded) {
 						count++;
 						if (count > 5) {
 							delay++;
