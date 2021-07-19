@@ -5,6 +5,7 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -47,12 +48,12 @@ public class PreferenceManager implements Listener, AutoCloseable {
 		this.valid = new AtomicBoolean(true);
 		this.entries = Collections.synchronizedList(ArrayUtils.putToArrayList(Database.getBitIndex(), new ArrayList<>()));
 		this.preferences = new ConcurrentHashMap<>();
-		this.backingPlayerList = Collections.synchronizedCollection(new ArrayList<>());
-		Bukkit.getPluginManager().registerEvents(this, plugin);
+		this.backingPlayerList = Collections.synchronizedCollection(new LinkedHashSet<>());
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			backingPlayerList.add(player);
 			loadPlayer(player.getUniqueId(), player.getName(), true);
 		}
+		Bukkit.getPluginManager().registerEvents(this, plugin);
 	}
 	
 	@Override
