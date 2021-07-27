@@ -169,7 +169,7 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
 					}
 					org.bukkit.block.BlastFurnace blastfurnace = (org.bukkit.block.BlastFurnace) block.getState();
 					
-					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						Inventory inv = blastfurnace.getInventory();
 						ItemStack itemstack = inv.getItem(0);
 						if (itemstack != null) {

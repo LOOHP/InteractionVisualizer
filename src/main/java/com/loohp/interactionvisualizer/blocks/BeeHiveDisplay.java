@@ -218,7 +218,7 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
 		org.bukkit.block.Beehive beehiveState = (org.bukkit.block.Beehive) block.getState();
 		org.bukkit.block.data.type.Beehive beehiveData = (org.bukkit.block.data.type.Beehive) block.getBlockData();
 		
-		Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			ArmorStand line0 = (ArmorStand) map.get("0");
 			ArmorStand line1 = (ArmorStand) map.get("1");
 			

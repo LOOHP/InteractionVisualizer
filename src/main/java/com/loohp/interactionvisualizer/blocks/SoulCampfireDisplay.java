@@ -169,7 +169,7 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 					org.bukkit.block.Campfire soulcampfire = (org.bukkit.block.Campfire) block.getState();
 					boolean isLit = ((Campfire) block.getBlockData()).isLit();
 					
-					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						ItemStack itemstack1 = soulcampfire.getItem(0);
 						if (itemstack1 != null) {
 							if (itemstack1.getType().equals(Material.AIR)) {

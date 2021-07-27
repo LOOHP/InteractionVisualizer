@@ -169,7 +169,7 @@ public class CampfireDisplay extends VisualizerRunnableDisplay implements Listen
 					org.bukkit.block.Campfire campfire = (org.bukkit.block.Campfire) block.getState();
 					boolean isLit = ((Campfire) block.getBlockData()).isLit();
 					
-					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						ItemStack itemstack1 = campfire.getItem(0);
 						if (itemstack1 != null) {
 							if (itemstack1.getType().equals(Material.AIR)) {

@@ -145,7 +145,7 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
 					}
 					org.bukkit.block.CreatureSpawner spawner = (org.bukkit.block.CreatureSpawner) block.getState();
 					
-					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {						
+					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {						
 						ArmorStand stand = (ArmorStand) entry.getValue().get("1");
 						
 						int activeRange = spawner.getRequiredPlayerRange();

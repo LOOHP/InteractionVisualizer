@@ -150,7 +150,7 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
 					
 					int amount = getFrameAmount(block);
 					
-					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						String arrow = "\u27f9";
 						String square = "\u2b1b";
 						ArmorStand line1 = (ArmorStand) entry.getValue().get("1");

@@ -23,7 +23,7 @@ public class Updater implements Listener {
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-		Bukkit.getScheduler().runTaskLaterAsynchronously(InteractionVisualizer.plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskLaterAsynchronously(() -> {
 			if (InteractionVisualizer.updaterEnabled) {
 				Player player = event.getPlayer();
 				if (player.hasPermission("interactionvisualizer.update")) {

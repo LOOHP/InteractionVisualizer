@@ -151,7 +151,7 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
 						return;
 					}
 					String name = NMS.getInstance().getBannerCustomName(block);
-					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						ArmorStand line1 = (ArmorStand) entry.getValue().get("1");
 						if (name == null || name.equals("")) {
 							if (!line1.getCustomName().toPlainText().equals("") || line1.isCustomNameVisible()) {

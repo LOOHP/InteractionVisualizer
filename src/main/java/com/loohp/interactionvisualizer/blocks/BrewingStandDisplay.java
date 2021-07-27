@@ -158,7 +158,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 					}
 					org.bukkit.block.BrewingStand brewingstand = (org.bukkit.block.BrewingStand) block.getState();
 
-					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						Inventory inv = brewingstand.getInventory();
 						ItemStack itemstack = inv.getItem(3);
 						if (itemstack != null) {

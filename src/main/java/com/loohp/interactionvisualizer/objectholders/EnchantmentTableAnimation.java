@@ -86,7 +86,7 @@ public class EnchantmentTableAnimation {
 	}
 	
 	private void tick() {
-		Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskLaterAsynchronously(() -> {
 			run();
 		}, 1);
 	}

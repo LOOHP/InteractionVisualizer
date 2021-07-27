@@ -159,7 +159,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 						return;
 					}
 					org.bukkit.block.Beacon beacon = (org.bukkit.block.Beacon) block.getState();
-					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						String arrow = "\u27f9";
 						String up = "\u25b2";
 						ChatColor color = getBeaconColor(block);

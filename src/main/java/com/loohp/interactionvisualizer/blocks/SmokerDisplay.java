@@ -169,7 +169,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 					}
 					org.bukkit.block.Smoker smoker = (org.bukkit.block.Smoker) block.getState();
 					
-					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						Inventory inv = smoker.getInventory();
 						ItemStack itemstack = inv.getItem(0);
 						if (itemstack != null) {

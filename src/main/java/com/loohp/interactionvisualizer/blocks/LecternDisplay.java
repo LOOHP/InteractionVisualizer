@@ -151,7 +151,7 @@ public class LecternDisplay extends VisualizerRunnableDisplay implements Listene
 					}
 					org.bukkit.block.Lectern lectern = (org.bukkit.block.Lectern) block.getState();
 					
-					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						Inventory inv = lectern.getInventory();
 						ItemStack itemstack = inv.getItem(0);
 						if (itemstack != null) {

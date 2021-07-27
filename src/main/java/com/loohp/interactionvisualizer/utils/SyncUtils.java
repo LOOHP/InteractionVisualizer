@@ -34,7 +34,7 @@ public class SyncUtils {
 	
 	public static void runAsyncWithSyncCondition(Condition syncCondition, long timeout, Runnable asyncTask) {
 		if (executeSync(() -> syncCondition.check(), timeout, false) && InteractionVisualizer.plugin.isEnabled()) {
-			Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, asyncTask);
+			InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(asyncTask);
 		}
 	}
 

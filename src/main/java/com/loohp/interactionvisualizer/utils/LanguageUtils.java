@@ -65,7 +65,7 @@ public class LanguageUtils {
 	@SuppressWarnings("unchecked")
 	public static void loadTranslations(String language) {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] Loading languages...");
-		Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			while (lock.get()) {
 				try {TimeUnit.MILLISECONDS.sleep(1);} catch (InterruptedException e) {}
 			}

@@ -8,6 +8,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -21,9 +26,11 @@ import org.simpleyaml.configuration.file.FileConfiguration;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.loohp.interactionvisualizer.api.events.InteractionVisualizerReloadEvent;
 import com.loohp.interactionvisualizer.config.Config;
 import com.loohp.interactionvisualizer.database.Database;
+import com.loohp.interactionvisualizer.managers.AsyncExecutorManager;
 import com.loohp.interactionvisualizer.managers.LangManager;
 import com.loohp.interactionvisualizer.managers.MaterialManager;
 import com.loohp.interactionvisualizer.managers.MusicManager;
@@ -99,6 +106,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static boolean defaultDisabledAll = false;
 	
 	public static PreferenceManager preferenceManager;
+	public static AsyncExecutorManager asyncExecutorManager;
 	
 	@Override
 	public void onEnable() {
@@ -127,6 +135,10 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		exactMinecraftVersion = Bukkit.getVersion().substring(Bukkit.getVersion().indexOf("(") + 5, Bukkit.getVersion().indexOf(")"));
 		version = MCVersion.fromPackageName(getServer().getClass().getPackage().getName());
+		
+		ThreadFactory factory = new ThreadFactoryBuilder().setNameFormat("InteractionVisualizer Async Processing Thread #%d").build();
+		ExecutorService threadPool = new ThreadPoolExecutor(8, 120, 5000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), factory);
+		asyncExecutorManager = new AsyncExecutorManager(threadPool);
 		
 		switch (version) {
 		case V1_17:
@@ -227,7 +239,7 @@ public class InteractionVisualizer extends JavaPlugin {
 			}
 		});
 		
-		Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskLaterAsynchronously(() -> {
 			if (updaterEnabled) {
 				UpdaterResponse version = Updater.checkUpdate();
 				if (!version.getResult().equals("latest")) {
@@ -312,6 +324,7 @@ public class InteractionVisualizer extends JavaPlugin {
 			}
 		}
 		
+		asyncExecutorManager.close();
 		getServer().getConsoleSender().sendMessage(ChatColor.RED + "[InteractionVisualizer] InteractionVisualizer has been disabled!");
 	}
 	

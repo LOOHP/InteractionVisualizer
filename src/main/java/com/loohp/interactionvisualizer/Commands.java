@@ -72,7 +72,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			if (sender.hasPermission("interactionvisualizer.update")) {
 				sender.sendMessage(ChatColor.AQUA + "[InteractionVisualizer] InteractionVisualizer written by LOOHP!");
 				sender.sendMessage(ChatColor.GOLD + "[InteractionVisualizer] You are running InteractionVisualizer version: " + plugin.getDescription().getVersion());
-				Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+				InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 					UpdaterResponse version = Updater.checkUpdate();
 					if (version.getResult().equals("latest")) {
 						if (version.isDevBuildLatest()) {
@@ -98,7 +98,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					Player player = (Player) sender;
-					Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						EntryKey[] entries;
 						String verboseEntry = null;
 						if (args[2].equalsIgnoreCase("all")) {
@@ -147,7 +147,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 						return true;
 					}
 					Player player = Bukkit.getPlayer(args[4]);
-					Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						EntryKey[] entries;
 						String verboseEntry = null;
 						if (args[2].equalsIgnoreCase("all")) {

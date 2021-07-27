@@ -119,7 +119,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 			for (World world : Bukkit.getWorlds()) {
 				WrappedIterable<?, Entity> entities = NMS.getInstance().getEntities(world);
 				for (Entity entity : entities) {
-					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						if (entity.isValid() && entity instanceof Item) {
 							tick((Item) entity, entities);
 						}

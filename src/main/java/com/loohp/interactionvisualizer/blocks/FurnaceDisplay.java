@@ -171,7 +171,7 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
 					}					
 					org.bukkit.block.Furnace furnace = (org.bukkit.block.Furnace) block.getState();
 					
-					Bukkit.getScheduler().runTaskAsynchronously(InteractionVisualizer.plugin, () -> {
+					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						Inventory inv = furnace.getInventory();
 						ItemStack itemstack = inv.getItem(0);
 						if (itemstack != null) {

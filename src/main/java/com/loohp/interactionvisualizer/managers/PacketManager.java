@@ -52,7 +52,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			for (Entry<VisualizerEntity, Boolean> entry : loaded.entrySet()) {
 				VisualizerEntity entity = entry.getKey();
 				if (entity instanceof ArmorStand) {
@@ -178,7 +178,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				try {
 					Set<VisualizerEntity> activeList = playerStatus.get(player);
@@ -242,7 +242,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, entity);
 			ServerPacketSender.sendHandMovement(playersInRange, entity);
 		});
@@ -257,7 +257,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, entity);
 			ServerPacketSender.spawnArmorStand(playersInRange, entity);
 			playersInRange.forEach((each) -> {
@@ -306,7 +306,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, entity);
 			ServerPacketSender.updateArmorStand(playersInRange, entity);
 		});
@@ -339,7 +339,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, entity);
 			ServerPacketSender.updateArmorStandOnlyMeta(playersInRange, entity);
 		});
@@ -357,7 +357,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			Collection<Player> playersInRange = bypassFilter ? players : PlayerLocationManager.filterOutOfRange(players, entity);
 			ServerPacketSender.removeArmorStand(playersInRange, entity);
 			playersInRange.forEach((each) -> {
@@ -391,7 +391,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, entity);
 			ServerPacketSender.spawnItem(playersInRange, entity);
 			playersInRange.forEach((each) -> {
@@ -428,7 +428,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, entity);
 			ServerPacketSender.updateItem(playersInRange, entity);
 		});
@@ -466,7 +466,7 @@ public class PacketManager implements Listener {
 		if (InteractionVisualizer.allPacketsSync) {
 			Bukkit.getScheduler().runTask(plugin, task);
 		} else {
-			Bukkit.getScheduler().runTaskAsynchronously(plugin, task);
+			InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(task);
 		}
 		
 		cache.put(entity, entity.cacheCode());
@@ -485,7 +485,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			Collection<Player> playersInRange = bypassFilter ? players : PlayerLocationManager.filterOutOfRange(players, entity);
 			ServerPacketSender.removeItem(playersInRange, entity);
 			playersInRange.forEach((each) -> {
@@ -510,7 +510,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, entity);
 			ServerPacketSender.spawnItemFrame(playersInRange, entity);
 			playersInRange.forEach((each) -> {
@@ -548,7 +548,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, entity);
 			ServerPacketSender.updateItemFrame(playersInRange, entity);
 		});
@@ -566,7 +566,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			Collection<Player> playersInRange = bypassFilter ? players : PlayerLocationManager.filterOutOfRange(players, entity);
 			ServerPacketSender.removeItemFrame(playersInRange, entity);
 			playersInRange.forEach((each) -> {
@@ -593,7 +593,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			Collection<Player> player = new HashSet<>();
 			player.add(theplayer);
 			int count = 0;
@@ -623,7 +623,7 @@ public class PacketManager implements Listener {
 		if (!plugin.isEnabled()) {
 			return;
 		}
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			Collection<Player> player = new HashSet<>();
 			player.add(theplayer);
 			int count = 0;

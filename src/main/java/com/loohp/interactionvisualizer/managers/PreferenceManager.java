@@ -35,6 +35,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class PreferenceManager implements Listener, AutoCloseable {
 	
+	@SuppressWarnings("unused")
 	private InteractionVisualizer plugin;
 	private List<EntryKey> entries;
 	private Map<UUID, Map<Modules, BitSet>> preferences;
@@ -120,7 +121,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
 	public void onJoinEvent(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		backingPlayerList.add(player);
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			loadPlayer(player.getUniqueId(), player.getName(), true);
 			updatePlayer(player, false);
 		});
@@ -130,7 +131,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
 	public void onQuitEvent(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 		backingPlayerList.remove(player);
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 			savePlayer(event.getPlayer().getUniqueId(), true);
 		});
 	}
