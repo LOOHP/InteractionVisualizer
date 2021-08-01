@@ -32,6 +32,7 @@ import com.loohp.interactionvisualizer.config.Config;
 import com.loohp.interactionvisualizer.database.Database;
 import com.loohp.interactionvisualizer.managers.AsyncExecutorManager;
 import com.loohp.interactionvisualizer.managers.LangManager;
+import com.loohp.interactionvisualizer.managers.LightManager;
 import com.loohp.interactionvisualizer.managers.MaterialManager;
 import com.loohp.interactionvisualizer.managers.MusicManager;
 import com.loohp.interactionvisualizer.managers.PacketManager;
@@ -42,6 +43,7 @@ import com.loohp.interactionvisualizer.managers.TileEntityManager;
 import com.loohp.interactionvisualizer.metrics.Charts;
 import com.loohp.interactionvisualizer.metrics.Metrics;
 import com.loohp.interactionvisualizer.nms.NMS;
+import com.loohp.interactionvisualizer.objectholders.ILightManager;
 import com.loohp.interactionvisualizer.placeholderAPI.Placeholders;
 import com.loohp.interactionvisualizer.protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.updater.Updater;
@@ -68,6 +70,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static MCVersion version;
 	public static Integer metaversion = 0;
 	
+	public static Boolean lightapi = false;
 	public static Boolean openinv = false;
 	public static Boolean vanish = false;
 	public static Boolean cmi = false;
@@ -105,6 +108,7 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static boolean allPacketsSync = false;
 	public static boolean defaultDisabledAll = false;
 	
+	public static ILightManager lightManager;
 	public static PreferenceManager preferenceManager;
 	public static AsyncExecutorManager asyncExecutorManager;
 	
@@ -114,23 +118,6 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		protocolManager = ProtocolLibrary.getProtocolManager();
 		
-		if (getServer().getPluginManager().getPlugin("OpenInv") != null) {
-			hookMessage("OpenInv");
-			openinv = true;
-		}
-		if (getServer().getPluginManager().getPlugin("SuperVanish") != null || getServer().getPluginManager().getPlugin("PremiumVanish") != null) {
-			hookMessage("SuperVanish/PremiumVanish");
-			vanish = true;
-		}
-		if (getServer().getPluginManager().getPlugin("CMI") != null) {
-			hookMessage("CMI");
-			cmi = true;
-		}
-		if (getServer().getPluginManager().getPlugin("Essentials") != null) {
-			hookMessage("Essentials");
-			ess3 = true;
-		}
-
 		Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
 		
 		exactMinecraftVersion = Bukkit.getVersion().substring(Bukkit.getVersion().indexOf("(") + 5, Bukkit.getVersion().indexOf(")"));
@@ -164,6 +151,33 @@ public class InteractionVisualizer extends JavaPlugin {
 		default:
 			unsupportedMessage();
 			break;
+		}
+		
+		if (getServer().getPluginManager().getPlugin("LightAPI") != null) {
+			hookMessage("LightAPI");
+			lightapi = true;
+			lightManager = new LightManager(this);
+		} else {
+			if (version.isOlderOrEqualTo(MCVersion.V1_16_4)) {
+				Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] LightAPI is recommended to be installed on servers with Minecraft version 1.16.5 or below!");
+			}
+			lightManager = ILightManager.DUMMY_INSTANCE;
+		}
+		if (getServer().getPluginManager().getPlugin("OpenInv") != null) {
+			hookMessage("OpenInv");
+			openinv = true;
+		}
+		if (getServer().getPluginManager().getPlugin("SuperVanish") != null || getServer().getPluginManager().getPlugin("PremiumVanish") != null) {
+			hookMessage("SuperVanish/PremiumVanish");
+			vanish = true;
+		}
+		if (getServer().getPluginManager().getPlugin("CMI") != null) {
+			hookMessage("CMI");
+			cmi = true;
+		}
+		if (getServer().getPluginManager().getPlugin("Essentials") != null) {
+			hookMessage("Essentials");
+			ess3 = true;
 		}
 		
 		if (!getDataFolder().exists()) {

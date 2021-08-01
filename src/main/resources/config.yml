@@ -81,6 +81,7 @@ TileEntityUpdate:
 
 LightUpdate:
   #How often should the plugin update the light level a block that requires it is used
+  #Only used if LightAPI is installed
   #Measured in ticks, 20 ticks = 1 second
   #Adjust this if your server is unable to handle fast light updates
   Period: 10

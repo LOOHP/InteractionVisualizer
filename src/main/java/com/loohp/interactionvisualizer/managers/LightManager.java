@@ -10,121 +10,49 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.utils.LocationUtils;
+import com.loohp.interactionvisualizer.objectholders.ILightManager;
+import com.loohp.interactionvisualizer.objectholders.LightData;
 
 import ru.beykerykt.lightapi.LightAPI;
 import ru.beykerykt.lightapi.LightType;
 import ru.beykerykt.lightapi.chunks.ChunkInfo;
 
-public class LightManager {
+public class LightManager implements ILightManager {
 	
-	public static class LightData {
-		
-		private Location location;
-		private int lightLevel;
-		private LightType lightType;
-		
-		public static LightData of(Location location) {
-			return of(location, 0, null);
-		}
-		
-		public static LightData of(Location location, LightType lightType) {
-			return of(location, 0, lightType);
-		}
-		
-		public static LightData of(Location location, int lightlevel, LightType lightType) {
-			return new LightData(location, lightlevel, lightType);
-		}
-		
-		private LightData(Location location, int lightlevel, LightType lightType) {
-			this.location = location;
-			this.lightType = lightType;
-			this.lightLevel = lightlevel;
-		}
-		
-		public Location getLocation() {
-			return location;
-		}
-		
-		public LightType getLightType() {
-			return lightType;
-		}
-		
-		public boolean hasLightType() {
-			return lightType != null;
-		}
-		
-		public int getLightLevel() {
-			return lightLevel;
-		}
-		
-		public boolean isLocationLoaded() {
-			return LocationUtils.isLoaded(location);
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + lightLevel;
-			result = prime * result + ((lightType == null) ? 0 : lightType.hashCode());
-			result = prime * result + ((location == null) ? 0 : location.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			LightData other = (LightData) obj;
-			if (lightLevel != other.lightLevel) {
-				return false;
-			}
-			if (lightType != other.lightType) {
-				return false;
-			}
-			if (location == null) {
-				if (other.location != null) {
-					return false;
-				}
-			} else if (!location.equals(other.location)) {
-				return false;
-			}
-			return true;
-		}
+	private InteractionVisualizer plugin;
+	private Set<LightData> addqueue;
+	private Set<LightData> deletequeue;
+	
+	public LightManager(InteractionVisualizer plugin) {
+		this.plugin = plugin;
+		this.addqueue = new HashSet<>();
+		this.deletequeue = new HashSet<>();
 	}
 	
-	private static Set<LightData> addqueue = new HashSet<LightData>();
-	private static Set<LightData> deletequeue = new HashSet<LightData>();
-	
-	public static void createLight(Location location, int lightlevel, LightType lightType) {
+	@Override
+	public void createLight(Location location, int lightlevel, com.loohp.interactionvisualizer.objectholders.LightType lightType) {
 		addqueue.add(LightData.of(location, lightlevel, lightType));
 	}
 	
-	public static void deleteLight(Location location) {
-		addqueue.remove(LightData.of(location, LightType.BLOCK));
-		addqueue.remove(LightData.of(location, LightType.SKY));
+	@Override
+	public void deleteLight(Location location) {
+		addqueue.remove(LightData.of(location, com.loohp.interactionvisualizer.objectholders.LightType.BLOCK));
+		addqueue.remove(LightData.of(location, com.loohp.interactionvisualizer.objectholders.LightType.SKY));
 		deletequeue.add(LightData.of(location));
 	}
 	
-	public static int run() {
-		return Bukkit.getScheduler().runTaskTimer(InteractionVisualizer.plugin, () -> {
+	@Override
+	public int run() {
+		return Bukkit.getScheduler().runTaskTimer(plugin, () -> {
 			boolean changed = false;
 			
 			Queue<LightData> updateQueue = new LinkedList<>();
 			
-			Set<LightData> addqueue = LightManager.addqueue;
-			Set<LightData> deletequeue = LightManager.deletequeue;
+			Set<LightData> addqueue = this.addqueue;
+			Set<LightData> deletequeue = this.deletequeue;
 			
-			LightManager.addqueue = new HashSet<>();
-			LightManager.deletequeue = new HashSet<>();
+			this.addqueue = new HashSet<>();
+			this.deletequeue = new HashSet<>();
 			
 			if (!deletequeue.isEmpty()) {
 				changed = true;
@@ -138,8 +66,8 @@ public class LightManager {
 						LightAPI.deleteLight(location, LightType.SKY, false);
 					}
 					LightAPI.deleteLight(location, LightType.BLOCK, false);
-					updateQueue.add(LightData.of(location, 14, LightType.SKY));
-					updateQueue.add(LightData.of(location, 14, LightType.BLOCK));
+					updateQueue.add(LightData.of(location, 14, com.loohp.interactionvisualizer.objectholders.LightType.SKY));
+					updateQueue.add(LightData.of(location, 14, com.loohp.interactionvisualizer.objectholders.LightType.BLOCK));
 				}
 				itr0.remove();
 			}
@@ -153,8 +81,8 @@ public class LightManager {
 				if (lightdata.isLocationLoaded()) {
 					Location location = lightdata.getLocation();
 					int lightlevel = lightdata.getLightLevel();
-					if (LightAPI.isSupported(location.getWorld(), lightdata.getLightType())) {
-						LightAPI.createLight(location, lightdata.getLightType(), lightlevel, false);
+					if (LightAPI.isSupported(location.getWorld(), convert(lightdata.getLightType()))) {
+						LightAPI.createLight(location, convert(lightdata.getLightType()), lightlevel, false);
 						updateQueue.add(lightdata);
 					}
 				}
@@ -166,7 +94,7 @@ public class LightManager {
 				HashSet<ChunkInfo> skyinfos = new HashSet<>();
 				while (!updateQueue.isEmpty()) {
 					LightData lightdata = updateQueue.poll();
-					LightType lightType = lightdata.getLightType();
+					LightType lightType = convert(lightdata.getLightType());
 					switch (lightType) {
 					case BLOCK:
 						blockinfos.addAll(LightAPI.collectChunks(lightdata.getLocation(), lightType, lightdata.getLightLevel()));
@@ -184,6 +112,19 @@ public class LightManager {
 				}
 			}
 		}, 0, InteractionVisualizer.lightUpdatePeriod).getTaskId();
+	}
+	
+	private static LightType convert(com.loohp.interactionvisualizer.objectholders.LightType lightType) {
+		if (lightType == null) {
+			return null;
+		}
+		switch (lightType) {
+		case BLOCK:
+			return LightType.BLOCK;
+		case SKY:
+			return LightType.SKY;
+		}
+		return null;
 	}
 
 }

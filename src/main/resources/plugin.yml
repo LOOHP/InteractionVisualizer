@@ -5,13 +5,14 @@ main: com.loohp.interactionvisualizer.InteractionVisualizer
 api-version: 1.13
 description: Makes function blocks better
 softdepend: 
+  - LightAPI
   - OpenInv
   - SuperVanish
   - PremiumVanish
   - CMI
   - Essentials
   - PlaceholderAPI
-depend: [ProtocolLib, LightAPI]
+depend: [ProtocolLib]
 prefix: InteractionVisualizer
 
 commands:

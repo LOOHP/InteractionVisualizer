@@ -43,6 +43,7 @@ import com.loohp.interactionvisualizer.utils.LanguageUtils;
 import com.loohp.interactionvisualizer.utils.LineOfSightUtils;
 import com.loohp.interactionvisualizer.utils.NBTUtils;
 import com.loohp.interactionvisualizer.utils.RarityUtils;
+import com.loohp.interactionvisualizer.utils.SyncUtils;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -119,11 +120,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 			for (World world : Bukkit.getWorlds()) {
 				WrappedIterable<?, Entity> entities = NMS.getInstance().getEntities(world);
 				for (Entity entity : entities) {
-					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
-						if (entity.isValid() && entity instanceof Item) {
-							tick((Item) entity, entities);
-						}
-					});
+					SyncUtils.runAsyncWithSyncCondition(() -> entity.isValid() && entity instanceof Item, 200, () -> tick((Item) entity, entities));
 				}
 			}
 		}, 0, 20).getTaskId();

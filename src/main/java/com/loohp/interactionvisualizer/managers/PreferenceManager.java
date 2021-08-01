@@ -75,12 +75,12 @@ public class PreferenceManager implements Listener, AutoCloseable {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.AQUA + "[InteractionVisualizer] Saving player preferences bitmask index, do not halt the server.");
 		try {
 			Awaitility.await().atMost(30, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).pollDelay(0, TimeUnit.MILLISECONDS).until(() -> !Database.isLocked());
-			Database.setLocked(true);
-			Database.setBitIndex(ArrayUtils.putToMap(entries, new HashMap<>()));
-			Database.setLocked(false);
 		} catch (ConditionTimeoutException e) {
-			new RuntimeException("Tried to save player preference but database is locked for more than 30 secionds", e).printStackTrace();
+			Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Tried to save player preference but database is locked for more than 30 secionds, performing save anyway...");
 		}
+		Database.setLocked(true);
+		Database.setBitIndex(ArrayUtils.putToMap(entries, new HashMap<>()));
+		Database.setLocked(false);
 	}
 	
 	public void registerEntry(EntryKey entryKey, EntryKey... entryKeys) {
@@ -92,27 +92,27 @@ public class PreferenceManager implements Listener, AutoCloseable {
 	
 	public void registerEntry(EntryKey[] entryKeys) {
 		if (entryKeys.length > 0) {
-			try {
-				synchronized (entries) {
+			synchronized (entries) {
+				try {
 					Awaitility.await().atMost(30, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).pollDelay(0, TimeUnit.MILLISECONDS).until(() -> !Database.isLocked());
-					Database.setLocked(true);
-					List<EntryKey> updatedEntries = ArrayUtils.putToArrayList(Database.getBitIndex(), new ArrayList<>());
-					entries.clear();
-					entries.addAll(updatedEntries);
-					boolean changes = false;
-					for (EntryKey entry : entryKeys) {
-						if (!entries.contains(entry)) {
-							changes = true;
-							entries.add(entry);
-						}
-					}
-					if (changes) {
-						Database.setBitIndex(ArrayUtils.putToMap(entries, new HashMap<>()));
-					}
-					Database.setLocked(false);
+				} catch (ConditionTimeoutException e) {
+					Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Tried to save player preference but database is locked for more than 30 secionds, performing save anyway...");
 				}
-			} catch (ConditionTimeoutException e) {
-				new RuntimeException("Tried to save player preference but database is locked for more than 30 secionds", e).printStackTrace();
+				Database.setLocked(true);
+				List<EntryKey> updatedEntries = ArrayUtils.putToArrayList(Database.getBitIndex(), new ArrayList<>());
+				entries.clear();
+				entries.addAll(updatedEntries);
+				boolean changes = false;
+				for (EntryKey entry : entryKeys) {
+					if (!entries.contains(entry)) {
+						changes = true;
+						entries.add(entry);
+					}
+				}
+				if (changes) {
+					Database.setBitIndex(ArrayUtils.putToMap(entries, new HashMap<>()));
+				}
+				Database.setLocked(false);
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package com.loohp.interactionvisualizer.managers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -92,10 +93,8 @@ public class TaskManager {
 	public static boolean item;
 	public static boolean villager;
 	
-	public static List<Integer> tasks = new ArrayList<Integer>();
-	
-	public static HashMap<InventoryType, List<VisualizerInteractDisplay>> processes = new HashMap<InventoryType, List<VisualizerInteractDisplay>>();
-	public static List<VisualizerRunnableDisplay> runnables = new ArrayList<VisualizerRunnableDisplay>();
+	public static Map<InventoryType, List<VisualizerInteractDisplay>> processes = new HashMap<>();
+	public static List<VisualizerRunnableDisplay> runnables = new ArrayList<>();
 	
 	@SuppressWarnings("deprecation")
 	public static void setup() {
@@ -384,7 +383,7 @@ public class TaskManager {
 		}
 		
 		InteractionVisualizer.preferenceManager.registerEntry(keys.toArray(new EntryKey[keys.size()]));
-		tasks.add(LightManager.run());
+		InteractionVisualizer.lightManager.run();
 		PacketManager.update();
 	}
 	

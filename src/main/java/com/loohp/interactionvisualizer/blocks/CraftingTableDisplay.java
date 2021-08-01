@@ -34,17 +34,15 @@ import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.api.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.entityholders.Item;
-import com.loohp.interactionvisualizer.managers.LightManager;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.SoundManager;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
+import com.loohp.interactionvisualizer.objectholders.LightType;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
 import com.loohp.interactionvisualizer.utils.MCVersion;
 import com.loohp.interactionvisualizer.utils.MaterialUtils;
 import com.loohp.interactionvisualizer.utils.MaterialUtils.MaterialMode;
 import com.loohp.interactionvisualizer.utils.VanishUtils;
-
-import ru.beykerykt.lightapi.LightType;
 
 public class CraftingTableDisplay extends VisualizerInteractDisplay implements Listener {
 	
@@ -112,7 +110,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
 								if (!(map.get(String.valueOf(i)) instanceof String)) {
 									Object entity = map.get(String.valueOf(i));
 									if (i == 5) {
-										LightManager.deleteLight(((ArmorStand) entity).getLocation());
+										InteractionVisualizer.lightManager.deleteLight(((ArmorStand) entity).getLocation());
 									}
 									if (entity instanceof Item) {
 										PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), (Item) entity);
@@ -278,15 +276,15 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
 			}
 		}
 		Location loc1 = ((ArmorStand) map.get("5")).getLocation();
-		LightManager.deleteLight(loc1);
+		InteractionVisualizer.lightManager.deleteLight(loc1);
 		int skylight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromSky();
 		int blocklight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromBlocks() - 1;
 		blocklight = blocklight < 0 ? 0 : blocklight;
 		if (skylight > 0) {
-			LightManager.createLight(loc1, skylight, LightType.SKY);
+			InteractionVisualizer.lightManager.createLight(loc1, skylight, LightType.SKY);
 		}
 		if (blocklight > 0) {
-			LightManager.createLight(loc1, blocklight, LightType.BLOCK);
+			InteractionVisualizer.lightManager.createLight(loc1, blocklight, LightType.BLOCK);
 		}
 	}
 	
@@ -502,7 +500,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
 					new BukkitRunnable() {
 						public void run() {
 							if (finalI == 5) {
-								LightManager.deleteLight(((ArmorStand) entity).getLocation());
+								InteractionVisualizer.lightManager.deleteLight(((ArmorStand) entity).getLocation());
 							}
 						}
 					}.runTaskLater(InteractionVisualizer.plugin, 20);

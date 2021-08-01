@@ -31,14 +31,12 @@ import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.api.VisualizerInteractDisplay;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.entityholders.Item;
-import com.loohp.interactionvisualizer.managers.LightManager;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.SoundManager;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
+import com.loohp.interactionvisualizer.objectholders.LightType;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
 import com.loohp.interactionvisualizer.utils.VanishUtils;
-
-import ru.beykerykt.lightapi.LightType;
 
 public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 	
@@ -88,7 +86,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 							
 							if (map.get("Banner") instanceof ArmorStand) {
 								ArmorStand entity = (ArmorStand) map.get("Banner");
-								LightManager.deleteLight(entity.getLocation());
+								InteractionVisualizer.lightManager.deleteLight(entity.getLocation());
 								PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), (ArmorStand) entity);
 							}
 							openedLooms.remove(block);
@@ -167,15 +165,15 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 		}
 		
 		Location loc1 = ((ArmorStand) map.get("Banner")).getLocation();
-		LightManager.deleteLight(loc1);
+		InteractionVisualizer.lightManager.deleteLight(loc1);
 		int skylight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromSky();
 		int blocklight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromBlocks() - 1;
 		blocklight = blocklight < 0 ? 0 : blocklight;
 		if (skylight > 0) {
-			LightManager.createLight(loc1, skylight, LightType.SKY);
+			InteractionVisualizer.lightManager.createLight(loc1, skylight, LightType.SKY);
 		}
 		if (blocklight > 0) {
-			LightManager.createLight(loc1, blocklight, LightType.BLOCK);
+			InteractionVisualizer.lightManager.createLight(loc1, blocklight, LightType.BLOCK);
 		}
 	}
 	
@@ -402,7 +400,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 		
 		if (map.get("Banner") instanceof ArmorStand) {
 			ArmorStand entity = (ArmorStand) map.get("Banner");
-			LightManager.deleteLight(entity.getLocation());
+			InteractionVisualizer.lightManager.deleteLight(entity.getLocation());
 			PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), (ArmorStand) entity);
 		}
 		openedLooms.remove(block);
