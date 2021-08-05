@@ -318,7 +318,8 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
 			}
 		}
 		if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) {
-			if (event.getWhoClicked().getInventory().getItem(event.getHotbarButton()) != null && !event.getWhoClicked().getInventory().getItem(event.getHotbarButton()).getType().equals(Material.AIR)) {
+			int button = event.getHotbarButton();
+			if (button < 0 || (event.getWhoClicked().getInventory().getItem(button) != null && !event.getWhoClicked().getInventory().getItem(button).getType().equals(Material.AIR))) {
 				return;
 			}
 		}
