@@ -1,5 +1,6 @@
 package com.loohp.interactionvisualizer.objectholders;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import org.bukkit.plugin.Plugin;
@@ -80,8 +81,12 @@ public class EntryKey {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
 		if (obj instanceof EntryKey) {
-			return toString().equals(obj.toString());
+			EntryKey other = (EntryKey) obj;
+			return Objects.equals(other.namespace, this.namespace) && Objects.equals(other.key, this.key);
 		}
 		return false;
 	}
