@@ -318,7 +318,9 @@ Entities:
       Blacklist:
         #Strip color codes when matching names
         StripColorWhenMatching: true
-        #Regex name match
+        #Regex name match and material match
+        #The first entry in each item on the list is a regex matching the item's name
+        #The second entry is the material name
         List:
           - ["^ALTAR Probe.*", "NETHER_STAR"]
           - ["^Blacklisted Item$", "*"]

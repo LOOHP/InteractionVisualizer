@@ -128,15 +128,7 @@ public class InteractionVisualizerAPI {
 	@return true/false.
 	*/
 	public static boolean hasPlayerEnabledModule(Player player, Modules module, EntryKey entry) {
-		switch (module) {
-		case HOLOGRAM:
-			return InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, entry).contains(player);
-		case ITEMDROP:
-			return InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, entry).contains(player);
-		case ITEMSTAND:
-			return InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, entry).contains(player);
-		}
-		return false;
+		return InteractionVisualizerAPI.getPlayerModuleList(module, entry).contains(player);
 	}
 	
 	/**
@@ -150,6 +142,150 @@ public class InteractionVisualizerAPI {
 		} else {
 			InteractionVisualizer.preferenceManager.loadPlayer(uuid, "", false);
 			boolean value = hasPlayerEnabledModule(player, module, entry);
+			InteractionVisualizer.preferenceManager.unloadPlayerWithoutSaving(uuid);
+			return value;
+		}
+	}
+	
+	/**
+	Check if player has any module disabled.
+	@return true/false.
+	*/
+	public static boolean hasAnyPreferenceDisabled(UUID uuid, Modules module) {
+		Player player = Bukkit.getPlayer(uuid);
+		if (player != null) {
+			return getPreferenceManager().hasAnyPreferenceDisabled(uuid, module);
+		} else {
+			InteractionVisualizer.preferenceManager.loadPlayer(uuid, "", false);
+			boolean value = getPreferenceManager().hasAnyPreferenceDisabled(uuid, module);
+			InteractionVisualizer.preferenceManager.unloadPlayerWithoutSaving(uuid);
+			return value;
+		}
+	}
+	
+	/**
+	Check if player has any entry disabled.
+	@return true/false.
+	*/
+	public static boolean hasAnyPreferenceDisabled(UUID uuid, EntryKey entry) {
+		Player player = Bukkit.getPlayer(uuid);
+		if (player != null) {
+			return getPreferenceManager().hasAnyPreferenceDisabled(uuid, entry);
+		} else {
+			InteractionVisualizer.preferenceManager.loadPlayer(uuid, "", false);
+			boolean value = getPreferenceManager().hasAnyPreferenceDisabled(uuid, entry);
+			InteractionVisualizer.preferenceManager.unloadPlayerWithoutSaving(uuid);
+			return value;
+		}
+	}
+	
+	/**
+	Check if player has any module of any entry disabled.
+	@return true/false.
+	*/
+	public static boolean hasAnyPreferenceDisabled(UUID uuid) {
+		Player player = Bukkit.getPlayer(uuid);
+		if (player != null) {
+			return getPreferenceManager().hasAnyPreferenceDisabled(uuid);
+		} else {
+			InteractionVisualizer.preferenceManager.loadPlayer(uuid, "", false);
+			boolean value = getPreferenceManager().hasAnyPreferenceDisabled(uuid);
+			InteractionVisualizer.preferenceManager.unloadPlayerWithoutSaving(uuid);
+			return value;
+		}
+	}
+	
+	/**
+	Check if player has any module enabled.
+	@return true/false.
+	*/
+	public static boolean hasAnyPreferenceEnabled(UUID uuid, Modules module) {
+		Player player = Bukkit.getPlayer(uuid);
+		if (player != null) {
+			return getPreferenceManager().hasAnyPreferenceEnabled(uuid, module);
+		} else {
+			InteractionVisualizer.preferenceManager.loadPlayer(uuid, "", false);
+			boolean value = getPreferenceManager().hasAnyPreferenceEnabled(uuid, module);
+			InteractionVisualizer.preferenceManager.unloadPlayerWithoutSaving(uuid);
+			return value;
+		}
+	}
+	
+	/**
+	Check if player has any entry enabled.
+	@return true/false.
+	*/
+	public static boolean hasAnyPreferenceEnabled(UUID uuid, EntryKey entry) {
+		Player player = Bukkit.getPlayer(uuid);
+		if (player != null) {
+			return getPreferenceManager().hasAnyPreferenceEnabled(uuid, entry);
+		} else {
+			InteractionVisualizer.preferenceManager.loadPlayer(uuid, "", false);
+			boolean value = getPreferenceManager().hasAnyPreferenceEnabled(uuid, entry);
+			InteractionVisualizer.preferenceManager.unloadPlayerWithoutSaving(uuid);
+			return value;
+		}
+	}
+	
+	/**
+	Check if player has any module of any entry enabled.
+	@return true/false.
+	*/
+	public static boolean hasAnyPreferenceEnabled(UUID uuid) {
+		Player player = Bukkit.getPlayer(uuid);
+		if (player != null) {
+			return getPreferenceManager().hasAnyPreferenceEnabled(uuid);
+		} else {
+			InteractionVisualizer.preferenceManager.loadPlayer(uuid, "", false);
+			boolean value = getPreferenceManager().hasAnyPreferenceEnabled(uuid);
+			InteractionVisualizer.preferenceManager.unloadPlayerWithoutSaving(uuid);
+			return value;
+		}
+	}
+	
+	/**
+	Check if player has all modules enabled.
+	@return true/false.
+	*/
+	public static boolean hasAllPreferenceEnabled(UUID uuid, Modules module) {
+		Player player = Bukkit.getPlayer(uuid);
+		if (player != null) {
+			return getPreferenceManager().hasAllPreferenceEnabled(uuid, module);
+		} else {
+			InteractionVisualizer.preferenceManager.loadPlayer(uuid, "", false);
+			boolean value = getPreferenceManager().hasAllPreferenceEnabled(uuid, module);
+			InteractionVisualizer.preferenceManager.unloadPlayerWithoutSaving(uuid);
+			return value;
+		}
+	}
+	
+	/**
+	Check if player has all entry enabled.
+	@return true/false.
+	*/
+	public static boolean hasAllPreferenceEnabled(UUID uuid, EntryKey entry) {
+		Player player = Bukkit.getPlayer(uuid);
+		if (player != null) {
+			return getPreferenceManager().hasAllPreferenceEnabled(uuid, entry);
+		} else {
+			InteractionVisualizer.preferenceManager.loadPlayer(uuid, "", false);
+			boolean value = getPreferenceManager().hasAllPreferenceEnabled(uuid, entry);
+			InteractionVisualizer.preferenceManager.unloadPlayerWithoutSaving(uuid);
+			return value;
+		}
+	}
+	
+	/**
+	Check if player has all modules of all entries enabled.
+	@return true/false.
+	*/
+	public static boolean hasAllPreferenceEnabled(UUID uuid) {
+		Player player = Bukkit.getPlayer(uuid);
+		if (player != null) {
+			return getPreferenceManager().hasAllPreferenceEnabled(uuid);
+		} else {
+			InteractionVisualizer.preferenceManager.loadPlayer(uuid, "", false);
+			boolean value = getPreferenceManager().hasAllPreferenceEnabled(uuid);
 			InteractionVisualizer.preferenceManager.unloadPlayerWithoutSaving(uuid);
 			return value;
 		}

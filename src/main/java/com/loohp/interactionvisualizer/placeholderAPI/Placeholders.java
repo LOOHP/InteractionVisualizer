@@ -40,34 +40,64 @@ public class Placeholders extends PlaceholderExpansion {
     public String onRequest(OfflinePlayer offlineplayer, String identifier) {
   
         if (identifier.startsWith("itemstand_")) {
-        	EntryKey entry = new EntryKey(identifier.substring(10));
-        	if (InteractionVisualizerAPI.isRegisteredEntry(entry)) {
-	    		if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.ITEMSTAND, entry)) {
-	    			return "enabled";
-	    		}
-	    		return "disabled";
+        	String entryType = identifier.substring(10);
+        	if (entryType.equals("all")) {
+        		if (InteractionVisualizerAPI.hasAllPreferenceEnabled(offlineplayer.getUniqueId(), Modules.ITEMSTAND)) {
+        			return "enabled";
+        		} else if (InteractionVisualizerAPI.hasAnyPreferenceEnabled(offlineplayer.getUniqueId(), Modules.ITEMSTAND)) {
+        			return "partly enabled";
+        		}
+        		return "disabled";
+        	} else {
+        		EntryKey entry = new EntryKey(entryType);
+	        	if (InteractionVisualizerAPI.isRegisteredEntry(entry)) {
+		    		if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.ITEMSTAND, entry)) {
+		    			return "enabled";
+		    		}
+		    		return "disabled";
+	        	}
         	}
         	return "invalid";
         }
 
         if (identifier.startsWith("itemdrop_")) {
-        	EntryKey entry = new EntryKey(identifier.substring(9));
-        	if (InteractionVisualizerAPI.isRegisteredEntry(entry)) {
-	        	if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.ITEMDROP, entry)) {
-	    			return "enabled";
-	    		}
-	    		return "disabled";
+        	String entryType = identifier.substring(9);
+        	if (entryType.equals("all")) {
+        		if (InteractionVisualizerAPI.hasAllPreferenceEnabled(offlineplayer.getUniqueId(), Modules.ITEMDROP)) {
+        			return "enabled";
+        		} else if (InteractionVisualizerAPI.hasAnyPreferenceEnabled(offlineplayer.getUniqueId(), Modules.ITEMDROP)) {
+        			return "partly enabled";
+        		}
+        		return "disabled";
+        	} else {
+	        	EntryKey entry = new EntryKey(entryType);
+	        	if (InteractionVisualizerAPI.isRegisteredEntry(entry)) {
+		        	if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.ITEMDROP, entry)) {
+		    			return "enabled";
+		    		}
+		    		return "disabled";
+	        	}
         	}
         	return "invalid";
         }
         
         if (identifier.startsWith("hologram_")) {
-        	EntryKey entry = new EntryKey(identifier.substring(9));
-        	if (InteractionVisualizerAPI.isRegisteredEntry(entry)) {
-	        	if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.HOLOGRAM, entry)) {
-	    			return "enabled";
-	    		}
-	    		return "disabled";
+        	String entryType = identifier.substring(9);
+        	if (entryType.equals("all")) {
+        		if (InteractionVisualizerAPI.hasAllPreferenceEnabled(offlineplayer.getUniqueId(), Modules.HOLOGRAM)) {
+        			return "enabled";
+        		} else if (InteractionVisualizerAPI.hasAnyPreferenceEnabled(offlineplayer.getUniqueId(), Modules.HOLOGRAM)) {
+        			return "partly enabled";
+        		}
+        		return "disabled";
+        	} else {
+	        	EntryKey entry = new EntryKey(entryType);
+	        	if (InteractionVisualizerAPI.isRegisteredEntry(entry)) {
+		        	if (InteractionVisualizerAPI.hasPlayerEnabledModule(offlineplayer.getUniqueId(), Modules.HOLOGRAM, entry)) {
+		    			return "enabled";
+		    		}
+		    		return "disabled";
+	        	}
         	}
         	return "invalid";
         }

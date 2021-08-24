@@ -14,6 +14,26 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class CustomStringUtils {
 	
+	public static String[] splitStringToArgs(char seperator, String str) {
+		List<String> tokens = new ArrayList<>();
+		StringBuilder sb = new StringBuilder();
+		boolean insideQuote = false;
+		for (char c : str.toCharArray()) {
+		    if (c == '"') {
+		        insideQuote = !insideQuote;
+		    } else if (c == seperator && !insideQuote) {
+		    	if (sb.length() > 0) {
+					tokens.add(sb.toString());
+				}
+		        sb.delete(0, sb.length());
+		    } else {
+		        sb.append(c);
+		    }
+		}
+		tokens.add(sb.toString());
+		return tokens.toArray(new String[tokens.size()]);
+	}
+	
 	public static String capitalize(String str) {
 		List<String> parts = Arrays.asList(str.split(" "));
 		StringBuilder sb = new StringBuilder();

@@ -315,6 +315,92 @@ public class PreferenceManager implements Listener, AutoCloseable {
 		return false;
 	}
 	
+	public boolean hasAnyPreferenceEnabled(UUID uuid, Modules module) {
+		Map<Modules, BitSet> info = preferences.get(uuid);
+		if (info != null) {
+			BitSet bitset = info.get(module);
+			for (int i = 0; i < entries.size(); i++) {
+				if (!bitset.get(i)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public boolean hasAnyPreferenceEnabled(UUID uuid, EntryKey entry) {
+		int i = entries.indexOf(entry);
+		if (i < 0) {
+			return false;
+		}
+		Map<Modules, BitSet> info = preferences.get(uuid);
+		if (info != null) {
+			for (BitSet bitset : info.values()) {
+				if (!bitset.get(i)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public boolean hasAnyPreferenceEnabled(UUID uuid) {
+		Map<Modules, BitSet> info = preferences.get(uuid);
+		if (info != null) {
+			for (BitSet bitset : info.values()) {
+				for (int i = 0; i < entries.size(); i++) {
+					if (!bitset.get(i)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	public boolean hasAllPreferenceEnabled(UUID uuid, Modules module) {
+		Map<Modules, BitSet> info = preferences.get(uuid);
+		if (info != null) {
+			BitSet bitset = info.get(module);
+			for (int i = 0; i < entries.size(); i++) {
+				if (bitset.get(i)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	public boolean hasAllPreferenceEnabled(UUID uuid, EntryKey entry) {
+		int i = entries.indexOf(entry);
+		if (i < 0) {
+			return false;
+		}
+		Map<Modules, BitSet> info = preferences.get(uuid);
+		if (info != null) {
+			for (BitSet bitset : info.values()) {
+				if (bitset.get(i)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	public boolean hasAllPreferenceEnabled(UUID uuid) {
+		Map<Modules, BitSet> info = preferences.get(uuid);
+		if (info != null) {
+			for (BitSet bitset : info.values()) {
+				for (int i = 0; i < entries.size(); i++) {
+					if (bitset.get(i)) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	public Collection<Player> getPlayerList(Modules module, EntryKey entry) {
 		Supplier<Boolean> serverSetting;
 		switch (module) {
