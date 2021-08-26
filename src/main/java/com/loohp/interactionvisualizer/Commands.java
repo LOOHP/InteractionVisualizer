@@ -92,7 +92,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		
 		if (args[0].equalsIgnoreCase("toggle")) {
 			if (sender.hasPermission("interactionvisualizer.toggle")) {
-				if (args.length == 4) {
+				if ((args.length == 4 && (args[3].equalsIgnoreCase("true") || args[3].equalsIgnoreCase("false"))) || args.length == 3) {
 					if (!(sender instanceof Player)) {
 						sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.Toggle.Console")));
 						return true;
@@ -107,34 +107,56 @@ public class Commands implements CommandExecutor, TabCompleter {
 						} else {
 							entries = new EntryKey[] {new EntryKey(args[2])};
 						}
-						boolean value = false;
-						if (args[3].equalsIgnoreCase("true")) {
-							value = true;
-						}
-						switch (args[1].toLowerCase()) {
-						case "itemstand":
-							Toggle.toggle(sender, player, Modules.ITEMSTAND, value, true, verboseEntry, entries);
-							break;
-						case "itemdrop":
-							Toggle.toggle(sender, player, Modules.ITEMDROP, value, true, verboseEntry, entries);
-							break;
-						case "hologram":
-							Toggle.toggle(sender, player, Modules.HOLOGRAM, value, true, verboseEntry, entries);
-							break;
-						case "all":
-							for (Modules modules : Modules.values()) {
-								Toggle.toggle(sender, player, modules, value, true, verboseEntry, entries);
+						if (args.length == 4) {
+							boolean value = false;
+							if (args[3].equalsIgnoreCase("true")) {
+								value = true;
 							}
-							break;
-						default:
-							sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.Toggle.Modes")));
+							switch (args[1].toLowerCase()) {
+							case "itemstand":
+								Toggle.toggle(sender, player, Modules.ITEMSTAND, value, true, verboseEntry, entries);
+								break;
+							case "itemdrop":
+								Toggle.toggle(sender, player, Modules.ITEMDROP, value, true, verboseEntry, entries);
+								break;
+							case "hologram":
+								Toggle.toggle(sender, player, Modules.HOLOGRAM, value, true, verboseEntry, entries);
+								break;
+							case "all":
+								for (Modules modules : Modules.values()) {
+									Toggle.toggle(sender, player, modules, value, true, verboseEntry, entries);
+								}
+								break;
+							default:
+								sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.Toggle.Modes")));
+							}
+						} else {
+							switch (args[1].toLowerCase()) {
+							case "itemstand":
+								Toggle.toggle(sender, player, Modules.ITEMSTAND, true, verboseEntry, entries);
+								break;
+							case "itemdrop":
+								Toggle.toggle(sender, player, Modules.ITEMDROP, true, verboseEntry, entries);
+								break;
+							case "hologram":
+								Toggle.toggle(sender, player, Modules.HOLOGRAM, true, verboseEntry, entries);
+								break;
+							case "all":
+								for (Modules modules : Modules.values()) {
+									Toggle.toggle(sender, player, modules, true, verboseEntry, entries);
+								}
+								break;
+							default:
+								sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.Toggle.Modes")));
+							}
 						}
 					});
 					return true;
-				} else if (args.length == 5) {
+				} else if (args.length == 5 || args.length == 4) {
+					Player player = Bukkit.getPlayer(args[args.length == 4 ? 3 : 4]);
 					if (sender instanceof Player) {
-						if (Bukkit.getPlayer(args[4]) != null) {
-							if (!Bukkit.getPlayer(args[4]).equals((Player) sender)) {
+						if (player != null) {
+							if (!player.equals((Player) sender)) {
 								if (!sender.hasPermission("interactionvisualizer.toggle.others")) {
 									sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.NoPermission")));
 									return true;
@@ -142,11 +164,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 							}
 						}
 					}
-					if (Bukkit.getPlayer(args[4]) == null) {
+					if (player == null) {
 						sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.Toggle.PlayerNotFound")));
 						return true;
 					}
-					Player player = Bukkit.getPlayer(args[4]);
 					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						EntryKey[] entries;
 						String verboseEntry = null;
@@ -156,27 +177,48 @@ public class Commands implements CommandExecutor, TabCompleter {
 						} else {
 							entries = new EntryKey[] {new EntryKey(args[2])};
 						}
-						boolean value = false;
-						if (args[3].equalsIgnoreCase("true")) {
-							value = true;
-						}
-						switch (args[1].toLowerCase()) {
-						case "itemstand":
-							Toggle.toggle(sender, player, Modules.ITEMSTAND, value, true, verboseEntry, entries);
-							break;
-						case "itemdrop":
-							Toggle.toggle(sender, player, Modules.ITEMDROP, value, true, verboseEntry, entries);
-							break;
-						case "hologram":
-							Toggle.toggle(sender, player, Modules.HOLOGRAM, value, true, verboseEntry, entries);
-							break;
-						case "all":
-							for (Modules modules : Modules.values()) {
-								Toggle.toggle(sender, player, modules, value, true, verboseEntry, entries);
+						if (args.length == 5) {
+							boolean value = false;
+							if (args[3].equalsIgnoreCase("true")) {
+								value = true;
 							}
-							break;
-						default:
-							sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.Toggle.Modes")));
+							switch (args[1].toLowerCase()) {
+							case "itemstand":
+								Toggle.toggle(sender, player, Modules.ITEMSTAND, value, true, verboseEntry, entries);
+								break;
+							case "itemdrop":
+								Toggle.toggle(sender, player, Modules.ITEMDROP, value, true, verboseEntry, entries);
+								break;
+							case "hologram":
+								Toggle.toggle(sender, player, Modules.HOLOGRAM, value, true, verboseEntry, entries);
+								break;
+							case "all":
+								for (Modules modules : Modules.values()) {
+									Toggle.toggle(sender, player, modules, value, true, verboseEntry, entries);
+								}
+								break;
+							default:
+								sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.Toggle.Modes")));
+							}
+						} else {
+							switch (args[1].toLowerCase()) {
+							case "itemstand":
+								Toggle.toggle(sender, player, Modules.ITEMSTAND, true, verboseEntry, entries);
+								break;
+							case "itemdrop":
+								Toggle.toggle(sender, player, Modules.ITEMDROP, true, verboseEntry, entries);
+								break;
+							case "hologram":
+								Toggle.toggle(sender, player, Modules.HOLOGRAM, true, verboseEntry, entries);
+								break;
+							case "all":
+								for (Modules modules : Modules.values()) {
+									Toggle.toggle(sender, player, modules, true, verboseEntry, entries);
+								}
+								break;
+							default:
+								sender.sendMessage(ChatColorUtils.translateAlternateColorCodes('&', plugin.getConfiguration().getString("Messages.Toggle.Modes")));
+							}
 						}
 					});
 					return true;

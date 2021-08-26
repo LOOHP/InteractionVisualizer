@@ -12,6 +12,24 @@ public class Toggle {
 	
 	private static InteractionVisualizer plugin = InteractionVisualizer.plugin;
 	
+	public static boolean toggle(CommandSender sender, Player player, Modules mode, boolean verbose, EntryKey... entries) {
+		return toggle(sender, player, mode, verbose, null, entries);
+	}
+	
+	public static boolean toggle(CommandSender sender, Player player, Modules mode, boolean verbose, String entryGroupName, EntryKey... entries) {
+		boolean value = true;
+		for (EntryKey entry : entries) {
+			if (!InteractionVisualizerAPI.isRegisteredEntry(entry)) {
+				return false;
+			}
+			if (InteractionVisualizerAPI.hasPlayerEnabledModule(player, mode, entry)) {
+				value = false;
+				break;
+			}
+		}
+		return toggle(sender, player, mode, value, verbose, entryGroupName, entries);
+	}
+	
 	public static boolean toggle(CommandSender sender, Player player, Modules mode, boolean value, boolean verbose, EntryKey... entries) {
 		return toggle(sender, player, mode, value, verbose, null, entries);
 	}
