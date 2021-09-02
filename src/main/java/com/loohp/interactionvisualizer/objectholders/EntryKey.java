@@ -1,6 +1,5 @@
 package com.loohp.interactionvisualizer.objectholders;
 
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 import org.bukkit.plugin.Plugin;
@@ -10,11 +9,11 @@ public class EntryKey {
 	public static final Pattern VALIDATE = Pattern.compile("^[a-z1-9_]*$");
 	public static final String NATIVE = "interactionvisualizer";
 
-	private String namespace;
-	private String key;
+	private final String namespace;
+	private final String key;
 
 	/**
-	 * <b>You are encouraged to use {@link EntryKey#EntryKey(Plugin, String)}.</b>
+	 * <b>You are encouraged to use {@link EntryKey#EntryKey(Plugin, String)} for your own plugin.</b>
 	 */
 	public EntryKey(String namespacedKey) {
 		int index = namespacedKey.indexOf(":");
@@ -31,7 +30,7 @@ public class EntryKey {
 	}
 
 	/**
-	 * <b>You are encouraged to use {@link EntryKey#EntryKey(Plugin, String)}.</b>
+	 * <b>You are encouraged to use {@link EntryKey#EntryKey(Plugin, String)} for your own plugin.</b>
 	 */
 	public EntryKey(String namespace, String key) {
 		this.namespace = namespace;
@@ -63,31 +62,31 @@ public class EntryKey {
 
 	@Override
 	public String toString() {
-		return namespace + ":" + key;
+		return this.namespace + ":" + this.key;
 	}
 	
 	public String toSimpleString() {
-		if (isNative()) {
-			return key;
-		} else {
-			return toString();
-		}
+		return isNative() ? key : toString();
 	}
-
+	
 	@Override
-	public int hashCode() {
-		return toString().hashCode();
-	}
+    public int hashCode() {
+        int hash = 5;
+        hash = 47 * hash + this.namespace.hashCode();
+        hash = 47 * hash + this.key.hashCode();
+        return hash;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == this) {
-			return true;
-		}
-		if (obj instanceof EntryKey) {
-			EntryKey other = (EntryKey) obj;
-			return Objects.equals(other.namespace, this.namespace) && Objects.equals(other.key, this.key);
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final EntryKey other = (EntryKey) obj;
+        return this.namespace.equals(other.namespace) && this.key.equals(other.key);
+    }
+
 }
