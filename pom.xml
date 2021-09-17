@@ -5,7 +5,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>1.16.3.13</version>
+	<version>1.16.3.14</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -212,9 +212,9 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>me.carleslc.Simple-YAML</groupId>
-			<artifactId>Simple-Yaml</artifactId>
-			<version>1.7.2</version>
+			<groupId>com.github.LOOHP</groupId>
+	    	<artifactId>Simple-YAML</artifactId>
+			<version>a1b8bce81f</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
