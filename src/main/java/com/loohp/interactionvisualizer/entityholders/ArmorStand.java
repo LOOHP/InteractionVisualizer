@@ -9,8 +9,8 @@ import org.bukkit.util.Vector;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.loohp.interactionvisualizer.protocol.WatchableCollection;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class ArmorStand extends VisualizerEntity {
 	
@@ -25,7 +25,7 @@ public class ArmorStand extends VisualizerEntity {
 	private EulerAngle headPose;
 	private ItemStack helmet;
 	private ItemStack mainhand;
-	private BaseComponent customName;
+	private Component customName;
 	private boolean custonNameVisible;
 	private Vector velocity;
 	
@@ -42,7 +42,7 @@ public class ArmorStand extends VisualizerEntity {
 		this.headPose = new EulerAngle(0.0, 0.0, 0.0);
 		this.helmet = new ItemStack(Material.AIR);
 		this.mainhand = new ItemStack(Material.AIR);
-		this.customName = new TextComponent();
+		this.customName = Component.empty();
 		this.custonNameVisible = false;
 		this.velocity = new Vector(0.0, 0.0, 0.0);
 	}
@@ -69,12 +69,12 @@ public class ArmorStand extends VisualizerEntity {
 	}
 
 	public void setCustomName(String customName) {
-		this.customName = new TextComponent(customName);
+		this.customName = LegacyComponentSerializer.legacySection().deserialize(customName);
 	}
-	public void setCustomName(BaseComponent customName) {
+	public void setCustomName(Component customName) {
 		this.customName = customName;
 	}
-	public BaseComponent getCustomName() {
+	public Component getCustomName() {
 		return customName;
 	}
 	

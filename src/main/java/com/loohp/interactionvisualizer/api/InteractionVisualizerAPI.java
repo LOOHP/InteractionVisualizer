@@ -29,6 +29,8 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.SynchronizedFilteredCollection;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+
 public class InteractionVisualizerAPI {
 	
 	/**
@@ -478,22 +480,25 @@ public class InteractionVisualizerAPI {
 	
 	@Deprecated
 	public static String getStandModeRaw(ArmorStand stand) {
-		if (stand.getCustomName().toPlainText().startsWith("IV.Custom.")) {
-			return stand.getCustomName().toPlainText().substring(stand.getCustomName().toPlainText().lastIndexOf(".") + 1);
+		String plain = PlainTextComponentSerializer.plainText().serialize(stand.getCustomName());
+		if (plain.startsWith("IV.Custom.")) {
+			return plain.substring(plain.lastIndexOf(".") + 1);
 		}
 		return null;
 	}
 	
 	public static ArmorStandHoldingMode getStandMode(ArmorStand stand) {
-		if (stand.getCustomName().toPlainText().startsWith("IV.Custom.")) {
-			return ArmorStandHoldingMode.fromName(stand.getCustomName().toPlainText().substring(stand.getCustomName().toPlainText().lastIndexOf(".") + 1));
+		String plain = PlainTextComponentSerializer.plainText().serialize(stand.getCustomName());
+		if (plain.startsWith("IV.Custom.")) {
+			return ArmorStandHoldingMode.fromName(plain.substring(plain.lastIndexOf(".") + 1));
 		}
 		return null;
 	}
 	
 	private static void toggleStandMode(ArmorStand stand, String mode) {
-		if (!stand.getCustomName().toPlainText().equals("IV.Custom.Item")) {
-			if (stand.getCustomName().toPlainText().equals("IV.Custom.Block")) {
+		String plain = PlainTextComponentSerializer.plainText().serialize(stand.getCustomName());
+		if (!plain.equals("IV.Custom.Item")) {
+			if (plain.equals("IV.Custom.Block")) {
 				stand.setCustomName("IV.Custom.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -502,7 +507,7 @@ public class InteractionVisualizerAPI {
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.14)));
 				
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.Custom.LowBlock")) {
+			if (plain.equals("IV.Custom.LowBlock")) {
 				stand.setCustomName("IV.Custom.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -511,14 +516,14 @@ public class InteractionVisualizerAPI {
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.15)));
 				
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.Custom.Tool")) {
+			if (plain.equals("IV.Custom.Tool")) {
 				stand.setCustomName("IV.Custom.Item");
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(0.3), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(0.1)));
 				stand.teleport(stand.getLocation().add(0, 0.26, 0));
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.Custom.Standing")) {
+			if (plain.equals("IV.Custom.Standing")) {
 				stand.setCustomName("IV.Custom.Item");
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().getDirection().normalize().multiply(0.323), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().getDirection().normalize().multiply(-0.115)));

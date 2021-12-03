@@ -40,6 +40,9 @@ import com.loohp.interactionvisualizer.objectholders.LightType;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
 import com.loohp.interactionvisualizer.utils.MaterialUtils;
 import com.loohp.interactionvisualizer.utils.MaterialUtils.MaterialMode;
+
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+
 import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class SmithingTableDisplay extends VisualizerInteractDisplay implements Listener {
@@ -363,15 +366,17 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
 	}
 	
 	public MaterialMode standMode(ArmorStand stand) {
-		if (stand.getCustomName().toPlainText().startsWith("IV.SmithingTable.")) {
-			return MaterialMode.getModeFromName(stand.getCustomName().toPlainText().substring(stand.getCustomName().toPlainText().lastIndexOf(".") + 1));
+		String plain = PlainTextComponentSerializer.plainText().serialize(stand.getCustomName());
+		if (plain.startsWith("IV.SmithingTable.")) {
+			return MaterialMode.getModeFromName(plain.substring(plain.lastIndexOf(".") + 1));
 		}
 		return null;
 	}
 	
 	public void toggleStandMode(ArmorStand stand, String mode) {
-		if (!stand.getCustomName().toPlainText().equals("IV.SmithingTable.Item")) {
-			if (stand.getCustomName().toPlainText().equals("IV.SmithingTable.Block")) {
+		String plain = PlainTextComponentSerializer.plainText().serialize(stand.getCustomName());
+		if (!plain.equals("IV.SmithingTable.Item")) {
+			if (plain.equals("IV.SmithingTable.Block")) {
 				stand.setCustomName("IV.SmithingTable.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -380,7 +385,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.14)));
 				
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.SmithingTable.LowBlock")) {
+			if (plain.equals("IV.SmithingTable.LowBlock")) {
 				stand.setCustomName("IV.SmithingTable.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -389,14 +394,14 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.15)));
 				
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.SmithingTable.Tool")) {
+			if (plain.equals("IV.SmithingTable.Tool")) {
 				stand.setCustomName("IV.SmithingTable.Item");
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(0.3), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(0.1)));
 				stand.teleport(stand.getLocation().add(0, 0.26, 0));
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.SmithingTable.Standing")) {
+			if (plain.equals("IV.SmithingTable.Standing")) {
 				stand.setCustomName("IV.SmithingTable.Item");
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().getDirection().normalize().multiply(0.323), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().getDirection().normalize().multiply(-0.115)));

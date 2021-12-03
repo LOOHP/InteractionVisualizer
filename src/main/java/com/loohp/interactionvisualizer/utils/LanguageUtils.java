@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -31,10 +32,11 @@ import org.json.simple.parser.JSONParser;
 import com.cryptomorin.xseries.XMaterial;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 
+import io.github.bananapuncher714.nbteditor.NBTEditor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class LanguageUtils {
 	
@@ -268,7 +270,7 @@ public class LanguageUtils {
 		}
 		
 		if (itemStack.getType().equals(Material.PLAYER_HEAD)) {
-			String owner = NBTUtils.getString(itemStack, "SkullOwner", "Name");
+			String owner = NBTEditor.getString(itemStack, "SkullOwner", "Name");
 			if (owner != null) {
 				path += ".named";
 			}
@@ -288,7 +290,7 @@ public class LanguageUtils {
 		Object nmsItemStackObject = asNMSCopyMethod.invoke(null, itemStack);
 		String path = getRawItemTypeNameMethod.invoke(nmsItemStackObject).toString() + ".name";
 		if (XMaterial.matchXMaterial(itemStack).equals(XMaterial.PLAYER_HEAD)) {
-			String owner = NBTUtils.getString(itemStack, "SkullOwner", "Name");
+			String owner = NBTEditor.getString(itemStack, "SkullOwner", "Name");
 			if (owner != null) {
 				path = "item.skull.player.name";
 			}
@@ -302,39 +304,31 @@ public class LanguageUtils {
 				return "%s's Head";
 			}
 			Map<String, String> mapping = translations.get(language);
-			return mapping == null ? new TranslatableComponent(translationKey).toPlainText() : mapping.getOrDefault(translationKey, translationKey);
+			if (language.equals("en_us")) {
+				return mapping.getOrDefault(translationKey, translationKey);
+			} else {
+				return mapping == null ? getTranslation(translationKey, "en_us") : mapping.getOrDefault(translationKey, getTranslation(translationKey, "en_us"));
+			}
 		} catch (Exception e) {
 			return translationKey;
 		}
 	}
 	
-	public static BaseComponent convert(BaseComponent baseComponent, String language) {
-		if (baseComponent instanceof TranslatableComponent) {
-			TranslatableComponent transComponent = (TranslatableComponent) baseComponent;
-			String translated = getTranslation(transComponent.getTranslate(), language);
-			if (transComponent.getWith() != null) {
-				for (BaseComponent with : transComponent.getWith()) {
-					translated = translated.replaceFirst("%s", convert(with, language).toLegacyText());
+	public static Component convert(Component component, String language) {
+		component = ComponentFlattening.flatten(component);
+		List<Component> children = new ArrayList<>(component.children());
+		for (int i = 0; i < children.size(); i++) {
+			Component current = children.get(i);
+			if (current instanceof TranslatableComponent) {
+				TranslatableComponent trans = (TranslatableComponent) current;
+				Component translated = Component.text(getTranslation(trans.key(), language)).style(trans.style());
+				for (Component arg : trans.args()) {
+					translated = translated.replaceText(TextReplacementConfig.builder().matchLiteral("%s").replacement(convert(arg, language)).once().build());
 				}
+				children.set(i, translated);
 			}
-			baseComponent = new TextComponent(translated);
-			CustomStringUtils.copyFormatting(baseComponent, transComponent);
-			if (transComponent.getExtra() != null) {
-				for (BaseComponent extra : transComponent.getExtra()) {
-					baseComponent.addExtra(convert(extra, language));
-				}
-			}
-			return baseComponent;
-		} else {
-			List<BaseComponent> extras = baseComponent.getExtra();
-			if (extras != null) {
-				for (int i = 0; i < extras.size(); i++) {
-					extras.set(i, convert(extras.get(i), language));
-				}
-				baseComponent.setExtra(extras);
-			}
-			return baseComponent;
 		}
+		return ComponentCompacting.optimize(component.children(children));
 	}
 
 }

@@ -36,10 +36,11 @@ import com.loohp.interactionvisualizer.utils.CustomStringUtils;
 import com.loohp.interactionvisualizer.utils.RomanNumberUtils;
 import com.loohp.interactionvisualizer.utils.TranslationUtils;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class EnchantmentTableAnimation {
 	
@@ -158,15 +159,15 @@ public class EnchantmentTableAnimation {
 				if (!EnchantmentTableDisplay.getTranslatableEnchantments().contains(str)) {
 					str = null;
 				}
-				BaseComponent enchantmentName = (str == null || str.equals("")) ? new TextComponent(CustomStringUtils.capitalize(ench.getName().toLowerCase().replace("_", " "))) : new TranslatableComponent(str);
+				Component enchantmentName = (str == null || str.equals("")) ? LegacyComponentSerializer.legacySection().deserialize(CustomStringUtils.capitalize(ench.getName().toLowerCase().replace("_", " "))) : Component.translatable(str);
 				ArmorStand stand = new ArmorStand(standloc);
 				if (ench.getMaxLevel() != 1 || level != 1) {
-					enchantmentName.addExtra(new TextComponent(" " + ChatColor.AQUA + RomanNumberUtils.toRoman(entry.getValue())));
+					enchantmentName = enchantmentName.append(LegacyComponentSerializer.legacySection().deserialize(" " + ChatColor.AQUA + RomanNumberUtils.toRoman(entry.getValue())));
 				}
 				if (ench.isCursed()) {
-					enchantmentName.setColor(ChatColor.RED);
+					enchantmentName = enchantmentName.color(NamedTextColor.RED);
 				} else {
-					enchantmentName.setColor(ChatColor.AQUA);
+					enchantmentName = enchantmentName.color(NamedTextColor.AQUA);
 				}
 				stand.setCustomName(enchantmentName);
 				stand.setCustomNameVisible(true);
@@ -177,11 +178,11 @@ public class EnchantmentTableAnimation {
 			}
 			
 			ArmorStand stand = new ArmorStand(standloc);
-			TranslatableComponent levelTrans = new TranslatableComponent(TranslationUtils.getLevel(expCost));
+			TranslatableComponent levelTrans = Component.translatable(TranslationUtils.getLevel(expCost));
 			if (expCost != 1) {
-				levelTrans.addWith(expCost + "");
+				levelTrans = levelTrans.args(Component.text(expCost));
 			}
-			levelTrans.setColor(ChatColor.GREEN);
+			levelTrans = levelTrans.color(NamedTextColor.GREEN);
 			stand.setCustomName(levelTrans);
 			stand.setCustomNameVisible(true);
 			setStand(stand);

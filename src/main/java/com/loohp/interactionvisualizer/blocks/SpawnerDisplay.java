@@ -33,6 +33,8 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+
 public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listener {
 	
 	public static final EntryKey KEY = new EntryKey("spawner");
@@ -173,13 +175,13 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
 							
 							symbol += spawnRange.replace("{SpawnRange}", spawner.getSpawnRange() + "");
 							
-							if (!stand.getCustomName().toPlainText().equals(symbol) || !stand.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand.getCustomName()).equals(symbol) || !stand.isCustomNameVisible()) {
 								stand.setCustomNameVisible(true);
 								stand.setCustomName(symbol);
 								PacketManager.updateArmorStandOnlyMeta(stand);
 							}
 						} else {					
-							if (!stand.getCustomName().toPlainText().equals("") || stand.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand.getCustomName()).equals("") || stand.isCustomNameVisible()) {
 								stand.setCustomNameVisible(false);
 								stand.setCustomName("");
 								PacketManager.updateArmorStandOnlyMeta(stand);

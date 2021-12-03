@@ -35,6 +35,7 @@ import com.loohp.interactionvisualizer.managers.TileEntityManager;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 
 public class ConduitDisplay extends VisualizerRunnableDisplay implements Listener {
@@ -160,20 +161,20 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
 						ChatColor color = range > 0 ? ChatColor.AQUA : ChatColor.YELLOW;
 							
 						String one = color + square + amount + " " + arrow + " " + range + "m";
-						if (!line1.getCustomName().toPlainText().equals(one) || !line1.isCustomNameVisible()) {
+						if (!PlainTextComponentSerializer.plainText().serialize(line1.getCustomName()).equals(one) || !line1.isCustomNameVisible()) {
 							line1.setCustomName(one);
 							line1.setCustomNameVisible(true);
 							PacketManager.updateArmorStandOnlyMeta(line1);
 						}
 						if (range < 96) {
-							if (!line2.getCustomName().toPlainText().equals("") || line2.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(line2.getCustomName()).equals("") || line2.isCustomNameVisible()) {
 								line2.setCustomName("");
 								line2.setCustomNameVisible(false);
 								PacketManager.updateArmorStandOnlyMeta(line2);
 							}
 						} else {
 							String damage = ChatColor.AQUA + "4(" + ChatColor.RED + "\u2665\u2665" + ChatColor.AQUA + ") / 2s";
-							if (!line2.getCustomName().toPlainText().equals(damage) || !line2.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(line2.getCustomName()).equals(damage) || !line2.isCustomNameVisible()) {
 								line2.setCustomName(damage);
 								line2.setCustomNameVisible(true);
 								PacketManager.updateArmorStandOnlyMeta(line2);

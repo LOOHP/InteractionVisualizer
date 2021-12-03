@@ -37,6 +37,8 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+
 public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listener {
 	
 	public static final EntryKey KEY = new EntryKey("beehive");
@@ -231,12 +233,12 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
 			}	
 			String str1 = beeCountText.replace("{Current}", beehiveState.getEntityCount() + "").replace("{Max}", beehiveState.getMaxEntities() + "");
 			
-			if (!line0.getCustomName().toPlainText().equals(str0)) {
+			if (!PlainTextComponentSerializer.plainText().serialize(line0.getCustomName()).equals(str0)) {
 				line0.setCustomName(str0);
 				line0.setCustomNameVisible(true);
 				PacketManager.updateArmorStandOnlyMeta(line0);
 			}
-			if (!line1.getCustomName().toPlainText().equals(str1)) {
+			if (!PlainTextComponentSerializer.plainText().serialize(line1.getCustomName()).equals(str1)) {
 				line1.setCustomName(str1);
 				line1.setCustomNameVisible(true);
 				PacketManager.updateArmorStandOnlyMeta(line1);

@@ -42,6 +42,9 @@ import com.loohp.interactionvisualizer.utils.InventoryUtils;
 import com.loohp.interactionvisualizer.utils.MCVersion;
 import com.loohp.interactionvisualizer.utils.MaterialUtils;
 import com.loohp.interactionvisualizer.utils.MaterialUtils.MaterialMode;
+
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+
 import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class CraftingTableDisplay extends VisualizerInteractDisplay implements Listener {
@@ -513,15 +516,17 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
 	}
 	
 	public MaterialMode standMode(ArmorStand stand) {
-		if (stand.getCustomName().toPlainText().startsWith("IV.CraftingTable.")) {
-			return MaterialMode.getModeFromName(stand.getCustomName().toPlainText().substring(stand.getCustomName().toPlainText().lastIndexOf(".") + 1));
+		String plain = PlainTextComponentSerializer.plainText().serialize(stand.getCustomName());
+		if (plain.startsWith("IV.CraftingTable.")) {
+			return MaterialMode.getModeFromName(plain.substring(plain.lastIndexOf(".") + 1));
 		}
 		return null;
 	}
 	
 	public void toggleStandMode(ArmorStand stand, String mode) {
-		if (!stand.getCustomName().toPlainText().equals("IV.CraftingTable.Item")) {
-			if (stand.getCustomName().toPlainText().equals("IV.CraftingTable.Block")) {
+		String plain = PlainTextComponentSerializer.plainText().serialize(stand.getCustomName());
+		if (!plain.equals("IV.CraftingTable.Item")) {
+			if (plain.equals("IV.CraftingTable.Block")) {
 				stand.setCustomName("IV.CraftingTable.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -530,7 +535,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.14)));
 				
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.CraftingTable.LowBlock")) {
+			if (plain.equals("IV.CraftingTable.LowBlock")) {
 				stand.setCustomName("IV.CraftingTable.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -539,14 +544,14 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.15)));
 				
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.CraftingTable.Tool")) {
+			if (plain.equals("IV.CraftingTable.Tool")) {
 				stand.setCustomName("IV.CraftingTable.Item");
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(0.3), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(0.1)));
 				stand.teleport(stand.getLocation().add(0, 0.26, 0));
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.CraftingTable.Standing")) {
+			if (plain.equals("IV.CraftingTable.Standing")) {
 				stand.setCustomName("IV.CraftingTable.Item");
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().getDirection().normalize().multiply(0.323), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().getDirection().normalize().multiply(-0.115)));

@@ -2,12 +2,15 @@ package com.loohp.interactionvisualizer.protocol;
 
 import java.util.Optional;
 
+import org.bukkit.entity.Entity;
+
 import com.comphenix.protocol.wrappers.Vector3F;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.Registry;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.Serializer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.WrappedDataWatcherObject;
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.entityholders.Item;
@@ -15,8 +18,10 @@ import com.loohp.interactionvisualizer.entityholders.ItemFrame;
 import com.loohp.interactionvisualizer.utils.LanguageUtils;
 import com.loohp.interactionvisualizer.utils.MCVersion;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 public class WatchableCollection {
 	
@@ -51,8 +56,8 @@ public class WatchableCollection {
 		
 		switch (metaversion) {
 		case 0:
-			if (stand.getCustomName() != null && !stand.getCustomName().toPlainText().equals("")) {
-				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), LanguageUtils.convert(stand.getCustomName(), InteractionVisualizer.language).toLegacyText());
+			if (stand.getCustomName() != null && !PlainTextComponentSerializer.plainText().serialize(stand.getCustomName()).equals("")) {
+				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), LegacyComponentSerializer.legacySection().serialize(LanguageUtils.convert(stand.getCustomName(), InteractionVisualizer.language)));
 			} else {
 				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), "");
 			}
@@ -61,7 +66,7 @@ public class WatchableCollection {
 		case 2:
 		case 3:
 		case 4:
-			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(ComponentSerializer.toString(stand.getCustomName())).getHandle()));
+			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(GsonComponentSerializer.gson().serialize(stand.getCustomName())).getHandle()));
 			break;
 		}
 		
@@ -145,8 +150,8 @@ public class WatchableCollection {
 		
 		switch (metaversion) {
 		case 0:
-			if (item.getCustomName() != null && !item.getCustomName().toPlainText().equals("")) {
-				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), LanguageUtils.convert(item.getCustomName(), InteractionVisualizer.language).toLegacyText());
+			if (item.getCustomName() != null && !PlainTextComponentSerializer.plainText().serialize(item.getCustomName()).equals("")) {
+				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), LegacyComponentSerializer.legacySection().serialize(LanguageUtils.convert(item.getCustomName(), InteractionVisualizer.language)));
 			} else {
 				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), "");
 			}
@@ -155,7 +160,7 @@ public class WatchableCollection {
 		case 2:
 		case 3:
 		case 4:
-			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(ComponentSerializer.toString(item.getCustomName())).getHandle()));
+			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(GsonComponentSerializer.gson().serialize(item.getCustomName())).getHandle()));
 			break;
 		}
 		
@@ -201,14 +206,12 @@ public class WatchableCollection {
 		return watcher;
 	}
 	
-	public static WrappedDataWatcher getWatchableCollection(org.bukkit.entity.Item item, BaseComponent name, WrappedDataWatcher watcher) {
-		if (watcher == null) {
-			watcher = WrappedDataWatcher.getEntityWatcher(item);
-		}
+	public static WrappedDataWatcher createCustomNameWatchableCollection(Component name) {
+		WrappedDataWatcher watcher = new WrappedDataWatcher();
 		
 		boolean visible;
 		try {
-			visible = name != null && !name.toPlainText().equals("");
+			visible = name != null && !PlainTextComponentSerializer.plainText().serialize(name).equals("");
 		} catch (Exception e) {
 			visible = false;
 		}
@@ -216,7 +219,7 @@ public class WatchableCollection {
 		switch (metaversion) {
 		case 0:
 			if (visible) {
-				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), LanguageUtils.convert(name, InteractionVisualizer.language).toLegacyText());
+				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), LegacyComponentSerializer.legacySection().serialize(LanguageUtils.convert(name, InteractionVisualizer.language)));
 			} else {
 				watcher.setObject(new WrappedDataWatcherObject(2, stringSerializer), "");
 			}
@@ -225,12 +228,22 @@ public class WatchableCollection {
 		case 2:
 		case 3:
 		case 4:
-			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(ComponentSerializer.toString(name)).getHandle()));
+			watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(GsonComponentSerializer.gson().serialize(name)).getHandle()));
 			break;
 		}
 		
 		watcher.setObject(new WrappedDataWatcherObject(3, booleanSerializer), visible);
 		
+		return watcher;
+	}
+	
+	public static WrappedDataWatcher resetCustomNameWatchableCollection(Entity entity) {
+		WrappedDataWatcher entityWatcher = WrappedDataWatcher.getEntityWatcher(entity);
+		WrappedDataWatcher watcher = new WrappedDataWatcher();
+		WrappedWatchableObject name = entityWatcher.getWatchableObject(2);
+		watcher.setObject(name.getWatcherObject(), name.getValue());
+		WrappedWatchableObject visible = entityWatcher.getWatchableObject(3);
+		watcher.setObject(visible.getWatcherObject(), visible.getValue());
 		return watcher;
 	}
 

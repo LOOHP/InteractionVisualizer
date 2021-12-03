@@ -37,7 +37,9 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.utils.MCVersion;
-import com.loohp.interactionvisualizer.utils.NBTUtils;
+
+import io.github.bananapuncher714.nbteditor.NBTEditor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 public class LecternDisplay extends VisualizerRunnableDisplay implements Listener {
 	
@@ -170,8 +172,8 @@ public class LecternDisplay extends VisualizerRunnableDisplay implements Listene
 							
 							if (InteractionVisualizer.version.isNewerOrEqualTo(MCVersion.V1_15)) {
 								line1 = format1
-										.replace("{Title}", meta.getTitle() == null ? "" : NBTUtils.getString(itemstack, "title"))
-										.replace("{Author}", meta.getAuthor() == null ? "" : NBTUtils.getString(itemstack, "author"))
+										.replace("{Title}", meta.getTitle() == null ? "" : NBTEditor.getString(itemstack, "title"))
+										.replace("{Author}", meta.getAuthor() == null ? "" : NBTEditor.getString(itemstack, "author"))
 										.replace("{Page}", lectern.getPage() + "");
 								line2 = format2
 										.replace("{Title}", meta.getTitle() == null ? "" : meta.getTitle())
@@ -188,23 +190,23 @@ public class LecternDisplay extends VisualizerRunnableDisplay implements Listene
 										.replace("{Page}", lectern.getPage() + "");
 							}
 							
-							if (!stand1.getCustomName().toPlainText().equals(line1) || !stand1.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand1.getCustomName()).equals(line1) || !stand1.isCustomNameVisible()) {
 								stand1.setCustomNameVisible(true);
 								stand1.setCustomName(line1);
 								PacketManager.updateArmorStandOnlyMeta(stand1);
 							}
-							if (!stand2.getCustomName().toPlainText().equals(line2) || !stand2.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand2.getCustomName()).equals(line2) || !stand2.isCustomNameVisible()) {
 								stand2.setCustomNameVisible(true);
 								stand2.setCustomName(line2);
 								PacketManager.updateArmorStandOnlyMeta(stand2);
 							}
 						} else {					
-							if (!stand1.getCustomName().toPlainText().equals("") || stand1.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand1.getCustomName()).equals("") || stand1.isCustomNameVisible()) {
 								stand1.setCustomNameVisible(false);
 								stand1.setCustomName("");
 								PacketManager.updateArmorStandOnlyMeta(stand1);
 							}
-							if (!stand2.getCustomName().toPlainText().equals("") || stand2.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand2.getCustomName()).equals("") || stand2.isCustomNameVisible()) {
 								stand2.setCustomNameVisible(false);
 								stand2.setCustomName("");
 								PacketManager.updateArmorStandOnlyMeta(stand2);

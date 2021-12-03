@@ -1,10 +1,13 @@
 package com.loohp.interactionvisualizer.entities;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -37,23 +40,26 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.WrappedIterable;
 import com.loohp.interactionvisualizer.protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
-import com.loohp.interactionvisualizer.utils.ChatComponentUtils;
+import com.loohp.interactionvisualizer.utils.ColorUtils;
+import com.loohp.interactionvisualizer.utils.ComponentCompacting;
 import com.loohp.interactionvisualizer.utils.JsonUtils;
 import com.loohp.interactionvisualizer.utils.LanguageUtils;
 import com.loohp.interactionvisualizer.utils.LineOfSightUtils;
-import com.loohp.interactionvisualizer.utils.NBTUtils;
 import com.loohp.interactionvisualizer.utils.RarityUtils;
 import com.loohp.interactionvisualizer.utils.SyncUtils;
 
+import io.github.bananapuncher714.nbteditor.NBTEditor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 
 public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 	
 	public static final EntryKey KEY = new EntryKey("item");
+	
+	private Map<Item, Set<Player>> outOfRangePlayersMap = Collections.synchronizedMap(new WeakHashMap<>());
 	
 	private String[] regularFormatting;
 	private String[] singularFormatting;
@@ -130,16 +136,16 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		World world = item.getWorld();
 		Location location = item.getLocation();
 		BoundingBox area = BoundingBox.of(item.getLocation(), 0.5, 0.5, 0.5);
-		int ticks = NBTUtils.getShort(item, "Age");
+		int ticks = NBTEditor.getShort(item, "Age");
 		
 		ItemStack itemstack = item.getItemStack();
 		if (itemstack == null) {
 			itemstack = new ItemStack(Material.AIR);
 		}
-		BaseComponent name = getDisplayName(itemstack);
+		Component name = getDisplayName(itemstack);
 		String matchingname = getMatchingName(itemstack, stripColorBlacklist);
 		
-		if (blacklist.test(matchingname, itemstack.getType()) || NBTUtils.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || isCramping(world, area, items)) {
+		if (blacklist.test(matchingname, itemstack.getType()) || NBTEditor.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || isCramping(world, area, items)) {
 			PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
 		    defaultPacket.getIntegers().write(0, item.getEntityId());
 		    defaultPacket.getWatchableCollectionModifier().write(0, WrappedDataWatcher.getEntityWatcher(item).getWatchableObjects());
@@ -185,40 +191,37 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		    
 		    String timer = timerColor + String.format("%02d:%02d", secondsLeft / 60, secondsLeft % 60);				    
 		    
-		    BaseComponent display;
+		    Component display;
 		    if (ticksLeft >= 600 && durDisplay != null) {
 		    	String line1 = (toolsFormatting.length > 0 ? toolsFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer).replace("{Durability}", durDisplay);
-		    	display = new TextComponent(line1);
+		    	display = LegacyComponentSerializer.legacySection().deserialize(line1);
 		    	for (int i = 1; i < toolsFormatting.length; i++) {
 		    		String line = toolsFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer).replace("{Durability}", durDisplay);
-			    	TextComponent text = new TextComponent(line);
-			    	display.addExtra(ChatComponentUtils.clone(name));
-			    	display.addExtra(text);					 
+			    	Component text = LegacyComponentSerializer.legacySection().deserialize(line);
+			    	display = display.append(name).append(text);
 		    	}
 		    } else {
 		    	if (amount == 1) {
 			    	String line1 = (singularFormatting.length > 0 ? singularFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer);
-			    	display = new TextComponent(line1);
+			    	display = LegacyComponentSerializer.legacySection().deserialize(line1);
 			    	for (int i = 1; i < singularFormatting.length; i++) {
 			    		String line = singularFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer);
-				    	TextComponent text = new TextComponent(line);
-				    	display.addExtra(ChatComponentUtils.clone(name));
-				    	display.addExtra(text);				
+				    	Component text = LegacyComponentSerializer.legacySection().deserialize(line);
+				    	display = display.append(name).append(text);		
 			    	}
 		    	} else {
 		    		String line1 = (regularFormatting.length > 0 ? regularFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer);
-			    	display = new TextComponent(line1);
+			    	display = LegacyComponentSerializer.legacySection().deserialize(line1);
 			    	for (int i = 1; i < regularFormatting.length; i++) {
 			    		String line = regularFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer);
-				    	TextComponent text = new TextComponent(line);
-				    	display.addExtra(ChatComponentUtils.clone(name));
-				    	display.addExtra(text);				
+				    	Component text = LegacyComponentSerializer.legacySection().deserialize(line);
+				    	display = display.append(name).append(text);
 			    	}
 		    	}
 		    }
 		    
-		    WrappedDataWatcher defaultWatcher = WrappedDataWatcher.getEntityWatcher(item);
-		    WrappedDataWatcher modifiedWatcher = WatchableCollection.getWatchableCollection(item, display, defaultWatcher.deepClone());
+		    WrappedDataWatcher modifiedWatcher = WatchableCollection.createCustomNameWatchableCollection(display);
+		    WrappedDataWatcher defaultWatcher = WatchableCollection.resetCustomNameWatchableCollection(item);
 		    
 		    PacketContainer modifiedPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
 		    PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
@@ -232,6 +235,15 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		    Location entityCenter = location.clone();
 			entityCenter.setY(entityCenter.getY() + item.getHeight() * 1.7);
 		    
+			Set<Player> outOfRangePlayers;
+			synchronized (outOfRangePlayersMap) {
+				outOfRangePlayers = outOfRangePlayersMap.get(item);
+				if (outOfRangePlayers == null) {
+					outOfRangePlayers = ConcurrentHashMap.newKeySet();
+					outOfRangePlayersMap.put(item, outOfRangePlayers);
+				}
+			}
+			
 		    Collection<Player> players = location.getWorld().getPlayers();
 		    Collection<Player> enabledPlayers = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY);
 		    Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, location, player -> !InteractionVisualizer.hideIfObstructed || LineOfSightUtils.hasLineOfSight(player.getEyeLocation(), entityCenter));
@@ -239,8 +251,10 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 	    		try {
 	    			if (playersInRange.contains(player) && enabledPlayers.contains(player)) {
 	    				InteractionVisualizer.protocolManager.sendServerPacket(player, modifiedPacket);
-	    			} else {
+	    				outOfRangePlayers.remove(player);
+	    			} else if (!outOfRangePlayers.contains(player)) {
 	    				InteractionVisualizer.protocolManager.sendServerPacket(player, defaultPacket);
+	    				outOfRangePlayers.add(player);
 			    	}
 				} catch (InvocationTargetException e) {
 					e.printStackTrace();
@@ -249,19 +263,19 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		}
 	}
 	
-	private BaseComponent getDisplayName(ItemStack item) {
-		BaseComponent name = null;
+	private Component getDisplayName(ItemStack item) {
+		Component name = null;
 		
-		String rawDisplayName = NBTUtils.getString(item, "display", "Name");
+		String rawDisplayName = NBTEditor.getString(item, "display", "Name");
 	    if (rawDisplayName != null && JsonUtils.isValid(rawDisplayName)) {
 	    	try {
 	    		if (item.getEnchantments().isEmpty()) {
-	    			name = ChatComponentUtils.join(ComponentSerializer.parse(rawDisplayName));
+	    			name = GsonComponentSerializer.gson().deserialize(rawDisplayName);
 	    		} else {							
-	    			TextComponent coloring = new TextComponent(ChatColor.AQUA + "");
-	    			coloring.setColor(ChatColor.AQUA);
-	    			coloring.setExtra(new ArrayList<>(Arrays.asList(ComponentSerializer.parse(rawDisplayName))));
-	    			name = ChatComponentUtils.cleanUpLegacyText(coloring);
+	    			Component coloring = LegacyComponentSerializer.legacySection().deserialize(ChatColor.AQUA + "");
+	    			coloring = coloring.color(NamedTextColor.AQUA);
+	    			coloring = coloring.append(GsonComponentSerializer.gson().deserialize(rawDisplayName));
+	    			name = ComponentCompacting.optimize(coloring);
 	    		}
 	    	} catch (Throwable e) {
 	    		name = null;
@@ -271,17 +285,17 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 	    if (name == null) {
 		    if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && !item.getItemMeta().getDisplayName().equals("")) {
 		    	if (item.getEnchantments().isEmpty()) {
-		    		name = new TextComponent(ChatColorUtils.filterIllegalColorCodes(item.getItemMeta().getDisplayName()));
+		    		name = LegacyComponentSerializer.legacySection().deserialize(ChatColorUtils.filterIllegalColorCodes(item.getItemMeta().getDisplayName()));
 		    	} else {
-		    		name = new TextComponent(ChatColorUtils.filterIllegalColorCodes(ChatColor.AQUA + item.getItemMeta().getDisplayName()));
+		    		name = LegacyComponentSerializer.legacySection().deserialize(ChatColorUtils.filterIllegalColorCodes(ChatColor.AQUA + item.getItemMeta().getDisplayName()));
 		    	}
 		    } else {
-		    	name = new TranslatableComponent(LanguageUtils.getTranslationKey(item));
+		    	name = Component.translatable(LanguageUtils.getTranslationKey(item));
 		    }
 	    }
 	    
-	    if (name.getColorRaw() == null) {
-	    	name.setColor(RarityUtils.getRarityColor(item));
+	    if (name.color() == null) {
+	    	name = name.color(ColorUtils.toTextColor(RarityUtils.getRarityColor(item)));
 	    }
 	    
 	    return name;

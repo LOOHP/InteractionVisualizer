@@ -19,17 +19,17 @@ import com.loohp.interactionvisualizer.updater.Updater;
 import com.loohp.interactionvisualizer.updater.Updater.UpdaterResponse;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 
 public class Commands implements CommandExecutor, TabCompleter {
 	
 	private static InteractionVisualizer plugin = InteractionVisualizer.plugin;
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (!label.equalsIgnoreCase("interactionvisualizer") && !label.equalsIgnoreCase("iv")) {
@@ -232,12 +232,11 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 		
 		if (args[0].equalsIgnoreCase("ethereal")) {
-			TextComponent text = new TextComponent("She is Imaginary~~");
-			text.setColor(ChatColor.YELLOW);
-			TextComponent bone = new TextComponent("\u00a7eNana's Bone\n\u00a77Lost \u00a76In-\u00a7dMaginary~~");
-			text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[] {bone}));
-			text.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.instagram.com/narliar/"));
-			sender.spigot().sendMessage(text);
+			Component text = Component.text("She is Imaginary~~");
+			text = text.color(NamedTextColor.YELLOW);
+			Component bone = LegacyComponentSerializer.legacySection().deserialize("\u00a7eNana's Bone\n\u00a77Lost \u00a76In-\u00a7dMaginary~~");
+			text = text.hoverEvent(HoverEvent.showText(bone)).clickEvent(ClickEvent.openUrl("https://www.instagram.com/narliars/"));
+			InteractionVisualizer.sendMessage(sender, text);
 			return true;
 		}
 		

@@ -1,21 +1,18 @@
 package com.loohp.interactionvisualizer.nms;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_17_R1.CraftChunk;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftItem;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_17_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_18_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftItem;
+import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_18_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
@@ -34,34 +31,18 @@ import com.loohp.interactionvisualizer.objectholders.ValuePairs;
 import com.loohp.interactionvisualizer.objectholders.WrappedIterable;
 import com.mojang.datafixers.util.Pair;
 
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityEquipment;
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.world.entity.EnumItemSlot;
 import net.minecraft.world.entity.item.EntityItem;
-import net.minecraft.world.level.IBlockAccess;
-import net.minecraft.world.level.block.state.BlockBase.BlockData;
-import net.minecraft.world.level.chunk.Chunk;
-import net.minecraft.world.level.entity.LevelEntityGetter;
 import net.minecraft.world.phys.AxisAlignedBB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class V1_17 extends NMS {
+public class V1_18 extends NMS {
 	
 	private static Method voxelShapeGetAABBList;
 	private static boolean entityDestoryIsInt;
-	private static Method worldServerGetType;
-	private static Method blockDataGetShape;
-	private static Method blockPositionGetX;
-	private static Method blockPositionGetY;
-	private static Method blockPositionGetZ;
-	private static Field nmsChunkL;
-	private static Method tileEntityGetBlock;
-	private static Method blockDataGetBlock;
-	private static Method worldServerGetTileEntity;
-	private static Method nmsNBTTagCompoundGetString;
-	private static Method worldServerGetEntities;
 	
 	static {
 		try {
@@ -76,17 +57,6 @@ public class V1_17 extends NMS {
 			} catch (NoSuchMethodException e) {
 				entityDestoryIsInt = false;
 			}
-			worldServerGetType = WorldServer.class.getMethod("getType", net.minecraft.core.BlockPosition.class);
-			blockDataGetShape = BlockData.class.getMethod("getShape", IBlockAccess.class, net.minecraft.core.BlockPosition.class);
-			blockPositionGetX = net.minecraft.core.BlockPosition.class.getMethod("getX");
-			blockPositionGetY = net.minecraft.core.BlockPosition.class.getMethod("getY");
-			blockPositionGetZ = net.minecraft.core.BlockPosition.class.getMethod("getZ");
-			nmsChunkL = Chunk.class.getField("l");
-			tileEntityGetBlock = net.minecraft.world.level.block.entity.TileEntity.class.getMethod("getBlock");
-			blockDataGetBlock = BlockData.class.getMethod("getBlock");
-			worldServerGetTileEntity = WorldServer.class.getMethod("getTileEntity", net.minecraft.core.BlockPosition.class);
-			nmsNBTTagCompoundGetString = NBTTagCompound.class.getMethod("getString", String.class);
-			worldServerGetEntities = WorldServer.class.getMethod("getEntities");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -96,8 +66,8 @@ public class V1_17 extends NMS {
 	public List<BoundingBox> getBoundingBoxes(BlockPosition pos) {
 		net.minecraft.core.BlockPosition blockpos = new net.minecraft.core.BlockPosition(pos.getX(), pos.getY(), pos.getZ());
 		WorldServer world = ((CraftWorld) pos.getWorld()).getHandle();
+		VoxelShape shape = world.a_(blockpos).j(world, blockpos);
 		try {
-			VoxelShape shape = (VoxelShape) blockDataGetShape.invoke(worldServerGetType.invoke(blockpos), world, blockpos);
 			return ((List<AxisAlignedBB>) voxelShapeGetAABBList.invoke(shape)).stream().map(each -> new BoundingBox(each.a + pos.getX(), each.b + pos.getY(), each.c + pos.getZ(), each.d + pos.getX(), each.e + pos.getY(), each.f + pos.getZ())).collect(Collectors.toList());
 		} catch (Exception e) {
 			List<BoundingBox> boxes = new ArrayList<>();
@@ -106,32 +76,22 @@ public class V1_17 extends NMS {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public NMSTileEntitySet<?, ?> getTileEntities(ChunkPosition chunk, boolean load) {
 		if (!chunk.isLoaded() && !load) {
 			return null;
 		}
 		World world = chunk.getWorld();
-		try {
-			return new NMSTileEntitySet<net.minecraft.core.BlockPosition, net.minecraft.world.level.block.entity.TileEntity>((Map<net.minecraft.core.BlockPosition, net.minecraft.world.level.block.entity.TileEntity>) nmsChunkL.get(((CraftChunk) chunk.getChunk()).getHandle()), entry -> {
-				net.minecraft.core.BlockPosition pos = entry.getKey();
-				try {
-					Material type = CraftMagicNumbers.getMaterial((net.minecraft.world.level.block.Block) blockDataGetBlock.invoke(tileEntityGetBlock.invoke(entry.getValue())));
-					TileEntityType tileEntityType = TileEntity.getTileEntityType(type);
-					if (tileEntityType != null) {
-						return new TileEntity(world, (int) blockPositionGetX.invoke(pos), (int) blockPositionGetY.invoke(pos), (int) blockPositionGetZ.invoke(pos), tileEntityType);
-					} else {
-						return null;
-					}
-				} catch (Exception e) {
-					return null;
-				}
-			});
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			e.printStackTrace();
-			return null;
-		}
+		return new NMSTileEntitySet<net.minecraft.core.BlockPosition, net.minecraft.world.level.block.entity.TileEntity>(((CraftChunk) chunk.getChunk()).getHandle().E(), entry -> {
+			net.minecraft.core.BlockPosition pos = entry.getKey();
+			Material type = CraftMagicNumbers.getMaterial(entry.getValue().q().b());
+			TileEntityType tileEntityType = TileEntity.getTileEntityType(type);
+			if (tileEntityType != null) {
+				return new TileEntity(world, pos.u(), pos.v(), pos.w(), tileEntityType);
+			} else {
+				return null;
+			}
+		});
 	}
 	
 	@Override
@@ -199,23 +159,13 @@ public class V1_17 extends NMS {
 	
 	@Override
 	public String getBannerCustomName(Block block) {
-		try {
-			return nmsNBTTagCompoundGetString.invoke(((net.minecraft.world.level.block.entity.TileEntity) worldServerGetTileEntity.invoke(((CraftWorld) block.getWorld()).getHandle(), new net.minecraft.core.BlockPosition(block.getX(), block.getY(), block.getZ()))).Z_(), "CustomName").toString();
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
-			return "";
-		}
+		return ((CraftWorld) block.getWorld()).getHandle().c_(new net.minecraft.core.BlockPosition(block.getX(), block.getY(), block.getZ())).Z_().l("CustomName");
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("resource")
 	@Override
 	public WrappedIterable<?, Entity> getEntities(World world) {
-		try {
-			return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(((LevelEntityGetter<net.minecraft.world.entity.Entity>) worldServerGetEntities.invoke(((CraftWorld) world).getHandle())).a(), entry -> entry.getBukkitEntity());
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
-			return null;
-		}
+		return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(((CraftWorld) world).getHandle().P.d().a(), entry -> entry.getBukkitEntity());
 	}
 
 }

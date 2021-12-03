@@ -46,6 +46,7 @@ import com.loohp.interactionvisualizer.utils.InventoryUtils;
 import com.loohp.interactionvisualizer.utils.MCVersion;
 import com.loohp.interactionvisualizer.utils.VanishUtils;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 
 public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener {
@@ -247,21 +248,21 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
 								symbol = symbol.replace("{CompletedAmount}", (inv.getItem(2) == null ? 0 : inv.getItem(2).getAmount()) + "");
 							}
 							if (hasFuel(smoker)) {
-								if (!stand.getCustomName().toPlainText().equals(symbol) || !stand.isCustomNameVisible()) {
+								if (!PlainTextComponentSerializer.plainText().serialize(stand.getCustomName()).equals(symbol) || !stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(true);
 									stand.setCustomName(symbol);
 									PacketManager.updateArmorStandOnlyMeta(stand);
 								}
 							} else {
 								symbol = noFuelColor + ChatColor.stripColor(symbol);
-								if (!stand.getCustomName().toPlainText().equals(symbol) || !stand.isCustomNameVisible()) {
+								if (!PlainTextComponentSerializer.plainText().serialize(stand.getCustomName()).equals(symbol) || !stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(true);
 									stand.setCustomName(symbol);
 									PacketManager.updateArmorStandOnlyMeta(stand);
 								}
 							}
 						} else {					
-							if (!stand.getCustomName().toPlainText().equals("") || stand.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand.getCustomName()).equals("") || stand.isCustomNameVisible()) {
 								stand.setCustomNameVisible(false);
 								stand.setCustomName("");
 								PacketManager.updateArmorStandOnlyMeta(stand);

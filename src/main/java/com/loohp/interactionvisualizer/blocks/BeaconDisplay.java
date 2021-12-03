@@ -32,14 +32,15 @@ import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
-import com.loohp.interactionvisualizer.utils.ChatComponentUtils;
+import com.loohp.interactionvisualizer.utils.ColorUtils;
 import com.loohp.interactionvisualizer.utils.RomanNumberUtils;
 import com.loohp.interactionvisualizer.utils.TranslationUtils;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener {
 	
@@ -169,82 +170,82 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 							
 						String one = color + up + beacon.getTier() + " " + arrow + " " + getRange(beacon.getTier()) + "m";
 						if (beacon.getTier() == 0) {
-							if (!line1.getCustomName().toPlainText().equals("") || line1.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(line1.getCustomName()).equals("") || line1.isCustomNameVisible()) {
 								line1.setCustomName("");
 								line1.setCustomNameVisible(false);
 								PacketManager.updateArmorStandOnlyMeta(line1);
 							}
-							if (!line2.getCustomName().toPlainText().equals(one) || !line2.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(line2.getCustomName()).equals(one) || !line2.isCustomNameVisible()) {
 								line2.setCustomName(one);
 								line2.setCustomNameVisible(true);
 								PacketManager.updateArmorStandOnlyMeta(line2);
 							}
-							if (!line3.getCustomName().toPlainText().equals("") || line3.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(line3.getCustomName()).equals("") || line3.isCustomNameVisible()) {
 								line3.setCustomName("");
 								line3.setCustomNameVisible(false);
 								PacketManager.updateArmorStandOnlyMeta(line3);
 							}
 						} else {
-							BaseComponent primaryEffectText = null;
-							BaseComponent secondaryEffectText = null;
+							Component primaryEffectText = null;
+							Component secondaryEffectText = null;
 							if (beacon.getPrimaryEffect() != null) {
-								TranslatableComponent effectTrans = new TranslatableComponent(TranslationUtils.getEffect(beacon.getPrimaryEffect().getType()));
-								effectTrans.setColor(color);
-								TextComponent levelText = new TextComponent(" " + color + RomanNumberUtils.toRoman(beacon.getPrimaryEffect().getAmplifier() + 1));
-								effectTrans.addExtra(levelText);
+								TranslatableComponent effectTrans = Component.translatable(TranslationUtils.getEffect(beacon.getPrimaryEffect().getType()));
+								effectTrans = effectTrans.color(ColorUtils.toTextColor(color));
+								Component levelText = LegacyComponentSerializer.legacySection().deserialize(" " + color + RomanNumberUtils.toRoman(beacon.getPrimaryEffect().getAmplifier() + 1));
+								effectTrans = effectTrans.append(levelText);
 								primaryEffectText = effectTrans;
 							}
 							if (beacon.getSecondaryEffect() != null) {
-								TranslatableComponent effectTrans = new TranslatableComponent(TranslationUtils.getEffect(beacon.getSecondaryEffect().getType()));
-								effectTrans.setColor(color);
-								TextComponent levelText = new TextComponent(" " + color + RomanNumberUtils.toRoman(beacon.getSecondaryEffect().getAmplifier() + 1));
-								effectTrans.addExtra(levelText);
+								TranslatableComponent effectTrans = Component.translatable(TranslationUtils.getEffect(beacon.getSecondaryEffect().getType()));
+								effectTrans = effectTrans.color(ColorUtils.toTextColor(color));
+								Component levelText = LegacyComponentSerializer.legacySection().deserialize(" " + color + RomanNumberUtils.toRoman(beacon.getSecondaryEffect().getAmplifier() + 1));
+								effectTrans = effectTrans.append(levelText);
 								secondaryEffectText = effectTrans;
 							}
 							if (secondaryEffectText == null) {
-								if (!line1.getCustomName().toPlainText().equals("") || line1.isCustomNameVisible()) {
+								if (!PlainTextComponentSerializer.plainText().serialize(line1.getCustomName()).equals("") || line1.isCustomNameVisible()) {
 									line1.setCustomName("");
 									line1.setCustomNameVisible(false);
 									PacketManager.updateArmorStandOnlyMeta(line1);
 								}
-								if (!line2.getCustomName().toPlainText().equals(one) || !line2.isCustomNameVisible()) {
+								if (!PlainTextComponentSerializer.plainText().serialize(line2.getCustomName()).equals(one) || !line2.isCustomNameVisible()) {
 									line2.setCustomName(one);
 									line2.setCustomNameVisible(true);
 									PacketManager.updateArmorStandOnlyMeta(line2);
 								}
 								if (primaryEffectText == null) {
-									if (!line3.getCustomName().toPlainText().equals("") || line3.isCustomNameVisible()) {
+									if (!PlainTextComponentSerializer.plainText().serialize(line3.getCustomName()).equals("") || line3.isCustomNameVisible()) {
 										line3.setCustomName("");
 										line3.setCustomNameVisible(false);
 										PacketManager.updateArmorStandOnlyMeta(line3);
 									}
 								} else {
-									if (!ChatComponentUtils.areSimilar(line3.getCustomName(), primaryEffectText, true) || !line3.isCustomNameVisible()) {
+									if (!line3.getCustomName().equals(primaryEffectText) || !line3.isCustomNameVisible()) {
 										line3.setCustomName(primaryEffectText);
 										line3.setCustomNameVisible(true);
 										PacketManager.updateArmorStandOnlyMeta(line3);
 									}
 								}
 							} else {
-								if (!line1.getCustomName().toPlainText().equals(one) || !line1.isCustomNameVisible()) {
+								if (!PlainTextComponentSerializer.plainText().serialize(line1.getCustomName()).equals(one) || !line1.isCustomNameVisible()) {
 									line1.setCustomName(one);
 									line1.setCustomNameVisible(true);
 									PacketManager.updateArmorStandOnlyMeta(line1);
 								}
 								if (primaryEffectText == null) {
-									if (!line2.getCustomName().toPlainText().equals("") || line2.isCustomNameVisible()) {
+									if (!PlainTextComponentSerializer.plainText().serialize(line2.getCustomName()).equals("") || line2.isCustomNameVisible()) {
 										line2.setCustomName("");
 										line2.setCustomNameVisible(false);
 										PacketManager.updateArmorStandOnlyMeta(line2);
 									}
 								} else {
-									if (!ChatComponentUtils.areSimilar(line2.getCustomName(), primaryEffectText, true) || !line2.isCustomNameVisible()) {
+									if (!line2.getCustomName().equals(primaryEffectText) || !line2.isCustomNameVisible()) {
 										line2.setCustomName(primaryEffectText);
 										line2.setCustomNameVisible(true);
 										PacketManager.updateArmorStandOnlyMeta(line2);
 									}
 								}
-								if (!ChatComponentUtils.areSimilar(line3.getCustomName(), secondaryEffectText, true) || !line3.isCustomNameVisible()) {
+								if (!line3.getCustomName().equals(secondaryEffectText) || !line3.isCustomNameVisible()) {
 									line3.setCustomName(secondaryEffectText);
 									line3.setCustomNameVisible(true);
 									PacketManager.updateArmorStandOnlyMeta(line3);

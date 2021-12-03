@@ -29,13 +29,13 @@ import com.loohp.interactionvisualizer.managers.PlayerLocationManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
+import com.loohp.interactionvisualizer.utils.ColorUtils;
 import com.loohp.interactionvisualizer.utils.LegacyRecordsUtils;
 import com.loohp.interactionvisualizer.utils.TranslationUtils;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listener {
 	
@@ -142,19 +142,18 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						ItemStack itemstack = InteractionVisualizer.version.isLegacy() ? (jukebox.getPlaying() == null ? null : (jukebox.getPlaying().equals(Material.AIR) ? null : new ItemStack(jukebox.getPlaying(), 1))) : (jukebox.getRecord() == null ? null : (jukebox.getRecord().getType().equals(Material.AIR) ? null : jukebox.getRecord().clone()));
 						
-						Item item = null;
 						if (entry.getValue().get("Item") instanceof String) {
 							if (itemstack != null) {
-								item = new Item(jukebox.getLocation().clone().add(0.5, 1.0, 0.5));
+								Item item = new Item(jukebox.getLocation().clone().add(0.5, 1.0, 0.5));
 								
 								String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString()) : jukebox.getPlaying().toString();
-								BaseComponent text;
+								Component text;
 								if (showDiscName) {
 									if (itemstack.getItemMeta().hasDisplayName()) {
-										text = new TextComponent(getColor(disc) + itemstack.getItemMeta().getDisplayName());
+										text = LegacyComponentSerializer.legacySection().deserialize(getColor(disc) + itemstack.getItemMeta().getDisplayName());
 									} else {
-										text = new TranslatableComponent(TranslationUtils.getRecord(disc));
-										text.setColor(getColor(disc));
+										text = Component.translatable(TranslationUtils.getRecord(disc));
+										text = text.color(ColorUtils.toTextColor(getColor(disc)));
 									}
 									item.setCustomName(text);
 									item.setCustomNameVisible(true);
@@ -173,18 +172,18 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 								entry.getValue().put("Item", "N/A");
 							}
 						} else {
-							item = (Item) entry.getValue().get("Item");
+							Item item = (Item) entry.getValue().get("Item");
 							if (itemstack != null) {
 								if (!item.getItemStack().equals(itemstack)) {
 									item.setItemStack(itemstack);
 									String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString()) : jukebox.getPlaying().toString();
-									BaseComponent text;
+									Component text;
 									if (showDiscName) {
 										if (itemstack.getItemMeta().hasDisplayName()) {
-											text = new TextComponent(getColor(disc) + itemstack.getItemMeta().getDisplayName());
+											text = LegacyComponentSerializer.legacySection().deserialize(getColor(disc) + itemstack.getItemMeta().getDisplayName());
 										} else {
-											text = new TranslatableComponent(TranslationUtils.getRecord(disc));
-											text.setColor(getColor(disc));
+											text = Component.translatable(TranslationUtils.getRecord(disc));
+											text = text.color(ColorUtils.toTextColor(getColor(disc)));
 										}
 										item.setCustomName(text);
 										item.setCustomNameVisible(true);
@@ -253,9 +252,11 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 		case "MUSIC_DISC_WAIT":
 			return ChatColor.AQUA;
 		case "MUSIC_DISC_WARD":
-			return ChatColor.DARK_GREEN;
+			return ChatColor.DARK_AQUA;
 		case "MUSIC_DISC_PIGSTEP":
 			return ChatColor.GOLD;
+		case "MUSIC_DISC_OTHERSIDE":
+			return ChatColor.BLUE;
 		default:
 			return ChatColor.WHITE;
 		}

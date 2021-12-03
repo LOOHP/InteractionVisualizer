@@ -36,12 +36,12 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
-import com.loohp.interactionvisualizer.utils.ChatComponentUtils;
 import com.loohp.interactionvisualizer.utils.JsonUtils;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 public class BannerDisplay extends VisualizerRunnableDisplay implements Listener {
 	
@@ -154,34 +154,34 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
 					InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
 						ArmorStand line1 = (ArmorStand) entry.getValue().get("1");
 						if (name == null || name.equals("")) {
-							if (!line1.getCustomName().toPlainText().equals("") || line1.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(line1.getCustomName()).equals("") || line1.isCustomNameVisible()) {
 								line1.setCustomName("");
 								line1.setCustomNameVisible(false);
 								PacketManager.updateArmorStandOnlyMeta(line1);
 							}
 						} else {
-							BaseComponent component;
+							Component component;
 							if (JsonUtils.isValid(name)) {
 								try {
-									component = ChatComponentUtils.join(ComponentSerializer.parse(name));
+									component = GsonComponentSerializer.gson().deserialize(name);
 								} catch (Throwable e) {
-									component = new TextComponent(name);
+									component = LegacyComponentSerializer.legacySection().deserialize(name);
 								}
 							} else {
-								component = new TextComponent(name);
+								component = LegacyComponentSerializer.legacySection().deserialize(name);
 							}
-							String matchingName = component.toLegacyText();
+							String matchingName = LegacyComponentSerializer.legacySection().serialize(component);
 							if (stripColorBlacklist) {
 								matchingName = ChatColorUtils.stripColor(matchingName);
 							}
 							if (blacklist.test(matchingName)) {
-								if (!line1.getCustomName().toPlainText().equals("") || line1.isCustomNameVisible()) {
+								if (!PlainTextComponentSerializer.plainText().serialize(line1.getCustomName()).equals("") || line1.isCustomNameVisible()) {
 									line1.setCustomName("");
 									line1.setCustomNameVisible(false);
 									PacketManager.updateArmorStandOnlyMeta(line1);
 								}
 							} else {
-								if (!ChatComponentUtils.areSimilar(line1.getCustomName(), component, true) || !line1.isCustomNameVisible()) {
+								if (!line1.getCustomName().equals(component) || !line1.isCustomNameVisible()) {
 									line1.setCustomName(component);
 									line1.setCustomNameVisible(true);
 									PacketManager.updateArmorStandOnlyMeta(line1);

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -52,11 +53,14 @@ import com.loohp.interactionvisualizer.utils.LanguageUtils;
 import com.loohp.interactionvisualizer.utils.MCVersion;
 import com.loohp.interactionvisualizer.utils.PotionUtils;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 public class InteractionVisualizer extends JavaPlugin {
 	
@@ -128,6 +132,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		asyncExecutorManager = new AsyncExecutorManager(threadPool);
 		
 		switch (version) {
+		case V1_18:
 		case V1_17:
 			metaversion = 4;
 			break;
@@ -396,6 +401,14 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	private static void hookMessage(String pluginName) {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.LIGHT_PURPLE + "[InteractionVisualizer] InteractionVisualizer has hooked into " + pluginName + "!");
+	}
+	
+	public static void sendMessage(CommandSender sender, Component component) {
+		if (version.isLegacyRGB()) {
+			sender.spigot().sendMessage(ComponentSerializer.parse(GsonComponentSerializer.colorDownsamplingGson().serialize(component)));
+		} else {
+			sender.spigot().sendMessage(ComponentSerializer.parse(GsonComponentSerializer.gson().serialize(component)));
+		}
 	}
 	
 }

@@ -38,6 +38,8 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+
 public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Listener {
 	
 	public static final EntryKey KEY = new EntryKey("brewing_stand");
@@ -232,13 +234,13 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
 								for (i = progressBarLength - 1; i >= percentagescaled; i--) {
 									symbol += emptyColor + progressBarCharacter;
 								}
-								if (!stand.getCustomName().toPlainText().equals(symbol) || !stand.isCustomNameVisible()) {
+								if (!PlainTextComponentSerializer.plainText().serialize(stand.getCustomName()).equals(symbol) || !stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(true);
 									stand.setCustomName(symbol);
 									PacketManager.updateArmorStandOnlyMeta(stand);
 								}
 							} else {
-								if (!stand.getCustomName().toPlainText().equals("") || stand.isCustomNameVisible()) {
+								if (!PlainTextComponentSerializer.plainText().serialize(stand.getCustomName()).equals("") || stand.isCustomNameVisible()) {
 									stand.setCustomNameVisible(false);
 									stand.setCustomName("");
 									PacketManager.updateArmorStandOnlyMeta(stand);

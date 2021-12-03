@@ -61,6 +61,7 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
 		}, 0, 20).getTaskId();
 	}
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onUseNoteBlock(PlayerInteractEvent event) {
 		Block block = event.getClickedBlock();

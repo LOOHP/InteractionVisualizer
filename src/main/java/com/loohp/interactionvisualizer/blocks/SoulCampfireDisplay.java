@@ -36,6 +36,8 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+
 public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Listener {
 	
 	public static final EntryKey KEY = new EntryKey("soul_campfire");
@@ -221,13 +223,13 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 								symbol += emptyColor + progressBarCharacter;
 							}
 							
-							if (!stand1.getCustomName().toPlainText().equals(symbol) || !stand1.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand1.getCustomName()).equals(symbol) || !stand1.isCustomNameVisible()) {
 								stand1.setCustomNameVisible(true);
 								stand1.setCustomName(symbol);
 								PacketManager.updateArmorStandOnlyMeta(stand1);
 							}
 						} else {					
-							if (!stand1.getCustomName().toPlainText().equals("") || stand1.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand1.getCustomName()).equals("") || stand1.isCustomNameVisible()) {
 								stand1.setCustomNameVisible(false);
 								stand1.setCustomName("");
 								PacketManager.updateArmorStandOnlyMeta(stand1);
@@ -254,13 +256,13 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 								symbol += emptyColor + progressBarCharacter;
 							}
 							
-							if (!stand2.getCustomName().toPlainText().equals(symbol) || !stand2.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand2.getCustomName()).equals(symbol) || !stand2.isCustomNameVisible()) {
 								stand2.setCustomNameVisible(true);
 								stand2.setCustomName(symbol);
 								PacketManager.updateArmorStandOnlyMeta(stand2);
 							}
 						} else {					
-							if (!stand2.getCustomName().toPlainText().equals("") || stand2.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand2.getCustomName()).equals("") || stand2.isCustomNameVisible()) {
 								stand2.setCustomNameVisible(false);
 								stand2.setCustomName("");
 								PacketManager.updateArmorStandOnlyMeta(stand2);
@@ -287,13 +289,13 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 								symbol += emptyColor + progressBarCharacter;
 							}
 							
-							if (!stand3.getCustomName().toPlainText().equals(symbol) || !stand3.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand3.getCustomName()).equals(symbol) || !stand3.isCustomNameVisible()) {
 								stand3.setCustomNameVisible(true);
 								stand3.setCustomName(symbol);
 								PacketManager.updateArmorStandOnlyMeta(stand3);
 							}
 						} else {					
-							if (!stand3.getCustomName().toPlainText().equals("") || stand3.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand3.getCustomName()).equals("") || stand3.isCustomNameVisible()) {
 								stand3.setCustomNameVisible(false);
 								stand3.setCustomName("");
 								PacketManager.updateArmorStandOnlyMeta(stand3);
@@ -320,13 +322,13 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
 								symbol += emptyColor + progressBarCharacter;
 							}
 							
-							if (!stand4.getCustomName().toPlainText().equals(symbol) || !stand4.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand4.getCustomName()).equals(symbol) || !stand4.isCustomNameVisible()) {
 								stand4.setCustomNameVisible(true);
 								stand4.setCustomName(symbol);
 								PacketManager.updateArmorStandOnlyMeta(stand4);
 							}
 						} else {					
-							if (!stand4.getCustomName().toPlainText().equals("") || stand4.isCustomNameVisible()) {
+							if (!PlainTextComponentSerializer.plainText().serialize(stand4.getCustomName()).equals("") || stand4.isCustomNameVisible()) {
 								stand4.setCustomNameVisible(false);
 								stand4.setCustomName("");
 								PacketManager.updateArmorStandOnlyMeta(stand4);

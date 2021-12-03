@@ -38,6 +38,8 @@ import com.loohp.interactionvisualizer.utils.MaterialUtils;
 import com.loohp.interactionvisualizer.utils.MaterialUtils.MaterialMode;
 import com.loohp.interactionvisualizer.utils.VanishUtils;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+
 public class AnvilDisplay extends VisualizerInteractDisplay implements Listener {
 	
 	public static final EntryKey KEY = new EntryKey("anvil");
@@ -390,15 +392,17 @@ public class AnvilDisplay extends VisualizerInteractDisplay implements Listener 
 	}
 	
 	public MaterialMode standMode(ArmorStand stand) {
-		if (stand.getCustomName().toPlainText().startsWith("IV.Anvil.")) {
-			return MaterialMode.getModeFromName(stand.getCustomName().toPlainText().substring(stand.getCustomName().toPlainText().lastIndexOf(".") + 1));
+		String plain = PlainTextComponentSerializer.plainText().serialize(stand.getCustomName());
+		if (plain.startsWith("IV.Anvil.")) {
+			return MaterialMode.getModeFromName(plain.substring(plain.lastIndexOf(".") + 1));
 		}
 		return null;
 	}
 	
 	public void toggleStandMode(ArmorStand stand, String mode) {
-		if (!stand.getCustomName().toPlainText().equals("IV.Anvil.Item")) {
-			if (stand.getCustomName().toPlainText().equals("IV.Anvil.Block")) {
+		String plain = PlainTextComponentSerializer.plainText().serialize(stand.getCustomName());
+		if (!plain.equals("IV.Anvil.Item")) {
+			if (plain.equals("IV.Anvil.Block")) {
 				stand.setCustomName("IV.Anvil.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -407,7 +411,7 @@ public class AnvilDisplay extends VisualizerInteractDisplay implements Listener 
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.14)));
 				
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.Anvil.LowBlock")) {
+			if (plain.equals("IV.Anvil.LowBlock")) {
 				stand.setCustomName("IV.Anvil.Item");
 				stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
@@ -416,14 +420,14 @@ public class AnvilDisplay extends VisualizerInteractDisplay implements Listener 
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.15)));
 				
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.Anvil.Tool")) {
+			if (plain.equals("IV.Anvil.Tool")) {
 				stand.setCustomName("IV.Anvil.Item");
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(0.3), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(0.1)));
 				stand.teleport(stand.getLocation().add(0, 0.26, 0));
 				stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
 			}
-			if (stand.getCustomName().toPlainText().equals("IV.Anvil.Standing")) {
+			if (plain.equals("IV.Anvil.Standing")) {
 				stand.setCustomName("IV.Anvil.Item");
 				stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().getDirection().normalize().multiply(0.323), -90)));
 				stand.teleport(stand.getLocation().add(stand.getLocation().getDirection().normalize().multiply(-0.115)));

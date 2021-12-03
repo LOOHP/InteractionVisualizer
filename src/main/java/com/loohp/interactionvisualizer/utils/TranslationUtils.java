@@ -44,7 +44,11 @@ public class TranslationUtils {
 				try {
 					getEffectFromIdMethod = nmsMobEffectListClass.getMethod("fromId", int.class);
 				} catch (Exception e) {
-					getEffectFromIdMethod = nmsMobEffectListClass.getMethod("byId", int.class);
+					try {
+						getEffectFromIdMethod = nmsMobEffectListClass.getMethod("byId", int.class);
+					} catch (Exception e1) {
+						getEffectFromIdMethod = nmsMobEffectListClass.getMethod("a", int.class);
+					}
 				}
 				getEffectKeyMethod = nmsMobEffectListClass.getMethod("c");
 			} catch (Exception e) {
