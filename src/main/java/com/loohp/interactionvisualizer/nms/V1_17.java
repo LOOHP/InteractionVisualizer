@@ -62,6 +62,7 @@ public class V1_17 extends NMS {
 	private static Method worldServerGetTileEntity;
 	private static Method nmsNBTTagCompoundGetString;
 	private static Method worldServerGetEntities;
+	private static Method nmsEntityGetBukkitEntity;
 	
 	static {
 		try {
@@ -87,6 +88,7 @@ public class V1_17 extends NMS {
 			worldServerGetTileEntity = WorldServer.class.getMethod("getTileEntity", net.minecraft.core.BlockPosition.class);
 			nmsNBTTagCompoundGetString = NBTTagCompound.class.getMethod("getString", String.class);
 			worldServerGetEntities = WorldServer.class.getMethod("getEntities");
+			nmsEntityGetBukkitEntity = net.minecraft.world.entity.Entity.class.getMethod("getBukkitEntity");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -211,7 +213,14 @@ public class V1_17 extends NMS {
 	@Override
 	public WrappedIterable<?, Entity> getEntities(World world) {
 		try {
-			return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(((LevelEntityGetter<net.minecraft.world.entity.Entity>) worldServerGetEntities.invoke(((CraftWorld) world).getHandle())).a(), entry -> entry.getBukkitEntity());
+			return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(((LevelEntityGetter<net.minecraft.world.entity.Entity>) worldServerGetEntities.invoke(((CraftWorld) world).getHandle())).a(), entry -> {
+				try {
+					return (Entity) nmsEntityGetBukkitEntity.invoke(entry);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					e.printStackTrace();
+				}
+				return null;
+			});
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 			return null;
