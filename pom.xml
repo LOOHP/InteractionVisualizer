@@ -5,7 +5,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>1.17.0.2</version>
+	<version>1.17.0.3</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -238,7 +238,7 @@
 		<dependency>
 			<groupId>com.github.cryptomorin</groupId>
 			<artifactId>XSeries</artifactId>
-			<version>8.5.0</version>
+			<version>8.5.0.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -308,25 +308,24 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>OpenInv</groupId>
+			<groupId>com.github.Jikoo</groupId>
 			<artifactId>OpenInv</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${basedir}/lib/OpenInv.jar</systemPath>
+			<version>4.1.9</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>LightAPI-Fork</groupId>
 			<artifactId>LightAPI-Fork</artifactId>
 			<scope>system</scope>
 			<version>1.0</version>
-			<systemPath>${basedir}/lib/LightAPI-fork-3.5.0.jar</systemPath>
+			<systemPath>${basedir}/lib/LightAPI-fork-3.5.2.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>CMIAPI</groupId>
 			<artifactId>CMIAPI</artifactId>
 			<scope>system</scope>
 			<version>1.0</version>
-			<systemPath>${basedir}/lib/CMIAPI7.6.2.0.jar</systemPath>
+			<systemPath>${basedir}/lib/CMIAPI8.7.8.2.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.bukkit..........</groupId>
