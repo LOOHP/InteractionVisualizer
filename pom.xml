@@ -5,7 +5,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>1.17.0.4</version>
+	<version>1.17.0.5</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -57,12 +57,8 @@
 									<shadedPattern>com.loohp.interactionvisualizer.libs.com.cryptomorin.xseries</shadedPattern>
 								</relocation>
 								<relocation>
-									<pattern>org.apache.commons.text</pattern>
-									<shadedPattern>com.loohp.interactionvisualizer.libs.org.apache.commons.text</shadedPattern>
-								</relocation>
-								<relocation>
-									<pattern>org.apache.commons.text</pattern>
-									<shadedPattern>com.loohp.interactionvisualizer.libs.org.apache.commons.text</shadedPattern>
+									<pattern>org.apache.commons</pattern>
+									<shadedPattern>com.loohp.interactionvisualizer.libs.org.apache.commons</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>org.simpleyaml</pattern>
@@ -232,7 +228,7 @@
 		<dependency>
 			<groupId>com.github.LOOHP</groupId>
 			<artifactId>Simple-YAML</artifactId>
-			<version>630efb0</version>
+			<version>3ecbba1307</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -248,6 +244,12 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.21</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>me.clip</groupId>
 			<artifactId>placeholderapi</artifactId>
 			<version>2.10.10</version>
@@ -256,7 +258,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.18-R0.1-SNAPSHOT</version>
+			<version>1.18.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -330,7 +332,7 @@
 		<dependency>
 			<groupId>org.bukkit..........</groupId>
 			<artifactId>craftbukkit</artifactId>
-			<version>1.18-R0.1-SNAPSHOT</version>
+			<version>1.18.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
