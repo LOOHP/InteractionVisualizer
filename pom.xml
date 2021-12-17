@@ -228,7 +228,7 @@
 		<dependency>
 			<groupId>com.github.LOOHP</groupId>
 			<artifactId>Simple-YAML</artifactId>
-			<version>5f9fc36b5b</version>
+			<version>bc077802d9</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
