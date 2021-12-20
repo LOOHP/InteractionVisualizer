@@ -159,12 +159,16 @@ public class InteractionVisualizer extends JavaPlugin {
 		}
 		
 		if (getServer().getPluginManager().getPlugin("LightAPI") != null) {
-			hookMessage("LightAPI");
-			lightapi = true;
-			lightManager = new LightManager(this);
-		} else {
+			try {
+				Class.forName("ru.beykerykt.lightapi.LightType");
+				hookMessage("LightAPI");
+				lightapi = true;
+				lightManager = new LightManager(this);
+			} catch (ClassNotFoundException e) {}
+		}
+		if (!lightapi) {
 			if (version.isOlderOrEqualTo(MCVersion.V1_16_4)) {
-				Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] LightAPI is recommended to be installed on servers with Minecraft version 1.16.5 or below!");
+				Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] LightAPI (Fork) is recommended to be installed on servers with Minecraft version 1.16.5 or below!");
 			}
 			lightManager = ILightManager.DUMMY_INSTANCE;
 		}
