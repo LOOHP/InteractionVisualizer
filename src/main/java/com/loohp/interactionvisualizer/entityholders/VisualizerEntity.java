@@ -1,18 +1,14 @@
 package com.loohp.interactionvisualizer.entityholders;
 
-import java.util.Random;
 import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.loohp.interactionvisualizer.utils.EntityUtils;
 
 public abstract class VisualizerEntity implements IVisualizerEntity {
-	
-	private static final Random RANDOM = new Random();
-	public static final int ID_OFFSET = 1000000;
-	public static final int ID_BOUND = Integer.MAX_VALUE - ID_OFFSET;
 
 	protected int id;
 	protected UUID uuid;
@@ -21,7 +17,7 @@ public abstract class VisualizerEntity implements IVisualizerEntity {
 	protected boolean isSilent;
 
 	public VisualizerEntity(Location location) {
-		this.id = RANDOM.nextInt(ID_BOUND) + ID_OFFSET;
+		this.id = EntityUtils.getNextEntityId();
 		this.uuid = UUID.randomUUID();
 		this.location = location.clone();
 		this.lock = false;
