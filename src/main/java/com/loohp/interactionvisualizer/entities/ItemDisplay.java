@@ -141,125 +141,129 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 		ItemStack itemstack = item.getItemStack();
 		if (itemstack == null) {
 			itemstack = new ItemStack(Material.AIR);
+		} else {
+			itemstack = itemstack.clone();
 		}
 		Component name = getDisplayName(itemstack);
 		String matchingname = getMatchingName(itemstack, stripColorBlacklist);
 		
-		if (blacklist.test(matchingname, itemstack.getType()) || NBTEditor.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || isCramping(world, area, items)) {
-			PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
-		    defaultPacket.getIntegers().write(0, item.getEntityId());
-		    defaultPacket.getWatchableCollectionModifier().write(0, WrappedDataWatcher.getEntityWatcher(item).getWatchableObjects());
-		    Collection<Player> players = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY);
-		    for (Player player : players) {
-	    		try {
-	    			InteractionVisualizer.protocolManager.sendServerPacket(player, defaultPacket);
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
-		    }
-		} else {
-			int amount = itemstack.getAmount();
-		    String durDisplay = null;
-		    
-		    if (itemstack.getType().getMaxDurability() > 0) {
-				@SuppressWarnings("deprecation")
-				int durability = itemstack.getType().getMaxDurability() - (InteractionVisualizer.version.isLegacy() ? itemstack.getDurability() : ((Damageable) itemstack.getItemMeta()).getDamage());
-				int maxDur = itemstack.getType().getMaxDurability();
-				double percentage = ((double) durability / (double) maxDur) * 100;
-				String color;
-				if (percentage > 66.666) {
-					color = highColor;
-				} else if (percentage > 33.333) {
-					color = mediumColor;
-				} else {
-					color = lowColor;
-				}
-				durDisplay = color + durability + "/" + maxDur;
-		    }			    			 
-		    
-		    int despawnRate = NMS.getInstance().getItemDespawnRate(item);
-		    int ticksLeft = despawnRate - ticks;
-		    int secondsLeft = ticksLeft / 20;
-		    String timerColor;
-		    if (secondsLeft <= 30) {
-		    	timerColor = lowColor;
-		    } else if (secondsLeft <= 120) {
-		    	timerColor = mediumColor;
-		    } else {
-		    	timerColor = highColor;
-		    }
-		    
-		    String timer = timerColor + String.format("%02d:%02d", secondsLeft / 60, secondsLeft % 60);				    
-		    
-		    Component display;
-		    if (ticksLeft >= 600 && durDisplay != null) {
-		    	String line1 = (toolsFormatting.length > 0 ? toolsFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer).replace("{Durability}", durDisplay);
-		    	display = LegacyComponentSerializer.legacySection().deserialize(line1);
-		    	for (int i = 1; i < toolsFormatting.length; i++) {
-		    		String line = toolsFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer).replace("{Durability}", durDisplay);
-			    	Component text = LegacyComponentSerializer.legacySection().deserialize(line);
-			    	display = display.append(name).append(text);
-		    	}
-		    } else {
-		    	if (amount == 1) {
-			    	String line1 = (singularFormatting.length > 0 ? singularFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer);
+		if (!blacklist.test(matchingname, itemstack.getType())) {
+			if (NBTEditor.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || isCramping(world, area, items)) {
+				PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+			    defaultPacket.getIntegers().write(0, item.getEntityId());
+			    defaultPacket.getWatchableCollectionModifier().write(0, WatchableCollection.resetCustomNameWatchableCollection(item).getWatchableObjects());
+			    Collection<Player> players = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY);
+			    for (Player player : players) {
+		    		try {
+		    			InteractionVisualizer.protocolManager.sendServerPacket(player, defaultPacket);
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					}
+			    }
+			} else {
+				int amount = itemstack.getAmount();
+			    String durDisplay = null;
+			    
+			    if (itemstack.getType().getMaxDurability() > 0) {
+					@SuppressWarnings("deprecation")
+					int durability = itemstack.getType().getMaxDurability() - (InteractionVisualizer.version.isLegacy() ? itemstack.getDurability() : ((Damageable) itemstack.getItemMeta()).getDamage());
+					int maxDur = itemstack.getType().getMaxDurability();
+					double percentage = ((double) durability / (double) maxDur) * 100;
+					String color;
+					if (percentage > 66.666) {
+						color = highColor;
+					} else if (percentage > 33.333) {
+						color = mediumColor;
+					} else {
+						color = lowColor;
+					}
+					durDisplay = color + durability + "/" + maxDur;
+			    }			    			 
+			    
+			    int despawnRate = NMS.getInstance().getItemDespawnRate(item);
+			    int ticksLeft = despawnRate - ticks;
+			    int secondsLeft = ticksLeft / 20;
+			    String timerColor;
+			    if (secondsLeft <= 30) {
+			    	timerColor = lowColor;
+			    } else if (secondsLeft <= 120) {
+			    	timerColor = mediumColor;
+			    } else {
+			    	timerColor = highColor;
+			    }
+			    
+			    String timer = timerColor + String.format("%02d:%02d", secondsLeft / 60, secondsLeft % 60);				    
+			    
+			    Component display;
+			    if (ticksLeft >= 600 && durDisplay != null) {
+			    	String line1 = (toolsFormatting.length > 0 ? toolsFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer).replace("{Durability}", durDisplay);
 			    	display = LegacyComponentSerializer.legacySection().deserialize(line1);
-			    	for (int i = 1; i < singularFormatting.length; i++) {
-			    		String line = singularFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer);
-				    	Component text = LegacyComponentSerializer.legacySection().deserialize(line);
-				    	display = display.append(name).append(text);		
-			    	}
-		    	} else {
-		    		String line1 = (regularFormatting.length > 0 ? regularFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer);
-			    	display = LegacyComponentSerializer.legacySection().deserialize(line1);
-			    	for (int i = 1; i < regularFormatting.length; i++) {
-			    		String line = regularFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer);
+			    	for (int i = 1; i < toolsFormatting.length; i++) {
+			    		String line = toolsFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer).replace("{Durability}", durDisplay);
 				    	Component text = LegacyComponentSerializer.legacySection().deserialize(line);
 				    	display = display.append(name).append(text);
 			    	}
-		    	}
-		    }
-		    
-		    WrappedDataWatcher modifiedWatcher = WatchableCollection.createCustomNameWatchableCollection(display);
-		    WrappedDataWatcher defaultWatcher = WatchableCollection.resetCustomNameWatchableCollection(item);
-		    
-		    PacketContainer modifiedPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
-		    PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
-		    
-		    modifiedPacket.getIntegers().write(0, item.getEntityId());
-		    defaultPacket.getIntegers().write(0, item.getEntityId());
-		    
-		    modifiedPacket.getWatchableCollectionModifier().write(0, modifiedWatcher.getWatchableObjects());
-		    defaultPacket.getWatchableCollectionModifier().write(0, defaultWatcher.getWatchableObjects());
-		    
-		    Location entityCenter = location.clone();
-			entityCenter.setY(entityCenter.getY() + item.getHeight() * 1.7);
-		    
-			Set<Player> outOfRangePlayers;
-			synchronized (outOfRangePlayersMap) {
-				outOfRangePlayers = outOfRangePlayersMap.get(item);
-				if (outOfRangePlayers == null) {
-					outOfRangePlayers = ConcurrentHashMap.newKeySet();
-					outOfRangePlayersMap.put(item, outOfRangePlayers);
-				}
-			}
-			
-		    Collection<Player> players = location.getWorld().getPlayers();
-		    Collection<Player> enabledPlayers = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY);
-		    Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, location, player -> !InteractionVisualizer.hideIfObstructed || LineOfSightUtils.hasLineOfSight(player.getEyeLocation(), entityCenter));
-		    for (Player player : players) {
-	    		try {
-	    			if (playersInRange.contains(player) && enabledPlayers.contains(player)) {
-	    				InteractionVisualizer.protocolManager.sendServerPacket(player, modifiedPacket);
-	    				outOfRangePlayers.remove(player);
-	    			} else if (!outOfRangePlayers.contains(player)) {
-	    				InteractionVisualizer.protocolManager.sendServerPacket(player, defaultPacket);
-	    				outOfRangePlayers.add(player);
+			    } else {
+			    	if (amount == 1) {
+				    	String line1 = (singularFormatting.length > 0 ? singularFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer);
+				    	display = LegacyComponentSerializer.legacySection().deserialize(line1);
+				    	for (int i = 1; i < singularFormatting.length; i++) {
+				    		String line = singularFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer);
+					    	Component text = LegacyComponentSerializer.legacySection().deserialize(line);
+					    	display = display.append(name).append(text);		
+				    	}
+			    	} else {
+			    		String line1 = (regularFormatting.length > 0 ? regularFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer);
+				    	display = LegacyComponentSerializer.legacySection().deserialize(line1);
+				    	for (int i = 1; i < regularFormatting.length; i++) {
+				    		String line = regularFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer);
+					    	Component text = LegacyComponentSerializer.legacySection().deserialize(line);
+					    	display = display.append(name).append(text);
+				    	}
 			    	}
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
+			    }
+			    
+			    WrappedDataWatcher modifiedWatcher = WatchableCollection.createCustomNameWatchableCollection(display);
+			    WrappedDataWatcher defaultWatcher = WatchableCollection.resetCustomNameWatchableCollection(item);
+			    
+			    PacketContainer modifiedPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+			    PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
+			    
+			    modifiedPacket.getIntegers().write(0, item.getEntityId());
+			    defaultPacket.getIntegers().write(0, item.getEntityId());
+			    
+			    modifiedPacket.getWatchableCollectionModifier().write(0, modifiedWatcher.getWatchableObjects());
+			    defaultPacket.getWatchableCollectionModifier().write(0, defaultWatcher.getWatchableObjects());
+			    
+			    Location entityCenter = location.clone();
+				entityCenter.setY(entityCenter.getY() + item.getHeight() * 1.7);
+			    
+				Set<Player> outOfRangePlayers;
+				synchronized (outOfRangePlayersMap) {
+					outOfRangePlayers = outOfRangePlayersMap.get(item);
+					if (outOfRangePlayers == null) {
+						outOfRangePlayers = ConcurrentHashMap.newKeySet();
+						outOfRangePlayersMap.put(item, outOfRangePlayers);
+					}
 				}
-		    }
+				
+			    Collection<Player> players = location.getWorld().getPlayers();
+			    Collection<Player> enabledPlayers = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY);
+			    Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, location, player -> !InteractionVisualizer.hideIfObstructed || LineOfSightUtils.hasLineOfSight(player.getEyeLocation(), entityCenter));
+			    for (Player player : players) {
+		    		try {
+		    			if (playersInRange.contains(player) && enabledPlayers.contains(player)) {
+		    				InteractionVisualizer.protocolManager.sendServerPacket(player, modifiedPacket);
+		    				outOfRangePlayers.remove(player);
+		    			} else if (!outOfRangePlayers.contains(player)) {
+		    				InteractionVisualizer.protocolManager.sendServerPacket(player, defaultPacket);
+		    				outOfRangePlayers.add(player);
+				    	}
+					} catch (InvocationTargetException e) {
+						e.printStackTrace();
+					}
+			    }
+			}
 		}
 	}
 	
