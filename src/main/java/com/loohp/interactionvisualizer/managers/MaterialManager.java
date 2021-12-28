@@ -1,11 +1,14 @@
 package com.loohp.interactionvisualizer.managers;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.EnumSet;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.simpleyaml.configuration.file.FileConfiguration;
+import org.simpleyaml.exceptions.InvalidConfigurationException;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.config.Config;
@@ -27,7 +30,13 @@ public class MaterialManager {
 		if (!InteractionVisualizer.plugin.getDataFolder().exists()) {
 			InteractionVisualizer.plugin.getDataFolder().mkdir();
 		}
-		Config.loadConfig(MATERIAL_CONFIG_ID, new File(InteractionVisualizer.plugin.getDataFolder(), "material.yml"), InteractionVisualizer.plugin.getClass().getClassLoader().getResourceAsStream("material.yml"), InteractionVisualizer.plugin.getClass().getClassLoader().getResourceAsStream("material.yml"), true);
+		try {
+			Config.loadConfig(MATERIAL_CONFIG_ID, new File(InteractionVisualizer.plugin.getDataFolder(), "material.yml"), InteractionVisualizer.plugin.getClass().getClassLoader().getResourceAsStream("material.yml"), InteractionVisualizer.plugin.getClass().getClassLoader().getResourceAsStream("material.yml"), true);
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+			Bukkit.getPluginManager().disablePlugin(InteractionVisualizer.plugin);
+			return;
+		}
 		reload();
 	}
 

@@ -1,6 +1,7 @@
 package com.loohp.interactionvisualizer;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.simpleyaml.configuration.file.FileConfiguration;
+import org.simpleyaml.exceptions.InvalidConfigurationException;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -192,7 +194,13 @@ public class InteractionVisualizer extends JavaPlugin {
 		if (!getDataFolder().exists()) {
 			getDataFolder().mkdirs();
 		}
-		Config.loadConfig(CONFIG_ID, new File(getDataFolder(), "config.yml"), getClass().getClassLoader().getResourceAsStream("config.yml"), getClass().getClassLoader().getResourceAsStream("config.yml"), true);
+		try {
+			Config.loadConfig(CONFIG_ID, new File(getDataFolder(), "config.yml"), getClass().getClassLoader().getResourceAsStream("config.yml"), getClass().getClassLoader().getResourceAsStream("config.yml"), true);
+		} catch (IOException | InvalidConfigurationException e) {
+			e.printStackTrace();
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 		loadConfig();
 		
 		defaultworld = getServer().getWorlds().get(0);
