@@ -94,7 +94,7 @@ public class Debug implements Listener {
 		List<String> lore = new ArrayList<String>();
 		lore.add("\u00a77Lost \u00a76In-\u00a7dMaginary~~");
 		lore.add("");
-		lore.add("\u00a76https://www.instagram.com/narliars/");
+		lore.add("\u00a76https://www.instagram.com/narliar/");
 		lore.add("");
 		lore.add("\u00a77EasterEgg tribute to the IV author's \u00a7cAdorable");
 		meta.setLore(lore);
