@@ -235,7 +235,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			Component text = Component.text("She is Imaginary~~");
 			text = text.color(NamedTextColor.YELLOW);
 			Component bone = LegacyComponentSerializer.legacySection().deserialize("\u00a7eNana's Bone\n\u00a77Lost \u00a76In-\u00a7dMaginary~~");
-			text = text.hoverEvent(HoverEvent.showText(bone)).clickEvent(ClickEvent.openUrl("https://www.instagram.com/narliars/"));
+			text = text.hoverEvent(HoverEvent.showText(bone)).clickEvent(ClickEvent.openUrl("https://www.instagram.com/narliar/"));
 			InteractionVisualizer.sendMessage(sender, text);
 			return true;
 		}
