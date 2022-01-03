@@ -17,7 +17,7 @@ public abstract class VisualizerEntity implements IVisualizerEntity {
 	protected boolean isSilent;
 
 	public VisualizerEntity(Location location) {
-		this.id = EntityUtils.getNextEntityId();
+		this.id = EntityUtils.getNextEntityId().join();
 		this.uuid = UUID.randomUUID();
 		this.location = location.clone();
 		this.lock = false;
