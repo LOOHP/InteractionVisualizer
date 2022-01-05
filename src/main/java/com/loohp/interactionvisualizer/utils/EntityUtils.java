@@ -45,8 +45,6 @@ public class EntityUtils {
 				} else {
 					return Bukkit.getScheduler().callSyncMethod(InteractionVisualizer.plugin, () -> getNextEntityId().get());
 				}
-			} else {
-				System.out.println(entityCountObject.getClass());
 			}
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
