@@ -1,6 +1,8 @@
 package com.loohp.interactionvisualizer.entityholders;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -10,18 +12,34 @@ import com.loohp.interactionvisualizer.utils.EntityUtils;
 
 public abstract class VisualizerEntity implements IVisualizerEntity {
 
-	protected int id;
+	private int id;
 	protected UUID uuid;
 	protected Location location;
 	protected boolean lock;
 	protected boolean isSilent;
+	
+	private transient Future<Integer> entityIdFuture;
 
 	public VisualizerEntity(Location location) {
-		this.id = EntityUtils.getNextEntityId().join();
+		this.entityIdFuture = EntityUtils.getNextEntityId();
+		this.id = Integer.MIN_VALUE;
 		this.uuid = UUID.randomUUID();
 		this.location = location.clone();
 		this.lock = false;
 		this.isSilent = false;
+	}
+	
+	@Override
+	public final int getEntityId() {
+		if (id != Integer.MIN_VALUE) {
+			return id;
+		}
+		try {
+			return id = entityIdFuture.get();
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+			return -1;
+		}
 	}
 
 	public int cacheCode() {
@@ -86,11 +104,6 @@ public abstract class VisualizerEntity implements IVisualizerEntity {
 	@Override
 	public UUID getUniqueId() {
 		return uuid;
-	}
-
-	@Override
-	public int getEntityId() {
-		return id;
 	}
 
 	@Override

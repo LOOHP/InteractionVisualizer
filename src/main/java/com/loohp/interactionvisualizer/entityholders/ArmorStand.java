@@ -181,6 +181,7 @@ public class ArmorStand extends VisualizerEntity {
 		return velocity;
 	}
 	
+	@Override
 	public WrappedDataWatcher getWrappedDataWatcher() {
 		return WatchableCollection.getWatchableCollection(this);
 	}

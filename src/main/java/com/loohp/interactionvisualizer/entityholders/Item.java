@@ -129,6 +129,7 @@ public class Item extends VisualizerEntity {
 		return pickupDelay;
 	}
 
+	@Override
 	public WrappedDataWatcher getWrappedDataWatcher() {
 		return WatchableCollection.getWatchableCollection(this);
 	}

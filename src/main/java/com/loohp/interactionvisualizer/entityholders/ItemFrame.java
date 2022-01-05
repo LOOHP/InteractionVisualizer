@@ -107,6 +107,7 @@ public class ItemFrame extends VisualizerEntity {
 		return framerotation;
 	}
 
+	@Override
 	public WrappedDataWatcher getWrappedDataWatcher() {
 		return WatchableCollection.getWatchableCollection(this);
 	}

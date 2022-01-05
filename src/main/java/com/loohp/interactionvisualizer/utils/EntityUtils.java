@@ -2,6 +2,7 @@ package com.loohp.interactionvisualizer.utils;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -26,41 +27,31 @@ public class EntityUtils {
 		}
 	}
 	
-	public static CompletableFuture<Integer> getNextEntityId() {
-		CompletableFuture<Integer> future = new CompletableFuture<>();
+	public static Future<Integer> getNextEntityId() {
 		try {
 			entityCountField.setAccessible(true);
 			Object entityCountObject = entityCountField.get(null);
 			if (entityCountObject instanceof AtomicInteger) {
-				future.complete(((AtomicInteger) entityCountObject).incrementAndGet());
-				return future;
-			} else if (entityCountObject instanceof Number) {
+				return CompletableFuture.completedFuture(((AtomicInteger) entityCountObject).incrementAndGet());
+			} else if (entityCountObject instanceof Integer) {
 				if (Bukkit.isPrimaryThread()) {
-					int value = ((Number) entityCountObject).intValue() + 1;
+					int value = (Integer) entityCountObject;
 					try {
-						entityCountField.set(null, value);
+						entityCountField.set(null, value + 1);
 					} catch (IllegalArgumentException | IllegalAccessException e) {
 						e.printStackTrace();
 					}
-					future.complete(value);
+					return CompletableFuture.completedFuture(value);
 				} else {
-					Bukkit.getScheduler().runTask(InteractionVisualizer.plugin, () -> {
-						int value = ((Number) entityCountObject).intValue() + 1;
-						try {
-							entityCountField.set(null, value);
-						} catch (IllegalArgumentException | IllegalAccessException e) {
-							e.printStackTrace();
-						}
-						future.complete(value);
-					});
+					return Bukkit.getScheduler().callSyncMethod(InteractionVisualizer.plugin, () -> getNextEntityId().get());
 				}
-				return future;
+			} else {
+				System.out.println(entityCountObject.getClass());
 			}
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-		future.complete(-1);
-		return future;
+		return CompletableFuture.completedFuture(-1);
 	}
 
 }
