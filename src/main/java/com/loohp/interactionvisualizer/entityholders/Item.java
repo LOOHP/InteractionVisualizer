@@ -8,6 +8,7 @@ import org.bukkit.util.Vector;
 
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.loohp.interactionvisualizer.protocol.WatchableCollection;
+import com.loohp.interactionvisualizer.utils.ComponentFont;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -48,7 +49,7 @@ public class Item extends VisualizerEntity {
 	}
 
 	public void setCustomName(String customName) {
-		this.customName = LegacyComponentSerializer.legacySection().deserialize(customName);
+		this.customName = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(customName));
 	}
 	
 	public void setCustomName(Component customName) {

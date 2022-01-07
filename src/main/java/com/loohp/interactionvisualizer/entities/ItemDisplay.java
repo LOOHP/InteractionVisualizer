@@ -42,6 +42,7 @@ import com.loohp.interactionvisualizer.protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.utils.ColorUtils;
 import com.loohp.interactionvisualizer.utils.ComponentCompacting;
+import com.loohp.interactionvisualizer.utils.ComponentFont;
 import com.loohp.interactionvisualizer.utils.JsonUtils;
 import com.loohp.interactionvisualizer.utils.LanguageUtils;
 import com.loohp.interactionvisualizer.utils.LineOfSightUtils;
@@ -197,27 +198,27 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 			    Component display;
 			    if (ticksLeft >= 600 && durDisplay != null) {
 			    	String line1 = (toolsFormatting.length > 0 ? toolsFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer).replace("{Durability}", durDisplay);
-			    	display = LegacyComponentSerializer.legacySection().deserialize(line1);
+			    	display = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(line1));
 			    	for (int i = 1; i < toolsFormatting.length; i++) {
 			    		String line = toolsFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer).replace("{Durability}", durDisplay);
-				    	Component text = LegacyComponentSerializer.legacySection().deserialize(line);
+				    	Component text = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(line));
 				    	display = display.append(name).append(text);
 			    	}
 			    } else {
 			    	if (amount == 1) {
 				    	String line1 = (singularFormatting.length > 0 ? singularFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer);
-				    	display = LegacyComponentSerializer.legacySection().deserialize(line1);
+				    	display = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(line1));
 				    	for (int i = 1; i < singularFormatting.length; i++) {
 				    		String line = singularFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer);
-					    	Component text = LegacyComponentSerializer.legacySection().deserialize(line);
+					    	Component text = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(line));
 					    	display = display.append(name).append(text);		
 				    	}
 			    	} else {
 			    		String line1 = (regularFormatting.length > 0 ? regularFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer);
-				    	display = LegacyComponentSerializer.legacySection().deserialize(line1);
+				    	display = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(line1));
 				    	for (int i = 1; i < regularFormatting.length; i++) {
 				    		String line = regularFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer);
-					    	Component text = LegacyComponentSerializer.legacySection().deserialize(line);
+					    	Component text = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(line));
 					    	display = display.append(name).append(text);
 				    	}
 			    	}
@@ -276,7 +277,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 	    		if (item.getEnchantments().isEmpty()) {
 	    			name = GsonComponentSerializer.gson().deserialize(rawDisplayName);
 	    		} else {							
-	    			Component coloring = LegacyComponentSerializer.legacySection().deserialize(ChatColor.AQUA + "");
+	    			Component coloring = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(ChatColor.AQUA + ""));
 	    			coloring = coloring.color(NamedTextColor.AQUA);
 	    			coloring = coloring.append(GsonComponentSerializer.gson().deserialize(rawDisplayName));
 	    			name = ComponentCompacting.optimize(coloring);
@@ -289,9 +290,9 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 	    if (name == null) {
 		    if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && !item.getItemMeta().getDisplayName().equals("")) {
 		    	if (item.getEnchantments().isEmpty()) {
-		    		name = LegacyComponentSerializer.legacySection().deserialize(ChatColorUtils.filterIllegalColorCodes(item.getItemMeta().getDisplayName()));
+		    		name = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(ChatColorUtils.filterIllegalColorCodes(item.getItemMeta().getDisplayName())));
 		    	} else {
-		    		name = LegacyComponentSerializer.legacySection().deserialize(ChatColorUtils.filterIllegalColorCodes(ChatColor.AQUA + item.getItemMeta().getDisplayName()));
+		    		name = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(ChatColorUtils.filterIllegalColorCodes(ChatColor.AQUA + item.getItemMeta().getDisplayName())));
 		    	}
 		    } else {
 		    	name = Component.translatable(LanguageUtils.getTranslationKey(item));

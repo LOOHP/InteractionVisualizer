@@ -40,10 +40,9 @@ import com.loohp.interactionvisualizer.objectholders.LightType;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
 import com.loohp.interactionvisualizer.utils.MaterialUtils;
 import com.loohp.interactionvisualizer.utils.MaterialUtils.MaterialMode;
+import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-
-import com.loohp.interactionvisualizer.utils.VanishUtils;
 
 public class SmithingTableDisplay extends VisualizerInteractDisplay implements Listener {
 	

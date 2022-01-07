@@ -33,6 +33,7 @@ import com.loohp.interactionvisualizer.managers.TileEntityManager;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ColorUtils;
+import com.loohp.interactionvisualizer.utils.ComponentFont;
 import com.loohp.interactionvisualizer.utils.RomanNumberUtils;
 import com.loohp.interactionvisualizer.utils.TranslationUtils;
 
@@ -191,14 +192,14 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 							if (beacon.getPrimaryEffect() != null) {
 								TranslatableComponent effectTrans = Component.translatable(TranslationUtils.getEffect(beacon.getPrimaryEffect().getType()));
 								effectTrans = effectTrans.color(ColorUtils.toTextColor(color));
-								Component levelText = LegacyComponentSerializer.legacySection().deserialize(" " + color + RomanNumberUtils.toRoman(beacon.getPrimaryEffect().getAmplifier() + 1));
+								Component levelText = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(" " + color + RomanNumberUtils.toRoman(beacon.getPrimaryEffect().getAmplifier() + 1)));
 								effectTrans = effectTrans.append(levelText);
 								primaryEffectText = effectTrans;
 							}
 							if (beacon.getSecondaryEffect() != null) {
 								TranslatableComponent effectTrans = Component.translatable(TranslationUtils.getEffect(beacon.getSecondaryEffect().getType()));
 								effectTrans = effectTrans.color(ColorUtils.toTextColor(color));
-								Component levelText = LegacyComponentSerializer.legacySection().deserialize(" " + color + RomanNumberUtils.toRoman(beacon.getSecondaryEffect().getAmplifier() + 1));
+								Component levelText = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(" " + color + RomanNumberUtils.toRoman(beacon.getSecondaryEffect().getAmplifier() + 1)));
 								effectTrans = effectTrans.append(levelText);
 								secondaryEffectText = effectTrans;
 							}

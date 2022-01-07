@@ -32,6 +32,7 @@ import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.SoundManager;
+import com.loohp.interactionvisualizer.utils.ComponentFont;
 import com.loohp.interactionvisualizer.utils.CustomStringUtils;
 import com.loohp.interactionvisualizer.utils.RomanNumberUtils;
 import com.loohp.interactionvisualizer.utils.TranslationUtils;
@@ -159,10 +160,10 @@ public class EnchantmentTableAnimation {
 				if (!EnchantmentTableDisplay.getTranslatableEnchantments().contains(str)) {
 					str = null;
 				}
-				Component enchantmentName = (str == null || str.equals("")) ? LegacyComponentSerializer.legacySection().deserialize(CustomStringUtils.capitalize(ench.getName().toLowerCase().replace("_", " "))) : Component.translatable(str);
+				Component enchantmentName = (str == null || str.equals("")) ? ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(CustomStringUtils.capitalize(ench.getName().toLowerCase().replace("_", " ")))) : Component.translatable(str);
 				ArmorStand stand = new ArmorStand(standloc);
 				if (ench.getMaxLevel() != 1 || level != 1) {
-					enchantmentName = enchantmentName.append(LegacyComponentSerializer.legacySection().deserialize(" " + ChatColor.AQUA + RomanNumberUtils.toRoman(entry.getValue())));
+					enchantmentName = enchantmentName.append(ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(" " + ChatColor.AQUA + RomanNumberUtils.toRoman(entry.getValue()))));
 				}
 				if (ench.isCursed()) {
 					enchantmentName = enchantmentName.color(NamedTextColor.RED);

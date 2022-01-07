@@ -30,6 +30,7 @@ import com.loohp.interactionvisualizer.managers.TileEntityManager;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ColorUtils;
+import com.loohp.interactionvisualizer.utils.ComponentFont;
 import com.loohp.interactionvisualizer.utils.LegacyRecordsUtils;
 import com.loohp.interactionvisualizer.utils.TranslationUtils;
 
@@ -150,7 +151,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 								Component text;
 								if (showDiscName) {
 									if (itemstack.getItemMeta().hasDisplayName()) {
-										text = LegacyComponentSerializer.legacySection().deserialize(getColor(disc) + itemstack.getItemMeta().getDisplayName());
+										text = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(getColor(disc) + itemstack.getItemMeta().getDisplayName()));
 									} else {
 										text = Component.translatable(TranslationUtils.getRecord(disc));
 										text = text.color(ColorUtils.toTextColor(getColor(disc)));
@@ -180,7 +181,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
 									Component text;
 									if (showDiscName) {
 										if (itemstack.getItemMeta().hasDisplayName()) {
-											text = LegacyComponentSerializer.legacySection().deserialize(getColor(disc) + itemstack.getItemMeta().getDisplayName());
+											text = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(getColor(disc) + itemstack.getItemMeta().getDisplayName()));
 										} else {
 											text = Component.translatable(TranslationUtils.getRecord(disc));
 											text = text.color(ColorUtils.toTextColor(getColor(disc)));

@@ -36,6 +36,7 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
+import com.loohp.interactionvisualizer.utils.ComponentFont;
 import com.loohp.interactionvisualizer.utils.JsonUtils;
 
 import net.kyori.adventure.text.Component;
@@ -165,10 +166,10 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
 								try {
 									component = GsonComponentSerializer.gson().deserialize(name);
 								} catch (Throwable e) {
-									component = LegacyComponentSerializer.legacySection().deserialize(name);
+									component = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(name));
 								}
 							} else {
-								component = LegacyComponentSerializer.legacySection().deserialize(name);
+								component = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(name));
 							}
 							String matchingName = LegacyComponentSerializer.legacySection().serialize(component);
 							if (stripColorBlacklist) {
