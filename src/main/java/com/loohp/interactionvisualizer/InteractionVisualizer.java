@@ -58,10 +58,6 @@ import com.loohp.interactionvisualizer.utils.PotionUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.HoverEvent.Action;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
 import net.md_5.bungee.chat.ComponentSerializer;
 
 public class InteractionVisualizer extends JavaPlugin {
@@ -102,8 +98,6 @@ public class InteractionVisualizer extends JavaPlugin {
 	public static Boolean handMovementEnabled = true;
 	
 	public static Integer lightUpdatePeriod = 10;
-	
-	public static boolean legacyChatAPI = false;
 	
 	public static boolean updaterEnabled = true;
 	
@@ -252,15 +246,6 @@ public class InteractionVisualizer extends JavaPlugin {
 		exemptBlocks.add("MOB_SPAWNER");
 		exemptBlocks.add("BEACON");
 		
-		try {
-			TextComponent test = new TextComponent("Legacy Bungeecord Chat API Test");
-			test.setHoverEvent(new HoverEvent(Action.SHOW_TEXT, new Text("Test Hover Text")));
-			test.getHoverEvent().getContents();
-			legacyChatAPI = false;
-		} catch (Throwable e) {
-			legacyChatAPI = true;
-			getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractiveChat] Legacy Bungeecord Chat API detected, using legacy methods...");
-		}
 		
 		getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] InteractionVisualizer has been enabled!");
 		
