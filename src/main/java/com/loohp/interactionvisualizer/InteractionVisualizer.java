@@ -156,7 +156,7 @@ public class InteractionVisualizer extends JavaPlugin {
 		
 		if (getServer().getPluginManager().getPlugin("LightAPI") != null) {
 			try {
-				Class.forName("ru.beykerykt.lightapi.LightType");
+				Class.forName("ru.beykerykt.lightapi.utils.Debug");
 				hookMessage("LightAPI");
 				lightapi = true;
 				lightManager = new LightManager(this);
