@@ -57,6 +57,7 @@ import com.loohp.interactionvisualizer.utils.PotionUtils;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.chat.ComponentSerializer;
 
@@ -402,7 +403,15 @@ public class InteractionVisualizer extends JavaPlugin {
 	
 	public static void sendMessage(CommandSender sender, Component component) {
 		if (version.isLegacyRGB()) {
-			sender.spigot().sendMessage(ComponentSerializer.parse(GsonComponentSerializer.colorDownsamplingGson().serialize(component)));
+			try {
+				sender.spigot().sendMessage(ComponentSerializer.parse(GsonComponentSerializer.colorDownsamplingGson().serialize(component)));
+			} catch (Throwable e) {
+				if (sender instanceof Player) {
+					((Player) sender).spigot().sendMessage(ComponentSerializer.parse(GsonComponentSerializer.colorDownsamplingGson().serialize(component)));
+				} else {
+					sender.sendMessage(LegacyComponentSerializer.legacySection().serialize(component));
+				}
+			}
 		} else {
 			sender.spigot().sendMessage(ComponentSerializer.parse(GsonComponentSerializer.gson().serialize(component)));
 		}
