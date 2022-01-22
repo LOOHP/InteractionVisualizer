@@ -38,14 +38,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EnchantmentTableDisplay extends VisualizerInteractDisplay implements Listener {
 
     private static Set<String> translatableEnchantments = Collections.unmodifiableSet(new HashSet<>());
+
+    public static Set<String> getTranslatableEnchantments() {
+        return translatableEnchantments;
+    }
     public Map<Player, Block> playermap = new ConcurrentHashMap<>();
 
     public EnchantmentTableDisplay() {
         onReload(new InteractionVisualizerReloadEvent());
-    }
-
-    public static Set<String> getTranslatableEnchantments() {
-        return translatableEnchantments;
     }
 
     @EventHandler
@@ -266,4 +266,5 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
             animation.queueClose(a -> true);
         }, 1);
     }
+
 }

@@ -12,12 +12,12 @@ public class InteractionVisualizerReloadEvent extends Event {
 
     private static final HandlerList HANDLERS = new HandlerList();
 
-    public InteractionVisualizerReloadEvent() {
-
-    }
-
     public static HandlerList getHandlerList() {
         return HANDLERS;
+    }
+
+    public InteractionVisualizerReloadEvent() {
+
     }
 
     public HandlerList getHandlers() {

@@ -7,15 +7,6 @@ import java.util.List;
 
 public class ChunkSectionPosition {
 
-    private final boolean[] flags;
-
-    private ChunkSectionPosition(int size, int... sections) {
-        flags = new boolean[size];
-        for (int i : sections) {
-            flags[i] = true;
-        }
-    }
-
     public static ChunkSectionPosition of(World world, int... sections) {
         return new ChunkSectionPosition((world.getMaxHeight() >> 4), sections);
     }
@@ -49,6 +40,14 @@ public class ChunkSectionPosition {
         }
         levels[y * 128 + z * 8 + x / 2] = value;
         return levels;
+    }
+    private final boolean[] flags;
+
+    private ChunkSectionPosition(int size, int... sections) {
+        flags = new boolean[size];
+        for (int i : sections) {
+            flags[i] = true;
+        }
     }
 
     public void set(int position, boolean value) {

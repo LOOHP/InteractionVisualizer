@@ -17,16 +17,6 @@ import java.util.Set;
 
 public class LightManager implements ILightManager {
 
-    private final InteractionVisualizer plugin;
-    private Set<LightData> addqueue;
-    private Set<LightData> deletequeue;
-
-    public LightManager(InteractionVisualizer plugin) {
-        this.plugin = plugin;
-        this.addqueue = new HashSet<>();
-        this.deletequeue = new HashSet<>();
-    }
-
     private static LightType convert(com.loohp.interactionvisualizer.objectholders.LightType lightType) {
         if (lightType == null) {
             return null;
@@ -38,6 +28,15 @@ public class LightManager implements ILightManager {
                 return LightType.SKY;
         }
         return null;
+    }
+    private final InteractionVisualizer plugin;
+    private Set<LightData> addqueue;
+    private Set<LightData> deletequeue;
+
+    public LightManager(InteractionVisualizer plugin) {
+        this.plugin = plugin;
+        this.addqueue = new HashSet<>();
+        this.deletequeue = new HashSet<>();
     }
 
     @Override

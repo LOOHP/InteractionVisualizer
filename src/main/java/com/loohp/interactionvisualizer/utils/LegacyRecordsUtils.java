@@ -24,4 +24,5 @@ public class LegacyRecordsUtils {
     public static String translateFromLegacy(String legacyName) {
         return mapping.get(legacyName);
     }
+
 }

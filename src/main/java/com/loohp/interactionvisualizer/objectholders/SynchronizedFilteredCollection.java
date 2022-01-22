@@ -11,15 +11,6 @@ import java.util.stream.Stream;
 
 public class SynchronizedFilteredCollection<E> implements Collection<E> {
 
-    private final Collection<E> backingCollection;
-    private final Predicate<E> predicate;
-    private final Object lock;
-    private SynchronizedFilteredCollection(Collection<E> backingCollection, Predicate<E> predicate) {
-        this.backingCollection = backingCollection;
-        this.predicate = predicate;
-        this.lock = aquireLock();
-    }
-
     /**
      * The provided Collection should already be synchronized.<br>
      * <br>
@@ -30,6 +21,15 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
      */
     public static <E> SynchronizedFilteredCollection<E> filterSynchronized(Collection<E> backingCollection, Predicate<E> predicate) {
         return new SynchronizedFilteredCollection<E>(backingCollection, predicate);
+    }
+    private final Collection<E> backingCollection;
+    private final Predicate<E> predicate;
+    private final Object lock;
+
+    private SynchronizedFilteredCollection(Collection<E> backingCollection, Predicate<E> predicate) {
+        this.backingCollection = backingCollection;
+        this.predicate = predicate;
+        this.lock = aquireLock();
     }
 
     private Object aquireLock() {

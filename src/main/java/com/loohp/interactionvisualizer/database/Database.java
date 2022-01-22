@@ -25,17 +25,14 @@ public class Database {
 
     public static final String EMPTY_BITSET = "0";
     public static final Pattern VALID_BITSET = Pattern.compile("^[0-9]*$");
-
-    public static boolean isMYSQL = false;
-
-    private static Connection connection;
-    private static String host, database, username, password;
     private static final String preferenceTable = "USER_PERFERENCES";
     private static final String indexMappingTable = "INDEX_MAPPING";
     private static final String statusLockTable = "USE_LOCK";
-    private static int port;
-
     private static final Object syncdb = new Object();
+    public static boolean isMYSQL = false;
+    private static Connection connection;
+    private static String host, database, username, password;
+    private static int port;
 
     public static void setup() {
         String type = InteractionVisualizer.plugin.getConfiguration().getString("Database.Type");

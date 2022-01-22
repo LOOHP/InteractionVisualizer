@@ -613,12 +613,6 @@ public class InteractionVisualizerAPI {
         ENCHANTMENT("enchantment.yml"),
         MUSIC("music.yml");
 
-        String fileName;
-
-        ConfiguationType(String fileName) {
-            this.fileName = fileName;
-        }
-
         public static ConfiguationType fromConfigFileName(String filename) {
             for (ConfiguationType cfgtype : ConfiguationType.values()) {
                 if (cfgtype.getConfigFileName().equalsIgnoreCase(filename)) {
@@ -626,6 +620,12 @@ public class InteractionVisualizerAPI {
                 }
             }
             return null;
+        }
+
+        String fileName;
+
+        ConfiguationType(String fileName) {
+            this.fileName = fileName;
         }
 
         public String getConfigFileName() {
@@ -639,12 +639,6 @@ public class InteractionVisualizerAPI {
         TOOL("Tool"),
         STANDING("Standing");
 
-        private final String mode;
-
-        ArmorStandHoldingMode(String mode) {
-            this.mode = mode;
-        }
-
         public static ArmorStandHoldingMode fromName(String name) {
             for (ArmorStandHoldingMode mode : values()) {
                 if (mode.toString().equalsIgnoreCase(name)) {
@@ -654,8 +648,15 @@ public class InteractionVisualizerAPI {
             return null;
         }
 
+        private final String mode;
+
+        ArmorStandHoldingMode(String mode) {
+            this.mode = mode;
+        }
+
         public String toString() {
             return mode;
         }
     }
+
 }

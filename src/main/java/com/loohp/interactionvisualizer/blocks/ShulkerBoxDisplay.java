@@ -346,4 +346,5 @@ public class ShulkerBoxDisplay implements Listener, VisualizerDisplay {
 
         link.remove((Player) event.getPlayer());
     }
+
 }

@@ -37,12 +37,6 @@ public class MaterialUtils {
         ITEM("Item"),
         BLOCK("Block");
 
-        String name;
-
-        MaterialMode(String name) {
-            this.name = name;
-        }
-
         public static MaterialMode getModeFromName(String name) {
             for (MaterialMode mode : MaterialMode.values()) {
                 if (mode.toString().equalsIgnoreCase(name)) {
@@ -50,6 +44,11 @@ public class MaterialUtils {
                 }
             }
             return null;
+        }
+        String name;
+
+        MaterialMode(String name) {
+            this.name = name;
         }
 
         @Override

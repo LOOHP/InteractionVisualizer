@@ -231,4 +231,5 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
         openedCTable.remove(block);
         playermap.remove((Player) event.getPlayer());
     }
+
 }

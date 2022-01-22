@@ -71,25 +71,25 @@ public class TileEntity {
         TILE_ENTITY_TYPES.put("BLACK_WALL_BANNER", TileEntityType.BANNER);
     }
 
-    private final World world;
-    private final int x;
-    private final int y;
-    private final int z;
-    private final TileEntityType type;
-    public TileEntity(World world, int x, int y, int z, TileEntityType type) {
-        this.world = world;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.type = type;
-    }
-
     public static TileEntityType getTileEntityType(Material material) {
         return TILE_ENTITY_TYPES.get(material.toString());
     }
 
     public static boolean isTileEntityType(Material material) {
         return TILE_ENTITY_TYPES.containsKey(material.toString());
+    }
+    private final World world;
+    private final int x;
+    private final int y;
+    private final int z;
+    private final TileEntityType type;
+
+    public TileEntity(World world, int x, int y, int z, TileEntityType type) {
+        this.world = world;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.type = type;
     }
 
     public World getWorld() {

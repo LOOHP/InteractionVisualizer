@@ -51,24 +51,6 @@ public class EnchantmentTableAnimation {
     public static final int CLOSE_TABLE = 3;
 
     private static final Map<Block, EnchantmentTableAnimation> tables = new ConcurrentHashMap<>();
-    private final Plugin plugin;
-    private final Block block;
-    private final Location location;
-    private final Player enchanter;
-    private final Queue<Supplier<CompletableFuture<Integer>>> taskQueue;
-    private Optional<Item> item;
-    private final AtomicBoolean enchanting;
-
-    private EnchantmentTableAnimation(Block block, Player enchanter) {
-        this.plugin = InteractionVisualizer.plugin;
-        this.block = block;
-        this.enchanter = enchanter;
-        this.location = block.getLocation().clone();
-        this.item = Optional.empty();
-        this.enchanting = new AtomicBoolean(false);
-        this.taskQueue = new ConcurrentLinkedQueue<>();
-        tick();
-    }
 
     public static EnchantmentTableAnimation getTableAnimation(Block block, Player player) {
         EnchantmentTableAnimation animation = tables.get(block);
@@ -81,6 +63,24 @@ public class EnchantmentTableAnimation {
         } else {
             return null;
         }
+    }
+    private final Plugin plugin;
+    private final Block block;
+    private final Location location;
+    private final Player enchanter;
+    private final Queue<Supplier<CompletableFuture<Integer>>> taskQueue;
+    private final AtomicBoolean enchanting;
+    private Optional<Item> item;
+
+    private EnchantmentTableAnimation(Block block, Player enchanter) {
+        this.plugin = InteractionVisualizer.plugin;
+        this.block = block;
+        this.enchanter = enchanter;
+        this.location = block.getLocation().clone();
+        this.item = Optional.empty();
+        this.enchanting = new AtomicBoolean(false);
+        this.taskQueue = new ConcurrentLinkedQueue<>();
+        tick();
     }
 
     private void tick() {

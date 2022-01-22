@@ -449,4 +449,5 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
 
         return new Vector((cosine * currentX - sine * currentZ), vector.getY(), (sine * currentX + cosine * currentZ));
     }
+
 }

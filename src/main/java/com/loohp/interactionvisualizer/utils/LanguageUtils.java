@@ -40,12 +40,12 @@ public class LanguageUtils {
 
     public static final String VERSION_MANIFEST_URL = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
     public static final String RESOURCES_URL = "http://resources.download.minecraft.net/";
+    private static final Map<String, Map<String, String>> translations = new HashMap<>();
+    private static final AtomicBoolean lock = new AtomicBoolean(false);
     private static Class<?> craftItemStackClass;
     private static Class<?> nmsItemStackClass;
     private static Method asNMSCopyMethod;
     private static Method getRawItemTypeNameMethod;
-    private static final Map<String, Map<String, String>> translations = new HashMap<>();
-    private static final AtomicBoolean lock = new AtomicBoolean(false);
 
     static {
         if (InteractionVisualizer.version.isLegacy()) {

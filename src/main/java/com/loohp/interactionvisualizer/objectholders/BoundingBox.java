@@ -33,34 +33,6 @@ import java.util.Objects;
 @SerializableAs("BoundingBox")
 public class BoundingBox implements Cloneable, ConfigurationSerializable {
 
-    private double minX;
-    private double minY;
-    private double minZ;
-    private double maxX;
-    private double maxY;
-    private double maxZ;
-
-    /**
-     * Creates a new (degenerate) bounding box with all corner coordinates at
-     * <code>0</code>.
-     */
-    public BoundingBox() {
-        this.resize(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-    }
-    /**
-     * Creates a new bounding box from the given corner coordinates.
-     *
-     * @param x1 the first corner's x value
-     * @param y1 the first corner's y value
-     * @param z1 the first corner's z value
-     * @param x2 the second corner's x value
-     * @param y2 the second corner's y value
-     * @param z2 the second corner's z value
-     */
-    public BoundingBox(double x1, double y1, double z1, double x2, double y2, double z2) {
-        this.resize(x1, y1, z1, x2, y2, z2);
-    }
-
     /**
      * Creates a new bounding box using the coordinates of the given vectors as
      * corners.
@@ -196,6 +168,34 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
         }
 
         return new BoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+    private double minX;
+    private double minY;
+    private double minZ;
+    private double maxX;
+    private double maxY;
+    private double maxZ;
+
+    /**
+     * Creates a new (degenerate) bounding box with all corner coordinates at
+     * <code>0</code>.
+     */
+    public BoundingBox() {
+        this.resize(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+    }
+
+    /**
+     * Creates a new bounding box from the given corner coordinates.
+     *
+     * @param x1 the first corner's x value
+     * @param y1 the first corner's y value
+     * @param z1 the first corner's z value
+     * @param x2 the second corner's x value
+     * @param y2 the second corner's y value
+     * @param z2 the second corner's z value
+     */
+    public BoundingBox(double x1, double y1, double z1, double x2, double y2, double z2) {
+        this.resize(x1, y1, z1, x2, y2, z2);
     }
 
     /**
@@ -1106,4 +1106,5 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
         result.put("maxZ", maxZ);
         return result;
     }
+
 }

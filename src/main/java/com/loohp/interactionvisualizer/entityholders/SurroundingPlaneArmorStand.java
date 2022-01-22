@@ -8,15 +8,6 @@ public class SurroundingPlaneArmorStand extends ArmorStand implements DynamicVis
     public static final double RIGHT_ANGLE = 1.5707963267948966;
     public static final double _45_ANGLE = RIGHT_ANGLE / 2;
 
-    private double radius;
-    private PathType path;
-
-    public SurroundingPlaneArmorStand(Location location, double radius, PathType path) {
-        super(location);
-        this.radius = radius;
-        this.path = path;
-    }
-
     private static Vector getViewingVector(Location location, Location from, Vector direction, double radius, PathType path) {
         Location leveled = from.clone();
         leveled.setY(location.getY());
@@ -81,6 +72,14 @@ public class SurroundingPlaneArmorStand extends ArmorStand implements DynamicVis
             return 90.0F;
         }
         return 0.0F;
+    }
+    private double radius;
+    private PathType path;
+
+    public SurroundingPlaneArmorStand(Location location, double radius, PathType path) {
+        super(location);
+        this.radius = radius;
+        this.path = path;
     }
 
     public double getRadius() {

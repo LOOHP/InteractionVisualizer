@@ -17,4 +17,5 @@ public class BoundingBoxUtils {
             throw new RuntimeException("No NMS implementation found for BoundingBoxUtils.getBoundingBoxes(BlockPosition)");
         }
     }
+
 }

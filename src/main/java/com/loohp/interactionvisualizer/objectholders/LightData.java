@@ -5,16 +5,6 @@ import org.bukkit.Location;
 
 public class LightData {
 
-    private final Location location;
-    private final int lightLevel;
-    private final LightType lightType;
-
-    private LightData(Location location, int lightlevel, LightType lightType) {
-        this.location = location;
-        this.lightType = lightType;
-        this.lightLevel = lightlevel;
-    }
-
     public static LightData of(Location location) {
         return of(location, 0, null);
     }
@@ -25,6 +15,15 @@ public class LightData {
 
     public static LightData of(Location location, int lightlevel, LightType lightType) {
         return new LightData(location, lightlevel, lightType);
+    }
+    private final Location location;
+    private final int lightLevel;
+    private final LightType lightType;
+
+    private LightData(Location location, int lightlevel, LightType lightType) {
+        this.location = location;
+        this.lightType = lightType;
+        this.lightLevel = lightlevel;
     }
 
     public Location getLocation() {
@@ -77,6 +76,9 @@ public class LightData {
         }
         if (location == null) {
             return other.location == null;
-        } else return location.equals(other.location);
+        } else {
+            return location.equals(other.location);
+        }
     }
+
 }

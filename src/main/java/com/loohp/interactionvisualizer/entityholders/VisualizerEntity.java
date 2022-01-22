@@ -11,12 +11,12 @@ import java.util.concurrent.Future;
 
 public abstract class VisualizerEntity implements IVisualizerEntity {
 
+    private final transient Future<Integer> entityIdFuture;
     protected UUID uuid;
     protected Location location;
     protected boolean lock;
     protected boolean isSilent;
     private int id;
-    private final transient Future<Integer> entityIdFuture;
 
     public VisualizerEntity(Location location) {
         this.entityIdFuture = EntityUtils.getNextEntityId();

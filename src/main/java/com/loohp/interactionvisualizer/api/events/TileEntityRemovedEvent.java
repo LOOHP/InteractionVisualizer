@@ -13,16 +13,17 @@ import org.bukkit.event.HandlerList;
 public class TileEntityRemovedEvent extends Event {
 
     private static final HandlerList HANDLERS = new HandlerList();
+
+    public static HandlerList getHandlerList() {
+        return HANDLERS;
+    }
+
     private final Block block;
     private final TileEntityType type;
 
     public TileEntityRemovedEvent(Block block, TileEntityType type) {
         this.block = block;
         this.type = type;
-    }
-
-    public static HandlerList getHandlerList() {
-        return HANDLERS;
     }
 
     public Block getBlock() {

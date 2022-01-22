@@ -343,4 +343,5 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
         openedStonecutter.remove(block);
         playermap.remove((Player) event.getPlayer());
     }
+
 }

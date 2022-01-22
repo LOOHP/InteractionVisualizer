@@ -36,12 +36,12 @@ import java.util.concurrent.TimeUnit;
 public class PacketManager implements Listener {
 
     private static final Vector VECTOR_ZERO = new Vector(0.0, 0.0, 0.0);
-    public static Map<VisualizerEntity, Collection<Player>> active = new ConcurrentHashMap<>();
-    public static Map<VisualizerEntity, Boolean> loaded = new ConcurrentHashMap<>();
-    public static Map<Player, Set<VisualizerEntity>> playerStatus = new ConcurrentHashMap<>();
     private static final Plugin plugin = InteractionVisualizer.plugin;
     private static final Map<VisualizerEntity, Integer> cache = new ConcurrentHashMap<>();
     private static final Map<DynamicVisualizerEntity, Set<Player>> dynamicTracking = new ConcurrentHashMap<>();
+    public static Map<VisualizerEntity, Collection<Player>> active = new ConcurrentHashMap<>();
+    public static Map<VisualizerEntity, Boolean> loaded = new ConcurrentHashMap<>();
+    public static Map<Player, Set<VisualizerEntity>> playerStatus = new ConcurrentHashMap<>();
 
     public static void run() {
         if (!plugin.isEnabled()) {
@@ -677,4 +677,5 @@ public class PacketManager implements Listener {
     public void onLeave(PlayerQuitEvent event) {
         playerStatus.remove(event.getPlayer());
     }
+
 }

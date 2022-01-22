@@ -37,4 +37,5 @@ public class MusicManager {
     public static void reloadConfig() {
         Config.getConfig(MUSIC_CONFIG_ID).reload();
     }
+
 }

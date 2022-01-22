@@ -93,6 +93,9 @@ public class JarUtils {
 
     @FunctionalInterface
     public interface PathTrimmer {
+
         String trim(String original);
+
     }
+
 }

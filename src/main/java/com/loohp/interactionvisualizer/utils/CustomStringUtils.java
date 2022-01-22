@@ -155,4 +155,5 @@ public class CustomStringUtils {
         String bagEnd = bag.substring(index);
         return bagBegin + marble + bagEnd;
     }
+
 }
