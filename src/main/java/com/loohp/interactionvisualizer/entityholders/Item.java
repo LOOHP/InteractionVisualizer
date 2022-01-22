@@ -1,143 +1,141 @@
 package com.loohp.interactionvisualizer.entityholders;
 
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.loohp.interactionvisualizer.protocol.WatchableCollection;
+import com.loohp.interactionvisualizer.utils.ComponentFont;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.loohp.interactionvisualizer.protocol.WatchableCollection;
-import com.loohp.interactionvisualizer.utils.ComponentFont;
-
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-
 public class Item extends VisualizerEntity {
 
-	private ItemStack item;
-	private boolean hasGravity;
-	private boolean isGlowing;
-	private int pickupDelay;
-	private Component customName;
-	private boolean custonNameVisible;
-	private Vector velocity;
+    private ItemStack item;
+    private boolean hasGravity;
+    private boolean isGlowing;
+    private int pickupDelay;
+    private Component customName;
+    private boolean custonNameVisible;
+    private Vector velocity;
 
-	public Item(Location location) {
-		super(location);
-		this.item = new ItemStack(Material.STONE);
-		this.hasGravity = false;
-		this.pickupDelay = 0;
-		this.customName = Component.empty();
-		this.custonNameVisible = false;
-		this.isGlowing = false;
-		this.velocity = new Vector(0.0, 0.0, 0.0);
-	}
+    public Item(Location location) {
+        super(location);
+        this.item = new ItemStack(Material.STONE);
+        this.hasGravity = false;
+        this.pickupDelay = 0;
+        this.customName = Component.empty();
+        this.custonNameVisible = false;
+        this.isGlowing = false;
+        this.velocity = new Vector(0.0, 0.0, 0.0);
+    }
 
-	@Override
-	public int cacheCode() {
-		int prime = 17;
-		int result = super.cacheCode();
-		result = prime * result + ((hasGravity) ? 5351 : 8923);
-		result = prime * result + pickupDelay;
-		result = prime * result + ((hasGravity) ? 6719 : 2753);
-		result = prime * result + ((item == null) ? 0 : item.hashCode());
-		result = prime * result + ((customName == null) ? 0 : customName.hashCode());
-		result = prime * result + ((custonNameVisible) ? 6199 : 8647);
-		result = prime * result + ((velocity == null) ? 0 : velocity.hashCode());
-		return result;
-	}
+    @Override
+    public int cacheCode() {
+        int prime = 17;
+        int result = super.cacheCode();
+        result = prime * result + ((hasGravity) ? 5351 : 8923);
+        result = prime * result + pickupDelay;
+        result = prime * result + ((hasGravity) ? 6719 : 2753);
+        result = prime * result + ((item == null) ? 0 : item.hashCode());
+        result = prime * result + ((customName == null) ? 0 : customName.hashCode());
+        result = prime * result + ((custonNameVisible) ? 6199 : 8647);
+        result = prime * result + ((velocity == null) ? 0 : velocity.hashCode());
+        return result;
+    }
 
-	public void setCustomName(String customName) {
-		this.customName = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(customName));
-	}
-	
-	public void setCustomName(Component customName) {
-		this.customName = customName;
-	}
-	
-	public Component getCustomName() {
-		return customName;
-	}
+    public Component getCustomName() {
+        return customName;
+    }
 
-	public void setGlowing(boolean bool) {
-		this.isGlowing = bool;
-	}
+    public void setCustomName(String customName) {
+        this.customName = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(customName));
+    }
 
-	public boolean isGlowing() {
-		return isGlowing;
-	}
+    public void setCustomName(Component customName) {
+        this.customName = customName;
+    }
 
-	public void setCustomNameVisible(boolean bool) {
-		this.custonNameVisible = bool;
-	}
+    public boolean isGlowing() {
+        return isGlowing;
+    }
 
-	public boolean isCustomNameVisible() {
-		return custonNameVisible;
-	}
+    public void setGlowing(boolean bool) {
+        this.isGlowing = bool;
+    }
 
-	public EntityType getType() {
-		return EntityType.DROPPED_ITEM;
-	}
+    public boolean isCustomNameVisible() {
+        return custonNameVisible;
+    }
 
-	public void setItemStack(ItemStack item, boolean force) {
-		if (lock && !force) {
-			return;
-		}
-		if (item.getType().equals(Material.AIR)) {
-			this.item = new ItemStack(Material.STONE);
-			return;
-		}
-		this.item = item.clone();
-	}
+    public void setCustomNameVisible(boolean bool) {
+        this.custonNameVisible = bool;
+    }
 
-	public void setItemStack(ItemStack item) {
-		if (lock) {
-			return;
-		}
-		if (item.getType().equals(Material.AIR)) {
-			this.item = new ItemStack(Material.STONE);
-			return;
-		}
-		this.item = item.clone();
-	}
+    public EntityType getType() {
+        return EntityType.DROPPED_ITEM;
+    }
 
-	public ItemStack getItemStack() {
-		return item.clone();
-	}
+    public void setItemStack(ItemStack item, boolean force) {
+        if (lock && !force) {
+            return;
+        }
+        if (item.getType().equals(Material.AIR)) {
+            this.item = new ItemStack(Material.STONE);
+            return;
+        }
+        this.item = item.clone();
+    }
 
-	public void setGravity(boolean bool) {
-		this.hasGravity = bool;
-	}
+    public ItemStack getItemStack() {
+        return item.clone();
+    }
 
-	public boolean hasGravity() {
-		return hasGravity;
-	}
+    public void setItemStack(ItemStack item) {
+        if (lock) {
+            return;
+        }
+        if (item.getType().equals(Material.AIR)) {
+            this.item = new ItemStack(Material.STONE);
+            return;
+        }
+        this.item = item.clone();
+    }
 
-	public void setVelocity(Vector vector) {
-		this.velocity = vector.clone();
-	}
+    public void setGravity(boolean bool) {
+        this.hasGravity = bool;
+    }
 
-	public Vector getVelocity() {
-		return velocity;
-	}
+    public boolean hasGravity() {
+        return hasGravity;
+    }
 
-	public void setPickupDelay(int pickupDelay) {
-		this.pickupDelay = pickupDelay;
-	}
+    public Vector getVelocity() {
+        return velocity;
+    }
 
-	public int getPickupDelay() {
-		return pickupDelay;
-	}
+    public void setVelocity(Vector vector) {
+        this.velocity = vector.clone();
+    }
 
-	@Override
-	public WrappedDataWatcher getWrappedDataWatcher() {
-		return WatchableCollection.getWatchableCollection(this);
-	}
+    public int getPickupDelay() {
+        return pickupDelay;
+    }
 
-	@Override
-	public double getHeight() {
-		return 0.25;
-	}
+    public void setPickupDelay(int pickupDelay) {
+        this.pickupDelay = pickupDelay;
+    }
+
+    @Override
+    public WrappedDataWatcher getWrappedDataWatcher() {
+        return WatchableCollection.getWatchableCollection(this);
+    }
+
+    @Override
+    public double getHeight() {
+        return 0.25;
+    }
 
 }

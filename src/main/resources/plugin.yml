@@ -4,7 +4,7 @@ version: ${project.version}
 main: com.loohp.interactionvisualizer.InteractionVisualizer
 api-version: 1.13
 description: Makes function blocks better
-softdepend: 
+softdepend:
   - LightAPI
   - OpenInv
   - SuperVanish

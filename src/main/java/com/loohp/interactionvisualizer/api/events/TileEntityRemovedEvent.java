@@ -1,41 +1,39 @@
 package com.loohp.interactionvisualizer.api.events;
 
+import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import org.bukkit.block.Block;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
-
 /**
  * Called when a tile entity is broken by any means. (Does <b>NOT</b> include unloading)
- * @author LOOHP
  *
+ * @author LOOHP
  */
 public class TileEntityRemovedEvent extends Event {
-	
-	private Block block;
-	private TileEntityType type;
-	
-	public TileEntityRemovedEvent(Block block, TileEntityType type) {
-		this.block = block;
-		this.type = type;
-	}
-	
-	public Block getBlock() {
-		return block;
-	}
-	
-	public TileEntityType getTileEntityType() {
-		return type;
-	}
 
-	private static final HandlerList HANDLERS = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
+    private final Block block;
+    private final TileEntityType type;
 
-    public HandlerList getHandlers() {
-        return HANDLERS;
+    public TileEntityRemovedEvent(Block block, TileEntityType type) {
+        this.block = block;
+        this.type = type;
     }
 
     public static HandlerList getHandlerList() {
+        return HANDLERS;
+    }
+
+    public Block getBlock() {
+        return block;
+    }
+
+    public TileEntityType getTileEntityType() {
+        return type;
+    }
+
+    public HandlerList getHandlers() {
         return HANDLERS;
     }
 

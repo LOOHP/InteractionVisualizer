@@ -4,19 +4,19 @@ import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 public interface DynamicVisualizerEntity extends IVisualizerEntity {
-	
-	public Location getViewingLocation(Location from, Vector direction);
-	
-	public double getRadius();
-	
-	public void setRadius(double radius);
-	
-	public PathType getPathType();
-	
-	public void setPathType(PathType path);
-	
-	public static enum PathType {
-		CIRCLE, SQUARE, FACE;
-	}
+
+    Location getViewingLocation(Location from, Vector direction);
+
+    double getRadius();
+
+    void setRadius(double radius);
+
+    PathType getPathType();
+
+    void setPathType(PathType path);
+
+    enum PathType {
+        CIRCLE, SQUARE, FACE
+    }
 
 }

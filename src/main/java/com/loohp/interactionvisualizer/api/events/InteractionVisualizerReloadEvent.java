@@ -5,22 +5,22 @@ import org.bukkit.event.HandlerList;
 
 /**
  * Called after InteractionVisualizer is reloaded.
- * @author LOOHP
  *
+ * @author LOOHP
  */
 public class InteractionVisualizerReloadEvent extends Event {
-	
-	public InteractionVisualizerReloadEvent() {
-		
-	}
 
-	private static final HandlerList HANDLERS = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
 
-    public HandlerList getHandlers() {
-        return HANDLERS;
+    public InteractionVisualizerReloadEvent() {
+
     }
 
     public static HandlerList getHandlerList() {
+        return HANDLERS;
+    }
+
+    public HandlerList getHandlers() {
         return HANDLERS;
     }
 

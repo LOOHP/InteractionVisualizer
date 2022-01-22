@@ -1,9 +1,5 @@
 package com.loohp.interactionvisualizer.objectholders;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -15,6 +11,10 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * A mutable axis aligned bounding box (AABB).
@@ -32,6 +32,34 @@ import org.jetbrains.annotations.Nullable;
  */
 @SerializableAs("BoundingBox")
 public class BoundingBox implements Cloneable, ConfigurationSerializable {
+
+    private double minX;
+    private double minY;
+    private double minZ;
+    private double maxX;
+    private double maxY;
+    private double maxZ;
+
+    /**
+     * Creates a new (degenerate) bounding box with all corner coordinates at
+     * <code>0</code>.
+     */
+    public BoundingBox() {
+        this.resize(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+    }
+    /**
+     * Creates a new bounding box from the given corner coordinates.
+     *
+     * @param x1 the first corner's x value
+     * @param y1 the first corner's y value
+     * @param z1 the first corner's z value
+     * @param x2 the second corner's x value
+     * @param y2 the second corner's y value
+     * @param z2 the second corner's z value
+     */
+    public BoundingBox(double x1, double y1, double z1, double x2, double y2, double z2) {
+        this.resize(x1, y1, z1, x2, y2, z2);
+    }
 
     /**
      * Creates a new bounding box using the coordinates of the given vectors as
@@ -113,9 +141,9 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
      * Creates a new bounding box using the given center and extents.
      *
      * @param center the center
-     * @param x 1/2 the size of the bounding box along the x axis
-     * @param y 1/2 the size of the bounding box along the y axis
-     * @param z 1/2 the size of the bounding box along the z axis
+     * @param x      1/2 the size of the bounding box along the x axis
+     * @param y      1/2 the size of the bounding box along the y axis
+     * @param z      1/2 the size of the bounding box along the z axis
      * @return the bounding box
      */
     @NotNull
@@ -128,9 +156,9 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
      * Creates a new bounding box using the given center and extents.
      *
      * @param center the center
-     * @param x 1/2 the size of the bounding box along the x axis
-     * @param y 1/2 the size of the bounding box along the y axis
-     * @param z 1/2 the size of the bounding box along the z axis
+     * @param x      1/2 the size of the bounding box along the x axis
+     * @param y      1/2 the size of the bounding box along the y axis
+     * @param z      1/2 the size of the bounding box along the z axis
      * @return the bounding box
      */
     @NotNull
@@ -139,33 +167,35 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
         return new BoundingBox(center.getX() - x, center.getY() - y, center.getZ() - z, center.getX() + x, center.getY() + y, center.getZ() + z);
     }
 
-    private double minX;
-    private double minY;
-    private double minZ;
-    private double maxX;
-    private double maxY;
-    private double maxZ;
+    @NotNull
+    public static BoundingBox deserialize(@NotNull Map<String, Object> args) {
+        double minX = 0.0D;
+        double minY = 0.0D;
+        double minZ = 0.0D;
+        double maxX = 0.0D;
+        double maxY = 0.0D;
+        double maxZ = 0.0D;
 
-    /**
-     * Creates a new (degenerate) bounding box with all corner coordinates at
-     * <code>0</code>.
-     */
-    public BoundingBox() {
-        this.resize(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
-    }
+        if (args.containsKey("minX")) {
+            minX = ((Number) args.get("minX")).doubleValue();
+        }
+        if (args.containsKey("minY")) {
+            minY = ((Number) args.get("minY")).doubleValue();
+        }
+        if (args.containsKey("minZ")) {
+            minZ = ((Number) args.get("minZ")).doubleValue();
+        }
+        if (args.containsKey("maxX")) {
+            maxX = ((Number) args.get("maxX")).doubleValue();
+        }
+        if (args.containsKey("maxY")) {
+            maxY = ((Number) args.get("maxY")).doubleValue();
+        }
+        if (args.containsKey("maxZ")) {
+            maxZ = ((Number) args.get("maxZ")).doubleValue();
+        }
 
-    /**
-     * Creates a new bounding box from the given corner coordinates.
-     *
-     * @param x1 the first corner's x value
-     * @param y1 the first corner's y value
-     * @param z1 the first corner's z value
-     * @param x2 the second corner's x value
-     * @param y2 the second corner's y value
-     * @param z2 the second corner's z value
-     */
-    public BoundingBox(double x1, double y1, double z1, double x2, double y2, double z2) {
-        this.resize(x1, y1, z1, x2, y2, z2);
+        return new BoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     /**
@@ -429,11 +459,11 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
      * to the bounding box's current size.
      *
      * @param x the amount of expansion in both positive and negative x
-     * direction
+     *          direction
      * @param y the amount of expansion in both positive and negative y
-     * direction
+     *          direction
      * @param z the amount of expansion in both positive and negative z
-     * direction
+     *          direction
      * @return this bounding box (now expanded)
      */
     @NotNull
@@ -481,16 +511,20 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
      * expansion value will shrink the bounding box in this direction. Shrinking
      * will be limited to the bounding box's current size.
      *
-     * @param dirX the x direction component
-     * @param dirY the y direction component
-     * @param dirZ the z direction component
+     * @param dirX      the x direction component
+     * @param dirY      the y direction component
+     * @param dirZ      the z direction component
      * @param expansion the amount of expansion
      * @return this bounding box (now expanded)
      */
     @NotNull
     public BoundingBox expand(double dirX, double dirY, double dirZ, double expansion) {
-        if (expansion == 0.0D) return this;
-        if (dirX == 0.0D && dirY == 0.0D && dirZ == 0.0D) return this;
+        if (expansion == 0.0D) {
+            return this;
+        }
+        if (dirX == 0.0D && dirY == 0.0D && dirZ == 0.0D) {
+            return this;
+        }
 
         double negativeX = (dirX < 0.0D ? (-dirX * expansion) : 0.0D);
         double negativeY = (dirY < 0.0D ? (-dirY * expansion) : 0.0D);
@@ -532,7 +566,9 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
     @NotNull
     public BoundingBox expand(@NotNull BlockFace blockFace, double expansion) {
         Validate.notNull(blockFace, "Block face is null!");
-        if (blockFace == BlockFace.SELF) return this;
+        if (blockFace == BlockFace.SELF) {
+            return this;
+        }
 
         return this.expand(blockFace.getDirection(), expansion);
     }
@@ -630,7 +666,9 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
     @NotNull
     public BoundingBox union(@NotNull BoundingBox other) {
         Validate.notNull(other, "Other bounding box is null!");
-        if (this.contains(other)) return this;
+        if (this.contains(other)) {
+            return this;
+        }
         double newMinX = Math.min(this.minX, other.minX);
         double newMinY = Math.min(this.minY, other.minY);
         double newMinZ = Math.min(this.minZ, other.minZ);
@@ -671,9 +709,11 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
      */
     @NotNull
     public BoundingBox shift(double shiftX, double shiftY, double shiftZ) {
-        if (shiftX == 0.0D && shiftY == 0.0D && shiftZ == 0.0D) return this;
+        if (shiftX == 0.0D && shiftY == 0.0D && shiftZ == 0.0D) {
+            return this;
+        }
         return this.resize(this.minX + shiftX, this.minY + shiftY, this.minZ + shiftZ,
-                this.maxX + shiftX, this.maxY + shiftY, this.maxZ + shiftZ);
+                           this.maxX + shiftX, this.maxY + shiftY, this.maxZ + shiftZ);
     }
 
     /**
@@ -741,7 +781,7 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
         double y2 = max.getY();
         double z2 = max.getZ();
         return this.overlaps(Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2),
-                Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2));
+                             Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2));
     }
 
     /**
@@ -806,7 +846,7 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
      * @param min the first corner
      * @param max the second corner
      * @return <code>true</code> if the bounding box contains the specified
-     *     bounding box
+     * bounding box
      */
     public boolean contains(@NotNull Vector min, @NotNull Vector max) {
         Validate.notNull(min, "Min is null!");
@@ -818,7 +858,7 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
         double y2 = max.getY();
         double z2 = max.getZ();
         return this.contains(Math.min(x1, x2), Math.min(y1, y2), Math.min(z1, z2),
-                Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2));
+                             Math.max(x1, x2), Math.max(y1, y2), Math.max(z1, z2));
     }
 
     /**
@@ -828,8 +868,8 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
      * Intersections at edges and corners yield one of the affected block faces
      * as hit result, but it is not defined which of them.
      *
-     * @param start the start position
-     * @param direction the ray direction
+     * @param start       the start position
+     * @param direction   the ray direction
      * @param maxDistance the maximum distance
      * @return the ray trace hit result, or <code>null</code> if there is no hit
      */
@@ -840,7 +880,9 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
         Validate.notNull(direction, "Direction is null!");
         direction.checkFinite();
         Validate.isTrue(direction.lengthSquared() > 0, "Direction's magnitude is 0!");
-        if (maxDistance < 0.0D) return null;
+        if (maxDistance < 0.0D) {
+            return null;
+        }
 
         // ray start:
         double startX = start.getX();
@@ -935,7 +977,9 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
         }
 
         // intersections are behind the start:
-        if (tMax < 0.0D) return null;
+        if (tMax < 0.0D) {
+            return null;
+        }
         // intersections are to far away:
         if (tMin > maxDistance) {
             return null;
@@ -955,11 +999,17 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
         Vector hitPosition = dir.multiply(t).add(start);
         return new RayTraceResult(hitPosition, hitBlockFace);
     }
-    
+
     Vector normalizeZeros(Vector vector) {
-        if (vector.getX() == -0.0D) vector.setX(0.0D);
-        if (vector.getY() == -0.0D) vector.setY(0.0D);
-        if (vector.getZ() == -0.0D) vector.setZ(0.0D);
+        if (vector.getX() == -0.0D) {
+            vector.setX(0.0D);
+        }
+        if (vector.getY() == -0.0D) {
+            vector.setY(0.0D);
+        }
+        if (vector.getZ() == -0.0D) {
+            vector.setZ(0.0D);
+        }
         return vector;
     }
 
@@ -985,16 +1035,29 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof BoundingBox)) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof BoundingBox)) {
+            return false;
+        }
         BoundingBox other = (BoundingBox) obj;
-        if (Double.doubleToLongBits(maxX) != Double.doubleToLongBits(other.maxX)) return false;
-        if (Double.doubleToLongBits(maxY) != Double.doubleToLongBits(other.maxY)) return false;
-        if (Double.doubleToLongBits(maxZ) != Double.doubleToLongBits(other.maxZ)) return false;
-        if (Double.doubleToLongBits(minX) != Double.doubleToLongBits(other.minX)) return false;
-        if (Double.doubleToLongBits(minY) != Double.doubleToLongBits(other.minY)) return false;
-        if (Double.doubleToLongBits(minZ) != Double.doubleToLongBits(other.minZ)) return false;
-        return true;
+        if (Double.doubleToLongBits(maxX) != Double.doubleToLongBits(other.maxX)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(maxY) != Double.doubleToLongBits(other.maxY)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(maxZ) != Double.doubleToLongBits(other.maxZ)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(minX) != Double.doubleToLongBits(other.minX)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(minY) != Double.doubleToLongBits(other.minY)) {
+            return false;
+        }
+        return Double.doubleToLongBits(minZ) == Double.doubleToLongBits(other.minZ);
     }
 
     @Override
@@ -1042,36 +1105,5 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
         result.put("maxY", maxY);
         result.put("maxZ", maxZ);
         return result;
-    }
-
-    @NotNull
-    public static BoundingBox deserialize(@NotNull Map<String, Object> args) {
-        double minX = 0.0D;
-        double minY = 0.0D;
-        double minZ = 0.0D;
-        double maxX = 0.0D;
-        double maxY = 0.0D;
-        double maxZ = 0.0D;
-
-        if (args.containsKey("minX")) {
-            minX = ((Number) args.get("minX")).doubleValue();
-        }
-        if (args.containsKey("minY")) {
-            minY = ((Number) args.get("minY")).doubleValue();
-        }
-        if (args.containsKey("minZ")) {
-            minZ = ((Number) args.get("minZ")).doubleValue();
-        }
-        if (args.containsKey("maxX")) {
-            maxX = ((Number) args.get("maxX")).doubleValue();
-        }
-        if (args.containsKey("maxY")) {
-            maxY = ((Number) args.get("maxY")).doubleValue();
-        }
-        if (args.containsKey("maxZ")) {
-            maxZ = ((Number) args.get("maxZ")).doubleValue();
-        }
-
-        return new BoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
     }
 }

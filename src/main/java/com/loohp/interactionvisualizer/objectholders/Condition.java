@@ -11,7 +11,7 @@ package com.loohp.interactionvisualizer.objectholders;
  */
 @FunctionalInterface
 public interface Condition {
-	
-	boolean check();
+
+    boolean check();
 
 }

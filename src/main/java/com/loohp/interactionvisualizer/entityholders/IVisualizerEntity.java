@@ -1,42 +1,41 @@
 package com.loohp.interactionvisualizer.entityholders;
 
-import java.util.UUID;
-
+import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import java.util.UUID;
 
 public interface IVisualizerEntity {
 
-	public void setRotation(float yaw, float pitch);
+    void setRotation(float yaw, float pitch);
 
-	public World getWorld();
+    World getWorld();
 
-	public void teleport(Location location);
+    void teleport(Location location);
 
-	public void teleport(World world, double x, double y, double z);
+    void teleport(World world, double x, double y, double z);
 
-	public void teleport(World world, double x, double y, double z, float yaw, float pitch);
+    void teleport(World world, double x, double y, double z, float yaw, float pitch);
 
-	public void setLocation(Location location);
+    Location getLocation();
 
-	public Location getLocation();
+    void setLocation(Location location);
 
-	public void setSilent(boolean bool);
+    boolean isSilent();
 
-	public boolean isSilent();
+    void setSilent(boolean bool);
 
-	public UUID getUniqueId();
+    UUID getUniqueId();
 
-	public int getEntityId();
+    int getEntityId();
 
-	public void setLocked(boolean bool);
+    boolean isLocked();
 
-	public boolean isLocked();
-	
-	public double getHeight();
+    void setLocked(boolean bool);
 
-	public WrappedDataWatcher getWrappedDataWatcher();
+    double getHeight();
+
+    WrappedDataWatcher getWrappedDataWatcher();
 
 }

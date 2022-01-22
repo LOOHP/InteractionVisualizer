@@ -8,7 +8,6 @@ import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
-import com.loohp.interactionvisualizer.utils.LegacyFacingUtils;
 import com.loohp.interactionvisualizer.utils.LocationUtils;
 import com.loohp.interactionvisualizer.utils.OpenInvUtils;
 import com.loohp.interactionvisualizer.utils.VanishUtils;
@@ -17,11 +16,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,7 +26,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -42,9 +35,9 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DoubleChestDisplay implements Listener, VisualizerDisplay {
+public class BarrelDisplay implements Listener, VisualizerDisplay {
 
-    public static final EntryKey KEY = new EntryKey("double_chest");
+    public static final EntryKey KEY = new EntryKey("barrel");
 
     public ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<>();
 
@@ -54,7 +47,7 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onUseDoubleChest(InventoryClickEvent event) {
+    public void onUseBarrel(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
         if (event.isCancelled()) {
             return;
@@ -71,14 +64,14 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
         if (event.getView().getTopInventory() == null) {
             return;
         }
-        if (!event.getView().getTopInventory().getType().equals(InventoryType.CHEST)) {
+        if (!event.getView().getTopInventory().getType().equals(InventoryType.BARREL)) {
             return;
         }
         try {
             if (event.getView().getTopInventory().getLocation() == null) {
                 return;
             }
-        } catch (Exception e) {
+        } catch (Exception | AbstractMethodError e) {
             return;
         }
         if (!LocationUtils.isLoaded(event.getView().getTopInventory().getLocation())) {
@@ -87,7 +80,7 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
         if (event.getView().getTopInventory().getLocation().getBlock() == null) {
             return;
         }
-        if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.CHEST) && !event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.TRAPPED_CHEST)) {
+        if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.BARREL)) {
             return;
         }
         if (event.getClick().equals(ClickType.MIDDLE) && !event.getWhoClicked().getGameMode().equals(GameMode.CREATIVE)) {
@@ -97,38 +90,12 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
         Block block = event.getView().getTopInventory().getLocation().getBlock();
         Location loc = block.getLocation();
 
-        Chest chest = (Chest) block.getState();
-        InventoryHolder holder = chest.getInventory().getHolder();
-        if (!(holder instanceof DoubleChest)) {
-            return;
-        }
-
-        DoubleChest doublechest = (DoubleChest) holder;
-        BlockFace facing = null;
-        if (!InteractionVisualizer.version.isLegacy()) {
-            BlockData blockData = chest.getBlockData();
-            facing = ((Directional) blockData).getFacing();
-        } else {
-            facing = LegacyFacingUtils.getFacing(chest.getBlock());
-        }
-        if (facing.equals(BlockFace.EAST)) {
-            block = doublechest.getLeftSide().getInventory().getLocation().getBlock();
-            loc = block.getLocation().add(0.0, 0.0, 0.5);
-        } else if (facing.equals(BlockFace.SOUTH)) {
-            block = doublechest.getRightSide().getInventory().getLocation().getBlock();
-            loc = block.getLocation().add(0.5, 0.0, 0.0);
-        } else if (facing.equals(BlockFace.WEST)) {
-            block = doublechest.getRightSide().getInventory().getLocation().getBlock();
-            loc = block.getLocation().add(0.0, 0.0, 0.5);
-        } else if (facing.equals(BlockFace.NORTH)) {
-            block = doublechest.getLeftSide().getInventory().getLocation().getBlock();
-            loc = block.getLocation().add(0.5, 0.0, 0.0);
-        }
-
         boolean isIn = true;
         boolean isMove = false;
         ItemStack itemstack = null;
-        if (event.getRawSlot() >= 0 && event.getRawSlot() <= 53) {
+
+        if (event.getRawSlot() >= 0 && event.getRawSlot() <= 26) {
+
             itemstack = event.getCurrentItem();
             if (itemstack != null) {
                 if (itemstack.getType().equals(Material.AIR)) {
@@ -155,7 +122,7 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
                 }
             }
             if (itemstack == null) {
-                if ((event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) || event.getAction().equals(InventoryAction.HOTBAR_SWAP)) && event.getHotbarButton() >= 0) {
+                if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) || event.getAction().equals(InventoryAction.HOTBAR_SWAP)) {
                     itemstack = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
                     if (itemstack != null) {
                         if (itemstack.getType().equals(Material.AIR)) {
@@ -167,6 +134,7 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
                 }
             }
         }
+
         if (itemstack == null) {
             if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
                 itemstack = event.getCurrentItem();
@@ -179,6 +147,7 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
                 }
             }
         }
+
         if (event.isShiftClick() && event.getView().getItem(event.getRawSlot()) != null) {
             if (isIn) {
                 if (!InventoryUtils.stillHaveSpace(event.getView().getTopInventory(), event.getView().getItem(event.getRawSlot()).getType())) {
@@ -203,16 +172,17 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
                 }
             }
         }
+
         if (isMove == true) {
             PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
             if (itemstack != null) {
-                Item item = new Item(loc.clone().add(0.5, 1, 0.5));
+                Item item = new Item(loc.clone().add(0.5, 0.5, 0.5).add(event.getWhoClicked().getLocation().getDirection().multiply(-0.8)));
                 Vector offset = new Vector(0.0, 0.15, 0.0);
-                Vector vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, -0.5, 0.0).add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(-0.15).add(offset);
+                Vector vector = loc.clone().add(0.5, 0.5, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).add(0.0, -0.5, 0.0).toVector()).multiply(-0.13).add(offset);
                 item.setVelocity(vector);
                 if (isIn) {
                     item.teleport(event.getWhoClicked().getEyeLocation().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0));
-                    vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.15).add(offset);
+                    vector = loc.clone().add(0.5, 0.5, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.13).add(offset);
                     item.setVelocity(vector);
                 }
                 PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
@@ -226,12 +196,11 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
                 List<Item> list = link.get(player);
                 list.add(item);
                 boolean finalIsIn = isIn;
-                Location finalLoc = loc;
                 Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
                     if (finalIsIn) {
-                        item.teleport(finalLoc.clone().add(0.5, 1, 0.5));
+                        item.teleport(loc.clone().add(0.5, 0.5, 0.5));
                     } else {
-                        item.teleport(player.getEyeLocation().add(0.0, -0.5, 0.0).add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0));
+                        item.teleport(event.getWhoClicked().getEyeLocation().add(0.0, -0.5, 0.0).add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0));
                     }
                     item.setVelocity(new Vector(0.0, 0.0, 0.0));
                     item.setGravity(false);
@@ -246,7 +215,7 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onDragDoubleChest(InventoryDragEvent event) {
+    public void onDragBarrel(InventoryDragEvent event) {
         Player player = (Player) event.getWhoClicked();
         if (event.isCancelled()) {
             return;
@@ -261,7 +230,7 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
             if (event.getView().getTopInventory().getLocation() == null) {
                 return;
             }
-        } catch (Exception e) {
+        } catch (Exception | AbstractMethodError e) {
             return;
         }
         if (!LocationUtils.isLoaded(event.getView().getTopInventory().getLocation())) {
@@ -270,7 +239,7 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
         if (event.getView().getTopInventory().getLocation().getBlock() == null) {
             return;
         }
-        if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.CHEST) && !event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.TRAPPED_CHEST)) {
+        if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.BARREL)) {
             return;
         }
 
@@ -300,35 +269,8 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
         Block block = event.getView().getTopInventory().getLocation().getBlock();
         Location loc = block.getLocation();
 
-        Chest chest = (Chest) block.getState();
-        InventoryHolder holder = chest.getInventory().getHolder();
-        if (!(holder instanceof DoubleChest)) {
-            return;
-        }
-        DoubleChest doublechest = (DoubleChest) holder;
-        BlockFace facing = null;
-        if (!InteractionVisualizer.version.isLegacy()) {
-            BlockData blockData = chest.getBlockData();
-            facing = ((Directional) blockData).getFacing();
-        } else {
-            facing = LegacyFacingUtils.getFacing(chest.getBlock());
-        }
-        if (facing.equals(BlockFace.EAST)) {
-            block = doublechest.getLeftSide().getInventory().getLocation().getBlock();
-            loc = block.getLocation().add(0.0, 0.0, 0.5);
-        } else if (facing.equals(BlockFace.SOUTH)) {
-            block = doublechest.getRightSide().getInventory().getLocation().getBlock();
-            loc = block.getLocation().add(0.5, 0.0, 0.0);
-        } else if (facing.equals(BlockFace.WEST)) {
-            block = doublechest.getRightSide().getInventory().getLocation().getBlock();
-            loc = block.getLocation().add(0.0, 0.0, 0.5);
-        } else if (facing.equals(BlockFace.NORTH)) {
-            block = doublechest.getLeftSide().getInventory().getLocation().getBlock();
-            loc = block.getLocation().add(0.5, 0.0, 0.0);
-        }
-
         for (int slot : event.getRawSlots()) {
-            if (slot >= 0 && slot <= 53) {
+            if (slot >= 0 && slot <= 26) {
                 PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
 
                 ItemStack itemstack = event.getOldCursor();
@@ -341,7 +283,7 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
                 if (itemstack != null) {
                     Item item = new Item(event.getWhoClicked().getEyeLocation().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0));
                     Vector offset = new Vector(0.0, 0.15, 0.0);
-                    Vector vector = loc.clone().add(0.5, 1, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.15).add(offset);
+                    Vector vector = loc.clone().add(0.5, 0.5, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.13).add(offset);
                     item.setVelocity(vector);
                     PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
                     item.setItemStack(itemstack);
@@ -354,9 +296,8 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
                     }
                     List<Item> list = link.get(player);
                     list.add(item);
-                    Location finalLoc = loc;
                     Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
-                        item.teleport(finalLoc.clone().add(0.5, 1, 0.5));
+                        item.teleport(loc.clone().add(0.5, 0.5, 0.5));
                         item.setVelocity(new Vector(0.0, 0.0, 0.0));
                         item.setGravity(false);
                         PacketManager.updateItem(item);
@@ -372,7 +313,7 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
     }
 
     @EventHandler
-    public void onCloseDoubleChest(InventoryCloseEvent event) {
+    public void onCloseBarrel(InventoryCloseEvent event) {
         if (event.getView().getTopInventory() == null) {
             return;
         }
@@ -380,7 +321,7 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
             if (event.getView().getTopInventory().getLocation() == null) {
                 return;
             }
-        } catch (Exception e) {
+        } catch (Exception | AbstractMethodError e) {
             return;
         }
         if (!LocationUtils.isLoaded(event.getView().getTopInventory().getLocation())) {

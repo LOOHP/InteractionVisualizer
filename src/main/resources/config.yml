@@ -10,7 +10,7 @@ Database:
 
 Messages:
   NoPermission: "&cYou do not have permission to use that command!"
-  Reload: "&aInteractionVisualizer sucessfully reloaded!"
+  Reload: "&aInteractionVisualizer successfully reloaded!"
   Toggle:
     Usage: "&cUsage: /interactionvisualizer toggle <itemstand/itemdrop/hologram> <block/entry> <true/false>"
     Modes: "&cToggle Modes: itemstand, itemdrop, hologram"
@@ -20,12 +20,12 @@ Messages:
     ToggleOff: "&eToggled %e %m off"
     PlayerNotFound: "&cThe player is not online!"
     All: "All"
-  #User friendly names for the modules
+  #User-friendly names for the modules
   ModuleName:
     hologram: "Holograms"
     itemstand: "ItemStands"
     itemdrop: "ItemDrops"
-  #User friendly names for the entries
+  #User-friendly names for the entries
   EntryName:
     "interactionvisualizer:crafting_table": "Crafting Table"
     "interactionvisualizer:loom": "Loom"
@@ -94,13 +94,15 @@ Blocks:
   Banner:
     Enabled: true
     Options:
-    #Banners that matches will not have the display shown
+      #Banners that matches will not have the display shown
       Blacklist:
         #Strip color codes when matching names
         StripColorWhenMatching: true
         #Regex name match
         List:
-        - "Ominous Banner"
+          - "Ominous Banner"
+  Barrel:
+    Enabled: true
   Beacon:
     Enabled: true
     #How often should the plugin check for block updates
@@ -339,7 +341,7 @@ Entities:
 #Enable these modules for InteractionVisualizer displays
 #ItemStand represents all displays using armorstands and itemframes
 #ItemDrop represents all displays using dropped items
-#Hologram represents all holograpgic displays using armorstands
+#Hologram represents all holographic displays using armorstands
 Modules:
   ItemStand:
     Enabled: true
