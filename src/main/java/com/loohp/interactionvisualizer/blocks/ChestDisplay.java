@@ -288,7 +288,7 @@ public class ChestDisplay implements Listener, VisualizerDisplay {
         }
 
         for (int slot : event.getRawSlots()) {
-            if (slot >= 0 && slot <= topInventory.getSize()) {
+            if (slot >= 0 && slot < topInventory.getSize()) {
                 PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
 
                 ItemStack itemstack = event.getOldCursor();
