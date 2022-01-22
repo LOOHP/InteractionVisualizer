@@ -29,6 +29,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -114,6 +115,7 @@ public class EnderchestDisplay implements Listener, VisualizerDisplay {
             return;
         }
 
+        Inventory topInventory = event.getView().getTopInventory();
         Block block = playermap.get(player);
         Location loc = block.getLocation();
 
@@ -121,7 +123,7 @@ public class EnderchestDisplay implements Listener, VisualizerDisplay {
         boolean isMove = false;
         ItemStack itemstack = null;
 
-        if (event.getRawSlot() >= 0 && event.getRawSlot() <= 26) {
+        if (event.getRawSlot() >= 0 && event.getRawSlot() < topInventory.getSize()) {
 
             itemstack = event.getCurrentItem();
             if (itemstack != null) {
@@ -200,7 +202,7 @@ public class EnderchestDisplay implements Listener, VisualizerDisplay {
             }
         }
 
-        if (isMove == true) {
+        if (isMove) {
             PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
             if (itemstack != null) {
                 Item item = new Item(loc.clone().add(0.5, 1, 0.5));
@@ -274,11 +276,12 @@ public class EnderchestDisplay implements Listener, VisualizerDisplay {
             return;
         }
 
+        Inventory topInventory = event.getView().getTopInventory();
         Block block = playermap.get(player);
         Location loc = block.getLocation();
 
         for (int slot : event.getRawSlots()) {
-            if (slot >= 0 && slot <= 26) {
+            if (slot >= 0 && slot < topInventory.getSize()) {
                 PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
 
                 ItemStack itemstack = event.getOldCursor();
@@ -331,9 +334,7 @@ public class EnderchestDisplay implements Listener, VisualizerDisplay {
 
         List<Item> list = link.get(player);
         if (list != null) {
-            Iterator<Item> itr = list.iterator();
-            while (itr.hasNext()) {
-                Item item = itr.next();
+            for (Item item : list) {
                 PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
             }
             link.remove(player);

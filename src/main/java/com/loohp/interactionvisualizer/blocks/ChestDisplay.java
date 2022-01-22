@@ -28,6 +28,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -90,7 +91,8 @@ public class ChestDisplay implements Listener, VisualizerDisplay {
             return;
         }
 
-        Block block = event.getView().getTopInventory().getLocation().getBlock();
+        Inventory topInventory = event.getView().getTopInventory();
+        Block block = topInventory.getLocation().getBlock();
         Location loc = block.getLocation();
 
         Chest chest = (Chest) block.getState();
@@ -103,7 +105,7 @@ public class ChestDisplay implements Listener, VisualizerDisplay {
         boolean isMove = false;
         ItemStack itemstack = null;
 
-        if (event.getRawSlot() >= 0 && event.getRawSlot() <= 26) {
+        if (event.getRawSlot() >= 0 && event.getRawSlot() < topInventory.getSize()) {
 
             itemstack = event.getCurrentItem();
             if (itemstack != null) {
@@ -182,7 +184,7 @@ public class ChestDisplay implements Listener, VisualizerDisplay {
             }
         }
 
-        if (isMove == true) {
+        if (isMove) {
             PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
             if (itemstack != null) {
                 Item item = new Item(loc.clone().add(0.5, 1, 0.5));
@@ -275,7 +277,8 @@ public class ChestDisplay implements Listener, VisualizerDisplay {
             return;
         }
 
-        Block block = event.getView().getTopInventory().getLocation().getBlock();
+        Inventory topInventory = event.getView().getTopInventory();
+        Block block = topInventory.getLocation().getBlock();
         Location loc = block.getLocation();
 
         Chest chest = (Chest) block.getState();
@@ -285,7 +288,7 @@ public class ChestDisplay implements Listener, VisualizerDisplay {
         }
 
         for (int slot : event.getRawSlots()) {
-            if (slot >= 0 && slot <= 26) {
+            if (slot >= 0 && slot <= topInventory.getSize()) {
                 PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
 
                 ItemStack itemstack = event.getOldCursor();
@@ -350,9 +353,7 @@ public class ChestDisplay implements Listener, VisualizerDisplay {
             return;
         }
         List<Item> list = link.get((Player) event.getPlayer());
-        Iterator<Item> itr = list.iterator();
-        while (itr.hasNext()) {
-            Item item = itr.next();
+        for (Item item : list) {
             PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
         }
 

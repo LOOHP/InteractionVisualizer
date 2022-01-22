@@ -25,6 +25,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -83,14 +84,15 @@ public class DispenserDisplay implements Listener, VisualizerDisplay {
             return;
         }
 
-        Block block = event.getView().getTopInventory().getLocation().getBlock();
+        Inventory topInventory = event.getView().getTopInventory();
+        Block block = topInventory.getLocation().getBlock();
         Location loc = block.getLocation();
 
         boolean isIn = true;
         boolean isMove = false;
         ItemStack itemstack = null;
 
-        if (event.getRawSlot() >= 0 && event.getRawSlot() <= 8) {
+        if (event.getRawSlot() >= 0 && event.getRawSlot() < topInventory.getSize()) {
 
             itemstack = event.getCurrentItem();
             if (itemstack != null) {
@@ -169,7 +171,7 @@ public class DispenserDisplay implements Listener, VisualizerDisplay {
             }
         }
 
-        if (isMove == true) {
+        if (isMove) {
             PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
             if (itemstack != null) {
                 Item item = new Item(loc.clone().add(0.5, 0.5, 0.5).add(event.getWhoClicked().getLocation().getDirection().multiply(-0.8)));
@@ -259,11 +261,12 @@ public class DispenserDisplay implements Listener, VisualizerDisplay {
             return;
         }
 
-        Block block = event.getView().getTopInventory().getLocation().getBlock();
+        Inventory topInventory = event.getView().getTopInventory();
+        Block block = topInventory.getLocation().getBlock();
         Location loc = block.getLocation();
 
         for (int slot : event.getRawSlots()) {
-            if (slot >= 0 && slot <= 8) {
+            if (slot >= 0 && slot < topInventory.getSize()) {
                 PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
 
                 ItemStack itemstack = event.getOldCursor();
@@ -325,9 +328,7 @@ public class DispenserDisplay implements Listener, VisualizerDisplay {
             return;
         }
         List<Item> list = link.get((Player) event.getPlayer());
-        Iterator<Item> itr = list.iterator();
-        while (itr.hasNext()) {
-            Item item = itr.next();
+        for (Item item : list) {
             PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
         }
 
