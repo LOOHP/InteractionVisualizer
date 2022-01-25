@@ -5,7 +5,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>1.17.1.4</version>
+	<version>1.17.1.5</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -61,12 +61,8 @@
 									<shadedPattern>com.loohp.interactionvisualizer.libs.org.apache.commons</shadedPattern>
 								</relocation>
 								<relocation>
-									<pattern>org.simpleyaml</pattern>
-									<shadedPattern>com.loohp.interactionvisualizer.libs.org.simpleyaml</shadedPattern>
-								</relocation>
-								<relocation>
-									<pattern>org.yaml</pattern>
-									<shadedPattern>com.loohp.interactionvisualizer.libs.org.yaml</shadedPattern>
+									<pattern>com.loohp.yamlconfiguration</pattern>
+									<shadedPattern>com.loohp.interactivechat.libs.com.loohp.yamlconfiguration</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>org.awaitility</pattern>
@@ -226,9 +222,9 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.github.LOOHP</groupId>
-			<artifactId>Simple-YAML</artifactId>
-			<version>d68cdc3892</version>
+			<groupId>com.loohp</groupId>
+			<artifactId>YamlConfiguration</artifactId>
+			<version>1.0.0.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

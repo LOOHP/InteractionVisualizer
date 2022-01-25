@@ -1,9 +1,7 @@
 package com.loohp.interactionvisualizer.config;
 
 import com.loohp.interactionvisualizer.utils.FileUtils;
-import org.simpleyaml.configuration.comments.CommentType;
-import org.simpleyaml.configuration.file.YamlFile;
-import org.simpleyaml.exceptions.InvalidConfigurationException;
+import com.loohp.yamlconfiguration.YamlConfiguration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,7 +31,7 @@ public class Config {
         }
     }
 
-    public static Config loadConfig(String id, File file, InputStream ifNotFound, InputStream def, boolean refreshComments) throws IOException, InvalidConfigurationException {
+    public static Config loadConfig(String id, File file, InputStream ifNotFound, InputStream def, boolean refreshComments) throws IOException {
         if (CONFIGS.containsKey(id)) {
             throw new IllegalArgumentException("Duplicate config id");
         }
@@ -47,7 +45,7 @@ public class Config {
         return config;
     }
 
-    public static Config loadConfig(String id, File file) {
+    public static Config loadConfig(String id, File file) throws IOException {
         if (getConfig(id) != null) {
             throw new IllegalArgumentException("Duplicate config id");
         }
@@ -75,52 +73,53 @@ public class Config {
             return false;
         }
     }
-    private File file;
-    private YamlFile defConfig;
-    private YamlFile config;
 
-    private Config(File file, InputStream def, boolean refreshComments) throws IOException, InvalidConfigurationException {
+    private File file;
+    private YamlConfiguration defConfig;
+    private YamlConfiguration config;
+
+    private Config(File file, InputStream def, boolean refreshComments) throws IOException {
         this.file = file;
 
-        defConfig = YamlFile.loadConfiguration(def, true);
-        config = new YamlFile(file);
-        config.loadWithComments();
+        defConfig = new YamlConfiguration(def);
+        config = new YamlConfiguration(file);
 
         for (String path : defConfig.getValues(true).keySet()) {
             if (config.contains(path)) {
                 if (refreshComments) {
-                    config.setComment(path, defConfig.getComment(path, CommentType.BLOCK), CommentType.BLOCK);
+                    config.setAboveComment(path, defConfig.getAboveComment(path));
                 }
             } else if (!defConfig.isConfigurationSection(path)) {
                 config.set(path, defConfig.get(path));
-                config.setComment(path, defConfig.getComment(path, CommentType.BLOCK), CommentType.BLOCK);
+                config.setAboveComment(path, defConfig.getAboveComment(path));
             }
         }
 
         save();
     }
 
-    private Config(File file) {
-        config = YamlFile.loadConfiguration(file, true);
+    private Config(File file) throws IOException {
+        config = new YamlConfiguration(file);
         save();
+    }
+
+    public File getFile() {
+        return file;
     }
 
     public void save() {
-        try {
-            for (String path : config.getValues(true).keySet()) {
-                config.setComment(path, null, CommentType.SIDE);
-            }
-            config.save();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        save(file);
+    }
+
+    public void save(File file) {
+        config.save(file);
     }
 
     public void reload() {
-        config = YamlFile.loadConfiguration(file, true);
+        config.reload();
     }
 
-    public YamlFile getConfiguration() {
+    public YamlConfiguration getConfiguration() {
         return config;
     }
 

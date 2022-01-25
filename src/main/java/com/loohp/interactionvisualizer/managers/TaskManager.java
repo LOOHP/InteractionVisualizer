@@ -41,12 +41,12 @@ import com.loohp.interactionvisualizer.listeners.ChunkEvents;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.updater.Updater;
 import com.loohp.interactionvisualizer.utils.MCVersion;
+import com.loohp.yamlconfiguration.YamlConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
-import org.simpleyaml.configuration.file.FileConfiguration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -430,7 +430,7 @@ public class TaskManager {
         Bukkit.getScheduler().runTaskLater(plugin, () -> run(), next);
     }
 
-    private static FileConfiguration getConfig() {
+    private static YamlConfiguration getConfig() {
         return InteractionVisualizer.plugin.getConfiguration();
     }
 
