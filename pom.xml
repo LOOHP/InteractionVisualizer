@@ -224,7 +224,7 @@
 		<dependency>
 			<groupId>com.loohp</groupId>
 			<artifactId>YamlConfiguration</artifactId>
-			<version>1.0.0.0</version>
+			<version>1.0.0.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
