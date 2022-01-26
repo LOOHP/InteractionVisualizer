@@ -62,7 +62,7 @@
 								</relocation>
 								<relocation>
 									<pattern>com.loohp.yamlconfiguration</pattern>
-									<shadedPattern>com.loohp.interactivechat.libs.com.loohp.yamlconfiguration</shadedPattern>
+									<shadedPattern>com.loohp.interactionvisualizer.libs.com.loohp.yamlconfiguration</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>org.awaitility</pattern>
