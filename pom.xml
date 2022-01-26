@@ -206,6 +206,10 @@
 			<id>CodeMC</id>
 			<url>https://repo.codemc.org/repository/maven-public/</url>
 		</repository>
+		<repository>
+			<id>loohp-repo</id>
+			<url>https://repo.loohpjames.com/repository</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
