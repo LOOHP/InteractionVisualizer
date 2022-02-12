@@ -100,7 +100,7 @@ Blocks:
         StripColorWhenMatching: true
         #Regex name match
         List:
-          - "Ominous Banner"
+          - ".*Ominous Banner"
   Barrel:
     Enabled: true
   Beacon:
