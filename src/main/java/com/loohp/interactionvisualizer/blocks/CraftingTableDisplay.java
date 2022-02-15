@@ -210,7 +210,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
 
         if (view.getItem(0) != null) {
             ItemStack itemstack = view.getItem(0);
-            if (itemstack.getType().equals(Material.AIR)) {
+            if (itemstack == null || itemstack.getType().equals(Material.AIR)) {
                 itemstack = null;
             }
             Item item = null;
@@ -243,7 +243,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
         for (int i = 0; i < 9; i++) {
             ArmorStand stand = (ArmorStand) map.get(String.valueOf(i + 1));
             ItemStack item = items[i];
-            if (item.getType().equals(Material.AIR)) {
+            if (item == null || item.getType().equals(Material.AIR)) {
                 item = null;
             }
             if (item != null) {
@@ -279,7 +279,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
         InteractionVisualizer.lightManager.deleteLight(loc1);
         int skylight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromSky();
         int blocklight = loc1.getBlock().getRelative(BlockFace.UP).getLightFromBlocks() - 1;
-        blocklight = blocklight < 0 ? 0 : blocklight;
+        blocklight = Math.max(blocklight, 0);
         if (skylight > 0) {
             InteractionVisualizer.lightManager.createLight(loc1, skylight, LightType.SKY);
         }
@@ -494,7 +494,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
                 if (entity instanceof Item) {
                     PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), (Item) entity);
                 } else if (entity instanceof ArmorStand) {
-                    if (((ArmorStand) entity).isLocked() == false) {
+                    if (!((ArmorStand) entity).isLocked()) {
                         PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), (ArmorStand) entity);
                     }
                     int finalI = i;

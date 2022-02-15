@@ -92,7 +92,7 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
 
         if (view.getItem(2) != null) {
             ItemStack itemstack = view.getItem(2);
-            if (itemstack.getType().equals(Material.AIR)) {
+            if (itemstack == null || itemstack.getType().equals(Material.AIR)) {
                 itemstack = null;
             }
             Item item = null;
@@ -125,7 +125,7 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
         for (int i = 0; i < 2; i++) {
             ArmorStand stand = (ArmorStand) map.get(String.valueOf(i));
             ItemStack item = items[i];
-            if (item.getType().equals(Material.AIR)) {
+            if (item == null || item.getType().equals(Material.AIR)) {
                 item = null;
             }
             if (item != null) {

@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class EntryKey {
 
-    public static final Pattern VALIDATE = Pattern.compile("^[a-z1-9_]*$");
+    public static final Pattern VALIDATE = Pattern.compile("^[a-z0-9_]*$");
     public static final String NATIVE = "interactionvisualizer";
 
     private final String namespace;
@@ -25,7 +25,7 @@ public class EntryKey {
             this.key = namespacedKey;
         }
         if (!VALIDATE.matcher(namespace).matches() || !VALIDATE.matcher(key).matches()) {
-            throw new IllegalArgumentException("Invalid EntryKey, an EntryKey can only contain " + VALIDATE.pattern());
+            throw new IllegalArgumentException("Invalid EntryKey, an EntryKey may only contain " + VALIDATE.pattern());
         }
     }
 
@@ -36,7 +36,7 @@ public class EntryKey {
         this.namespace = namespace;
         this.key = key;
         if (!VALIDATE.matcher(namespace).matches() || !VALIDATE.matcher(key).matches()) {
-            throw new IllegalArgumentException("Invalid EntryKey, an EntryKey can only contain " + VALIDATE.pattern());
+            throw new IllegalArgumentException("Invalid EntryKey, an EntryKey may only contain " + VALIDATE.pattern());
         }
     }
 

@@ -15,7 +15,6 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
-import com.loohp.interactionvisualizer.utils.ComponentFont;
 import com.loohp.interactionvisualizer.utils.JsonUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -63,8 +62,7 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
         stripColorBlacklist = InteractionVisualizer.plugin.getConfiguration().getBoolean("Entities.Item.Options.Blacklist.StripColorWhenMatching");
         blacklist = InteractionVisualizer.plugin.getConfiguration().getStringList("Blocks.Banner.Options.Blacklist.List").stream().map(each -> {
             Pattern pattern = Pattern.compile(each);
-            Predicate<String> predicate = str -> pattern.matcher(str).matches();
-            return predicate;
+            return (Predicate<String>) str -> pattern.matcher(str).matches();
         }).reduce(Predicate::or).orElse(s -> false);
     }
 
@@ -105,7 +103,6 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
                             PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand);
                         }
                         bannerMap.remove(block);
-                        return;
                     }
                 }, delay);
             }
@@ -164,10 +161,10 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
                                 try {
                                     component = GsonComponentSerializer.gson().deserialize(name);
                                 } catch (Throwable e) {
-                                    component = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(name));
+                                    component = LegacyComponentSerializer.legacySection().deserialize(name);
                                 }
                             } else {
-                                component = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(name));
+                                component = LegacyComponentSerializer.legacySection().deserialize(name);
                             }
                             String matchingName = LegacyComponentSerializer.legacySection().serialize(component);
                             if (stripColorBlacklist) {

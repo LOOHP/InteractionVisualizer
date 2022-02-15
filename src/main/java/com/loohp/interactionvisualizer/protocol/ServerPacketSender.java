@@ -176,7 +176,7 @@ public class ServerPacketSender {
     }
 
     public static void removeArmorStand(Collection<Player> players, ArmorStand entity) {
-        PacketContainer[] packets = NMS.getInstance().createEntityDestoryPacket(entity.getEntityId());
+        PacketContainer[] packets = NMS.getInstance().createEntityDestroyPacket(entity.getEntityId());
 
         if (!plugin.isEnabled()) {
             return;
@@ -324,7 +324,7 @@ public class ServerPacketSender {
     }
 
     public static void removeItem(Collection<Player> players, Item entity) {
-        PacketContainer[] packets = NMS.getInstance().createEntityDestoryPacket(entity.getEntityId());
+        PacketContainer[] packets = NMS.getInstance().createEntityDestroyPacket(entity.getEntityId());
 
         if (!plugin.isEnabled()) {
             return;
@@ -426,7 +426,7 @@ public class ServerPacketSender {
     }
 
     public static void removeItemFrame(Collection<Player> players, ItemFrame entity) {
-        PacketContainer[] packets = NMS.getInstance().createEntityDestoryPacket(entity.getEntityId());
+        PacketContainer[] packets = NMS.getInstance().createEntityDestroyPacket(entity.getEntityId());
 
         if (!plugin.isEnabled()) {
             return;

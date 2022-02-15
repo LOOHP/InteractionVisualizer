@@ -168,7 +168,7 @@ public class V1_17 extends NMS {
     }
 
     @Override
-    public PacketContainer[] createEntityDestoryPacket(int... entityIds) {
+    public PacketContainer[] createEntityDestroyPacket(int... entityIds) {
         if (entityDestoryIsInt) {
             PacketContainer[] packets = new PacketContainer[entityIds.length];
             for (int i = 0; i < entityIds.length; i++) {

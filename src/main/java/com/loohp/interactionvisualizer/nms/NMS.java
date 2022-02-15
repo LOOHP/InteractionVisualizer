@@ -20,7 +20,7 @@ import java.util.List;
 
 public abstract class NMS {
 
-    private static NMS instance;
+    private static NMS instance = null;
 
     public static NMS getInstance() {
         if (instance == null) {
@@ -59,7 +59,6 @@ public abstract class NMS {
                     instance = new V1_11();
                     break;
                 default:
-                    instance = null;
                     break;
             }
         }
@@ -68,7 +67,7 @@ public abstract class NMS {
 
     public abstract PacketContainer[] createEntityEquipmentPacket(int entityId, List<ValuePairs<EquipmentSlot, ItemStack>> equipments);
 
-    public PacketContainer[] createEntityDestoryPacket(int... entityIds) {
+    public PacketContainer[] createEntityDestroyPacket(int... entityIds) {
         PacketContainer packet = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
         packet.getIntegerArrays().write(0, entityIds);
         return new PacketContainer[] {packet};

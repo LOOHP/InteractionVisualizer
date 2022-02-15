@@ -350,7 +350,7 @@ public class InteractionVisualizer extends JavaPlugin {
         if (!Bukkit.getOnlinePlayers().isEmpty()) {
             getServer().getConsoleSender().sendMessage(ChatColor.YELLOW + "[InteractionVisualizer] Plugin reload detected, attempting to despawn all visual entities. If anything went wrong, please restart! (Reloads are always not recommended)");
             int[] entityIdArray = PacketManager.active.keySet().stream().mapToInt(each -> each.getEntityId()).toArray();
-            PacketContainer[] packets = NMS.getInstance().createEntityDestoryPacket(entityIdArray);
+            PacketContainer[] packets = NMS.getInstance().createEntityDestroyPacket(entityIdArray);
 
             try {
                 for (Player player : Bukkit.getOnlinePlayers()) {

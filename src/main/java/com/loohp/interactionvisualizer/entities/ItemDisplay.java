@@ -102,10 +102,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
                 material = e -> true;
             }
             Predicate<Material> finalmaterial = material;
-            BiPredicate<String, Material> bipredicate = (s, m) -> {
-                return name.test(s) && finalmaterial.test(m);
-            };
-            return bipredicate;
+            return (BiPredicate<String, Material>) (s, m) -> name.test(s) && finalmaterial.test(m);
         }).reduce(BiPredicate::or).orElse((s, m) -> false);
     }
 

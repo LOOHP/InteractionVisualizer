@@ -100,7 +100,7 @@ Blocks:
         StripColorWhenMatching: true
         #Regex name match
         List:
-          - ".*Ominous Banner"
+          - "Ominous Banner|block\\.minecraft\\.ominous_banner"
   Barrel:
     Enabled: true
   Beacon:
