@@ -40,6 +40,7 @@ import com.loohp.interactionvisualizer.managers.TileEntityManager;
 import com.loohp.interactionvisualizer.metrics.Charts;
 import com.loohp.interactionvisualizer.metrics.Metrics;
 import com.loohp.interactionvisualizer.nms.NMS;
+import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.ILightManager;
 import com.loohp.interactionvisualizer.placeholderAPI.Placeholders;
 import com.loohp.interactionvisualizer.protocol.WatchableCollection;
@@ -105,6 +106,9 @@ public class InteractionVisualizer extends JavaPlugin {
     public static boolean itemStandEnabled = true;
     public static boolean itemDropEnabled = true;
     public static boolean hologramsEnabled = true;
+    public static Set<EntryKey> itemStandDisabled = new HashSet<>();
+    public static Set<EntryKey> itemDropDisabled = new HashSet<>();
+    public static Set<EntryKey> hologramsDisabled = new HashSet<>();
 
     public static Double playerPickupYOffset = 0.0;
 
@@ -399,6 +403,10 @@ public class InteractionVisualizer extends JavaPlugin {
         itemDropEnabled = getConfiguration().getBoolean("Modules.ItemDrop.Enabled");
         hologramsEnabled = getConfiguration().getBoolean("Modules.Hologram.Enabled");
 
+        itemStandDisabled = getConfiguration().getStringList("Modules.ItemStand.OverridingDisabled").stream().map(each -> new EntryKey(each)).collect(Collectors.toSet());
+        itemDropDisabled = getConfiguration().getStringList("Modules.ItemDrop.OverridingDisabled").stream().map(each -> new EntryKey(each)).collect(Collectors.toSet());
+        hologramsDisabled = getConfiguration().getStringList("Modules.Hologram.OverridingDisabled").stream().map(each -> new EntryKey(each)).collect(Collectors.toSet());
+
         playerPickupYOffset = getConfiguration().getDouble("Settings.PickupAnimationPlayerYOffset");
 
         tileEntityCheckingRange = getConfiguration().getInt("TileEntityUpdate.CheckingRange");
@@ -411,7 +419,7 @@ public class InteractionVisualizer extends JavaPlugin {
 
         handMovementEnabled = getConfiguration().getBoolean("Settings.UseHandSwingAnimation");
 
-        disabledWorlds = getConfiguration().getStringList("Settings.DisabledWorlds").stream().collect(Collectors.toSet());
+        disabledWorlds = new HashSet<>(getConfiguration().getStringList("Settings.DisabledWorlds"));
         hideIfObstructed = getConfiguration().getBoolean("Settings.HideIfViewObstructed");
 
         lightUpdatePeriod = getConfiguration().getInt("LightUpdate.Period");

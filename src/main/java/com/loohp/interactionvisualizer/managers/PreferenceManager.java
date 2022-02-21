@@ -21,9 +21,9 @@
 package com.loohp.interactionvisualizer.managers;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
-import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.database.Database;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
+import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
 import com.loohp.interactionvisualizer.objectholders.SynchronizedFilteredCollection;
 import com.loohp.interactionvisualizer.utils.ArrayUtils;
 import net.md_5.bungee.api.ChatColor;
@@ -49,11 +49,11 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
 
 public class PreferenceManager implements Listener, AutoCloseable {
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings("FieldCanBeLocal")
     private final InteractionVisualizer plugin;
     private final List<EntryKey> entries;
     private final Map<UUID, Map<Modules, BitSet>> preferences;
@@ -94,7 +94,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
         try {
             Awaitility.await().atMost(30, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).pollDelay(0, TimeUnit.MILLISECONDS).until(() -> !Database.isLocked());
         } catch (ConditionTimeoutException e) {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Tried to save player preference but database is locked for more than 30 secionds, performing save anyway...");
+            Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Tried to save player preference but database is locked for more than 30 seconds, performing save anyway...");
         }
         Database.setLocked(true);
         Database.setBitIndex(ArrayUtils.putToMap(entries, new HashMap<>()));
@@ -114,7 +114,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
                 try {
                     Awaitility.await().atMost(30, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).pollDelay(0, TimeUnit.MILLISECONDS).until(() -> !Database.isLocked());
                 } catch (ConditionTimeoutException e) {
-                    Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Tried to save player preference but database is locked for more than 30 secionds, performing save anyway...");
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Tried to save player preference but database is locked for more than 30 seconds, performing save anyway...");
                 }
                 Database.setLocked(true);
                 List<EntryKey> updatedEntries = ArrayUtils.putToArrayList(Database.getBitIndex(), new ArrayList<>());
@@ -207,7 +207,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
     }
 
     public boolean isRegisteredEntry(EntryKey entry) {
-        return entries.indexOf(entry) >= 0;
+        return entries.contains(entry);
     }
 
     public List<EntryKey> getRegisteredEntries() {
@@ -420,23 +420,23 @@ public class PreferenceManager implements Listener, AutoCloseable {
     }
 
     public Collection<Player> getPlayerList(Modules module, EntryKey entry) {
-        Supplier<Boolean> serverSetting;
+        BooleanSupplier serverSetting;
         switch (module) {
             case HOLOGRAM:
-                serverSetting = () -> InteractionVisualizer.hologramsEnabled;
+                serverSetting = () -> InteractionVisualizer.hologramsEnabled && !InteractionVisualizer.hologramsDisabled.contains(entry);
                 break;
             case ITEMDROP:
-                serverSetting = () -> InteractionVisualizer.itemDropEnabled;
+                serverSetting = () -> InteractionVisualizer.itemDropEnabled && !InteractionVisualizer.itemDropDisabled.contains(entry);
                 break;
             case ITEMSTAND:
-                serverSetting = () -> InteractionVisualizer.itemStandEnabled;
+                serverSetting = () -> InteractionVisualizer.itemStandEnabled && !InteractionVisualizer.itemStandDisabled.contains(entry);
                 break;
             default:
                 serverSetting = () -> true;
                 break;
         }
         return SynchronizedFilteredCollection.filterSynchronized(backingPlayerList, player -> {
-            if (!serverSetting.get()) {
+            if (!serverSetting.getAsBoolean()) {
                 return false;
             }
             if (!isRegisteredEntry(entry)) {

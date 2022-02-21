@@ -342,13 +342,19 @@ Entities:
 #ItemStand represents all displays using armorstands and itemframes
 #ItemDrop represents all displays using dropped items
 #Hologram represents all holographic displays using armorstands
+#OverridingDisabled accepts a list of entry keys
+#Which force disables a module for a display type regardless of player preference
+#An example of an entry key is "interactionvisualizer:crafting_table"
 Modules:
   ItemStand:
     Enabled: true
+    OverridingDisabled: []
   ItemDrop:
     Enabled: true
+    OverridingDisabled: []
   Hologram:
     Enabled: true
+    OverridingDisabled: []
 
 Settings:
   #Whether everything should be disabled to the player by default

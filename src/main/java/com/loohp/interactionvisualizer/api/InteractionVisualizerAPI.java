@@ -52,18 +52,18 @@ import java.util.stream.Stream;
 public class InteractionVisualizerAPI {
 
     /**
-     * Get the user friendly names of a module
+     * Get the user-friendly names of a module
      *
-     * @return The user friendly name of the module, or the internal name, if not found.
+     * @return The user-friendly name of the module, or the internal name, if not found.
      */
     public static String getUserFriendlyName(Modules module) {
         return Config.getConfig(InteractionVisualizer.CONFIG_ID).getConfiguration().getString("Messages.ModuleName." + module.toString().toLowerCase(), module.toString().toLowerCase());
     }
 
     /**
-     * Get the user friendly names of an entry
+     * Get the user-friendly names of an entry
      *
-     * @return The user friendly name of the entry, or the internal name, if not found.
+     * @return The user-friendly name of the entry, or the internal name, if not found.
      */
     public static String getUserFriendlyName(EntryKey entry) {
         return Config.getConfig(InteractionVisualizer.CONFIG_ID).getConfiguration().getString("Messages.EntryName." + entry.toString().toLowerCase(), entry.toString().toLowerCase());
@@ -88,7 +88,7 @@ public class InteractionVisualizerAPI {
     }
 
     /**
-     * Gets all players that has a module enabled for themselves, excluding players in disabled worlds.
+     * Gets all players that have a module enabled for themselves, excluding players in disabled worlds.
      *
      * @return A set of players.
      */
@@ -97,7 +97,7 @@ public class InteractionVisualizerAPI {
     }
 
     /**
-     * Gets all players that has a module enabled for themselves, excluding the provided players and players in disabled worlds.
+     * Gets all players that have a module enabled for themselves, excluding the provided players and players in disabled worlds.
      *
      * @return A set of players.
      */
@@ -106,7 +106,7 @@ public class InteractionVisualizerAPI {
     }
 
     /**
-     * Gets all players that has a module enabled for themselves, excluding the provided players.
+     * Gets all players that have a module enabled for themselves, excluding the provided players.
      *
      * @return A set of players.
      */
@@ -146,13 +146,19 @@ public class InteractionVisualizerAPI {
         }
     }
 
+    public enum Modules {
+        ITEMSTAND,
+        ITEMDROP,
+        HOLOGRAM
+    }
+
     /**
      * Check if an online player has a module enabled.
      *
      * @return true/false.
      */
     public static boolean hasPlayerEnabledModule(Player player, Modules module, EntryKey entry) {
-        return InteractionVisualizerAPI.getPlayerModuleList(module, entry).contains(player);
+        return getPlayerModuleList(module, entry).contains(player);
     }
 
     /**
@@ -350,6 +356,23 @@ public class InteractionVisualizerAPI {
      */
     public static Set<String> getDisabledWorlds() {
         return Collections.unmodifiableSet(InteractionVisualizer.disabledWorlds);
+    }
+
+    /**
+     * Get the set of entry keys that is force disabled for a module
+     *
+     * @return a set of entry keys
+     */
+    public static Set<EntryKey> getOverridingDisabledEntries(Modules module) {
+        switch (module) {
+            case ITEMSTAND:
+                return Collections.unmodifiableSet(InteractionVisualizer.itemStandDisabled);
+            case ITEMDROP:
+                return Collections.unmodifiableSet(InteractionVisualizer.itemDropDisabled);
+            case HOLOGRAM:
+                return Collections.unmodifiableSet(InteractionVisualizer.hologramsDisabled);
+        }
+        return Collections.emptySet();
     }
 
     /**
@@ -618,12 +641,6 @@ public class InteractionVisualizerAPI {
     public static Item removeItem(Item item, EntryKey entry) {
         PacketManager.removeItem(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, entry), item);
         return item;
-    }
-
-    public enum Modules {
-        ITEMSTAND,
-        ITEMDROP,
-        HOLOGRAM
     }
 
     public enum ConfiguationType {
