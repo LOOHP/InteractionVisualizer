@@ -65,6 +65,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -100,7 +102,7 @@ public class InteractionVisualizer extends JavaPlugin {
     public static Set<String> exemptBlocks = new HashSet<>();
     public static Set<String> disabledWorlds = new HashSet<>();
 
-    public static World defaultworld;
+    public static Reference<World> defaultworld;
     public static Location defaultlocation;
 
     public static boolean itemStandEnabled = true;
@@ -244,10 +246,10 @@ public class InteractionVisualizer extends JavaPlugin {
         }
         loadConfig();
 
-        defaultworld = getServer().getWorlds().get(0);
-        defaultlocation = new Location(defaultworld, 0, 0, 0);
+        defaultworld = new WeakReference<>(getServer().getWorlds().get(0));
+        defaultlocation = new Location(getDefaultWorld(), 0, 0, 0);
         if (!version.isLegacy() && !version.equals(MCVersion.V1_13) && !version.equals(MCVersion.V1_13_1)) {
-            defaultworld.setChunkForceLoaded(0, 0, true);
+            getDefaultWorld().setChunkForceLoaded(0, 0, true);
         }
 
         if (getConfiguration().getBoolean("Options.DownloadLanguageFiles")) {
@@ -441,6 +443,16 @@ public class InteractionVisualizer extends JavaPlugin {
         LanguageUtils.loadTranslations(language);
 
         getServer().getPluginManager().callEvent(new InteractionVisualizerReloadEvent());
+    }
+
+    public static World getDefaultWorld() {
+        if (defaultworld == null) {
+            World world = Bukkit.getWorlds().get(0);
+            defaultworld = new WeakReference<>(world);
+            return world;
+        } else {
+            return defaultworld.get();
+        }
     }
 
 }

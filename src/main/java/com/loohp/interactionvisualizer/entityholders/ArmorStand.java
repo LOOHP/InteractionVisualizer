@@ -45,7 +45,7 @@ public class ArmorStand extends VisualizerEntity {
     private ItemStack helmet;
     private ItemStack mainhand;
     private Component customName;
-    private boolean custonNameVisible;
+    private boolean customNameVisible;
     private Vector velocity;
 
     public ArmorStand(Location location) {
@@ -62,7 +62,7 @@ public class ArmorStand extends VisualizerEntity {
         this.helmet = new ItemStack(Material.AIR);
         this.mainhand = new ItemStack(Material.AIR);
         this.customName = Component.empty();
-        this.custonNameVisible = false;
+        this.customNameVisible = false;
         this.velocity = new Vector(0.0, 0.0, 0.0);
     }
 
@@ -82,7 +82,7 @@ public class ArmorStand extends VisualizerEntity {
         result = prime * result + ((helmet == null) ? 0 : helmet.hashCode());
         result = prime * result + ((mainhand == null) ? 0 : mainhand.hashCode());
         result = prime * result + ((customName == null) ? 0 : customName.hashCode());
-        result = prime * result + ((custonNameVisible) ? 6199 : 8647);
+        result = prime * result + ((customNameVisible) ? 6199 : 8647);
         result = prime * result + ((velocity == null) ? 0 : velocity.hashCode());
         return result;
     }
@@ -100,11 +100,11 @@ public class ArmorStand extends VisualizerEntity {
     }
 
     public boolean isCustomNameVisible() {
-        return custonNameVisible;
+        return customNameVisible;
     }
 
     public void setCustomNameVisible(boolean bool) {
-        this.custonNameVisible = bool;
+        this.customNameVisible = bool;
     }
 
     public void setArms(boolean bool) {
@@ -216,8 +216,8 @@ public class ArmorStand extends VisualizerEntity {
     }
 
     @Override
-    public WrappedDataWatcher getWrappedDataWatcher() {
-        return WatchableCollection.getWatchableCollection(this);
+    public WrappedDataWatcher updateAndGetWrappedDataWatcher() {
+        return dataWatcher = WatchableCollection.getWatchableCollection(this, dataWatcher);
     }
 
     @Override

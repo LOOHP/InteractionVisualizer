@@ -56,6 +56,6 @@ public interface IVisualizerEntity {
 
     double getHeight();
 
-    WrappedDataWatcher getWrappedDataWatcher();
+    WrappedDataWatcher updateAndGetWrappedDataWatcher();
 
 }

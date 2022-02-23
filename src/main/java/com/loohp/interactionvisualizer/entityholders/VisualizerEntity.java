@@ -36,6 +36,7 @@ public abstract class VisualizerEntity implements IVisualizerEntity {
     protected Location location;
     protected boolean lock;
     protected boolean isSilent;
+    protected WrappedDataWatcher dataWatcher;
     private int id;
 
     public VisualizerEntity(Location location) {
@@ -45,6 +46,7 @@ public abstract class VisualizerEntity implements IVisualizerEntity {
         this.location = location.clone();
         this.lock = false;
         this.isSilent = false;
+        this.dataWatcher = null;
     }
 
     @Override
@@ -138,6 +140,6 @@ public abstract class VisualizerEntity implements IVisualizerEntity {
     public abstract double getHeight();
 
     @Override
-    public abstract WrappedDataWatcher getWrappedDataWatcher();
+    public abstract WrappedDataWatcher updateAndGetWrappedDataWatcher();
 
 }

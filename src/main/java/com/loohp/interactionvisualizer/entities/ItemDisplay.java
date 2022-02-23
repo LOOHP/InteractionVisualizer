@@ -79,6 +79,8 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
     public static final EntryKey KEY = new EntryKey("item");
 
     private final Map<Item, Set<Player>> outOfRangePlayersMap = Collections.synchronizedMap(new WeakHashMap<>());
+    private final Map<Item, WrappedDataWatcher> defaultWatchers = Collections.synchronizedMap(new WeakHashMap<>());
+    private final Map<Item, WrappedDataWatcher> modifiedWatchers = Collections.synchronizedMap(new WeakHashMap<>());
 
     private String[] regularFormatting;
     private String[] singularFormatting;
@@ -167,7 +169,9 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
             if (NBTEditor.getShort(item, "PickupDelay") >= Short.MAX_VALUE || ticks < 0 || isCramping(world, area, items)) {
                 PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
                 defaultPacket.getIntegers().write(0, item.getEntityId());
-                defaultPacket.getWatchableCollectionModifier().write(0, WatchableCollection.resetCustomNameWatchableCollection(item).getWatchableObjects());
+                WrappedDataWatcher watcher = WatchableCollection.resetCustomNameWatchableCollection(item, defaultWatchers.get(item));
+                defaultPacket.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
+                defaultWatchers.put(item, watcher);
                 Collection<Player> players = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY);
                 for (Player player : players) {
                     try {
@@ -239,8 +243,11 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
                     }
                 }
 
-                WrappedDataWatcher modifiedWatcher = WatchableCollection.createCustomNameWatchableCollection(display);
-                WrappedDataWatcher defaultWatcher = WatchableCollection.resetCustomNameWatchableCollection(item);
+                WrappedDataWatcher modifiedWatcher = WatchableCollection.createCustomNameWatchableCollection(display, modifiedWatchers.get(item));
+                WrappedDataWatcher defaultWatcher = WatchableCollection.resetCustomNameWatchableCollection(item, defaultWatchers.get(item));
+
+                modifiedWatchers.put(item, modifiedWatcher);
+                defaultWatchers.put(item, defaultWatcher);
 
                 PacketContainer modifiedPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
                 PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);

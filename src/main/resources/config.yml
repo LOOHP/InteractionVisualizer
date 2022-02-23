@@ -364,7 +364,9 @@ Settings:
   UseHandSwingAnimation: true
   PickupAnimationPlayerYOffset: 0
   DisabledWorlds: []
-  #Might be resource intensive
+  #MIGHT BE RESOURCE INTENSIVE
+  #MIGHT BE RESOURCE INTENSIVE
+  #MIGHT BE RESOURCE INTENSIVE
   HideIfViewObstructed: false
   #The default language
   #Doesn't do anything on Minecraft 1.13+

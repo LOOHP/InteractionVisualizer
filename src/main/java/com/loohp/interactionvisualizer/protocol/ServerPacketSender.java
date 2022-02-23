@@ -112,7 +112,7 @@ public class ServerPacketSender {
 
         PacketContainer packet2 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet2.getIntegers().write(0, entity.getEntityId());
-        WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
+        WrappedDataWatcher wpw = entity.updateAndGetWrappedDataWatcher();
         packet2.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
 
         List<ValuePairs<EquipmentSlot, ItemStack>> equipments = new ArrayList<>();
@@ -149,7 +149,7 @@ public class ServerPacketSender {
 
         PacketContainer packet2 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet2.getIntegers().write(0, entity.getEntityId());
-        WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
+        WrappedDataWatcher wpw = entity.updateAndGetWrappedDataWatcher();
         packet2.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
 
         List<ValuePairs<EquipmentSlot, ItemStack>> equipments = new ArrayList<>();
@@ -178,7 +178,7 @@ public class ServerPacketSender {
     public static void updateArmorStandOnlyMeta(Collection<Player> players, ArmorStand entity) {
         PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet1.getIntegers().write(0, entity.getEntityId());
-        WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
+        WrappedDataWatcher wpw = entity.updateAndGetWrappedDataWatcher();
         packet1.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
 
         if (!plugin.isEnabled()) {
@@ -244,7 +244,7 @@ public class ServerPacketSender {
 
         PacketContainer packet2 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet2.getIntegers().write(0, entity.getEntityId());
-        WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
+        WrappedDataWatcher wpw = entity.updateAndGetWrappedDataWatcher();
         packet2.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
 
         PacketContainer packet3 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_VELOCITY);
@@ -276,7 +276,7 @@ public class ServerPacketSender {
 
         PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet1.getIntegers().write(0, entity.getEntityId());
-        WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
+        WrappedDataWatcher wpw = entity.updateAndGetWrappedDataWatcher();
         packet1.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
 
         PacketContainer packet2 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
@@ -316,7 +316,7 @@ public class ServerPacketSender {
 
         PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet1.getIntegers().write(0, entity.getEntityId());
-        WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
+        WrappedDataWatcher wpw = entity.updateAndGetWrappedDataWatcher();
         packet1.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
 
         PacketContainer packet2 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_TELEPORT);
@@ -388,7 +388,7 @@ public class ServerPacketSender {
 
         PacketContainer packet2 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet2.getIntegers().write(0, entity.getEntityId());
-        WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
+        WrappedDataWatcher wpw = entity.updateAndGetWrappedDataWatcher();
         packet2.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
 
         if (!plugin.isEnabled()) {
@@ -428,7 +428,7 @@ public class ServerPacketSender {
     public static void updateItemFrame(Collection<Player> players, ItemFrame entity) {
         PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet1.getIntegers().write(0, entity.getEntityId());
-        WrappedDataWatcher wpw = entity.getWrappedDataWatcher();
+        WrappedDataWatcher wpw = entity.updateAndGetWrappedDataWatcher();
         packet1.getWatchableCollectionModifier().write(0, wpw.getWatchableObjects());
 
         if (!plugin.isEnabled()) {

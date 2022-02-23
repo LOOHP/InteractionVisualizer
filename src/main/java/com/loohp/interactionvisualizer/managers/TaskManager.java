@@ -172,7 +172,7 @@ public class TaskManager {
         Bukkit.getPluginManager().registerEvents(new PacketManager(), plugin);
         if (version.isLegacy()) {
             ChunkEvents.setup();
-            InteractionVisualizer.defaultworld.getChunkAt(0, 0).load();
+            InteractionVisualizer.getDefaultWorld().getChunkAt(0, 0).load();
             Bukkit.getPluginManager().registerEvents(new ChunkEvents(), plugin);
         }
 

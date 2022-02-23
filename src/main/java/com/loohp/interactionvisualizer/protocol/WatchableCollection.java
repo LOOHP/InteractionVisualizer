@@ -65,8 +65,10 @@ public class WatchableCollection {
         vectorSerializer = Registry.getVectorSerializer();
     }
 
-    public static WrappedDataWatcher getWatchableCollection(ArmorStand stand) {
-        WrappedDataWatcher watcher = new WrappedDataWatcher();
+    public static WrappedDataWatcher getWatchableCollection(ArmorStand stand, WrappedDataWatcher watcher) {
+        if (watcher == null) {
+            watcher = new WrappedDataWatcher();
+        }
 
         byte bitmask = (byte) 0;
         bitmask = !stand.isVisible() ? (byte) (bitmask | 0x20) : bitmask;
@@ -159,8 +161,10 @@ public class WatchableCollection {
         return watcher;
     }
 
-    public static WrappedDataWatcher getWatchableCollection(Item item) {
-        WrappedDataWatcher watcher = new WrappedDataWatcher();
+    public static WrappedDataWatcher getWatchableCollection(Item item, WrappedDataWatcher watcher) {
+        if (watcher == null) {
+            watcher = new WrappedDataWatcher();
+        }
 
         byte bitmask = (byte) 0;
         bitmask = item.isGlowing() ? (byte) (bitmask | 0x40) : bitmask;
@@ -202,8 +206,11 @@ public class WatchableCollection {
         return watcher;
     }
 
-    public static WrappedDataWatcher getWatchableCollection(ItemFrame frame) {
-        WrappedDataWatcher watcher = new WrappedDataWatcher();
+    public static WrappedDataWatcher getWatchableCollection(ItemFrame frame, WrappedDataWatcher watcher) {
+        if (watcher == null) {
+            watcher = new WrappedDataWatcher();
+        }
+
         watcher.setObject(new WrappedDataWatcherObject(4, booleanSerializer), frame.isSilent());
         switch (metaversion) {
             case 0:
@@ -224,8 +231,10 @@ public class WatchableCollection {
         return watcher;
     }
 
-    public static WrappedDataWatcher createCustomNameWatchableCollection(Component name) {
-        WrappedDataWatcher watcher = new WrappedDataWatcher();
+    public static WrappedDataWatcher createCustomNameWatchableCollection(Component name, WrappedDataWatcher watcher) {
+        if (watcher == null) {
+            watcher = new WrappedDataWatcher();
+        }
 
         boolean visible;
         try {
@@ -255,9 +264,11 @@ public class WatchableCollection {
         return watcher;
     }
 
-    public static WrappedDataWatcher resetCustomNameWatchableCollection(Entity entity) {
+    public static WrappedDataWatcher resetCustomNameWatchableCollection(Entity entity, WrappedDataWatcher watcher) {
         WrappedDataWatcher entityWatcher = WrappedDataWatcher.getEntityWatcher(entity);
-        WrappedDataWatcher watcher = new WrappedDataWatcher();
+        if (watcher == null) {
+            watcher = new WrappedDataWatcher();
+        }
         WrappedWatchableObject name = entityWatcher.getWatchableObject(2);
         watcher.setObject(name.getWatcherObject(), name.getValue());
         WrappedWatchableObject visible = entityWatcher.getWatchableObject(3);

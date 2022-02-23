@@ -149,8 +149,8 @@ public class Item extends VisualizerEntity {
     }
 
     @Override
-    public WrappedDataWatcher getWrappedDataWatcher() {
-        return WatchableCollection.getWatchableCollection(this);
+    public WrappedDataWatcher updateAndGetWrappedDataWatcher() {
+        return dataWatcher = WatchableCollection.getWatchableCollection(this, dataWatcher);
     }
 
     @Override
