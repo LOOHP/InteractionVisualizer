@@ -45,6 +45,9 @@ public abstract class NMS {
     public static NMS getInstance() {
         if (instance == null) {
             switch (InteractionVisualizer.version) {
+                case V1_18_2:
+                    instance = new V1_18_2();
+                    break;
                 case V1_18:
                     instance = new V1_18();
                     break;

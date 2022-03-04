@@ -61,6 +61,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -102,8 +103,8 @@ public class InteractionVisualizer extends JavaPlugin {
     public static Set<String> exemptBlocks = new HashSet<>();
     public static Set<String> disabledWorlds = new HashSet<>();
 
-    public static Reference<World> defaultworld;
-    public static Location defaultlocation;
+    public static Reference<World> defaultWorld;
+    public static Location defaultLocation;
 
     public static boolean itemStandEnabled = true;
     public static boolean itemDropEnabled = true;
@@ -160,6 +161,11 @@ public class InteractionVisualizer extends JavaPlugin {
         }
     }
 
+    public static boolean isPluginEnabled(String name) {
+        Plugin plugin = Bukkit.getPluginManager().getPlugin(name);
+        return plugin != null && plugin.isEnabled();
+    }
+
     @Override
     public void onEnable() {
         plugin = this;
@@ -176,6 +182,7 @@ public class InteractionVisualizer extends JavaPlugin {
         asyncExecutorManager = new AsyncExecutorManager(threadPool);
 
         switch (version) {
+            case V1_18_2:
             case V1_18:
             case V1_17:
                 metaversion = 4;
@@ -202,13 +209,13 @@ public class InteractionVisualizer extends JavaPlugin {
                 break;
         }
 
-        if (getServer().getPluginManager().getPlugin("LightAPI") != null) {
+        if (isPluginEnabled("LightAPI")) {
             try {
                 Class.forName("ru.beykerykt.lightapi.utils.Debug");
                 hookMessage("LightAPI");
                 lightapi = true;
                 lightManager = new LightManager(this);
-            } catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException ignored) {
             }
         }
         if (!lightapi) {
@@ -217,19 +224,19 @@ public class InteractionVisualizer extends JavaPlugin {
             }
             lightManager = ILightManager.DUMMY_INSTANCE;
         }
-        if (getServer().getPluginManager().getPlugin("OpenInv") != null) {
+        if (isPluginEnabled("OpenInv")) {
             hookMessage("OpenInv");
             openinv = true;
         }
-        if (getServer().getPluginManager().getPlugin("SuperVanish") != null || getServer().getPluginManager().getPlugin("PremiumVanish") != null) {
+        if (isPluginEnabled("SuperVanish") || isPluginEnabled("PremiumVanish")) {
             hookMessage("SuperVanish/PremiumVanish");
             vanish = true;
         }
-        if (getServer().getPluginManager().getPlugin("CMI") != null) {
+        if (isPluginEnabled("CMI")) {
             hookMessage("CMI");
             cmi = true;
         }
-        if (getServer().getPluginManager().getPlugin("Essentials") != null) {
+        if (isPluginEnabled("Essentials")) {
             hookMessage("Essentials");
             ess3 = true;
         }
@@ -246,8 +253,8 @@ public class InteractionVisualizer extends JavaPlugin {
         }
         loadConfig();
 
-        defaultworld = new WeakReference<>(getServer().getWorlds().get(0));
-        defaultlocation = new Location(getDefaultWorld(), 0, 0, 0);
+        defaultWorld = new WeakReference<>(getServer().getWorlds().get(0));
+        defaultLocation = new Location(getDefaultWorld(), 0, 0, 0);
         if (!version.isLegacy() && !version.equals(MCVersion.V1_13) && !version.equals(MCVersion.V1_13_1)) {
             getDefaultWorld().setChunkForceLoaded(0, 0, true);
         }
@@ -275,7 +282,7 @@ public class InteractionVisualizer extends JavaPlugin {
 
         Charts.registerCharts(metrics);
 
-        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+        if (isPluginEnabled("PlaceholderAPI")) {
             new Placeholders().register();
         }
 
@@ -446,12 +453,12 @@ public class InteractionVisualizer extends JavaPlugin {
     }
 
     public static World getDefaultWorld() {
-        if (defaultworld == null) {
+        if (defaultWorld == null) {
             World world = Bukkit.getWorlds().get(0);
-            defaultworld = new WeakReference<>(world);
+            defaultWorld = new WeakReference<>(world);
             return world;
         } else {
-            return defaultworld.get();
+            return defaultWorld.get();
         }
     }
 

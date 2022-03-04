@@ -20,12 +20,18 @@
 
 package com.loohp.interactionvisualizer.objectholders;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-public class NMSTileEntitySet<K, V> implements Iterable<TileEntity> {
+public class NMSTileEntitySet<K, V> implements Set<TileEntity> {
 
     private final Map<K, V> nmsTileEntities;
     private final Function<Entry<K, V>, TileEntity> converter;
@@ -53,16 +59,81 @@ public class NMSTileEntitySet<K, V> implements Iterable<TileEntity> {
         };
     }
 
-    public int size() {
-        return nmsTileEntities.size();
-    }
-
     public Map<K, V> getHandle() {
         return nmsTileEntities;
     }
 
     public Function<Entry<K, V>, TileEntity> getConverter() {
         return converter;
+    }
+
+    @NotNull
+    @Override
+    public Object[] toArray() {
+        return nmsTileEntities.entrySet().stream().map(converter).toArray();
+    }
+
+    @SuppressWarnings("unchecked")
+    @NotNull
+    @Override
+    public <T> T[] toArray(@NotNull T[] a) {
+        a = a.length < nmsTileEntities.size() ? (T[]) Array.newInstance(a.getClass().getComponentType(), nmsTileEntities.size()) : a;
+        int i = 0;
+        for (Entry<K, V> entry : nmsTileEntities.entrySet()) {
+            a[i++] = (T) converter.apply(entry);
+        }
+        return a;
+    }
+
+    @Override
+    public boolean add(TileEntity tileEntity) {
+        throw new UnsupportedOperationException("NMSTileEntitySet is read only!");
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        throw new UnsupportedOperationException("NMSTileEntitySet is read only!");
+    }
+
+    @Override
+    public boolean containsAll(@NotNull Collection<?> c) {
+        Set<TileEntity> set = nmsTileEntities.entrySet().stream().map(converter).collect(Collectors.toSet());
+        return set.containsAll(c);
+    }
+
+    @Override
+    public boolean addAll(@NotNull Collection<? extends TileEntity> c) {
+        throw new UnsupportedOperationException("NMSTileEntitySet is read only!");
+    }
+
+    @Override
+    public boolean retainAll(@NotNull Collection<?> c) {
+        throw new UnsupportedOperationException("NMSTileEntitySet is read only!");
+    }
+
+    @Override
+    public boolean removeAll(@NotNull Collection<?> c) {
+        throw new UnsupportedOperationException("NMSTileEntitySet is read only!");
+    }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException("NMSTileEntitySet is read only!");
+    }
+
+    @Override
+    public int size() {
+        return nmsTileEntities.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return nmsTileEntities.isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return nmsTileEntities.entrySet().stream().map(converter).anyMatch(each -> each.equals(o));
     }
 
 }

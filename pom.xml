@@ -25,7 +25,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>1.17.1.13</version>
+	<version>1.17.2.0</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -254,7 +254,7 @@
 		<dependency>
 			<groupId>com.github.cryptomorin</groupId>
 			<artifactId>XSeries</artifactId>
-			<version>8.6.1</version>
+			<version>8.6.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -284,7 +284,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.18.1-R0.1-SNAPSHOT</version>
+			<version>1.18.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -354,6 +354,12 @@
 			<scope>system</scope>
 			<version>1.0</version>
 			<systemPath>${basedir}/lib/CMIAPI8.7.8.2.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.bukkit...........</groupId>
+			<artifactId>craftbukkit</artifactId>
+			<version>1.18.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.bukkit..........</groupId>

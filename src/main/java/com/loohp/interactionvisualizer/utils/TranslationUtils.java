@@ -60,15 +60,13 @@ public class TranslationUtils {
         } else {
             try {
                 nmsMobEffectListClass = NMSUtils.getNMSClass("net.minecraft.server.%s.MobEffectList", "net.minecraft.world.effect.MobEffectList");
-                try {
-                    getEffectFromIdMethod = nmsMobEffectListClass.getMethod("fromId", int.class);
-                } catch (Exception e) {
-                    try {
-                        getEffectFromIdMethod = nmsMobEffectListClass.getMethod("byId", int.class);
-                    } catch (Exception e1) {
-                        getEffectFromIdMethod = nmsMobEffectListClass.getMethod("a", int.class);
-                    }
-                }
+                getEffectFromIdMethod = NMSUtils.reflectiveLookup(Method.class, () -> {
+                    return nmsMobEffectListClass.getMethod("fromId", int.class);
+                }, () -> {
+                    return nmsMobEffectListClass.getMethod("byId", int.class);
+                }, () -> {
+                    return nmsMobEffectListClass.getMethod("a", int.class);
+                });
                 getEffectKeyMethod = nmsMobEffectListClass.getMethod("c");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -148,11 +146,10 @@ public class TranslationUtils {
         if (!type.contains("MUSIC_DISC_")) {
             return null;
         }
-        type = type.toLowerCase();
         if (!InteractionVisualizer.version.isLegacy()) {
-            return "item.minecraft." + type + ".desc";
+            return "item.minecraft." + type.toLowerCase() + ".desc";
         } else {
-            return "item.record." + type.substring(type.indexOf("MUSIC_DISC_") + 11) + ".desc";
+            return "item.record." + type.substring(type.indexOf("MUSIC_DISC_") + 11).toLowerCase() + ".desc";
         }
     }
 

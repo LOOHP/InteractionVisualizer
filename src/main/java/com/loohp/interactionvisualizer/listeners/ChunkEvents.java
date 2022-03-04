@@ -43,7 +43,7 @@ public class ChunkEvents implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onUnload(ChunkUnloadEvent event) {
-        if (event.getWorld().equals(InteractionVisualizer.defaultworld) && event.getChunk().getX() == 0 && event.getChunk().getZ() == 0) {
+        if (event.getWorld().equals(InteractionVisualizer.defaultWorld) && event.getChunk().getX() == 0 && event.getChunk().getZ() == 0) {
             try {
                 method.invoke(event, true);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {

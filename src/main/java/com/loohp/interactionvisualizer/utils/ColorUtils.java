@@ -31,29 +31,29 @@ import java.util.stream.Stream;
 
 public class ColorUtils {
 
-    private static final BiMap<ChatColor, Color> colors = HashBiMap.create();
+    private static final BiMap<ChatColor, Color> COLORS = HashBiMap.create();
 
-    private static boolean chatColorHasGetColor = false;
+    private static final boolean CHAT_COLOR_HAS_GET_COLOR;
 
     static {
-        colors.put(ChatColor.BLACK, new Color(0x000000));
-        colors.put(ChatColor.DARK_BLUE, new Color(0x0000AA));
-        colors.put(ChatColor.DARK_GREEN, new Color(0x00AA00));
-        colors.put(ChatColor.DARK_AQUA, new Color(0x00AAAA));
-        colors.put(ChatColor.DARK_RED, new Color(0xAA0000));
-        colors.put(ChatColor.DARK_PURPLE, new Color(0xAA00AA));
-        colors.put(ChatColor.GOLD, new Color(0xFFAA00));
-        colors.put(ChatColor.GRAY, new Color(0xAAAAAA));
-        colors.put(ChatColor.DARK_GRAY, new Color(0x555555));
-        colors.put(ChatColor.BLUE, new Color(0x05555FF));
-        colors.put(ChatColor.GREEN, new Color(0x55FF55));
-        colors.put(ChatColor.AQUA, new Color(0x55FFFF));
-        colors.put(ChatColor.RED, new Color(0xFF5555));
-        colors.put(ChatColor.LIGHT_PURPLE, new Color(0xFF55FF));
-        colors.put(ChatColor.YELLOW, new Color(0xFFFF55));
-        colors.put(ChatColor.WHITE, new Color(0xFFFFFF));
+        COLORS.put(ChatColor.BLACK, new Color(0x000000));
+        COLORS.put(ChatColor.DARK_BLUE, new Color(0x0000AA));
+        COLORS.put(ChatColor.DARK_GREEN, new Color(0x00AA00));
+        COLORS.put(ChatColor.DARK_AQUA, new Color(0x00AAAA));
+        COLORS.put(ChatColor.DARK_RED, new Color(0xAA0000));
+        COLORS.put(ChatColor.DARK_PURPLE, new Color(0xAA00AA));
+        COLORS.put(ChatColor.GOLD, new Color(0xFFAA00));
+        COLORS.put(ChatColor.GRAY, new Color(0xAAAAAA));
+        COLORS.put(ChatColor.DARK_GRAY, new Color(0x555555));
+        COLORS.put(ChatColor.BLUE, new Color(0x05555FF));
+        COLORS.put(ChatColor.GREEN, new Color(0x55FF55));
+        COLORS.put(ChatColor.AQUA, new Color(0x55FFFF));
+        COLORS.put(ChatColor.RED, new Color(0xFF5555));
+        COLORS.put(ChatColor.LIGHT_PURPLE, new Color(0xFF55FF));
+        COLORS.put(ChatColor.YELLOW, new Color(0xFFFF55));
+        COLORS.put(ChatColor.WHITE, new Color(0xFFFFFF));
 
-        chatColorHasGetColor = Stream.of(ChatColor.class.getMethods()).anyMatch(each -> each.getName().equalsIgnoreCase("getColor") && each.getReturnType().equals(Color.class));
+        CHAT_COLOR_HAS_GET_COLOR = Stream.of(ChatColor.class.getMethods()).anyMatch(each -> each.getName().equalsIgnoreCase("getColor") && each.getReturnType().equals(Color.class));
     }
 
     public static ChatColor toChatColor(String str) {
@@ -72,16 +72,16 @@ public class ColorUtils {
     }
 
     public static Color getColor(ChatColor chatcolor) {
-        if (chatColorHasGetColor) {
+        if (CHAT_COLOR_HAS_GET_COLOR) {
             return chatcolor.getColor();
         } else {
-            Color color = colors.get(chatcolor);
+            Color color = COLORS.get(chatcolor);
             return color == null ? Color.white : color;
         }
     }
 
     public static ChatColor getLegacyChatColor(Color color) {
-        ChatColor chatcolor = colors.inverse().get(color);
+        ChatColor chatcolor = COLORS.inverse().get(color);
         return chatcolor == null ? ChatColor.WHITE : chatcolor;
     }
 
@@ -99,7 +99,7 @@ public class ColorUtils {
         if (colorStr.length() > 1) {
             ChatColor chatColor = toChatColor(colorStr);
             if (chatColor != null && ChatColorUtils.isColor(chatColor)) {
-                return chatColorHasGetColor ? chatColor.getColor() : getColor(chatColor);
+                return CHAT_COLOR_HAS_GET_COLOR ? chatColor.getColor() : getColor(chatColor);
             }
         }
         return null;

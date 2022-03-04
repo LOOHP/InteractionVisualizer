@@ -167,7 +167,7 @@ public class ChatColorUtils {
 
     public static String hexToColorCode(String hex) {
         if (hex == null) {
-            return hex;
+            return null;
         }
 
         Matcher matcher = COLOR_HEX_FORMAT_BUKKIT.matcher(hex);
@@ -183,9 +183,9 @@ public class ChatColorUtils {
             Matcher matcher = COLOR_FORMATTING.matcher(text);
 
             if (matcher.find()) {
-                String foramtedColor = matcher.group().toLowerCase();
+                String formattedColor = matcher.group().toLowerCase();
                 int start = matcher.start();
-                int pos = foramtedColor.indexOf("color");
+                int pos = formattedColor.indexOf("color");
                 int absPos = text.indexOf("color", start);
                 int end = matcher.end();
 
@@ -193,7 +193,7 @@ public class ChatColorUtils {
                     continue;
                 }
 
-                String colorCode = hexToColorCode(foramtedColor.substring(pos + 6, pos + 13));
+                String colorCode = hexToColorCode(formattedColor.substring(pos + 6, pos + 13));
 
                 StringBuilder sb = new StringBuilder(text);
                 sb.insert(end, colorCode);

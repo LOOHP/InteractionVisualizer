@@ -32,11 +32,13 @@ import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.objectholders.ValuePairs;
 import com.loohp.interactionvisualizer.objectholders.WrappedIterable;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityEquipment;
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.world.entity.EnumItemSlot;
 import net.minecraft.world.entity.item.EntityItem;
+import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 import net.minecraft.world.phys.AxisAlignedBB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.bukkit.Material;
@@ -52,15 +54,21 @@ import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class V1_18 extends NMS {
 
     private static Method voxelShapeGetAABBList;
-    private static boolean entityDestoryIsInt;
+    private static boolean entityDestroyIsInt;
+    private static Method nmsTileEntityGetNBTTag;
+    private static Field worldServerPersistentEntitySectionManager;
+    private static Method nmsEntityGetBukkitEntity;
 
     static {
         try {
@@ -71,10 +79,13 @@ public class V1_18 extends NMS {
             }
             try {
                 PacketPlayOutEntityDestroy.class.getConstructor(int.class);
-                entityDestoryIsInt = true;
+                entityDestroyIsInt = true;
             } catch (NoSuchMethodException e) {
-                entityDestoryIsInt = false;
+                entityDestroyIsInt = false;
             }
+            nmsTileEntityGetNBTTag = net.minecraft.world.level.block.entity.TileEntity.class.getMethod("Z_");
+            worldServerPersistentEntitySectionManager = WorldServer.class.getField("P");
+            nmsEntityGetBukkitEntity = net.minecraft.world.entity.Entity.class.getMethod("getBukkitEntity");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -147,7 +158,7 @@ public class V1_18 extends NMS {
 
     @Override
     public PacketContainer[] createEntityDestroyPacket(int... entityIds) {
-        if (entityDestoryIsInt) {
+        if (entityDestroyIsInt) {
             PacketContainer[] packets = new PacketContainer[entityIds.length];
             for (int i = 0; i < entityIds.length; i++) {
                 PacketContainer packet = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
@@ -178,13 +189,31 @@ public class V1_18 extends NMS {
 
     @Override
     public String getBannerCustomName(Block block) {
-        return ((CraftWorld) block.getWorld()).getHandle().c_(new net.minecraft.core.BlockPosition(block.getX(), block.getY(), block.getZ())).Z_().l("CustomName");
+        try {
+            return ((NBTTagCompound) nmsTileEntityGetNBTTag.invoke(((CraftWorld) block.getWorld()).getHandle().c_(new net.minecraft.core.BlockPosition(block.getX(), block.getY(), block.getZ())))).l("CustomName");
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
-    @SuppressWarnings("resource")
+    @SuppressWarnings({"resource", "unchecked"})
     @Override
     public WrappedIterable<?, Entity> getEntities(World world) {
-        return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(((CraftWorld) world).getHandle().P.d().a(), entry -> entry.getBukkitEntity());
+        try {
+            PersistentEntitySectionManager<net.minecraft.world.entity.Entity> manager = (PersistentEntitySectionManager<net.minecraft.world.entity.Entity>) worldServerPersistentEntitySectionManager.get(((CraftWorld) world).getHandle());
+            return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(manager.d().a(), entry -> {
+                try {
+                    return (Entity) nmsEntityGetBukkitEntity.invoke(entry);
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            });
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return new WrappedIterable<>(Collections.emptyList(), entry -> null);
+        }
     }
 
 }
