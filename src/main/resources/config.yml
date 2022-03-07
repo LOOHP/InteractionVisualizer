@@ -331,6 +331,10 @@ Entities:
       ToolsFormat: "{Item} &6[{Durability}&6]"
       #Hide if there is more than this defined amount of item entities in one block
       Cramping: 6
+      #How often the item display updates
+      #This is in ticks (20 ticks = 1 second)
+      #Setting this too low might impact performance
+      UpdateRate: 20
       Color:
         High: "&a"
         Medium: "&e"

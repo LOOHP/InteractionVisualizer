@@ -61,6 +61,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -89,6 +90,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
     private String mediumColor = "";
     private String lowColor = "";
     private int cramp = 6;
+    private int updateRate = 20;
     private boolean stripColorBlacklist;
     private BiPredicate<String, Material> blacklist;
 
@@ -105,6 +107,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
         mediumColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.Color.Medium"));
         lowColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.Color.Low"));
         cramp = InteractionVisualizer.plugin.getConfiguration().getInt("Entities.Item.Options.Cramping");
+        updateRate = InteractionVisualizer.plugin.getConfiguration().getInt("Entities.Item.Options.UpdateRate");
         stripColorBlacklist = InteractionVisualizer.plugin.getConfiguration().getBoolean("Entities.Item.Options.Blacklist.StripColorWhenMatching");
         blacklist = InteractionVisualizer.plugin.getConfiguration().getList("Entities.Item.Options.Blacklist.List").stream().map(each -> {
             @SuppressWarnings("unchecked")
@@ -140,14 +143,22 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 
     @Override
     public int run() {
-        return Bukkit.getScheduler().runTaskTimer(InteractionVisualizer.plugin, () -> {
-            for (World world : Bukkit.getWorlds()) {
-                WrappedIterable<?, Entity> entities = NMS.getInstance().getEntities(world);
-                for (Entity entity : entities) {
-                    SyncUtils.runAsyncWithSyncCondition(() -> entity.isValid() && entity instanceof Item, 200, () -> tick((Item) entity, entities));
+        return new BukkitRunnable() {
+            int i = 0;
+            @Override
+            public void run() {
+                if (--i > 0) {
+                    return;
+                }
+                i = updateRate;
+                for (World world : Bukkit.getWorlds()) {
+                    WrappedIterable<?, Entity> entities = NMS.getInstance().getEntities(world);
+                    for (Entity entity : entities) {
+                        SyncUtils.runAsyncWithSyncCondition(() -> entity.isValid() && entity instanceof Item, 200, () -> tick((Item) entity, entities));
+                    }
                 }
             }
-        }, 0, 20).getTaskId();
+        }.runTaskTimer(InteractionVisualizer.plugin, 0, 1).getTaskId();
     }
 
     private void tick(Item item, WrappedIterable<?, Entity> items) {
