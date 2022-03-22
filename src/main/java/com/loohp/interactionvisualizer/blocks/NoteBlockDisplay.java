@@ -31,12 +31,14 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.utils.LegacyInstrumentUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note.Tone;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.type.NoteBlock;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -89,8 +91,14 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
         if (!block.getType().equals(Material.NOTE_BLOCK)) {
             return;
         }
-        boolean holdingAir = event.getPlayer().getEquipment().getItemInMainHand() == null || (event.getPlayer().getEquipment().getItemInMainHand().getType().equals(Material.AIR));
-        if (event.getPlayer().isSneaking() && !holdingAir) {
+
+        Player player = event.getPlayer();
+        if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+            return;
+        }
+
+        boolean holdingAir = player.getEquipment().getItemInMainHand() == null || (player.getEquipment().getItemInMainHand().getType().equals(Material.AIR));
+        if (player.isSneaking() && !holdingAir) {
             return;
         }
 
@@ -110,7 +118,7 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
             map.put("Timeout", System.currentTimeMillis() + 3000);
             displayingNotes.put(block, map);
 
-            String text = "";
+            String text;
             if (!InteractionVisualizer.version.isLegacy()) {
                 NoteBlock state = (NoteBlock) block.getBlockData();
                 Tone tone = state.getNote().getTone();
@@ -146,6 +154,7 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
         stand.setCustomNameVisible(true);
     }
 
+    @SuppressWarnings("DuplicateBranchesInSwitch")
     public Location getFaceOffset(Block block, BlockFace face) {
         Location location = block.getLocation().clone().add(0.5, 0.5, 0.5);
         switch (face) {
@@ -166,6 +175,7 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
         }
     }
 
+    @SuppressWarnings("DuplicateBranchesInSwitch")
     public ChatColor getColor(Tone tone) {
         switch (tone) {
             case A:
