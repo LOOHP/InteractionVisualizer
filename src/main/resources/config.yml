@@ -153,7 +153,7 @@ Blocks:
     Enabled: true
     CheckingPeriod: 20
     Options:
-      ProgressBarCharacter: "\uff5c"
+      ProgressBarCharacter: "\u007c"
       EmptyColor: "&7"
       FilledColor: "&e"
       ProgressBarLength: 10
@@ -295,7 +295,7 @@ Blocks:
     Enabled: true
     CheckingPeriod: 20
     Options:
-      ProgressBarCharacter: "\uff5c"
+      ProgressBarCharacter: "\u007c"
       EmptyColor: "&7"
       FilledColor: "&b"
       ProgressBarLength: 10
