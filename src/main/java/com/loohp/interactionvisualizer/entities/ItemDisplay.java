@@ -23,6 +23,7 @@ package com.loohp.interactionvisualizer.entities;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.cryptomorin.xseries.XMaterial;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI;
 import com.loohp.interactionvisualizer.api.InteractionVisualizerAPI.Modules;
@@ -36,16 +37,17 @@ import com.loohp.interactionvisualizer.objectholders.WrappedIterable;
 import com.loohp.interactionvisualizer.protocol.WatchableCollection;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.utils.ColorUtils;
-import com.loohp.interactionvisualizer.utils.ComponentCompacting;
 import com.loohp.interactionvisualizer.utils.ComponentFont;
 import com.loohp.interactionvisualizer.utils.JsonUtils;
 import com.loohp.interactionvisualizer.utils.LanguageUtils;
 import com.loohp.interactionvisualizer.utils.LineOfSightUtils;
 import com.loohp.interactionvisualizer.utils.RarityUtils;
 import com.loohp.interactionvisualizer.utils.SyncUtils;
+import com.loohp.interactionvisualizer.utils.XMaterialUtils;
 import io.github.bananapuncher714.nbteditor.NBTEditor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
@@ -59,6 +61,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -78,6 +81,8 @@ import java.util.regex.Pattern;
 public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 
     public static final EntryKey KEY = new EntryKey("item");
+
+    private static final ItemStack AIR = new ItemStack(Material.AIR);
 
     private final Map<Item, Set<Player>> outOfRangePlayersMap = Collections.synchronizedMap(new WeakHashMap<>());
     private final Map<Item, WrappedDataWatcher> defaultWatchers = Collections.synchronizedMap(new WeakHashMap<>());
@@ -145,6 +150,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
     public int run() {
         return new BukkitRunnable() {
             int i = 0;
+
             @Override
             public void run() {
                 if (--i > 0) {
@@ -301,42 +307,59 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
         }
     }
 
-    private Component getDisplayName(ItemStack item) {
-        Component name = null;
+    private Component getDisplayName(ItemStack itemstack) {
+        return getDisplayName(itemstack, ChatColor.WHITE);
+    }
 
-        String rawDisplayName = NBTEditor.getString(item, "display", "Name");
-        if (rawDisplayName != null && JsonUtils.isValid(rawDisplayName)) {
+    private Component getDisplayName(ItemStack itemstack, ChatColor defaultRarityColor) {
+        if (itemstack == null) {
+            itemstack = AIR.clone();
+        }
+        XMaterial xMaterial = XMaterialUtils.matchXMaterial(itemstack);
+        ChatColor rarityChatColor = RarityUtils.getRarityColor(itemstack);
+        if (rarityChatColor.equals(ChatColor.WHITE)) {
+            rarityChatColor = defaultRarityColor;
+        }
+        Component component = Component.empty();
+        if (rarityChatColor != null) {
+            component = component.color(ColorUtils.toTextColor(rarityChatColor));
+        }
+        if (!itemstack.getType().equals(Material.AIR) && NBTEditor.contains(itemstack, "display", "Name")) {
+            String name = NBTEditor.getString(itemstack, "display", "Name");
+            if (!InteractionVisualizer.version.isLegacy()) {
+                component = component.decorate(TextDecoration.ITALIC);
+            }
             try {
-                if (item.getEnchantments().isEmpty()) {
-                    name = GsonComponentSerializer.gson().deserialize(rawDisplayName);
+                if (JsonUtils.isValid(name)) {
+                    component = component.append(GsonComponentSerializer.gson().deserialize(name));
                 } else {
-                    Component coloring = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(ChatColor.AQUA + ""));
-                    coloring = coloring.color(NamedTextColor.AQUA);
-                    coloring = coloring.append(GsonComponentSerializer.gson().deserialize(rawDisplayName));
-                    name = ComponentCompacting.optimize(coloring);
+                    component = component.append(LegacyComponentSerializer.legacySection().deserialize(name));
                 }
             } catch (Throwable e) {
-                name = null;
+                component = component.append(LegacyComponentSerializer.legacySection().deserialize(name));
             }
-        }
-
-        if (name == null) {
-            if (item.hasItemMeta() && item.getItemMeta().hasDisplayName() && !item.getItemMeta().getDisplayName().equals("")) {
-                if (item.getEnchantments().isEmpty()) {
-                    name = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(ChatColorUtils.filterIllegalColorCodes(item.getItemMeta().getDisplayName())));
-                } else {
-                    name = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(ChatColorUtils.filterIllegalColorCodes(ChatColor.AQUA + item.getItemMeta().getDisplayName())));
+        } else {
+            boolean displayNameCompleted = false;
+            if (itemstack.hasItemMeta() && itemstack.getItemMeta() instanceof BookMeta) {
+                BookMeta meta = (BookMeta) itemstack.getItemMeta();
+                String rawTitle = meta.getTitle();
+                if (rawTitle != null) {
+                    displayNameCompleted = true;
+                    component = component.append(LegacyComponentSerializer.legacySection().deserialize(rawTitle));
                 }
-            } else {
-                name = Component.translatable(LanguageUtils.getTranslationKey(item));
+            }
+            if (!displayNameCompleted) {
+                TranslatableComponent translatableComponent = Component.translatable(LanguageUtils.getTranslationKey(itemstack));
+                if (xMaterial.equals(XMaterial.PLAYER_HEAD)) {
+                    String owner = NBTEditor.getString(itemstack, "SkullOwner", "Name");
+                    if (owner != null) {
+                        translatableComponent = translatableComponent.args(Component.text(owner));
+                    }
+                }
+                component = component.append(translatableComponent);
             }
         }
-
-        if (name.color() == null) {
-            name = name.color(ColorUtils.toTextColor(RarityUtils.getRarityColor(item)));
-        }
-
-        return name;
+        return component;
     }
 
     private String getMatchingName(ItemStack item, boolean stripColor) {
