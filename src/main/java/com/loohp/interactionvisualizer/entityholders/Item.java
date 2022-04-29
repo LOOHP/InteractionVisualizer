@@ -38,7 +38,7 @@ public class Item extends VisualizerEntity {
     private boolean isGlowing;
     private int pickupDelay;
     private Component customName;
-    private boolean custonNameVisible;
+    private boolean customNameVisible;
     private Vector velocity;
 
     public Item(Location location) {
@@ -46,8 +46,8 @@ public class Item extends VisualizerEntity {
         this.item = new ItemStack(Material.STONE);
         this.hasGravity = false;
         this.pickupDelay = 0;
-        this.customName = Component.empty();
-        this.custonNameVisible = false;
+        this.customName = null;
+        this.customNameVisible = false;
         this.isGlowing = false;
         this.velocity = new Vector(0.0, 0.0, 0.0);
     }
@@ -61,7 +61,7 @@ public class Item extends VisualizerEntity {
         result = prime * result + ((hasGravity) ? 6719 : 2753);
         result = prime * result + ((item == null) ? 0 : item.hashCode());
         result = prime * result + ((customName == null) ? 0 : customName.hashCode());
-        result = prime * result + ((custonNameVisible) ? 6199 : 8647);
+        result = prime * result + ((customNameVisible) ? 6199 : 8647);
         result = prime * result + ((velocity == null) ? 0 : velocity.hashCode());
         return result;
     }
@@ -71,7 +71,7 @@ public class Item extends VisualizerEntity {
     }
 
     public void setCustomName(String customName) {
-        this.customName = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(customName));
+        this.customName = customName == null ? null : ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(customName));
     }
 
     public void setCustomName(Component customName) {
@@ -87,11 +87,11 @@ public class Item extends VisualizerEntity {
     }
 
     public boolean isCustomNameVisible() {
-        return custonNameVisible;
+        return customNameVisible;
     }
 
     public void setCustomNameVisible(boolean bool) {
-        this.custonNameVisible = bool;
+        this.customNameVisible = bool;
     }
 
     public EntityType getType() {

@@ -61,7 +61,7 @@ public class ArmorStand extends VisualizerEntity {
         this.headPose = new EulerAngle(0.0, 0.0, 0.0);
         this.helmet = new ItemStack(Material.AIR);
         this.mainhand = new ItemStack(Material.AIR);
-        this.customName = Component.empty();
+        this.customName = null;
         this.customNameVisible = false;
         this.velocity = new Vector(0.0, 0.0, 0.0);
     }
@@ -92,7 +92,7 @@ public class ArmorStand extends VisualizerEntity {
     }
 
     public void setCustomName(String customName) {
-        this.customName = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(customName));
+        this.customName = customName == null ? null : ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(customName));
     }
 
     public void setCustomName(Component customName) {
