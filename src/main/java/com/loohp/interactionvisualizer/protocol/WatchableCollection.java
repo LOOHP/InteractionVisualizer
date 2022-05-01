@@ -86,7 +86,11 @@ public class WatchableCollection {
             case 2:
             case 3:
             case 4:
-                watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(GsonComponentSerializer.gson().serialize(stand.getCustomName())).getHandle()));
+                if (stand.getCustomName() != null && !PlainTextComponentSerializer.plainText().serialize(stand.getCustomName()).equals("")) {
+                    watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(GsonComponentSerializer.gson().serialize(stand.getCustomName())).getHandle()));
+                } else {
+                    watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.empty());
+                }
                 break;
         }
 
@@ -182,7 +186,11 @@ public class WatchableCollection {
             case 2:
             case 3:
             case 4:
-                watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(GsonComponentSerializer.gson().serialize(item.getCustomName())).getHandle()));
+                if (item.getCustomName() != null && !PlainTextComponentSerializer.plainText().serialize(item.getCustomName()).equals("")) {
+                    watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.of(WrappedChatComponent.fromJson(GsonComponentSerializer.gson().serialize(item.getCustomName())).getHandle()));
+                } else {
+                    watcher.setObject(new WrappedDataWatcherObject(2, optChatSerializer), Optional.empty());
+                }
                 break;
         }
 
