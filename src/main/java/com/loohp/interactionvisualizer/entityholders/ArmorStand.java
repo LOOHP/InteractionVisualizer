@@ -27,6 +27,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
@@ -64,6 +65,11 @@ public class ArmorStand extends VisualizerEntity {
         this.customName = null;
         this.customNameVisible = false;
         this.velocity = new Vector(0.0, 0.0, 0.0);
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.ARMOR_STAND;
     }
 
     @Override

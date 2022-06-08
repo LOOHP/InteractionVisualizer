@@ -39,7 +39,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -65,10 +64,7 @@ public class ServerPacketSender {
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            try {
-                protocolManager.sendServerPacket(entity, packet1);
-            } catch (InvocationTargetException | IllegalArgumentException e) {
-            }
+            protocolManager.sendServerPacket(entity, packet1);
         });
     }
 
@@ -86,29 +82,34 @@ public class ServerPacketSender {
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            try {
-                protocolManager.sendServerPacket(player, packet1);
-            } catch (InvocationTargetException | IllegalArgumentException e) {
-            }
+            protocolManager.sendServerPacket(player, packet1);
         });
     }
 
     public static void spawnArmorStand(Collection<Player> players, ArmorStand entity) {
-        PacketContainer packet1 = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
+        PacketContainer packet1 = protocolManager.createPacket(version.isNewerOrEqualTo(MCVersion.V1_19) ? PacketType.Play.Server.SPAWN_ENTITY : PacketType.Play.Server.SPAWN_ENTITY_LIVING);
         packet1.getIntegers().write(0, entity.getEntityId());
         if (packet1.getUUIDs().size() > 0) {
             packet1.getUUIDs().write(0, entity.getUniqueId());
         }
-        packet1.getIntegers().write(1, version.isLegacy() ? 30 : 1);
-        packet1.getIntegers().write(2, (int) (entity.getVelocity().getX() * 8000));
-        packet1.getIntegers().write(3, (int) (entity.getVelocity().getY() * 8000));
-        packet1.getIntegers().write(4, (int) (entity.getVelocity().getZ() * 8000));
+        int i = 1;
+        if (version.isOlderThan(MCVersion.V1_19)) {
+            packet1.getIntegers().write(i++, version.isLegacy() ? 30 : 1);
+        } else {
+            packet1.getEntityTypeModifier().write(0, entity.getType());
+        }
+        packet1.getIntegers().write(i++, (int) (entity.getVelocity().getX() * 8000));
+        packet1.getIntegers().write(i++, (int) (entity.getVelocity().getY() * 8000));
+        packet1.getIntegers().write(i++, (int) (entity.getVelocity().getZ() * 8000));
         packet1.getDoubles().write(0, entity.getLocation().getX());
         packet1.getDoubles().write(1, entity.getLocation().getY());
         packet1.getDoubles().write(2, entity.getLocation().getZ());
         packet1.getBytes().write(0, (byte) (int) (entity.getLocation().getYaw() * 256.0F / 360.0F)); //Yaw
         packet1.getBytes().write(1, (byte) (int) (entity.getLocation().getPitch() * 256.0F / 360.0F)); //Pitch
         packet1.getBytes().write(2, (byte) (int) (entity.getLocation().getYaw() * 256.0F / 360.0F)); //Head
+        if (packet1.getIntegers().size() > i) {
+            packet1.getIntegers().write(i, 0);
+        }
 
         PacketContainer packet2 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet2.getIntegers().write(0, entity.getEntityId());
@@ -125,15 +126,12 @@ public class ServerPacketSender {
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            try {
-                for (Player player : players) {
-                    protocolManager.sendServerPacket(player, packet1);
-                    protocolManager.sendServerPacket(player, packet2);
-                    for (PacketContainer packet : packet3) {
-                        protocolManager.sendServerPacket(player, packet);
-                    }
+            for (Player player : players) {
+                protocolManager.sendServerPacket(player, packet1);
+                protocolManager.sendServerPacket(player, packet2);
+                for (PacketContainer packet : packet3) {
+                    protocolManager.sendServerPacket(player, packet);
                 }
-            } catch (InvocationTargetException | IllegalArgumentException e) {
             }
         });
     }
@@ -162,15 +160,12 @@ public class ServerPacketSender {
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            try {
-                for (Player player : players) {
-                    protocolManager.sendServerPacket(player, packet1);
-                    protocolManager.sendServerPacket(player, packet2);
-                    for (PacketContainer packet : packet3) {
-                        protocolManager.sendServerPacket(player, packet);
-                    }
+            for (Player player : players) {
+                protocolManager.sendServerPacket(player, packet1);
+                protocolManager.sendServerPacket(player, packet2);
+                for (PacketContainer packet : packet3) {
+                    protocolManager.sendServerPacket(player, packet);
                 }
-            } catch (InvocationTargetException | IllegalArgumentException e) {
             }
         });
     }
@@ -186,11 +181,8 @@ public class ServerPacketSender {
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            try {
-                for (Player player : players) {
-                    protocolManager.sendServerPacket(player, packet1);
-                }
-            } catch (InvocationTargetException | IllegalArgumentException e) {
+            for (Player player : players) {
+                protocolManager.sendServerPacket(player, packet1);
             }
         });
     }
@@ -203,13 +195,10 @@ public class ServerPacketSender {
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            try {
-                for (Player player : players) {
-                    for (PacketContainer packet : packets) {
-                        protocolManager.sendServerPacket(player, packet);
-                    }
+            for (Player player : players) {
+                for (PacketContainer packet : packets) {
+                    protocolManager.sendServerPacket(player, packet);
                 }
-            } catch (InvocationTargetException | IllegalArgumentException e) {
             }
         });
     }
@@ -224,23 +213,40 @@ public class ServerPacketSender {
         if (packet1.getUUIDs().size() > 0) {
             packet1.getUUIDs().write(0, entity.getUniqueId());
         }
-        packet1.getIntegers().write(1, (int) (entity.getVelocity().getX() * 8000));
-        packet1.getIntegers().write(2, (int) (entity.getVelocity().getY() * 8000));
-        packet1.getIntegers().write(3, (int) (entity.getVelocity().getZ() * 8000));
-        packet1.getIntegers().write(4, (int) (entity.getLocation().getPitch() * 256.0F / 360.0F));
-        packet1.getIntegers().write(5, (int) (entity.getLocation().getYaw() * 256.0F / 360.0F));
-        if (version.isLegacy() || version.equals(MCVersion.V1_13) || version.equals(MCVersion.V1_13_1)) {
-            packet1.getIntegers().write(6, 2);
-            packet1.getIntegers().write(7, 1);
-        } else {
+        if (version.isNewerOrEqualTo(MCVersion.V1_19)) {
+            int i = 1;
             packet1.getEntityTypeModifier().write(0, entity.getType());
-            packet1.getIntegers().write(6, 1);
+            packet1.getIntegers().write(i++, (int) (entity.getVelocity().getX() * 8000));
+            packet1.getIntegers().write(i++, (int) (entity.getVelocity().getY() * 8000));
+            packet1.getIntegers().write(i++, (int) (entity.getVelocity().getZ() * 8000));
+            packet1.getDoubles().write(0, entity.getLocation().getX());
+            packet1.getDoubles().write(1, entity.getLocation().getY());
+            packet1.getDoubles().write(2, entity.getLocation().getZ());
+            packet1.getBytes().write(0, (byte) (int) (entity.getLocation().getYaw() * 256.0F / 360.0F)); //Yaw
+            packet1.getBytes().write(1, (byte) (int) (entity.getLocation().getPitch() * 256.0F / 360.0F)); //Pitch
+            packet1.getBytes().write(2, (byte) (int) (entity.getLocation().getYaw() * 256.0F / 360.0F)); //Head
+            if (packet1.getIntegers().size() > i) {
+                packet1.getIntegers().write(i, 0);
+            }
+        } else {
+            packet1.getIntegers().write(1, (int) (entity.getVelocity().getX() * 8000));
+            packet1.getIntegers().write(2, (int) (entity.getVelocity().getY() * 8000));
+            packet1.getIntegers().write(3, (int) (entity.getVelocity().getZ() * 8000));
+            packet1.getIntegers().write(4, (int) (entity.getLocation().getPitch() * 256.0F / 360.0F));
+            packet1.getIntegers().write(5, (int) (entity.getLocation().getYaw() * 256.0F / 360.0F));
+            if (version.isLegacy() || version.equals(MCVersion.V1_13) || version.equals(MCVersion.V1_13_1)) {
+                packet1.getIntegers().write(6, 2);
+                packet1.getIntegers().write(7, 1);
+            } else {
+                packet1.getEntityTypeModifier().write(0, entity.getType());
+                packet1.getIntegers().write(6, 1);
+            }
+            packet1.getUUIDs().write(0, entity.getUniqueId());
+            Location location = entity.getLocation();
+            packet1.getDoubles().write(0, location.getX());
+            packet1.getDoubles().write(1, location.getY());
+            packet1.getDoubles().write(2, location.getZ());
         }
-        packet1.getUUIDs().write(0, entity.getUniqueId());
-        Location location = entity.getLocation();
-        packet1.getDoubles().write(0, location.getX());
-        packet1.getDoubles().write(1, location.getY());
-        packet1.getDoubles().write(2, location.getZ());
 
         PacketContainer packet2 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet2.getIntegers().write(0, entity.getEntityId());
@@ -258,13 +264,10 @@ public class ServerPacketSender {
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            try {
-                for (Player player : players) {
-                    protocolManager.sendServerPacket(player, packet1);
-                    protocolManager.sendServerPacket(player, packet2);
-                    protocolManager.sendServerPacket(player, packet3);
-                }
-            } catch (InvocationTargetException | IllegalArgumentException e) {
+            for (Player player : players) {
+                protocolManager.sendServerPacket(player, packet1);
+                protocolManager.sendServerPacket(player, packet2);
+                protocolManager.sendServerPacket(player, packet3);
             }
         });
     }
@@ -298,13 +301,10 @@ public class ServerPacketSender {
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            try {
-                for (Player player : players) {
-                    protocolManager.sendServerPacket(player, packet1);
-                    protocolManager.sendServerPacket(player, packet2);
-                    protocolManager.sendServerPacket(player, packet3);
-                }
-            } catch (InvocationTargetException | IllegalArgumentException e) {
+            for (Player player : players) {
+                protocolManager.sendServerPacket(player, packet1);
+                protocolManager.sendServerPacket(player, packet2);
+                protocolManager.sendServerPacket(player, packet3);
             }
         });
     }
@@ -333,13 +333,10 @@ public class ServerPacketSender {
         packet3.getIntegers().write(2, (int) (entity.getVelocity().getY() * 8000));
         packet3.getIntegers().write(3, (int) (entity.getVelocity().getZ() * 8000));
 
-        try {
-            for (Player player : players) {
-                protocolManager.sendServerPacket(player, packet1);
-                protocolManager.sendServerPacket(player, packet2);
-                protocolManager.sendServerPacket(player, packet3);
-            }
-        } catch (InvocationTargetException | IllegalArgumentException e) {
+        for (Player player : players) {
+            protocolManager.sendServerPacket(player, packet1);
+            protocolManager.sendServerPacket(player, packet2);
+            protocolManager.sendServerPacket(player, packet3);
         }
     }
 
@@ -351,13 +348,10 @@ public class ServerPacketSender {
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            try {
-                for (Player player : players) {
-                    for (PacketContainer packet : packets) {
-                        protocolManager.sendServerPacket(player, packet);
-                    }
+            for (Player player : players) {
+                for (PacketContainer packet : packets) {
+                    protocolManager.sendServerPacket(player, packet);
                 }
-            } catch (InvocationTargetException | IllegalArgumentException e) {
             }
         });
     }
@@ -368,23 +362,40 @@ public class ServerPacketSender {
         if (packet1.getUUIDs().size() > 0) {
             packet1.getUUIDs().write(0, entity.getUniqueId());
         }
-        packet1.getIntegers().write(1, 0);
-        packet1.getIntegers().write(2, 0);
-        packet1.getIntegers().write(3, 0);
-        packet1.getIntegers().write(4, (int) (entity.getPitch() * 256.0F / 360.0F));
-        packet1.getIntegers().write(5, (int) (entity.getYaw() * 256.0F / 360.0F));
-        if (version.isLegacy() || version.equals(MCVersion.V1_13) || version.equals(MCVersion.V1_13_1)) {
-            packet1.getIntegers().write(6, 33);
-            packet1.getIntegers().write(7, getItemFrameData(entity));
-        } else {
+        if (version.isNewerOrEqualTo(MCVersion.V1_19)) {
+            int i = 1;
             packet1.getEntityTypeModifier().write(0, entity.getType());
-            packet1.getIntegers().write(6, getItemFrameData(entity));
+            packet1.getIntegers().write(i++, 0);
+            packet1.getIntegers().write(i++, 0);
+            packet1.getIntegers().write(i++, 0);
+            packet1.getDoubles().write(0, entity.getLocation().getX());
+            packet1.getDoubles().write(1, entity.getLocation().getY());
+            packet1.getDoubles().write(2, entity.getLocation().getZ());
+            packet1.getBytes().write(0, (byte) (int) (entity.getLocation().getYaw() * 256.0F / 360.0F)); //Yaw
+            packet1.getBytes().write(1, (byte) (int) (entity.getLocation().getPitch() * 256.0F / 360.0F)); //Pitch
+            packet1.getBytes().write(2, (byte) (int) (entity.getLocation().getYaw() * 256.0F / 360.0F)); //Head
+            if (packet1.getIntegers().size() > i) {
+                packet1.getIntegers().write(i, getItemFrameData(entity));
+            }
+        } else {
+            packet1.getIntegers().write(1, 0);
+            packet1.getIntegers().write(2, 0);
+            packet1.getIntegers().write(3, 0);
+            packet1.getIntegers().write(4, (int) (entity.getPitch() * 256.0F / 360.0F));
+            packet1.getIntegers().write(5, (int) (entity.getYaw() * 256.0F / 360.0F));
+            if (version.isLegacy() || version.equals(MCVersion.V1_13) || version.equals(MCVersion.V1_13_1)) {
+                packet1.getIntegers().write(6, 33);
+                packet1.getIntegers().write(7, getItemFrameData(entity));
+            } else {
+                packet1.getEntityTypeModifier().write(0, entity.getType());
+                packet1.getIntegers().write(6, getItemFrameData(entity));
+            }
+            packet1.getUUIDs().write(0, entity.getUniqueId());
+            Location location = entity.getLocation();
+            packet1.getDoubles().write(0, location.getX());
+            packet1.getDoubles().write(1, location.getY());
+            packet1.getDoubles().write(2, location.getZ());
         }
-        packet1.getUUIDs().write(0, entity.getUniqueId());
-        Location location = entity.getLocation();
-        packet1.getDoubles().write(0, location.getX());
-        packet1.getDoubles().write(1, location.getY());
-        packet1.getDoubles().write(2, location.getZ());
 
         PacketContainer packet2 = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet2.getIntegers().write(0, entity.getEntityId());
@@ -396,12 +407,9 @@ public class ServerPacketSender {
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            try {
-                for (Player player : players) {
-                    protocolManager.sendServerPacket(player, packet1);
-                    protocolManager.sendServerPacket(player, packet2);
-                }
-            } catch (InvocationTargetException | IllegalArgumentException e) {
+            for (Player player : players) {
+                protocolManager.sendServerPacket(player, packet1);
+                protocolManager.sendServerPacket(player, packet2);
             }
         });
     }
@@ -436,11 +444,8 @@ public class ServerPacketSender {
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            try {
-                for (Player player : players) {
-                    protocolManager.sendServerPacket(player, packet1);
-                }
-            } catch (InvocationTargetException | IllegalArgumentException e) {
+            for (Player player : players) {
+                protocolManager.sendServerPacket(player, packet1);
             }
         });
     }
@@ -453,13 +458,10 @@ public class ServerPacketSender {
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            try {
-                for (Player player : players) {
-                    for (PacketContainer packet : packets) {
-                        protocolManager.sendServerPacket(player, packet);
-                    }
+            for (Player player : players) {
+                for (PacketContainer packet : packets) {
+                    protocolManager.sendServerPacket(player, packet);
                 }
-            } catch (InvocationTargetException | IllegalArgumentException e) {
             }
         });
     }

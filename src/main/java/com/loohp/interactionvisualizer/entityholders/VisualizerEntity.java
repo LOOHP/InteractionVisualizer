@@ -24,6 +24,7 @@ import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.loohp.interactionvisualizer.utils.EntityUtils;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.EntityType;
 
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -61,6 +62,8 @@ public abstract class VisualizerEntity implements IVisualizerEntity {
             return -1;
         }
     }
+
+    public abstract EntityType getType();
 
     public int cacheCode() {
         int prime = 17;

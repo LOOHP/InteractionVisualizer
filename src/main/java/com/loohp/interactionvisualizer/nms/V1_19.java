@@ -32,43 +32,35 @@ import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.objectholders.ValuePairs;
 import com.loohp.interactionvisualizer.objectholders.WrappedIterable;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityEquipment;
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.world.entity.EnumItemSlot;
 import net.minecraft.world.entity.item.EntityItem;
-import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 import net.minecraft.world.phys.AxisAlignedBB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_18_R2.CraftChunk;
-import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftItem;
-import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_19_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftItem;
+import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_19_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class V1_18_2 extends NMS {
+public class V1_19 extends NMS {
 
     private static Method voxelShapeGetAABBList;
     private static boolean entityDestroyIsInt;
-    private static Method nmsTileEntityGetNBTTag;
-    private static Field worldServerPersistentEntitySectionManager;
-    private static Method nmsEntityGetBukkitEntity;
 
     static {
         try {
@@ -83,9 +75,6 @@ public class V1_18_2 extends NMS {
             } catch (NoSuchMethodException e) {
                 entityDestroyIsInt = false;
             }
-            nmsTileEntityGetNBTTag = net.minecraft.world.level.block.entity.TileEntity.class.getMethod("aa_");
-            worldServerPersistentEntitySectionManager = WorldServer.class.getField("O");
-            nmsEntityGetBukkitEntity = net.minecraft.world.entity.Entity.class.getMethod("getBukkitEntity");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -189,31 +178,12 @@ public class V1_18_2 extends NMS {
 
     @Override
     public String getBannerCustomName(Block block) {
-        try {
-            return ((NBTTagCompound) nmsTileEntityGetNBTTag.invoke(((org.bukkit.craftbukkit.v1_18_R2.CraftWorld) block.getWorld()).getHandle().c_(new net.minecraft.core.BlockPosition(block.getX(), block.getY(), block.getZ())))).l("CustomName");
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-            return "";
-        }
+        return ((CraftWorld) block.getWorld()).getHandle().c_(new net.minecraft.core.BlockPosition(block.getX(), block.getY(), block.getZ())).ab_().l("CustomName");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public WrappedIterable<?, Entity> getEntities(World world) {
-        try {
-            PersistentEntitySectionManager<net.minecraft.world.entity.Entity> manager = (PersistentEntitySectionManager<net.minecraft.world.entity.Entity>) worldServerPersistentEntitySectionManager.get(((org.bukkit.craftbukkit.v1_18_R2.CraftWorld) world).getHandle());
-            return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(manager.d().a(), entry -> {
-                try {
-                    return (Entity) nmsEntityGetBukkitEntity.invoke(entry);
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            });
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            return new WrappedIterable<>(Collections.emptyList(), entry -> null);
-        }
+        return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(((CraftWorld) world).getHandle().P.d().a(), entry -> entry.getBukkitEntity());
     }
 
 }

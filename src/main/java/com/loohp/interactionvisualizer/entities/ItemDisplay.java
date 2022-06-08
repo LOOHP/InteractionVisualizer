@@ -191,11 +191,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
                 defaultWatchers.put(item, watcher);
                 Collection<Player> players = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY);
                 for (Player player : players) {
-                    try {
-                        InteractionVisualizer.protocolManager.sendServerPacket(player, defaultPacket);
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
+                    InteractionVisualizer.protocolManager.sendServerPacket(player, defaultPacket);
                 }
             } else {
                 int amount = itemstack.getAmount();
@@ -291,16 +287,12 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
                 Collection<Player> enabledPlayers = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY);
                 Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, location, player -> !InteractionVisualizer.hideIfObstructed || LineOfSightUtils.hasLineOfSight(player.getEyeLocation(), entityCenter));
                 for (Player player : players) {
-                    try {
-                        if (playersInRange.contains(player) && enabledPlayers.contains(player)) {
-                            InteractionVisualizer.protocolManager.sendServerPacket(player, modifiedPacket);
-                            outOfRangePlayers.remove(player);
-                        } else if (!outOfRangePlayers.contains(player)) {
-                            InteractionVisualizer.protocolManager.sendServerPacket(player, defaultPacket);
-                            outOfRangePlayers.add(player);
-                        }
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
+                    if (playersInRange.contains(player) && enabledPlayers.contains(player)) {
+                        InteractionVisualizer.protocolManager.sendServerPacket(player, modifiedPacket);
+                        outOfRangePlayers.remove(player);
+                    } else if (!outOfRangePlayers.contains(player)) {
+                        InteractionVisualizer.protocolManager.sendServerPacket(player, defaultPacket);
+                        outOfRangePlayers.add(player);
                     }
                 }
             }

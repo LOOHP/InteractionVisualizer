@@ -182,6 +182,7 @@ public class InteractionVisualizer extends JavaPlugin {
         asyncExecutorManager = new AsyncExecutorManager(threadPool);
 
         switch (version) {
+            case V1_19:
             case V1_18_2:
             case V1_18:
             case V1_17:
@@ -385,14 +386,10 @@ public class InteractionVisualizer extends JavaPlugin {
             int[] entityIdArray = PacketManager.active.keySet().stream().mapToInt(each -> each.getEntityId()).toArray();
             PacketContainer[] packets = NMS.getInstance().createEntityDestroyPacket(entityIdArray);
 
-            try {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    for (PacketContainer packet : packets) {
-                        protocolManager.sendServerPacket(player, packet);
-                    }
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                for (PacketContainer packet : packets) {
+                    protocolManager.sendServerPacket(player, packet);
                 }
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
             }
         }
 

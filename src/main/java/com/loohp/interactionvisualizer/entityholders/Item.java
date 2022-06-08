@@ -94,6 +94,7 @@ public class Item extends VisualizerEntity {
         this.customNameVisible = bool;
     }
 
+    @Override
     public EntityType getType() {
         return EntityType.DROPPED_ITEM;
     }

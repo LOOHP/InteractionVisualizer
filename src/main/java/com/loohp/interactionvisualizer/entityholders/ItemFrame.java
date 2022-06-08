@@ -52,6 +52,7 @@ public class ItemFrame extends VisualizerEntity {
         return result;
     }
 
+    @Override
     public EntityType getType() {
         return EntityType.ITEM_FRAME;
     }
