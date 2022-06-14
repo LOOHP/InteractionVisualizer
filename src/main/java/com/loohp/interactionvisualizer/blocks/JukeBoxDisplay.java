@@ -276,6 +276,8 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
                 return ChatColor.GOLD;
             case "MUSIC_DISC_OTHERSIDE":
                 return ChatColor.BLUE;
+            case "MUSIC_DISC_5":
+                return ChatColor.DARK_AQUA;
             default:
                 return ChatColor.WHITE;
         }
