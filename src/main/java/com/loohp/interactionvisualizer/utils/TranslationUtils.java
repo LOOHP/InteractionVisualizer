@@ -67,7 +67,11 @@ public class TranslationUtils {
                 }, () -> {
                     return nmsMobEffectListClass.getMethod("a", int.class);
                 });
-                getEffectKeyMethod = nmsMobEffectListClass.getMethod("c");
+                if (InteractionVisualizer.version.isNewerOrEqualTo(MCVersion.V1_19)) {
+                    getEffectKeyMethod = nmsMobEffectListClass.getMethod("d");
+                } else {
+                    getEffectKeyMethod = nmsMobEffectListClass.getMethod("c");
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
