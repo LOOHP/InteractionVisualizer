@@ -52,6 +52,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -167,7 +168,12 @@ public class V1_19 extends NMS {
             Object spigotWorldConfig = net.minecraft.world.level.World.class.getField("spigotConfig").get(((CraftWorld) item.getWorld()).getHandle());
             despawnRate = spigotWorldConfig.getClass().getField("itemDespawnRate").getInt(spigotWorldConfig);
             try {
-                despawnRate = (int) EntityItem.class.getMethod("getDespawnRate").invoke(((CraftItem) item).getHandle());
+                Field despawnRateField = EntityItem.class.getDeclaredField("despawnRate");
+                despawnRateField.setAccessible(true);
+                int despawnRateValue = despawnRateField.getInt(((CraftItem) item).getHandle());
+                if (despawnRateValue >= 0) {
+                    despawnRate = despawnRateValue;
+                }
             } catch (Throwable ignore) {
             }
         } catch (Throwable e) {

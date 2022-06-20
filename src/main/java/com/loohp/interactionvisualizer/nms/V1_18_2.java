@@ -46,9 +46,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_18_R2.CraftChunk;
 import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftItem;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftItem;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
@@ -178,7 +178,12 @@ public class V1_18_2 extends NMS {
             Object spigotWorldConfig = net.minecraft.world.level.World.class.getField("spigotConfig").get(((CraftWorld) item.getWorld()).getHandle());
             despawnRate = spigotWorldConfig.getClass().getField("itemDespawnRate").getInt(spigotWorldConfig);
             try {
-                despawnRate = (int) EntityItem.class.getMethod("getDespawnRate").invoke(((CraftItem) item).getHandle());
+                Field despawnRateField = EntityItem.class.getDeclaredField("despawnRate");
+                despawnRateField.setAccessible(true);
+                int despawnRateValue = despawnRateField.getInt(((CraftItem) item).getHandle());
+                if (despawnRateValue >= 0) {
+                    despawnRate = despawnRateValue;
+                }
             } catch (Throwable ignore) {
             }
         } catch (Throwable e) {
