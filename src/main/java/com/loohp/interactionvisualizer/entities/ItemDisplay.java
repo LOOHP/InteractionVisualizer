@@ -46,6 +46,7 @@ import com.loohp.interactionvisualizer.utils.SyncUtils;
 import com.loohp.interactionvisualizer.utils.XMaterialUtils;
 import io.github.bananapuncher714.nbteditor.NBTEditor;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -66,7 +67,6 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -88,9 +88,9 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
     private final Map<Item, WrappedDataWatcher> defaultWatchers = Collections.synchronizedMap(new WeakHashMap<>());
     private final Map<Item, WrappedDataWatcher> modifiedWatchers = Collections.synchronizedMap(new WeakHashMap<>());
 
-    private String[] regularFormatting;
-    private String[] singularFormatting;
-    private String[] toolsFormatting;
+    private String regularFormatting;
+    private String singularFormatting;
+    private String toolsFormatting;
     private String highColor = "";
     private String mediumColor = "";
     private String lowColor = "";
@@ -105,9 +105,9 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
 
     @EventHandler
     public void onReload(InteractionVisualizerReloadEvent event) {
-        regularFormatting = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.RegularFormat")).split("\\{Item\\}", -1);
-        singularFormatting = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.SingularFormat")).split("\\{Item\\}", -1);
-        toolsFormatting = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.ToolsFormat")).split("\\{Item\\}", -1);
+        regularFormatting = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.RegularFormat"));
+        singularFormatting = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.SingularFormat"));
+        toolsFormatting = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.ToolsFormat"));
         highColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.Color.High"));
         mediumColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.Color.Medium"));
         lowColor = ChatColorUtils.translateAlternateColorCodes('&', InteractionVisualizer.plugin.getConfiguration().getString("Entities.Item.Options.Color.Low"));
@@ -228,33 +228,18 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
                 String timer = timerColor + String.format("%02d:%02d", secondsLeft / 60, secondsLeft % 60);
 
                 Component display;
+                String line1;
                 if (ticksLeft >= 600 && durDisplay != null) {
-                    String line1 = (toolsFormatting.length > 0 ? toolsFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer).replace("{Durability}", durDisplay);
-                    display = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(line1));
-                    for (int i = 1; i < toolsFormatting.length; i++) {
-                        String line = toolsFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer).replace("{Durability}", durDisplay);
-                        Component text = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(line));
-                        display = display.append(name).append(text);
-                    }
+                    line1 = toolsFormatting.replace("{Amount}", amount + "").replace("{Timer}", timer).replace("{Durability}", durDisplay);
                 } else {
                     if (amount == 1) {
-                        String line1 = (singularFormatting.length > 0 ? singularFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer);
-                        display = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(line1));
-                        for (int i = 1; i < singularFormatting.length; i++) {
-                            String line = singularFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer);
-                            Component text = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(line));
-                            display = display.append(name).append(text);
-                        }
+                        line1 = singularFormatting.replace("{Amount}", amount + "").replace("{Timer}", timer);
                     } else {
-                        String line1 = (regularFormatting.length > 0 ? regularFormatting[0] : "").replace("{Amount}", amount + "").replace("{Timer}", timer);
-                        display = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(line1));
-                        for (int i = 1; i < regularFormatting.length; i++) {
-                            String line = regularFormatting[i].replace("{Amount}", amount + "").replace("{Timer}", timer);
-                            Component text = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(line));
-                            display = display.append(name).append(text);
-                        }
+                        line1 = regularFormatting.replace("{Amount}", amount + "").replace("{Timer}", timer);
                     }
                 }
+                display = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(line1));
+                display = display.replaceText(TextReplacementConfig.builder().matchLiteral("{Item}").replacement(name).build());
 
                 WrappedDataWatcher modifiedWatcher = WatchableCollection.createCustomNameWatchableCollection(display, modifiedWatchers.get(item));
                 WrappedDataWatcher defaultWatcher = WatchableCollection.resetCustomNameWatchableCollection(item, defaultWatchers.get(item));
