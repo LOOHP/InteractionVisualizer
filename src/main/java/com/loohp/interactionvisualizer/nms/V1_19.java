@@ -32,6 +32,7 @@ import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.objectholders.ValuePairs;
 import com.loohp.interactionvisualizer.objectholders.WrappedIterable;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityEquipment;
 import net.minecraft.server.level.WorldServer;
@@ -53,6 +54,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +64,7 @@ public class V1_19 extends NMS {
 
     private static Method voxelShapeGetAABBList;
     private static boolean entityDestroyIsInt;
+    private static Method nmsTileEntityGetNBTTag;
 
     static {
         try {
@@ -75,6 +78,11 @@ public class V1_19 extends NMS {
                 entityDestroyIsInt = true;
             } catch (NoSuchMethodException e) {
                 entityDestroyIsInt = false;
+            }
+            try {
+                nmsTileEntityGetNBTTag = net.minecraft.world.level.block.entity.TileEntity.class.getMethod("aa_");
+            } catch (NoSuchMethodException e) {
+                nmsTileEntityGetNBTTag = net.minecraft.world.level.block.entity.TileEntity.class.getMethod("ab_");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -184,7 +192,12 @@ public class V1_19 extends NMS {
 
     @Override
     public String getBannerCustomName(Block block) {
-        return ((CraftWorld) block.getWorld()).getHandle().c_(new net.minecraft.core.BlockPosition(block.getX(), block.getY(), block.getZ())).ab_().l("CustomName");
+        try {
+            return ((NBTTagCompound) nmsTileEntityGetNBTTag.invoke(((CraftWorld) block.getWorld()).getHandle().c_(new net.minecraft.core.BlockPosition(block.getX(), block.getY(), block.getZ())))).l("CustomName");
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     @Override
