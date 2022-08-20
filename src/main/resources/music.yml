@@ -1,7 +1,7 @@
 #These instrument names will be used in the noteblock display
 Instruments:
   BANJO: Banjo
-  BASS_DRUM: Base Drum
+  BASS_DRUM: Bass Drum
   BASS_GUITAR: Bass Guitar
   BELL: Glockenspiel
   BIT: Bit
