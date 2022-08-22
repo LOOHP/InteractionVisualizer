@@ -245,6 +245,8 @@ Blocks:
         - "enchantment.minecraft.multishot"
         - "enchantment.minecraft.quick_charge"
         - "enchantment.minecraft.piercing"
+      CustomDefinedEnchantmentNames:
+        "myplugin:mycustomenchant": "My Cool Enchant"
   EnderChest:
     Enabled: true
   Furnace:

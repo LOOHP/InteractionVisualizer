@@ -174,10 +174,20 @@ public class EnchantmentTableAnimation {
                 Enchantment ench = entry.getKey();
                 int level = entry.getValue();
                 String str = TranslationUtils.getEnchantment(ench);
+                boolean isTranslatable;
                 if (!EnchantmentTableDisplay.getTranslatableEnchantments().contains(str)) {
-                    str = null;
+                    Map<String, String> definedNames = EnchantmentTableDisplay.getCustomDefinedEnchantmentNames();
+                    str = definedNames.get(EnchantmentTableDisplay.getEnchantmentIdOrKey(ench));
+                    isTranslatable = false;
+                } else {
+                    isTranslatable = true;
                 }
-                Component enchantmentName = (str == null || str.equals("")) ? ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(CustomStringUtils.capitalize(ench.getName().toLowerCase().replace("_", " ")))) : Component.translatable(str);
+                Component enchantmentName;
+                if (isTranslatable) {
+                    enchantmentName = Component.translatable(str);
+                } else {
+                    enchantmentName = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize((str == null || str.equals("")) ? CustomStringUtils.capitalize(ench.getName().toLowerCase().replace("_", " ")) : str));;
+                }
                 ArmorStand stand = new ArmorStand(standloc);
                 if (ench.getMaxLevel() != 1 || level != 1) {
                     enchantmentName = enchantmentName.append(ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(" " + ChatColor.AQUA + RomanNumberUtils.toRoman(entry.getValue()))));

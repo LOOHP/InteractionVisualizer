@@ -48,20 +48,54 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
-import java.util.Collections;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 public class EnchantmentTableDisplay extends VisualizerInteractDisplay implements Listener {
 
-    private static Set<String> translatableEnchantments = Collections.unmodifiableSet(new HashSet<>());
+    public static final Pattern VALID_NUMBER = Pattern.compile("-?[0-9]+");
+
+    private static Method bukkitEnchantmentGetIdMethod;
+    private static Set<String> translatableEnchantments = new HashSet<>();
+    private static Map<String, String> customDefinedEnchantmentNames = new HashMap<>();
+
+    static {
+        if (InteractionVisualizer.version.isLegacy()) {
+            try {
+                bukkitEnchantmentGetIdMethod = Enchantment.class.getMethod("getId");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public static Set<String> getTranslatableEnchantments() {
         return translatableEnchantments;
     }
+
+    public static Map<String, String> getCustomDefinedEnchantmentNames() {
+        return customDefinedEnchantmentNames;
+    }
+
+    public static String getEnchantmentIdOrKey(Enchantment enchantment) {
+        if (InteractionVisualizer.version.isLegacy()) {
+            try {
+                return bukkitEnchantmentGetIdMethod.invoke(enchantment).toString();
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+                return "-1";
+            }
+        } else {
+            return enchantment.getKey().toString();
+        }
+    }
+
     public Map<Player, Block> playermap = new ConcurrentHashMap<>();
 
     public EnchantmentTableDisplay() {
@@ -70,7 +104,17 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
 
     @EventHandler
     public void onReload(InteractionVisualizerReloadEvent event) {
-        translatableEnchantments = Collections.unmodifiableSet(new HashSet<>(InteractionVisualizer.plugin.getConfiguration().getStringList("Blocks.EnchantmentTable.Options.TranslatableEnchantments")));
+        translatableEnchantments = new HashSet<>(InteractionVisualizer.plugin.getConfiguration().getStringList("Blocks.EnchantmentTable.Options.TranslatableEnchantments"));
+        customDefinedEnchantmentNames = new HashMap<>();
+        if (InteractionVisualizer.plugin.getConfiguration().isConfigurationSection("Blocks.EnchantmentTable.Options.CustomDefinedEnchantmentNames")) {
+            for (Map.Entry<String, Object> entry : InteractionVisualizer.plugin.getConfiguration().getConfigurationSection("Blocks.EnchantmentTable.Options.CustomDefinedEnchantmentNames").getValues(false).entrySet()) {
+                String key = entry.getKey();
+                if (!key.contains(":") && !VALID_NUMBER.matcher(key).matches()) {
+                    key = "minecraft:" + key;
+                }
+                customDefinedEnchantmentNames.put(key, entry.getValue().toString());
+            }
+        }
     }
 
     @Override
