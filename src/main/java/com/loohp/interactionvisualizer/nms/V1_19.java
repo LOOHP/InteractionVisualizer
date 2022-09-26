@@ -38,6 +38,7 @@ import net.minecraft.network.protocol.game.PacketPlayOutEntityEquipment;
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.world.entity.EnumItemSlot;
 import net.minecraft.world.entity.item.EntityItem;
+import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 import net.minecraft.world.phys.AxisAlignedBB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.bukkit.Material;
@@ -57,6 +58,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,6 +67,9 @@ public class V1_19 extends NMS {
     private static Method voxelShapeGetAABBList;
     private static boolean entityDestroyIsInt;
     private static Method nmsTileEntityGetNBTTag;
+    private static Field nmsPersistentEntitySectionManager;
+    private static Method nmsGetEntityLookUp;
+    private static Method nmsEntityIterable;
 
     static {
         try {
@@ -83,6 +88,12 @@ public class V1_19 extends NMS {
                 nmsTileEntityGetNBTTag = net.minecraft.world.level.block.entity.TileEntity.class.getMethod("aa_");
             } catch (NoSuchMethodException e) {
                 nmsTileEntityGetNBTTag = net.minecraft.world.level.block.entity.TileEntity.class.getMethod("ab_");
+            }
+            try {
+                nmsPersistentEntitySectionManager = WorldServer.class.getField("P");
+            } catch (NoSuchFieldException e) {
+                nmsGetEntityLookUp = WorldServer.class.getMethod("getEntityLookup");
+                nmsEntityIterable = nmsGetEntityLookUp.getReturnType().getMethod("a");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -200,9 +211,22 @@ public class V1_19 extends NMS {
         return "";
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public WrappedIterable<?, Entity> getEntities(World world) {
-        return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(((CraftWorld) world).getHandle().P.d().a(), entry -> entry.getBukkitEntity());
+        try {
+            WorldServer worldServer = ((CraftWorld) world).getHandle();
+            Iterable<net.minecraft.world.entity.Entity> itr;
+            if (nmsPersistentEntitySectionManager == null) {
+                itr = (Iterable<net.minecraft.world.entity.Entity>) nmsEntityIterable.invoke(nmsGetEntityLookUp.invoke(worldServer));
+            } else {
+                itr = ((PersistentEntitySectionManager<net.minecraft.world.entity.Entity>) nmsPersistentEntitySectionManager.get(worldServer)).d().a();
+            }
+            return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(itr, entry -> entry.getBukkitEntity());
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(Collections.emptyList(), entry -> entry.getBukkitEntity());
     }
 
 }
