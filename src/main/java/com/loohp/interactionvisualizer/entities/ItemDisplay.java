@@ -187,7 +187,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
                 PacketContainer defaultPacket = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA);
                 defaultPacket.getIntegers().write(0, item.getEntityId());
                 WrappedDataWatcher watcher = WatchableCollection.resetCustomNameWatchableCollection(item, defaultWatchers.get(item));
-                defaultPacket.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
+                WatchableCollection.writeMetadataPacket(defaultPacket, watcher);
                 defaultWatchers.put(item, watcher);
                 Collection<Player> players = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY);
                 for (Player player : players) {
@@ -253,8 +253,8 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
                 modifiedPacket.getIntegers().write(0, item.getEntityId());
                 defaultPacket.getIntegers().write(0, item.getEntityId());
 
-                modifiedPacket.getWatchableCollectionModifier().write(0, modifiedWatcher.getWatchableObjects());
-                defaultPacket.getWatchableCollectionModifier().write(0, defaultWatcher.getWatchableObjects());
+                WatchableCollection.writeMetadataPacket(modifiedPacket, modifiedWatcher);
+                WatchableCollection.writeMetadataPacket(defaultPacket, defaultWatcher);
 
                 Location entityCenter = location.clone();
                 entityCenter.setY(entityCenter.getY() + item.getHeight() * 1.7);

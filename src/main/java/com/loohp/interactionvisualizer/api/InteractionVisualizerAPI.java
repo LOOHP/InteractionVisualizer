@@ -84,7 +84,7 @@ public class InteractionVisualizerAPI {
      * @return A list of blocks that is within range of at least one player.
      */
     public static Collection<Block> getActiveTileEntityBlocks(TileEntityType type) {
-        return TileEntityManager.getTileEntites(type);
+        return TileEntityManager.getTileEntities(type);
     }
 
     /**

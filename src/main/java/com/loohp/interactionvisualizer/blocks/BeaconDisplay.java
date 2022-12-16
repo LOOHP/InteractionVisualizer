@@ -301,7 +301,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
     }
 
     public Set<Block> nearbyBeacon() {
-        return TileEntityManager.getTileEntites(TileEntityType.BEACON);
+        return TileEntityManager.getTileEntities(TileEntityType.BEACON);
     }
 
     public boolean isActive(Location loc) {

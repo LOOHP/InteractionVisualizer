@@ -414,7 +414,7 @@ public class Charts {
             public Integer call() throws Exception {
                 int total = 0;
                 for (TileEntityType type : TileEntityType.values()) {
-                    total += TileEntityManager.getTileEntites(type).size();
+                    total += TileEntityManager.getTileEntities(type).size();
                 }
                 return total;
             }

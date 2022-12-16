@@ -386,7 +386,7 @@ public class CampfireDisplay extends VisualizerRunnableDisplay implements Listen
     }
 
     public Set<Block> nearbyCampfire() {
-        return TileEntityManager.getTileEntites(TileEntityType.CAMPFIRE);
+        return TileEntityManager.getTileEntities(TileEntityType.CAMPFIRE);
     }
 
     public boolean isActive(Location loc) {

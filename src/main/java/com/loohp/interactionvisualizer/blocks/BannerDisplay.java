@@ -226,7 +226,7 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
     }
 
     public Set<Block> nearbyBanner() {
-        return TileEntityManager.getTileEntites(TileEntityType.BANNER);
+        return TileEntityManager.getTileEntities(TileEntityType.BANNER);
     }
 
     public boolean isActive(Location loc) {

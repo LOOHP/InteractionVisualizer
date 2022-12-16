@@ -256,7 +256,7 @@ public class LecternDisplay extends VisualizerRunnableDisplay implements Listene
     }
 
     public Set<Block> nearbyLectern() {
-        return TileEntityManager.getTileEntites(TileEntityType.LECTERN);
+        return TileEntityManager.getTileEntities(TileEntityType.LECTERN);
     }
 
     public boolean isActive(Location loc) {

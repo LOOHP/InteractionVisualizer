@@ -227,7 +227,7 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
     }
 
     public Set<Block> nearbySpawner() {
-        return TileEntityManager.getTileEntites(TileEntityType.SPAWNER);
+        return TileEntityManager.getTileEntities(TileEntityType.SPAWNER);
     }
 
     public boolean isActive(Location loc) {

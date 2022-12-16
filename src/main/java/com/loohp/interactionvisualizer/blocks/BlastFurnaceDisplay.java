@@ -498,7 +498,7 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
     }
 
     public Set<Block> nearbyBlastFurnace() {
-        return TileEntityManager.getTileEntites(TileEntityType.BLAST_FURNACE);
+        return TileEntityManager.getTileEntities(TileEntityType.BLAST_FURNACE);
     }
 
     public boolean isActive(Location loc) {

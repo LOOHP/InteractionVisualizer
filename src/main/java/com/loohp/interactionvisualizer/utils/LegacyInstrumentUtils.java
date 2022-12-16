@@ -24,7 +24,7 @@ import java.util.HashMap;
 
 public class LegacyInstrumentUtils {
 
-    private static final HashMap<String, String> mapping = new HashMap<String, String>();
+    private static final HashMap<String, String> mapping = new HashMap<>();
 
     static {
         mapping.put("WOOD", "BASS_GUITAR");

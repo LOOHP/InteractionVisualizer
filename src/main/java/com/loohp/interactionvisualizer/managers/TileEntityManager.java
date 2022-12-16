@@ -75,13 +75,7 @@ public class TileEntityManager implements Listener {
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             for (TileEntityType type : tileEntityTypes) {
                 Set<Block> blocks = active.get(type);
-                Iterator<Block> itr = blocks.iterator();
-                while (itr.hasNext()) {
-                    Block block = itr.next();
-                    if (!PlayerLocationManager.hasPlayerNearby(block.getLocation())) {
-                        itr.remove();
-                    }
-                }
+                blocks.removeIf(block -> !PlayerLocationManager.hasPlayerNearby(block.getLocation()));
             }
         }, 0, InteractionVisualizerAPI.getGCPeriod());
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -89,7 +83,7 @@ public class TileEntityManager implements Listener {
         }
     }
 
-    public static Set<Block> getTileEntites(TileEntityType type) {
+    public static Set<Block> getTileEntities(TileEntityType type) {
         Set<Block> set = active.get(type);
         return set != null ? set : new LinkedHashSet<>();
     }

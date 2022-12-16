@@ -20,8 +20,10 @@
 
 package com.loohp.interactionvisualizer.protocol;
 
+import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.Vector3F;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.Registry;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.Serializer;
@@ -39,6 +41,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Entity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class WatchableCollection {
@@ -282,6 +286,42 @@ public class WatchableCollection {
         WrappedWatchableObject visible = entityWatcher.getWatchableObject(3);
         watcher.setObject(visible.getWatcherObject(), visible.getValue());
         return watcher;
+    }
+
+    public static WrappedDataWatcher fromDataValueList(List<WrappedDataValue> dataValues) {
+        WrappedDataWatcher watcher = new WrappedDataWatcher();
+        for (WrappedDataValue dataValue : dataValues) {
+            watcher.setObject(new WrappedDataWatcher.WrappedDataWatcherObject(dataValue.getIndex(), dataValue.getSerializer()), dataValue.getRawValue());
+        }
+        return watcher;
+    }
+
+    public static List<WrappedDataValue> toDataValueList(WrappedDataWatcher wrappedDataWatcher) {
+        List<WrappedWatchableObject> watchableObjectList = wrappedDataWatcher.getWatchableObjects();
+        List<WrappedDataValue> wrappedDataValues = new ArrayList<>(watchableObjectList.size());
+        for (WrappedWatchableObject wrappedWatchableObject : wrappedDataWatcher.getWatchableObjects()) {
+            WrappedDataWatcher.WrappedDataWatcherObject wrappedDataWatcherObject = wrappedWatchableObject.getWatcherObject();
+            wrappedDataValues.add(new WrappedDataValue(wrappedDataWatcherObject.getIndex(), wrappedDataWatcherObject.getSerializer(), wrappedWatchableObject.getRawValue()));
+        }
+        return wrappedDataValues;
+    }
+
+    public static WrappedDataWatcher fromMetadataPacket(PacketContainer packet) {
+        if (InteractionVisualizer.version.isNewerOrEqualTo(MCVersion.V1_19_3)) {
+            List<WrappedDataValue> data = packet.getDataValueCollectionModifier().read(0);
+            return fromDataValueList(data);
+        } else {
+            List<WrappedWatchableObject> data = packet.getWatchableCollectionModifier().read(0);
+            return new WrappedDataWatcher(data);
+        }
+    }
+
+    public static void writeMetadataPacket(PacketContainer packet, WrappedDataWatcher watcher) {
+        if (InteractionVisualizer.version.isNewerOrEqualTo(MCVersion.V1_19_3)) {
+            packet.getDataValueCollectionModifier().write(0, toDataValueList(watcher));
+        } else {
+            WatchableCollection.writeMetadataPacket(packet, watcher);
+        }
     }
 
 }

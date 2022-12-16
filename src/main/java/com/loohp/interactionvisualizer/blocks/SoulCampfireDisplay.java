@@ -386,7 +386,7 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
     }
 
     public Set<Block> nearbySoulCampfire() {
-        return TileEntityManager.getTileEntites(TileEntityType.SOUL_CAMPFIRE);
+        return TileEntityManager.getTileEntities(TileEntityType.SOUL_CAMPFIRE);
     }
 
     public boolean isActive(Location loc) {

@@ -265,7 +265,7 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
     }
 
     public Set<Block> nearbyBeehive() {
-        return TileEntityManager.getTileEntites(TileEntityType.BEEHIVE);
+        return TileEntityManager.getTileEntities(TileEntityType.BEEHIVE);
     }
 
     public boolean isActive(Location loc) {

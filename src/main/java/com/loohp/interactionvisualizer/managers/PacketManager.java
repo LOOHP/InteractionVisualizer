@@ -73,8 +73,8 @@ public class PacketManager implements Listener {
                 if (entity instanceof ArmorStand) {
                     ArmorStand stand = (ArmorStand) entity;
                     if (PlayerLocationManager.hasPlayerNearby(stand.getLocation())) {
+                        Collection<Player> players = active.get(entity);
                         if (entry.getValue()) {
-                            Collection<Player> players = active.get(entity);
                             if (players != null) {
                                 SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(stand.getLocation()) && isOccluding(stand.getLocation().getBlock().getType()), 200, () -> {
                                     if (active.containsKey(entity)) {
@@ -84,7 +84,6 @@ public class PacketManager implements Listener {
                                 });
                             }
                         } else {
-                            Collection<Player> players = active.get(entity);
                             if (players != null) {
                                 SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(stand.getLocation()) && !isOccluding(stand.getLocation().getBlock().getType()), 200, () -> {
                                     if (active.containsKey(entity)) {
@@ -99,8 +98,8 @@ public class PacketManager implements Listener {
                 } else if (entity instanceof Item) {
                     Item item = (Item) entity;
                     if (PlayerLocationManager.hasPlayerNearby(item.getLocation())) {
+                        Collection<Player> players = active.get(entity);
                         if (entry.getValue()) {
-                            Collection<Player> players = active.get(entity);
                             if (players != null) {
                                 if (item.getVelocity().equals(VECTOR_ZERO) && !item.hasGravity()) {
                                     updateItemAsync(item, true);
@@ -113,7 +112,6 @@ public class PacketManager implements Listener {
                                 });
                             }
                         } else {
-                            Collection<Player> players = active.get(entity);
                             if (players != null) {
                                 SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(item.getLocation()) && !isOccluding(item.getLocation().getBlock().getType()), 200, () -> {
                                     if (active.containsKey(entity)) {
@@ -128,8 +126,8 @@ public class PacketManager implements Listener {
                 } else if (entity instanceof ItemFrame) {
                     ItemFrame frame = (ItemFrame) entity;
                     if (PlayerLocationManager.hasPlayerNearby(frame.getLocation())) {
+                        Collection<Player> players = active.get(entity);
                         if (entry.getValue()) {
-                            Collection<Player> players = active.get(entity);
                             if (players != null) {
                                 SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(frame.getLocation()) && isOccluding(frame.getLocation().getBlock().getType()), 200, () -> {
                                     if (active.containsKey(entity)) {
@@ -139,7 +137,6 @@ public class PacketManager implements Listener {
                                 });
                             }
                         } else {
-                            Collection<Player> players = active.get(entity);
                             if (players != null) {
                                 SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(frame.getLocation()) && !isOccluding(frame.getLocation().getBlock().getType()), 200, () -> {
                                     if (active.containsKey(entity)) {
@@ -155,7 +152,7 @@ public class PacketManager implements Listener {
             }
             try {
                 TimeUnit.MILLISECONDS.sleep(5);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
             }
             run();
         });
@@ -253,7 +250,7 @@ public class PacketManager implements Listener {
             }
             try {
                 TimeUnit.MILLISECONDS.sleep(5);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
             }
             update();
         });

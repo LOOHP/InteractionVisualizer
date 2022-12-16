@@ -68,7 +68,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -182,6 +181,7 @@ public class InteractionVisualizer extends JavaPlugin {
         asyncExecutorManager = new AsyncExecutorManager(threadPool);
 
         switch (version) {
+            case V1_19_3:
             case V1_19:
             case V1_18_2:
             case V1_18:

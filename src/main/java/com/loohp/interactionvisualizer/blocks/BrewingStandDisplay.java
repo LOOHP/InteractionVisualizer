@@ -371,7 +371,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
     }
 
     public Set<Block> nearbyBrewingStand() {
-        return TileEntityManager.getTileEntites(TileEntityType.BREWING_STAND);
+        return TileEntityManager.getTileEntities(TileEntityType.BREWING_STAND);
     }
 
     public boolean isActive(Location loc) {

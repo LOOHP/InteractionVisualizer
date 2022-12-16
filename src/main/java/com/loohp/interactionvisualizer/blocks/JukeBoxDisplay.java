@@ -239,7 +239,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
     }
 
     public Set<Block> nearbyJukeBox() {
-        return TileEntityManager.getTileEntites(TileEntityType.JUKEBOX);
+        return TileEntityManager.getTileEntities(TileEntityType.JUKEBOX);
     }
 
     public boolean isActive(Location loc) {

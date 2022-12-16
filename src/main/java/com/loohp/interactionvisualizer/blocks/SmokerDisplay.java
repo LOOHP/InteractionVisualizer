@@ -497,7 +497,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
     }
 
     public Set<Block> nearbySmoker() {
-        return TileEntityManager.getTileEntites(TileEntityType.SMOKER);
+        return TileEntityManager.getTileEntities(TileEntityType.SMOKER);
     }
 
     public boolean isActive(Location loc) {

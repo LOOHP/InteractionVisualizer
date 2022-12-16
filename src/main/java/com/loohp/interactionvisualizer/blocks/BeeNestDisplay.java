@@ -265,7 +265,7 @@ public class BeeNestDisplay extends VisualizerRunnableDisplay implements Listene
     }
 
     public Set<Block> nearbyBeenest() {
-        return TileEntityManager.getTileEntites(TileEntityType.BEE_NEST);
+        return TileEntityManager.getTileEntities(TileEntityType.BEE_NEST);
     }
 
     public boolean isActive(Location loc) {

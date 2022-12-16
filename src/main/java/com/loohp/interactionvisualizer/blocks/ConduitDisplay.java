@@ -241,7 +241,7 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
     }
 
     public Set<Block> nearbyConduit() {
-        return TileEntityManager.getTileEntites(TileEntityType.CONDUIT);
+        return TileEntityManager.getTileEntities(TileEntityType.CONDUIT);
     }
 
     public boolean isActive(Location loc) {

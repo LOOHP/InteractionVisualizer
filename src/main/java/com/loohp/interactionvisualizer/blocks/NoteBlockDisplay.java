@@ -28,7 +28,13 @@ import com.loohp.interactionvisualizer.entityholders.ArmorStand;
 import com.loohp.interactionvisualizer.managers.MusicManager;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
+import com.loohp.interactionvisualizer.utils.LanguageUtils;
 import com.loohp.interactionvisualizer.utils.LegacyInstrumentUtils;
+import com.loohp.interactionvisualizer.utils.MCVersion;
+import io.github.bananapuncher714.nbteditor.NBTEditor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -37,13 +43,16 @@ import org.bukkit.Material;
 import org.bukkit.Note.Tone;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Skull;
 import org.bukkit.block.data.type.NoteBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -118,24 +127,37 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
             map.put("Timeout", System.currentTimeMillis() + 3000);
             displayingNotes.put(block, map);
 
-            String text;
-            if (!InteractionVisualizer.version.isLegacy()) {
+            Block topBlock = block.getRelative(BlockFace.UP);
+            Collection<ItemStack> topBlockDrops;
+            Component component;
+            if (InteractionVisualizer.version.isNewerThan(MCVersion.V1_19) && isHead(topBlock) && !(topBlockDrops = topBlock.getDrops()).isEmpty()) {
+                ItemStack skull = topBlockDrops.iterator().next();
+                String translatable = LanguageUtils.getTranslationKey(skull);
+                String owner = NBTEditor.getString(skull, "SkullOwner", "Name");
+                if (owner == null) {
+                    component = Component.translatable(translatable == null ? "" : translatable).color(NamedTextColor.YELLOW);
+                } else {
+                    component = Component.translatable(translatable == null ? "" : translatable).args(Component.text(owner)).color(NamedTextColor.YELLOW);
+                }
+            } else if (!InteractionVisualizer.version.isLegacy()) {
                 NoteBlock state = (NoteBlock) block.getBlockData();
                 Tone tone = state.getNote().getTone();
                 String inst = MusicManager.getMusicConfig().getString("Instruments." + state.getInstrument().toString().toUpperCase());
-                text = ChatColor.GOLD + inst + " " + getColor(tone) + tone.toString().toUpperCase();
+                String text = ChatColor.GOLD + inst + " " + getColor(tone) + tone.toString().toUpperCase();
                 text = state.getNote().isSharped() ? text + "#" : text;
                 text = state.getNote().getOctave() == 0 ? text : text + " ^";
+                component = LegacyComponentSerializer.legacySection().deserialize(text);
             } else {
                 org.bukkit.block.NoteBlock state = (org.bukkit.block.NoteBlock) block.getState();
                 Tone tone = state.getNote().getTone();
                 String inst = MusicManager.getMusicConfig().getString("Instruments." + LegacyInstrumentUtils.getInstrumentNameFromLegacy(block.getRelative(BlockFace.DOWN).getType().toString().toUpperCase()));
-                text = ChatColor.GOLD + inst + " " + getColor(tone) + tone.toString().toUpperCase();
+                String text = ChatColor.GOLD + inst + " " + getColor(tone) + tone.toString().toUpperCase();
                 text = state.getNote().isSharped() ? text + "#" : text;
                 text = state.getNote().getOctave() == 0 ? text : text + " ^";
+                component = LegacyComponentSerializer.legacySection().deserialize(text);
             }
 
-            stand.setCustomName(text);
+            stand.setCustomName(component);
 
             PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), stand);
             PacketManager.updateArmorStand(stand);
@@ -195,6 +217,10 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
             default:
                 return ChatColor.AQUA;
         }
+    }
+
+    public boolean isHead(Block block) {
+        return block.getState() instanceof Skull;
     }
 
 }

@@ -499,7 +499,7 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
     }
 
     public Set<Block> nearbyFurnace() {
-        return TileEntityManager.getTileEntites(TileEntityType.FURNACE);
+        return TileEntityManager.getTileEntities(TileEntityType.FURNACE);
     }
 
     public boolean isActive(Location loc) {
