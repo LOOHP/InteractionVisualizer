@@ -70,6 +70,7 @@ public class V1_19 extends NMS {
     private static Field nmsPersistentEntitySectionManager;
     private static Method nmsGetEntityLookUp;
     private static Method nmsEntityIterable;
+    private static Method nmsEntityGetBukkitEntity;
 
     static {
         try {
@@ -95,6 +96,7 @@ public class V1_19 extends NMS {
                 nmsGetEntityLookUp = WorldServer.class.getMethod("getEntityLookup");
                 nmsEntityIterable = nmsGetEntityLookUp.getReturnType().getMethod("a");
             }
+            nmsEntityGetBukkitEntity = net.minecraft.world.entity.Entity.class.getMethod("getBukkitEntity");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -222,11 +224,18 @@ public class V1_19 extends NMS {
             } else {
                 itr = ((PersistentEntitySectionManager<net.minecraft.world.entity.Entity>) nmsPersistentEntitySectionManager.get(worldServer)).d().a();
             }
-            return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(itr, entry -> entry.getBukkitEntity());
+            return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(itr, entry -> {
+                try {
+                    return (Entity) nmsEntityGetBukkitEntity.invoke(entry);
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            });
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
-        return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(Collections.emptyList(), entry -> entry.getBukkitEntity());
+        return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(Collections.emptyList(), entry -> null);
     }
 
 }
