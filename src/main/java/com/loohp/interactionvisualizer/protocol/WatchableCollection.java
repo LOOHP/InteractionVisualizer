@@ -320,7 +320,7 @@ public class WatchableCollection {
         if (InteractionVisualizer.version.isNewerOrEqualTo(MCVersion.V1_19_3)) {
             packet.getDataValueCollectionModifier().write(0, toDataValueList(watcher));
         } else {
-            WatchableCollection.writeMetadataPacket(packet, watcher);
+            packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
         }
     }
 
