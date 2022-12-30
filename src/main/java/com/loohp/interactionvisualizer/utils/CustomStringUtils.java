@@ -50,14 +50,22 @@ public class CustomStringUtils {
     }
 
     public static String capitalize(String str) {
-        List<String> parts = Arrays.asList(str.split(" "));
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < parts.size(); i++) {
-            String each = parts.get(i);
-            String firstLetter = each.substring(0, 1);
-            sb.append(firstLetter.toUpperCase() + each.substring(1) + " ");
+        if (str.isEmpty()) {
+            return str;
         }
-        return sb.substring(0, sb.length() - 1);
+        StringBuilder sb = new StringBuilder(str.length());
+        String lastChar = " ";
+        for (int i = 0; i < str.length();) {
+            String character = new String(Character.toChars(str.codePointAt(i)));
+            i += character.length();
+            if (lastChar.equals(" ")) {
+                sb.append(character.toUpperCase());
+            } else {
+                sb.append(character);
+            }
+            lastChar = character;
+        }
+        return sb.toString();
     }
 
     public static String replaceFromTo(String stringToReplace, int from, int to, String withString) {
