@@ -64,7 +64,9 @@ public class ServerPacketSender {
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            protocolManager.sendServerPacket(entity, packet1);
+            if (entity.isOnline()) {
+                protocolManager.sendServerPacket(entity, packet1);
+            }
         });
     }
 
@@ -82,7 +84,9 @@ public class ServerPacketSender {
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            protocolManager.sendServerPacket(player, packet1);
+            if (player.isOnline()) {
+                protocolManager.sendServerPacket(player, packet1);
+            }
         });
     }
 
@@ -127,10 +131,12 @@ public class ServerPacketSender {
 
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (Player player : players) {
-                protocolManager.sendServerPacket(player, packet1);
-                protocolManager.sendServerPacket(player, packet2);
-                for (PacketContainer packet : packet3) {
-                    protocolManager.sendServerPacket(player, packet);
+                if (player.isOnline()) {
+                    protocolManager.sendServerPacket(player, packet1);
+                    protocolManager.sendServerPacket(player, packet2);
+                    for (PacketContainer packet : packet3) {
+                        protocolManager.sendServerPacket(player, packet);
+                    }
                 }
             }
         });
@@ -161,10 +167,12 @@ public class ServerPacketSender {
 
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (Player player : players) {
-                protocolManager.sendServerPacket(player, packet1);
-                protocolManager.sendServerPacket(player, packet2);
-                for (PacketContainer packet : packet3) {
-                    protocolManager.sendServerPacket(player, packet);
+                if (player.isOnline()) {
+                    protocolManager.sendServerPacket(player, packet1);
+                    protocolManager.sendServerPacket(player, packet2);
+                    for (PacketContainer packet : packet3) {
+                        protocolManager.sendServerPacket(player, packet);
+                    }
                 }
             }
         });
@@ -182,7 +190,9 @@ public class ServerPacketSender {
 
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (Player player : players) {
-                protocolManager.sendServerPacket(player, packet1);
+                if (player.isOnline()) {
+                    protocolManager.sendServerPacket(player, packet1);
+                }
             }
         });
     }
@@ -196,8 +206,10 @@ public class ServerPacketSender {
 
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (Player player : players) {
-                for (PacketContainer packet : packets) {
-                    protocolManager.sendServerPacket(player, packet);
+                if (player.isOnline()) {
+                    for (PacketContainer packet : packets) {
+                        protocolManager.sendServerPacket(player, packet);
+                    }
                 }
             }
         });
@@ -265,9 +277,11 @@ public class ServerPacketSender {
 
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (Player player : players) {
-                protocolManager.sendServerPacket(player, packet1);
-                protocolManager.sendServerPacket(player, packet2);
-                protocolManager.sendServerPacket(player, packet3);
+                if (player.isOnline()) {
+                    protocolManager.sendServerPacket(player, packet1);
+                    protocolManager.sendServerPacket(player, packet2);
+                    protocolManager.sendServerPacket(player, packet3);
+                }
             }
         });
     }
@@ -302,9 +316,11 @@ public class ServerPacketSender {
 
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (Player player : players) {
-                protocolManager.sendServerPacket(player, packet1);
-                protocolManager.sendServerPacket(player, packet2);
-                protocolManager.sendServerPacket(player, packet3);
+                if (player.isOnline()) {
+                    protocolManager.sendServerPacket(player, packet1);
+                    protocolManager.sendServerPacket(player, packet2);
+                    protocolManager.sendServerPacket(player, packet3);
+                }
             }
         });
     }
@@ -334,9 +350,11 @@ public class ServerPacketSender {
         packet3.getIntegers().write(3, (int) (entity.getVelocity().getZ() * 8000));
 
         for (Player player : players) {
-            protocolManager.sendServerPacket(player, packet1);
-            protocolManager.sendServerPacket(player, packet2);
-            protocolManager.sendServerPacket(player, packet3);
+            if (player.isOnline()) {
+                protocolManager.sendServerPacket(player, packet1);
+                protocolManager.sendServerPacket(player, packet2);
+                protocolManager.sendServerPacket(player, packet3);
+            }
         }
     }
 
@@ -349,8 +367,10 @@ public class ServerPacketSender {
 
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (Player player : players) {
-                for (PacketContainer packet : packets) {
-                    protocolManager.sendServerPacket(player, packet);
+                if (player.isOnline()) {
+                    for (PacketContainer packet : packets) {
+                        protocolManager.sendServerPacket(player, packet);
+                    }
                 }
             }
         });
@@ -408,8 +428,10 @@ public class ServerPacketSender {
 
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (Player player : players) {
-                protocolManager.sendServerPacket(player, packet1);
-                protocolManager.sendServerPacket(player, packet2);
+                if (player.isOnline()) {
+                    protocolManager.sendServerPacket(player, packet1);
+                    protocolManager.sendServerPacket(player, packet2);
+                }
             }
         });
     }
@@ -445,7 +467,9 @@ public class ServerPacketSender {
 
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (Player player : players) {
-                protocolManager.sendServerPacket(player, packet1);
+                if (player.isOnline()) {
+                    protocolManager.sendServerPacket(player, packet1);
+                }
             }
         });
     }
@@ -459,8 +483,10 @@ public class ServerPacketSender {
 
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (Player player : players) {
-                for (PacketContainer packet : packets) {
-                    protocolManager.sendServerPacket(player, packet);
+                if (player.isOnline()) {
+                    for (PacketContainer packet : packets) {
+                        protocolManager.sendServerPacket(player, packet);
+                    }
                 }
             }
         });
