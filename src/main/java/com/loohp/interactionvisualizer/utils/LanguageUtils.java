@@ -30,8 +30,12 @@ import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.block.Banner;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BannerMeta;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -290,17 +294,47 @@ public class LanguageUtils {
             path = "item." + material.getKey().getNamespace() + "." + material.getKey().getKey();
         }
 
-        if (itemStack.getType().equals(Material.POTION) || itemStack.getType().equals(Material.SPLASH_POTION) || itemStack.getType().equals(Material.LINGERING_POTION) || itemStack.getType().equals(Material.TIPPED_ARROW)) {
+        if (material.equals(Material.POTION) || material.equals(Material.SPLASH_POTION) || material.equals(Material.LINGERING_POTION) || material.equals(Material.TIPPED_ARROW)) {
             PotionMeta meta = (PotionMeta) itemStack.getItemMeta();
             String namespace = PotionUtils.getVanillaPotionName(meta.getBasePotionData().getType());
             path += ".effect." + namespace;
         }
 
-        if (itemStack.getType().equals(Material.PLAYER_HEAD)) {
+        if (material.equals(Material.PLAYER_HEAD)) {
             String owner = NBTEditor.getString(itemStack, "SkullOwner", "Name");
             if (owner != null) {
                 path += ".named";
             }
+        }
+
+        if (material.equals(Material.SHIELD)) {
+            if (NBTEditor.contains(itemStack, "BlockEntityTag")) {
+                DyeColor color = DyeColor.WHITE;
+                if (!(itemStack.getItemMeta() instanceof BannerMeta)) {
+                    if (itemStack.getItemMeta() instanceof BlockStateMeta) {
+                        BlockStateMeta bmeta = (BlockStateMeta) itemStack.getItemMeta();
+                        if (bmeta.hasBlockState()) {
+                            Banner bannerBlockMeta = (Banner) bmeta.getBlockState();
+                            color = bannerBlockMeta.getBaseColor();
+                        }
+                    }
+                } else {
+                    BannerMeta meta = (BannerMeta) itemStack.getItemMeta();
+                    color = meta.getBaseColor();
+                }
+
+                path += "." + color.name().toLowerCase();
+            }
+        }
+
+        if (material.equals(Material.COMPASS)) {
+            if (CompassUtils.isLodestoneCompass(itemStack)) {
+                path = "item.minecraft.lodestone_compass";
+            }
+        }
+
+        if (material.name().contains("SMITHING_TEMPLATE")) {
+            path = "item.minecraft.smithing_template";
         }
 
         return path;

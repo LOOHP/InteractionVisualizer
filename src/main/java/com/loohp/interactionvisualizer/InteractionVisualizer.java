@@ -181,6 +181,7 @@ public class InteractionVisualizer extends JavaPlugin {
         asyncExecutorManager = new AsyncExecutorManager(threadPool);
 
         switch (version) {
+            case V1_19_4:
             case V1_19_3:
             case V1_19:
             case V1_18_2:

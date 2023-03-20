@@ -53,7 +53,7 @@ import java.util.function.BooleanSupplier;
 
 public class PreferenceManager implements Listener, AutoCloseable {
 
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final InteractionVisualizer plugin;
     private final List<EntryKey> entries;
     private final Map<UUID, Map<Modules, BitSet>> preferences;

@@ -42,11 +42,11 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_19_R2.CraftChunk;
-import org.bukkit.craftbukkit.v1_19_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftItem;
-import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_19_R2.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_19_R3.CraftChunk;
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftItem;
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_19_R3.util.CraftMagicNumbers;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
@@ -60,14 +60,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class V1_19_3 extends NMS {
+public class V1_19_4 extends NMS {
 
     private static Method voxelShapeGetAABBList;
     private static Method nmsTileEntityGetNBTTag;
     private static Field nmsPersistentEntitySectionManager;
     private static Method nmsGetEntityLookUp;
     private static Method nmsEntityIterable;
-    private static Method nmsEntityGetBukkitEntity;
 
     static {
         try {
@@ -76,14 +75,13 @@ public class V1_19_3 extends NMS {
             } catch (NoSuchMethodException | SecurityException e) {
                 voxelShapeGetAABBList = VoxelShape.class.getMethod("toList");
             }
-            nmsTileEntityGetNBTTag = net.minecraft.world.level.block.entity.TileEntity.class.getMethod("ad_");
+            nmsTileEntityGetNBTTag = net.minecraft.world.level.block.entity.TileEntity.class.getMethod("aq_");
             try {
-                nmsPersistentEntitySectionManager = WorldServer.class.getField("P");
+                nmsPersistentEntitySectionManager = WorldServer.class.getField("L");
             } catch (NoSuchFieldException e) {
                 nmsGetEntityLookUp = WorldServer.class.getMethod("getEntityLookup");
                 nmsEntityIterable = nmsGetEntityLookUp.getReturnType().getMethod("a");
             }
-            nmsEntityGetBukkitEntity = net.minecraft.world.entity.Entity.class.getMethod("getBukkitEntity");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -201,14 +199,7 @@ public class V1_19_3 extends NMS {
             } else {
                 itr = ((PersistentEntitySectionManager<net.minecraft.world.entity.Entity>) nmsPersistentEntitySectionManager.get(worldServer)).d().a();
             }
-            return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(itr, entry -> {
-                try {
-                    return (Entity) nmsEntityGetBukkitEntity.invoke(entry);
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            });
+            return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(itr, entry -> entry.getBukkitEntity());
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
