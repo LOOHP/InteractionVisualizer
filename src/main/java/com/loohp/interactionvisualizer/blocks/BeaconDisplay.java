@@ -47,6 +47,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Beacon;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
@@ -54,6 +55,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.util.EulerAngle;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -64,6 +68,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener {
 
     public static final EntryKey KEY = new EntryKey("beacon");
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0");
+
+    private static Method paperGetEffectRangeMethod;
+
+    static {
+        try {
+            paperGetEffectRangeMethod = Beacon.class.getMethod("getEffectRange");
+        } catch (NoSuchMethodException e) {
+            paperGetEffectRangeMethod = null;
+        }
+    }
 
     public Map<Block, Map<String, Object>> beaconMap = new ConcurrentHashMap<>();
     private int checkingPeriod = 20;
@@ -187,7 +202,7 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
                         ArmorStand line2 = (ArmorStand) entry.getValue().get("2");
                         ArmorStand line3 = (ArmorStand) entry.getValue().get("3");
 
-                        String one = color + up + beacon.getTier() + " " + arrow + " " + getRange(beacon.getTier()) + "m";
+                        String one = color + up + beacon.getTier() + " " + arrow + " " + DECIMAL_FORMAT.format(getRange(beacon)) + "m";
                         if (beacon.getTier() == 0) {
                             if (!PlainTextComponentSerializer.plainText().serialize(line1.getCustomName()).equals("") || line1.isCustomNameVisible()) {
                                 line1.setCustomName("");
@@ -443,21 +458,15 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
         }
     }
 
-    public int getRange(int tier) {
-        switch (tier) {
-            case 0:
-                return 0;
-            case 1:
-                return 20;
-            case 2:
-                return 30;
-            case 3:
-                return 40;
-            case 4:
-                return 50;
-            default:
-                return 0;
+    public double getRange(Beacon beacon) {
+        if (paperGetEffectRangeMethod != null) {
+            try {
+                return (double) paperGetEffectRangeMethod.invoke(beacon);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
         }
+        return beacon.getTier() * 10 + 10;
     }
 
 }

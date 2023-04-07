@@ -42,7 +42,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_19_R3.CraftChunk;
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftItem;
 import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack;
@@ -107,7 +106,7 @@ public class V1_19_4 extends NMS {
             return null;
         }
         World world = chunk.getWorld();
-        return new NMSTileEntitySet<net.minecraft.core.BlockPosition, net.minecraft.world.level.block.entity.TileEntity>(((CraftChunk) chunk.getChunk()).getHandle().E(), entry -> {
+        return new NMSTileEntitySet<net.minecraft.core.BlockPosition, net.minecraft.world.level.block.entity.TileEntity>(((CraftWorld) world).getHandle().getChunkIfLoaded(chunk.getChunkX(), chunk.getChunkZ()).E(), entry -> {
             net.minecraft.core.BlockPosition pos = entry.getKey();
             Material type = CraftMagicNumbers.getMaterial(entry.getValue().q().b());
             TileEntityType tileEntityType = TileEntity.getTileEntityType(type);
