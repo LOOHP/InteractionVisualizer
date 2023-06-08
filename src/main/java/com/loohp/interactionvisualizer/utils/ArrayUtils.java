@@ -21,7 +21,6 @@
 package com.loohp.interactionvisualizer.utils;
 
 import java.util.Base64;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -44,15 +43,15 @@ public class ArrayUtils {
         return bytes;
     }
 
-    public static <T> List<T> putToArrayList(Map<Integer, T> mapping, List<T> list) {
-        int size = mapping.keySet().stream().max(Comparator.naturalOrder()).orElse(-1) + 1;
+    public static <L extends List<T>, T> L putToArrayList(Map<Integer, T> mapping, L list) {
+        int size = mapping.keySet().stream().mapToInt(i -> i).max().orElse(-1) + 1;
         for (int i = 0; i < size; i++) {
             list.add(mapping.getOrDefault(i, null));
         }
         return list;
     }
 
-    public static <T> Map<Integer, T> putToMap(List<T> list, Map<Integer, T> mapping) {
+    public static <M extends Map<Integer, T>, T> M putToMap(List<T> list, M mapping) {
         for (int i = 0; i < list.size(); i++) {
             T t = list.get(i);
             mapping.put(i, t);

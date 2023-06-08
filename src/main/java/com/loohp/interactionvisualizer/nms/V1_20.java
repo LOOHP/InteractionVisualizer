@@ -20,9 +20,7 @@
 
 package com.loohp.interactionvisualizer.nms;
 
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.objectholders.BlockPosition;
 import com.loohp.interactionvisualizer.objectholders.BoundingBox;
 import com.loohp.interactionvisualizer.objectholders.ChunkPosition;
@@ -38,18 +36,16 @@ import net.minecraft.network.protocol.game.PacketPlayOutEntityEquipment;
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.world.entity.EnumItemSlot;
 import net.minecraft.world.entity.item.EntityItem;
-import net.minecraft.world.level.chunk.Chunk;
 import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 import net.minecraft.world.phys.AxisAlignedBB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers;
-import org.bukkit.craftbukkit.v1_18_R2.entity.CraftItem;
-import org.bukkit.craftbukkit.v1_19_R2.CraftChunk;
+import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R1.entity.CraftItem;
+import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
@@ -61,17 +57,15 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-public class V1_18_2 extends NMS {
+public class V1_20 extends NMS {
 
     private static Method voxelShapeGetAABBList;
-    private static boolean entityDestroyIsInt;
     private static Method nmsTileEntityGetNBTTag;
-    private static Field worldServerPersistentEntitySectionManager;
-    private static Method nmsEntityGetBukkitEntity;
-    private static Method nmsGetTileEntitesMethod;
+    private static Field nmsPersistentEntitySectionManager;
+    private static Method nmsGetEntityLookUp;
+    private static Method nmsEntityIterable;
 
     static {
         try {
@@ -80,16 +74,13 @@ public class V1_18_2 extends NMS {
             } catch (NoSuchMethodException | SecurityException e) {
                 voxelShapeGetAABBList = VoxelShape.class.getMethod("toList");
             }
+            nmsTileEntityGetNBTTag = net.minecraft.world.level.block.entity.TileEntity.class.getMethod("ao_");
             try {
-                PacketPlayOutEntityDestroy.class.getConstructor(int.class);
-                entityDestroyIsInt = true;
-            } catch (NoSuchMethodException e) {
-                entityDestroyIsInt = false;
+                nmsPersistentEntitySectionManager = WorldServer.class.getField("M");
+            } catch (NoSuchFieldException e) {
+                nmsGetEntityLookUp = WorldServer.class.getMethod("getEntityLookup");
+                nmsEntityIterable = nmsGetEntityLookUp.getReturnType().getMethod("a");
             }
-            nmsTileEntityGetNBTTag = net.minecraft.world.level.block.entity.TileEntity.class.getMethod("aa_");
-            worldServerPersistentEntitySectionManager = WorldServer.class.getField("O");
-            nmsEntityGetBukkitEntity = net.minecraft.world.entity.Entity.class.getMethod("getBukkitEntity");
-            nmsGetTileEntitesMethod = Chunk.class.getMethod("E");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,28 +100,22 @@ public class V1_18_2 extends NMS {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public NMSTileEntitySet<?, ?> getTileEntities(ChunkPosition chunk, boolean load) {
         if (!chunk.isLoaded() && !load) {
             return null;
         }
         World world = chunk.getWorld();
-        try {
-            return new NMSTileEntitySet<net.minecraft.core.BlockPosition, net.minecraft.world.level.block.entity.TileEntity>((Map<net.minecraft.core.BlockPosition, net.minecraft.world.level.block.entity.TileEntity>) nmsGetTileEntitesMethod.invoke(((CraftChunk) chunk.getChunk()).getHandle()), entry -> {
-                net.minecraft.core.BlockPosition pos = entry.getKey();
-                Material type = CraftMagicNumbers.getMaterial(entry.getValue().q().b());
-                TileEntityType tileEntityType = TileEntity.getTileEntityType(type);
-                if (tileEntityType != null) {
-                    return new TileEntity(world, pos.u(), pos.v(), pos.w(), tileEntityType);
-                } else {
-                    return null;
-                }
-            });
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-            return NMSTileEntitySet.emptySet();
-        }
+        return new NMSTileEntitySet<net.minecraft.core.BlockPosition, net.minecraft.world.level.block.entity.TileEntity>(((CraftWorld) world).getHandle().getChunkIfLoaded(chunk.getChunkX(), chunk.getChunkZ()).G(), entry -> {
+            net.minecraft.core.BlockPosition pos = entry.getKey();
+            Material type = CraftMagicNumbers.getMaterial(entry.getValue().q().b());
+            TileEntityType tileEntityType = TileEntity.getTileEntityType(type);
+            if (tileEntityType != null) {
+                return new TileEntity(world, pos.u(), pos.v(), pos.w(), tileEntityType);
+            } else {
+                return null;
+            }
+        });
     }
 
     @Override
@@ -168,17 +153,7 @@ public class V1_18_2 extends NMS {
 
     @Override
     public PacketContainer[] createEntityDestroyPacket(int... entityIds) {
-        if (entityDestroyIsInt) {
-            PacketContainer[] packets = new PacketContainer[entityIds.length];
-            for (int i = 0; i < entityIds.length; i++) {
-                PacketContainer packet = InteractionVisualizer.protocolManager.createPacket(PacketType.Play.Server.ENTITY_DESTROY);
-                packet.getIntegers().write(0, entityIds[i]);
-                packets[i] = packet;
-            }
-            return packets;
-        } else {
-            return new PacketContainer[] {PacketContainer.fromPacket(new PacketPlayOutEntityDestroy(entityIds))};
-        }
+        return new PacketContainer[] {PacketContainer.fromPacket(new PacketPlayOutEntityDestroy(entityIds))};
     }
 
     @Override
@@ -205,30 +180,29 @@ public class V1_18_2 extends NMS {
     @Override
     public String getBannerCustomName(Block block) {
         try {
-            return ((NBTTagCompound) nmsTileEntityGetNBTTag.invoke(((org.bukkit.craftbukkit.v1_18_R2.CraftWorld) block.getWorld()).getHandle().c_(new net.minecraft.core.BlockPosition(block.getX(), block.getY(), block.getZ())))).l("CustomName");
+            return ((NBTTagCompound) nmsTileEntityGetNBTTag.invoke(((CraftWorld) block.getWorld()).getHandle().c_(new net.minecraft.core.BlockPosition(block.getX(), block.getY(), block.getZ())))).l("CustomName");
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
-            return "";
         }
+        return "";
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public WrappedIterable<?, Entity> getEntities(World world) {
         try {
-            PersistentEntitySectionManager<net.minecraft.world.entity.Entity> manager = (PersistentEntitySectionManager<net.minecraft.world.entity.Entity>) worldServerPersistentEntitySectionManager.get(((org.bukkit.craftbukkit.v1_18_R2.CraftWorld) world).getHandle());
-            return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(manager.d().a(), entry -> {
-                try {
-                    return (Entity) nmsEntityGetBukkitEntity.invoke(entry);
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            });
-        } catch (IllegalAccessException e) {
+            WorldServer worldServer = ((CraftWorld) world).getHandle();
+            Iterable<net.minecraft.world.entity.Entity> itr;
+            if (nmsPersistentEntitySectionManager == null) {
+                itr = (Iterable<net.minecraft.world.entity.Entity>) nmsEntityIterable.invoke(nmsGetEntityLookUp.invoke(worldServer));
+            } else {
+                itr = ((PersistentEntitySectionManager<net.minecraft.world.entity.Entity>) nmsPersistentEntitySectionManager.get(worldServer)).d().a();
+            }
+            return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(itr, entry -> entry.getBukkitEntity());
+        } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
-            return new WrappedIterable<>(Collections.emptyList(), entry -> null);
         }
+        return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(Collections.emptyList(), entry -> entry.getBukkitEntity());
     }
 
 }

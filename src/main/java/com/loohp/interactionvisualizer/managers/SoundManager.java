@@ -20,8 +20,10 @@
 
 package com.loohp.interactionvisualizer.managers;
 
+import com.cryptomorin.xseries.XSound;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -31,19 +33,16 @@ public class SoundManager {
 
     public static final float VOLUME = 2.0F;
     public static final int AUDIBLE_RANGE = 16;
+    public static final Sound ITEM_PICKUP_SOUND = XSound.ENTITY_ITEM_PICKUP.parseSound();
 
-    private static final Random random = new Random();
-    private static Sound itemPickup;
-
-    public static void setup() {
-        itemPickup = Sound.valueOf("ENTITY_ITEM_PICKUP");
-    }
+    private static final Random RANDOM = new Random();
 
     public static void playItemPickup(Location location, Collection<Player> players, float volume) {
         float range = Math.max(AUDIBLE_RANGE, volume * AUDIBLE_RANGE) + 1;
         for (Player player : players) {
             if (player.getWorld().equals(location.getWorld()) && player.getLocation().distanceSquared(location) <= range) {
-                player.playSound(location, itemPickup, 2.0F, random.nextFloat() + 1);
+                //noinspection DataFlowIssue
+                player.playSound(location, ITEM_PICKUP_SOUND, SoundCategory.PLAYERS, volume, RANDOM.nextFloat() + 1);
             }
         }
     }

@@ -540,7 +540,7 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
         stand.setSilent(true);
         stand.setVisible(false);
         stand.setCustomName("");
-        stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+        stand.setRightArmPose(EulerAngle.ZERO);
     }
 
     public boolean isFurnace(String material) {

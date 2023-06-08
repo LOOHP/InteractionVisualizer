@@ -434,7 +434,7 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
         stand.setInvulnerable(true);
         stand.setVisible(false);
         stand.setCustomName("");
-        stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+        stand.setRightArmPose(EulerAngle.ZERO);
     }
 
     public Vector rotateVectorAroundY(Vector vector, double degrees) {

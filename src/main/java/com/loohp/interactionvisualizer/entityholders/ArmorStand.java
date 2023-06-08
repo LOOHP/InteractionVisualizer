@@ -58,8 +58,8 @@ public class ArmorStand extends VisualizerEntity {
         this.isSmall = false;
         this.isInvulnerable = false;
         this.isVisible = true;
-        this.rightArmPose = new EulerAngle(0.0, 0.0, 0.0);
-        this.headPose = new EulerAngle(0.0, 0.0, 0.0);
+        this.rightArmPose = EulerAngle.ZERO;
+        this.headPose = EulerAngle.ZERO;
         this.helmet = new ItemStack(Material.AIR);
         this.mainhand = new ItemStack(Material.AIR);
         this.customName = null;

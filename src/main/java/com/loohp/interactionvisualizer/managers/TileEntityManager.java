@@ -49,7 +49,6 @@ import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -68,7 +67,7 @@ public class TileEntityManager implements Listener {
 
     public static void _init_() {
         for (TileEntityType type : tileEntityTypes) {
-            active.put(type, Collections.newSetFromMap(new ConcurrentHashMap<>()));
+            active.put(type, ConcurrentHashMap.newKeySet());
         }
         TileEntityManager instance = new TileEntityManager();
         Bukkit.getPluginManager().registerEvents(instance, plugin);

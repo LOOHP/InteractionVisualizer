@@ -37,6 +37,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -101,15 +102,19 @@ public class PreferenceManager implements Listener, AutoCloseable {
         Database.setLocked(false);
     }
 
-    public void registerEntry(EntryKey entryKey, EntryKey... entryKeys) {
-        EntryKey[] keys = new EntryKey[entryKeys.length + 1];
-        keys[0] = entryKey;
-        System.arraycopy(entryKeys, 0, keys, 1, entryKeys.length);
-        registerEntry(keys);
+    public void registerEntry(EntryKey entryKey) {
+        registerEntry(Collections.singletonList(entryKey));
     }
 
-    public void registerEntry(EntryKey[] entryKeys) {
-        if (entryKeys.length > 0) {
+    public void registerEntry(EntryKey... entryKeys) {
+        if (entryKeys.length == 0) {
+            return;
+        }
+        registerEntry(Arrays.asList(entryKeys));
+    }
+
+    public void registerEntry(List<EntryKey> entryKeys) {
+        if (!entryKeys.isEmpty()) {
             synchronized (entries) {
                 try {
                     Awaitility.await().atMost(30, TimeUnit.SECONDS).pollInterval(500, TimeUnit.MILLISECONDS).pollDelay(0, TimeUnit.MILLISECONDS).until(() -> !Database.isLocked());

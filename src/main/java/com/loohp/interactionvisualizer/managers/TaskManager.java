@@ -69,10 +69,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TaskManager {
 
@@ -114,7 +114,7 @@ public class TaskManager {
     public static boolean item;
     public static boolean villager;
 
-    public static Map<InventoryType, List<VisualizerInteractDisplay>> processes = new HashMap<>();
+    public static Map<InventoryType, List<VisualizerInteractDisplay>> processes = new ConcurrentHashMap<>();
     public static List<VisualizerRunnableDisplay> runnables = new ArrayList<>();
 
     @SuppressWarnings("deprecation")
@@ -329,7 +329,7 @@ public class TaskManager {
 
         if (getConfig().getBoolean("Blocks.SmithingTable.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_16)) {
             SmithingTableDisplay std = new SmithingTableDisplay();
-            keys.add(std.registerNative(InventoryType.SMITHING));
+            keys.add(std.registerNative(InventoryType.SMITHING, InventoryType.SMITHING_NEW));
             Bukkit.getPluginManager().registerEvents(std, plugin);
             smithingtable = true;
         }
@@ -411,7 +411,7 @@ public class TaskManager {
             villager = true;
         }
 
-        InteractionVisualizer.preferenceManager.registerEntry(keys.toArray(new EntryKey[keys.size()]));
+        InteractionVisualizer.preferenceManager.registerEntry(keys);
         InteractionVisualizer.lightManager.run();
         PacketManager.update();
     }
@@ -440,10 +440,8 @@ public class TaskManager {
                 if (player == null) {
                     return;
                 }
-
                 Inventory inv = player.getOpenInventory().getTopInventory();
-
-                processes.get(inv.getType()).forEach((each) -> each.process(player));
+                processes.get(inv.getType()).forEach(each -> each.process(player));
             }, delay);
         }
         next = next + delay;

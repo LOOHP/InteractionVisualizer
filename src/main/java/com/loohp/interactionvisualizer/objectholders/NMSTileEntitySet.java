@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,6 +33,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class NMSTileEntitySet<K, V> implements Set<TileEntity> {
+
+    @SuppressWarnings("rawtypes")
+    public static final NMSTileEntitySet EMPTY_SET = new NMSTileEntitySet<>(Collections.emptyMap(), e -> null);
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> NMSTileEntitySet<K, V> emptySet() {
+        return (NMSTileEntitySet<K, V>) EMPTY_SET;
+    }
 
     private final Map<K, V> nmsTileEntities;
     private final Function<Entry<K, V>, TileEntity> converter;

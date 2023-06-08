@@ -37,7 +37,7 @@ public abstract class VisualizerInteractDisplay implements VisualizerDisplay {
     /**
      * DO NOT CHANGE THESE FIELD
      */
-    private InventoryType type;
+    private InventoryType[] types;
     private Set<Integer> tasks;
 
     /**
@@ -69,12 +69,24 @@ public abstract class VisualizerInteractDisplay implements VisualizerDisplay {
      * Register this custom display to InteractionVisualizer.
      */
     public final void register(InventoryType type) {
+        register(new InventoryType[] {type});
+    }
+
+    /**
+     * Register this custom display to InteractionVisualizer.
+     */
+    public final void register(InventoryType... types) {
+        if (types.length == 0) {
+            throw new IllegalStateException("Display must be for at least one type of inventory");
+        }
         if (key().isNative()) {
             throw new IllegalStateException("EntryKey must not have the default interactionvisualizer namespace");
         }
         InteractionVisualizerAPI.getPreferenceManager().registerEntry(key());
-        this.type = type;
-        TaskManager.processes.get(type).add(this);
+        this.types = types;
+        for (InventoryType type : types) {
+            TaskManager.processes.get(type).add(this);
+        }
         this.tasks = new HashSet<>();
         int run = run();
         if (run >= 0) {
@@ -86,9 +98,14 @@ public abstract class VisualizerInteractDisplay implements VisualizerDisplay {
      * <b>Only use if this is a native built-in display</b>
      */
     @Deprecated
-    public final EntryKey registerNative(InventoryType type) {
-        this.type = type;
-        TaskManager.processes.get(type).add(this);
+    public final EntryKey registerNative(InventoryType... types) {
+        if (types.length == 0) {
+            throw new IllegalStateException("Display must be for at least one type of inventory");
+        }
+        this.types = types;
+        for (InventoryType type : types) {
+            TaskManager.processes.get(type).add(this);
+        }
         this.tasks = new HashSet<>();
         int run = run();
         if (run >= 0) {
@@ -103,7 +120,9 @@ public abstract class VisualizerInteractDisplay implements VisualizerDisplay {
      */
     @Deprecated
     public final void unregister() {
-        TaskManager.processes.get(type).remove(this);
+        for (InventoryType type : types) {
+            TaskManager.processes.get(type).remove(this);
+        }
         this.tasks.forEach(each -> Bukkit.getScheduler().cancelTask(each));
     }
 

@@ -307,7 +307,7 @@ public class BeeNestDisplay extends VisualizerRunnableDisplay implements Listene
         stand.setInvulnerable(true);
         stand.setVisible(false);
         stand.setCustomName("");
-        stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+        stand.setRightArmPose(EulerAngle.ZERO);
     }
 
 }

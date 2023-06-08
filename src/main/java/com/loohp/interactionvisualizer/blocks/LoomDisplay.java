@@ -455,7 +455,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
         stand.setSmall(true);
         stand.setCustomName("IV.Loom.Banner");
         stand.setRotation(yaw, stand.getLocation().getPitch());
-        stand.setHeadPose(new EulerAngle(0.0, 0.0, 0.0));
+        stand.setHeadPose(EulerAngle.ZERO);
     }
 
     public Vector rotateVectorAroundY(Vector vector, double degrees) {

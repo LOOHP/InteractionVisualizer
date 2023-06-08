@@ -99,11 +99,14 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
         Block block = playermap.get(player);
         Location loc = block.getLocation();
 
+        int maxSlot = view.getTopInventory().getSize() - 1;
+        String maxSlotStr = String.valueOf(maxSlot);
+
         if (!openedSTables.containsKey(block)) {
             Map<String, Object> map = new HashMap<>();
             map.put("Player", player);
-            map.put("2", "N/A");
-            map.putAll(spawnArmorStands(player, block));
+            map.put(maxSlotStr, "N/A");
+            map.putAll(spawnArmorStands(player, block, maxSlot));
             openedSTables.put(block, map);
         }
 
@@ -112,41 +115,44 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
         if (!map.get("Player").equals(player)) {
             return;
         }
-        ItemStack[] items = new ItemStack[] {view.getItem(0), view.getItem(1)};
+        ItemStack[] items = new ItemStack[maxSlot + 1];
+        for (int i = 0; i <= maxSlot; i++) {
+            items[i] = view.getItem(i);
+        }
 
-        if (view.getItem(2) != null) {
-            ItemStack itemstack = view.getItem(2);
+        if (view.getItem(maxSlot) != null) {
+            ItemStack itemstack = view.getItem(maxSlot);
             if (itemstack == null || itemstack.getType().equals(Material.AIR)) {
                 itemstack = null;
             }
             Item item = null;
-            if (map.get("2") instanceof String) {
+            if (map.get(maxSlotStr) instanceof String) {
                 if (itemstack != null) {
                     item = new Item(loc.clone().add(0.5, 1.2, 0.5));
                     item.setItemStack(itemstack);
                     item.setVelocity(new Vector(0, 0, 0));
                     item.setPickupDelay(32767);
                     item.setGravity(false);
-                    map.put("2", item);
+                    map.put(maxSlotStr, item);
                     PacketManager.sendItemSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY), item);
                     PacketManager.updateItem(item);
                 } else {
-                    map.put("2", "N/A");
+                    map.put(maxSlotStr, "N/A");
                 }
             } else {
-                item = (Item) map.get("2");
+                item = (Item) map.get(maxSlotStr);
                 if (itemstack != null) {
                     if (!item.getItemStack().equals(itemstack)) {
                         item.setItemStack(itemstack);
                         PacketManager.updateItem(item);
                     }
                 } else {
-                    map.put("2", "N/A");
+                    map.put(maxSlotStr, "N/A");
                     PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
                 }
             }
         }
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < maxSlot; i++) {
             ArmorStand stand = (ArmorStand) map.get(String.valueOf(i));
             ItemStack item = items[i];
             if (item == null || item.getType().equals(Material.AIR)) {
@@ -200,7 +206,9 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
         if (event.isCancelled()) {
             return;
         }
-        if (event.getRawSlot() != 2) {
+        int maxSlot = event.getView().getTopInventory().getSize() - 1;
+        String maxSlotStr = String.valueOf(maxSlot);
+        if (event.getRawSlot() != maxSlot) {
             return;
         }
         if (event.getCurrentItem() == null) {
@@ -217,7 +225,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
             }
         }
         if (event.isShiftClick()) {
-            if (!InventoryUtils.stillHaveSpace(event.getWhoClicked().getInventory(), event.getView().getItem(2).getType())) {
+            if (!InventoryUtils.stillHaveSpace(event.getWhoClicked().getInventory(), event.getView().getItem(maxSlot).getType())) {
                 return;
             }
         }
@@ -246,40 +254,59 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
         Location loc = block.getLocation();
         Player player = (Player) event.getWhoClicked();
 
-        ArmorStand slot0 = (ArmorStand) map.get("0");
-        ArmorStand slot1 = (ArmorStand) map.get("1");
-        if (map.get("2") instanceof String) {
-            map.put("2", new Item(block.getLocation().clone().add(0.5, 1.2, 0.5)));
+        ArmorStand slot0;
+        ArmorStand slot1;
+        ArmorStand slot2;
+        if (maxSlot == 2) {
+            slot0 = null;
+            slot1 = (ArmorStand) map.get("0");
+            slot2 = (ArmorStand) map.get("1");
+        } else {
+            slot0 = (ArmorStand) map.get("0");
+            slot1 = (ArmorStand) map.get("1");
+            slot2 =(ArmorStand) map.get("2");
         }
-        Item item = (Item) map.get("2");
+
+        if (map.get(maxSlotStr) instanceof String) {
+            map.put(maxSlotStr, new Item(block.getLocation().clone().add(0.5, 1.2, 0.5)));
+        }
+        Item item = (Item) map.get(maxSlotStr);
 
         Inventory before = Bukkit.createInventory(null, 9);
-        before.setItem(0, player.getOpenInventory().getItem(0).clone());
-        before.setItem(1, player.getOpenInventory().getItem(1).clone());
+        for (int i = 0; i <= maxSlot; i++) {
+            before.setItem(i, player.getOpenInventory().getItem(i).clone());
+        }
 
         Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
 
             Inventory after = Bukkit.createInventory(null, 9);
-            after.setItem(0, player.getOpenInventory().getItem(0).clone());
-            after.setItem(1, player.getOpenInventory().getItem(1).clone());
+            for (int i = 0; i <= maxSlot; i++) {
+                after.setItem(i, player.getOpenInventory().getItem(i).clone());
+            }
 
             if (InventoryUtils.compareContents(before, after)) {
                 return;
             }
 
-            slot0.setLocked(true);
+            if (slot0 != null) {
+                slot0.setLocked(true);
+            }
             slot1.setLocked(true);
+            slot2.setLocked(true);
             item.setLocked(true);
 
             openedSTables.remove(block);
 
             float yaw = getCardinalDirection(player);
-            Vector vector = new Location(slot0.getWorld(), slot0.getLocation().getX(), slot0.getLocation().getY(), slot0.getLocation().getZ(), yaw, 0).getDirection().normalize();
-            slot0.teleport(slot0.getLocation().add(rotateVectorAroundY(vector.clone(), 90).multiply(0.1)));
-            slot1.teleport(slot1.getLocation().add(rotateVectorAroundY(vector.clone(), -90).multiply(0.1)));
+            Vector vector = new Location(slot1.getWorld(), slot1.getLocation().getX(), slot1.getLocation().getY(), slot1.getLocation().getZ(), yaw, 0).getDirection().normalize();
+            slot1.teleport(slot1.getLocation().add(rotateVectorAroundY(vector.clone(), 90).multiply(0.1)));
+            slot2.teleport(slot2.getLocation().add(rotateVectorAroundY(vector.clone(), -90).multiply(0.1)));
 
-            PacketManager.updateArmorStand(slot0);
+            if (slot0 != null) {
+                PacketManager.updateArmorStand(slot0);
+            }
             PacketManager.updateArmorStand(slot1);
+            PacketManager.updateArmorStand(slot2);
 
             Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
                 for (Player each : InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY)) {
@@ -298,8 +325,11 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
 
                 Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
                     SoundManager.playItemPickup(item.getLocation(), InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMDROP, KEY));
-                    PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot0);
+                    if (slot0 != null) {
+                        PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot0);
+                    }
                     PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot1);
+                    PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), slot2);
                     PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
                 }, 8);
             }, 10);
@@ -317,8 +347,8 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
         if (!playermap.containsKey((Player) event.getWhoClicked())) {
             return;
         }
-
-        if (event.getRawSlot() >= 0 && event.getRawSlot() <= 2) {
+        int maxSlot = event.getView().getTopInventory().getSize() - 1;
+        if (event.getRawSlot() >= 0 && event.getRawSlot() <= maxSlot) {
             PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), (Player) event.getWhoClicked());
         }
     }
@@ -337,9 +367,9 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
         if (!playermap.containsKey((Player) event.getWhoClicked())) {
             return;
         }
-
+        int maxSlot = event.getView().getTopInventory().getSize() - 1;
         for (int slot : event.getRawSlots()) {
-            if (slot >= 0 && slot <= 2) {
+            if (slot >= 0 && slot <= maxSlot) {
                 PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), (Player) event.getWhoClicked());
                 break;
             }
@@ -363,7 +393,9 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
             return;
         }
 
-        for (int i = 0; i <= 2; i++) {
+        int maxSlot = event.getView().getTopInventory().getSize() - 1;
+
+        for (int i = 0; i <= maxSlot; i++) {
             if (!(map.get(String.valueOf(i)) instanceof String)) {
                 Object entity = map.get(String.valueOf(i));
                 if (entity instanceof Item) {
@@ -380,6 +412,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
             PacketManager.removeArmorStand(InteractionVisualizerAPI.getPlayers(), entity);
         }
         openedSTables.remove(block);
+        playermap.remove((Player) event.getPlayer());
     }
 
     public MaterialMode standMode(ArmorStand stand) {
@@ -396,7 +429,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
             if (plain.equals("IV.SmithingTable.Block")) {
                 stand.setCustomName("IV.SmithingTable.Item");
                 stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
-                stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+                stand.setRightArmPose(EulerAngle.ZERO);
                 stand.teleport(stand.getLocation().add(0.0, -0.084, 0.0));
                 stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(-0.102), -90)));
                 stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.14)));
@@ -405,7 +438,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
             if (plain.equals("IV.SmithingTable.LowBlock")) {
                 stand.setCustomName("IV.SmithingTable.Item");
                 stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
-                stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+                stand.setRightArmPose(EulerAngle.ZERO);
                 stand.teleport(stand.getLocation().add(0.0, -0.02, 0.0));
                 stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(-0.09), -90)));
                 stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.15)));
@@ -416,14 +449,14 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
                 stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(0.3), -90)));
                 stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(0.1)));
                 stand.teleport(stand.getLocation().add(0, 0.26, 0));
-                stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+                stand.setRightArmPose(EulerAngle.ZERO);
             }
             if (plain.equals("IV.SmithingTable.Standing")) {
                 stand.setCustomName("IV.SmithingTable.Item");
                 stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().getDirection().normalize().multiply(0.323), -90)));
                 stand.teleport(stand.getLocation().add(stand.getLocation().getDirection().normalize().multiply(-0.115)));
                 stand.teleport(stand.getLocation().add(0, 0.32, 0));
-                stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+                stand.setRightArmPose(EulerAngle.ZERO);
             }
         }
         if (mode.equals("Block")) {
@@ -458,7 +491,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
         }
     }
 
-    public Map<String, ArmorStand> spawnArmorStands(Player player, Block block) { //.add(0.68, 0.600781, 0.35)
+    public Map<String, ArmorStand> spawnArmorStands(Player player, Block block, int maxSlot) { //.add(0.68, 0.600781, 0.35)
         Map<String, ArmorStand> map = new HashMap<>();
         Location loc = block.getLocation().clone().add(0.5, 0.600781, 0.5);
         ArmorStand center = new ArmorStand(loc);
@@ -469,16 +502,26 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
         Vector vector = rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.19), -100).add(center.getLocation().clone().getDirection().normalize().multiply(-0.11));
         ArmorStand middle = new ArmorStand(loc.clone().add(vector));
         setStand(middle, yaw);
-        ArmorStand slot0 = new ArmorStand(middle.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), -90)));
-        setStand(slot0, yaw + 20);
-        ArmorStand slot1 = new ArmorStand(middle.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.2), 90)));
-        setStand(slot1, yaw - 20);
 
-        map.put("0", slot0);
-        map.put("1", slot1);
+        ArmorStand slot0 = new ArmorStand(middle.getLocation());
+        setStand(slot0, yaw);
+        ArmorStand slot1 = new ArmorStand(middle.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.3), -90)));
+        setStand(slot1, yaw + 20);
+        ArmorStand slot2 = new ArmorStand(middle.getLocation().clone().add(rotateVectorAroundY(center.getLocation().clone().getDirection().normalize().multiply(0.3), 90)));
+        setStand(slot2, yaw - 20);
 
-        PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot0);
+        if (maxSlot == 2) {
+            map.put("0", slot1);
+            map.put("1", slot2);
+        } else {
+            map.put("0", slot0);
+            map.put("1", slot1);
+            map.put("2", slot2);
+
+            PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot0);
+        }
         PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot1);
+        PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.ITEMSTAND, KEY), slot2);
 
         return map;
     }
@@ -492,7 +535,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
         stand.setVisible(false);
         stand.setSilent(true);
         stand.setSmall(true);
-        stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+        stand.setRightArmPose(EulerAngle.ZERO);
         stand.setCustomName("IV.SmithingTable.Item");
         stand.setRotation(yaw, stand.getLocation().getPitch());
     }

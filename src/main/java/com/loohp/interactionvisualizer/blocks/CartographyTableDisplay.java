@@ -55,7 +55,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
     public static final EntryKey KEY = new EntryKey("cartography_table");
 
     public Map<Block, Map<String, Object>> openedCTable = new HashMap<>();
-    public Map<Player, Block> playermap = new HashMap<Player, Block>();
+    public Map<Player, Block> playermap = new HashMap<>();
 
     @Override
     public EntryKey key() {

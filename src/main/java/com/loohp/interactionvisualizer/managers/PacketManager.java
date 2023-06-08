@@ -288,7 +288,7 @@ public class PacketManager implements Listener {
                 boolean absent = false;
                 Set<Player> tracking = dynamicTracking.get((DynamicVisualizerEntity) entity);
                 if (tracking == null) {
-                    tracking = Collections.newSetFromMap(new ConcurrentHashMap<>());
+                    tracking = ConcurrentHashMap.newKeySet();
                     absent = true;
                 }
                 tracking.addAll(playersInRange);
@@ -607,7 +607,7 @@ public class PacketManager implements Listener {
     }
 
     public static void removeAll(Player theplayer) {
-        playerStatus.put(theplayer, Collections.newSetFromMap(new ConcurrentHashMap<>()));
+        playerStatus.put(theplayer, ConcurrentHashMap.newKeySet());
         if (!plugin.isEnabled()) {
             return;
         }
@@ -682,12 +682,12 @@ public class PacketManager implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        playerStatus.put(event.getPlayer(), Collections.newSetFromMap(new ConcurrentHashMap<>()));
+        playerStatus.put(event.getPlayer(), ConcurrentHashMap.newKeySet());
     }
 
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event) {
-        playerStatus.put(event.getPlayer(), Collections.newSetFromMap(new ConcurrentHashMap<>()));
+        playerStatus.put(event.getPlayer(), ConcurrentHashMap.newKeySet());
     }
 
     @EventHandler

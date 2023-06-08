@@ -68,7 +68,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -181,6 +180,7 @@ public class InteractionVisualizer extends JavaPlugin {
         asyncExecutorManager = new AsyncExecutorManager(threadPool);
 
         switch (version) {
+            case V1_20:
             case V1_19_4:
             case V1_19_3:
             case V1_19:
@@ -266,7 +266,6 @@ public class InteractionVisualizer extends JavaPlugin {
         }
 
         WatchableCollection.setup();
-        SoundManager.setup();
         MusicManager.setup();
         Database.setup();
         preferenceManager = new PreferenceManager(this);
@@ -303,13 +302,12 @@ public class InteractionVisualizer extends JavaPlugin {
         exemptBlocks.add("SPAWNER");
         exemptBlocks.add("MOB_SPAWNER");
         exemptBlocks.add("BEACON");
-
-
+        
         getServer().getConsoleSender().sendMessage(ChatColor.GREEN + "[InteractionVisualizer] InteractionVisualizer has been enabled!");
 
         Bukkit.getScheduler().runTask(this, () -> {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                PacketManager.playerStatus.put(player, Collections.newSetFromMap(new ConcurrentHashMap<>()));
+                PacketManager.playerStatus.put(player, ConcurrentHashMap.newKeySet());
             }
         });
 
@@ -451,7 +449,7 @@ public class InteractionVisualizer extends JavaPlugin {
     }
 
     public static World getDefaultWorld() {
-        if (defaultWorld == null) {
+        if (defaultWorld == null || defaultWorld.get() == null) {
             World world = Bukkit.getWorlds().get(0);
             defaultWorld = new WeakReference<>(world);
             return world;

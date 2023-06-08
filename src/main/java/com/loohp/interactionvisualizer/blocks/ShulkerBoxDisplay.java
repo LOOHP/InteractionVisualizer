@@ -51,8 +51,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -60,7 +60,7 @@ public class ShulkerBoxDisplay implements Listener, VisualizerDisplay {
 
     public static final EntryKey KEY = new EntryKey("shulker_box");
 
-    public ConcurrentHashMap<Player, List<Item>> link = new ConcurrentHashMap<>();
+    public Map<Player, List<Item>> link = new ConcurrentHashMap<>();
 
     @Override
     public EntryKey key() {
@@ -197,7 +197,7 @@ public class ShulkerBoxDisplay implements Listener, VisualizerDisplay {
 
         if (isMove) {
             PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
-            if (itemstack != null) {
+            if (itemstack != null && !itemstack.getType().name().contains("SHULKER_BOX")) {
                 Item item = new Item(loc.clone().add(0.5, 0.5, 0.5).add(event.getWhoClicked().getLocation().getDirection().multiply(-0.8)));
                 Vector offset = new Vector(0.0, 0.15, 0.0);
                 Vector vector = loc.clone().add(0.5, 0.5, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).add(0.0, -0.5, 0.0).toVector()).multiply(-0.13).add(offset);
@@ -297,13 +297,8 @@ public class ShulkerBoxDisplay implements Listener, VisualizerDisplay {
                 PacketManager.sendHandMovement(InteractionVisualizerAPI.getPlayers(), player);
 
                 ItemStack itemstack = event.getOldCursor();
-                if (itemstack != null) {
-                    if (itemstack.getType().equals(Material.AIR)) {
-                        itemstack = null;
-                    }
-                }
 
-                if (itemstack != null) {
+                if (itemstack != null && !itemstack.getType().equals(Material.AIR) && !itemstack.getType().name().contains("SHULKER_BOX")) {
                     Item item = new Item(event.getWhoClicked().getEyeLocation().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0));
                     Vector offset = new Vector(0.0, 0.15, 0.0);
                     Vector vector = loc.clone().add(0.5, 0.5, 0.5).toVector().subtract(event.getWhoClicked().getEyeLocation().clone().add(0.0, InteractionVisualizer.playerPickupYOffset, 0.0).toVector()).multiply(0.13).add(offset);
@@ -358,9 +353,7 @@ public class ShulkerBoxDisplay implements Listener, VisualizerDisplay {
             return;
         }
         List<Item> list = link.get((Player) event.getPlayer());
-        Iterator<Item> itr = list.iterator();
-        while (itr.hasNext()) {
-            Item item = itr.next();
+        for (Item item : list) {
             PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), item);
         }
 

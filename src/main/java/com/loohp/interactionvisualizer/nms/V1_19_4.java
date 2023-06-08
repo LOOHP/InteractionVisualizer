@@ -36,6 +36,7 @@ import net.minecraft.network.protocol.game.PacketPlayOutEntityEquipment;
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.world.entity.EnumItemSlot;
 import net.minecraft.world.entity.item.EntityItem;
+import net.minecraft.world.level.chunk.Chunk;
 import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 import net.minecraft.world.phys.AxisAlignedBB;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -57,6 +58,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class V1_19_4 extends NMS {
@@ -66,6 +68,8 @@ public class V1_19_4 extends NMS {
     private static Field nmsPersistentEntitySectionManager;
     private static Method nmsGetEntityLookUp;
     private static Method nmsEntityIterable;
+    private static Method nmsEntityGetBukkitEntity;
+    private static Method nmsGetTileEntitesMethod;
 
     static {
         try {
@@ -81,6 +85,8 @@ public class V1_19_4 extends NMS {
                 nmsGetEntityLookUp = WorldServer.class.getMethod("getEntityLookup");
                 nmsEntityIterable = nmsGetEntityLookUp.getReturnType().getMethod("a");
             }
+            nmsEntityGetBukkitEntity = net.minecraft.world.entity.Entity.class.getMethod("getBukkitEntity");
+            nmsGetTileEntitesMethod = Chunk.class.getMethod("E");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -100,22 +106,29 @@ public class V1_19_4 extends NMS {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public NMSTileEntitySet<?, ?> getTileEntities(ChunkPosition chunk, boolean load) {
         if (!chunk.isLoaded() && !load) {
             return null;
         }
         World world = chunk.getWorld();
-        return new NMSTileEntitySet<net.minecraft.core.BlockPosition, net.minecraft.world.level.block.entity.TileEntity>(((CraftWorld) world).getHandle().getChunkIfLoaded(chunk.getChunkX(), chunk.getChunkZ()).E(), entry -> {
-            net.minecraft.core.BlockPosition pos = entry.getKey();
-            Material type = CraftMagicNumbers.getMaterial(entry.getValue().q().b());
-            TileEntityType tileEntityType = TileEntity.getTileEntityType(type);
-            if (tileEntityType != null) {
-                return new TileEntity(world, pos.u(), pos.v(), pos.w(), tileEntityType);
-            } else {
-                return null;
-            }
-        });
+        Chunk nmsChunk = ((CraftWorld) world).getHandle().getChunkIfLoaded(chunk.getChunkX(), chunk.getChunkZ());
+        try {
+            return new NMSTileEntitySet<net.minecraft.core.BlockPosition, net.minecraft.world.level.block.entity.TileEntity>((Map<net.minecraft.core.BlockPosition, net.minecraft.world.level.block.entity.TileEntity>) nmsGetTileEntitesMethod.invoke(nmsChunk), entry -> {
+                net.minecraft.core.BlockPosition pos = entry.getKey();
+                Material type = CraftMagicNumbers.getMaterial(entry.getValue().q().b());
+                TileEntityType tileEntityType = TileEntity.getTileEntityType(type);
+                if (tileEntityType != null) {
+                    return new TileEntity(world, pos.u(), pos.v(), pos.w(), tileEntityType);
+                } else {
+                    return null;
+                }
+            });
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            return NMSTileEntitySet.emptySet();
+        }
     }
 
     @Override
@@ -198,7 +211,14 @@ public class V1_19_4 extends NMS {
             } else {
                 itr = ((PersistentEntitySectionManager<net.minecraft.world.entity.Entity>) nmsPersistentEntitySectionManager.get(worldServer)).d().a();
             }
-            return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(itr, entry -> entry.getBukkitEntity());
+            return new WrappedIterable<net.minecraft.world.entity.Entity, Entity>(itr, entry -> {
+                try {
+                    return (Entity) nmsEntityGetBukkitEntity.invoke(entry);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            });
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }

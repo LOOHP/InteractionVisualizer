@@ -400,7 +400,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
         stand.setSilent(true);
         stand.setVisible(false);
         stand.setCustomName("");
-        stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+        stand.setRightArmPose(EulerAngle.ZERO);
     }
 
 }

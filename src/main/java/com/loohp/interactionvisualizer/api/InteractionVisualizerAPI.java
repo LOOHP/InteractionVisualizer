@@ -483,7 +483,7 @@ public class InteractionVisualizerAPI {
         stand.setInvulnerable(true);
         stand.setVisible(false);
         stand.setSilent(true);
-        stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+        stand.setRightArmPose(EulerAngle.ZERO);
         stand.setCustomName("IV.Custom.Item");
         stand.setRotation(yaw, stand.getLocation().getPitch());
     }
@@ -511,7 +511,7 @@ public class InteractionVisualizerAPI {
             if (plain.equals("IV.Custom.Block")) {
                 stand.setCustomName("IV.Custom.Item");
                 stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
-                stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+                stand.setRightArmPose(EulerAngle.ZERO);
                 stand.teleport(stand.getLocation().add(0.0, -0.084, 0.0));
                 stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(-0.102), -90)));
                 stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.14)));
@@ -520,7 +520,7 @@ public class InteractionVisualizerAPI {
             if (plain.equals("IV.Custom.LowBlock")) {
                 stand.setCustomName("IV.Custom.Item");
                 stand.setRotation(stand.getLocation().getYaw() - 45, stand.getLocation().getPitch());
-                stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+                stand.setRightArmPose(EulerAngle.ZERO);
                 stand.teleport(stand.getLocation().add(0.0, -0.02, 0.0));
                 stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(-0.09), -90)));
                 stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(-0.15)));
@@ -531,14 +531,14 @@ public class InteractionVisualizerAPI {
                 stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().clone().getDirection().normalize().multiply(0.3), -90)));
                 stand.teleport(stand.getLocation().add(stand.getLocation().clone().getDirection().normalize().multiply(0.1)));
                 stand.teleport(stand.getLocation().add(0, 0.26, 0));
-                stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+                stand.setRightArmPose(EulerAngle.ZERO);
             }
             if (plain.equals("IV.Custom.Standing")) {
                 stand.setCustomName("IV.Custom.Item");
                 stand.teleport(stand.getLocation().add(rotateVectorAroundY(stand.getLocation().getDirection().normalize().multiply(0.323), -90)));
                 stand.teleport(stand.getLocation().add(stand.getLocation().getDirection().normalize().multiply(-0.115)));
                 stand.teleport(stand.getLocation().add(0, 0.32, 0));
-                stand.setRightArmPose(new EulerAngle(0.0, 0.0, 0.0));
+                stand.setRightArmPose(EulerAngle.ZERO);
             }
         }
         if (mode.equals("Block")) {

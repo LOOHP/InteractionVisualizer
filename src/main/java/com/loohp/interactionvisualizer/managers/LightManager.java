@@ -49,6 +49,7 @@ public class LightManager implements ILightManager {
         }
         return null;
     }
+
     private final InteractionVisualizer plugin;
     private Set<LightData> addqueue;
     private Set<LightData> deletequeue;
@@ -87,9 +88,9 @@ public class LightManager implements ILightManager {
             if (!deletequeue.isEmpty()) {
                 changed = true;
             }
-            Iterator<LightData> itr0 = deletequeue.iterator();
-            while (itr0.hasNext()) {
-                LightData lightdata = itr0.next();
+
+            for (Iterator<LightData> itr = deletequeue.iterator(); itr.hasNext();) {
+                LightData lightdata = itr.next();
                 if (lightdata.isLocationLoaded()) {
                     Location location = lightdata.getLocation();
                     if (LightAPI.isSupported(location.getWorld(), LightType.SKY)) {
@@ -99,15 +100,15 @@ public class LightManager implements ILightManager {
                     updateQueue.add(LightData.of(location, 14, com.loohp.interactionvisualizer.objectholders.LightType.SKY));
                     updateQueue.add(LightData.of(location, 14, com.loohp.interactionvisualizer.objectholders.LightType.BLOCK));
                 }
-                itr0.remove();
+                itr.remove();
             }
 
             if (!addqueue.isEmpty()) {
                 changed = true;
             }
-            Iterator<LightData> itr1 = addqueue.iterator();
-            while (itr1.hasNext()) {
-                LightData lightdata = itr1.next();
+
+            for (Iterator<LightData> itr = addqueue.iterator(); itr.hasNext();) {
+                LightData lightdata = itr.next();
                 if (lightdata.isLocationLoaded()) {
                     Location location = lightdata.getLocation();
                     int lightlevel = lightdata.getLightLevel();
@@ -116,12 +117,12 @@ public class LightManager implements ILightManager {
                         updateQueue.add(lightdata);
                     }
                 }
-                itr1.remove();
+                itr.remove();
             }
 
             if (changed) {
-                HashSet<ChunkInfo> blockinfos = new HashSet<>();
-                HashSet<ChunkInfo> skyinfos = new HashSet<>();
+                Set<ChunkInfo> blockinfos = new HashSet<>();
+                Set<ChunkInfo> skyinfos = new HashSet<>();
                 while (!updateQueue.isEmpty()) {
                     LightData lightdata = updateQueue.poll();
                     LightType lightType = convert(lightdata.getLightType());
