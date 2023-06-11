@@ -329,7 +329,11 @@ public class TaskManager {
 
         if (getConfig().getBoolean("Blocks.SmithingTable.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_16)) {
             SmithingTableDisplay std = new SmithingTableDisplay();
-            keys.add(std.registerNative(InventoryType.SMITHING, InventoryType.SMITHING_NEW));
+            if (version.isNewerOrEqualTo(MCVersion.V1_19_4)) {
+                keys.add(std.registerNative(InventoryType.SMITHING, InventoryType.SMITHING_NEW));
+            } else {
+                keys.add(std.registerNative(InventoryType.SMITHING));
+            }
             Bukkit.getPluginManager().registerEvents(std, plugin);
             smithingtable = true;
         }
