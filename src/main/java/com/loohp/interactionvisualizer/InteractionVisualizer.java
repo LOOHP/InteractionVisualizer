@@ -34,7 +34,6 @@ import com.loohp.interactionvisualizer.managers.MaterialManager;
 import com.loohp.interactionvisualizer.managers.MusicManager;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.managers.PreferenceManager;
-import com.loohp.interactionvisualizer.managers.SoundManager;
 import com.loohp.interactionvisualizer.managers.TaskManager;
 import com.loohp.interactionvisualizer.managers.TileEntityManager;
 import com.loohp.interactionvisualizer.metrics.Charts;
@@ -94,9 +93,6 @@ public class InteractionVisualizer extends JavaPlugin {
 
     public static Boolean lightapi = false;
     public static Boolean openinv = false;
-    public static Boolean vanish = false;
-    public static Boolean cmi = false;
-    public static Boolean ess3 = false;
 
     public static Set<String> exemptBlocks = new HashSet<>();
     public static Set<String> disabledWorlds = new HashSet<>();
@@ -229,18 +225,6 @@ public class InteractionVisualizer extends JavaPlugin {
         if (isPluginEnabled("OpenInv")) {
             hookMessage("OpenInv");
             openinv = true;
-        }
-        if (isPluginEnabled("SuperVanish") || isPluginEnabled("PremiumVanish")) {
-            hookMessage("SuperVanish/PremiumVanish");
-            vanish = true;
-        }
-        if (isPluginEnabled("CMI")) {
-            hookMessage("CMI");
-            cmi = true;
-        }
-        if (isPluginEnabled("Essentials")) {
-            hookMessage("Essentials");
-            ess3 = true;
         }
 
         if (!getDataFolder().exists()) {

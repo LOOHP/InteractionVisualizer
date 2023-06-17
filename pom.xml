@@ -25,7 +25,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>1.18.6.0</version>
+	<version>1.18.6.1</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -284,19 +284,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.20-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.ess3</groupId>
-			<artifactId>EssentialsX</artifactId>
-			<version>2.17.2</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.LeonMangler</groupId>
-			<artifactId>PremiumVanishAPI</artifactId>
-			<version>2.7.11-2</version>
+			<version>1.20.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -349,16 +337,9 @@
 			<systemPath>${basedir}/lib/LightAPI-fork-3.5.2.jar</systemPath>
 		</dependency>
 		<dependency>
-			<groupId>CMIAPI</groupId>
-			<artifactId>CMIAPI</artifactId>
-			<scope>system</scope>
-			<version>1.0</version>
-			<systemPath>${basedir}/lib/CMIAPI8.7.8.2.jar</systemPath>
-		</dependency>
-		<dependency>
 			<groupId>org.bukkit...............</groupId>
 			<artifactId>craftbukkit</artifactId>
-			<version>1.20-R0.1-SNAPSHOT</version>
+			<version>1.20.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
