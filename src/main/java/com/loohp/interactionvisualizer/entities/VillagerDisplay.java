@@ -43,6 +43,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.util.Vector;
 
+import java.util.Objects;
+
 public class VillagerDisplay implements Listener, VisualizerDisplay {
 
     public static final EntryKey KEY = new EntryKey("villager");
@@ -81,6 +83,13 @@ public class VillagerDisplay implements Listener, VisualizerDisplay {
         }
         if (event.isShiftClick()) {
             if (!InventoryUtils.stillHaveSpace(event.getWhoClicked().getInventory(), event.getView().getItem(2).getType())) {
+                return;
+            }
+        }
+        int hotbarSlot = event.getHotbarButton();
+        if (hotbarSlot >= 0 && !Objects.equals(event.getClickedInventory(), event.getWhoClicked().getInventory())) {
+            ItemStack hotbarItem = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
+            if (hotbarItem != null) {
                 return;
             }
         }
