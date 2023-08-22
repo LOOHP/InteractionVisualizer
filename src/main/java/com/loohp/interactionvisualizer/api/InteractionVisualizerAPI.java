@@ -115,9 +115,9 @@ public class InteractionVisualizerAPI {
         Set<Player> excludedPlayers = Stream.of(excludes).collect(Collectors.toSet());
         if (excludeDisabledWorlds) {
             Set<String> disabledWorlds = getDisabledWorlds();
-            players = SynchronizedFilteredCollection.filterSynchronized(players, each -> !excludedPlayers.contains(each) && !disabledWorlds.contains(each.getWorld().getName()));
+            players = SynchronizedFilteredCollection.filter(players, each -> !excludedPlayers.contains(each) && !disabledWorlds.contains(each.getWorld().getName()));
         } else {
-            players = SynchronizedFilteredCollection.filterSynchronized(players, each -> !excludedPlayers.contains(each));
+            players = SynchronizedFilteredCollection.filter(players, each -> !excludedPlayers.contains(each));
         }
         return Collections.unmodifiableCollection(players);
     }

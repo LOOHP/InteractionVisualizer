@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Spliterator;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,136 +33,175 @@ import java.util.stream.Stream;
 public class SynchronizedFilteredCollection<E> implements Collection<E> {
 
     /**
-     * The provided Collection should already be synchronized.<br>
-     * <br>
      * The predicate is evaluated for all elements once only for methods that return an iteration of elements.
      * Meaning it will not return a live view of the underlying collection.<br>
      * <br>
-     * However, the SynchronizedFilteredCollection itself is a filtered live view of the underlying collection.
+     * However, the SynchronizedFilteredCollection itself is a filtered live view of the underlying collection.<br>
+     * <br>
+     * "backingCollection" can be another SynchronizedFilteredCollection, in this case their locks will share.
      */
-    public static <E> SynchronizedFilteredCollection<E> filterSynchronized(Collection<E> backingCollection, Predicate<E> predicate) {
+    public static <E> SynchronizedFilteredCollection<E> filter(Collection<E> backingCollection, Predicate<E> predicate) {
         return new SynchronizedFilteredCollection<E>(backingCollection, predicate);
     }
+
     private final Collection<E> backingCollection;
     private final Predicate<E> predicate;
-    private final Object lock;
+    private final ReentrantReadWriteLock lock;
 
     private SynchronizedFilteredCollection(Collection<E> backingCollection, Predicate<E> predicate) {
         this.backingCollection = backingCollection;
         this.predicate = predicate;
-        this.lock = aquireLock();
+        this.lock = acquireLock();
     }
 
-    private Object aquireLock() {
+    private ReentrantReadWriteLock acquireLock() {
         if (backingCollection instanceof SynchronizedFilteredCollection) {
-            return ((SynchronizedFilteredCollection<E>) backingCollection).aquireLock();
+            return ((SynchronizedFilteredCollection<E>) backingCollection).acquireLock();
         } else {
-            return backingCollection;
+            return new ReentrantReadWriteLock();
         }
     }
 
-    public Object getLock() {
+    public ReentrantReadWriteLock getLock() {
         return lock;
     }
 
     @Override
     public int size() {
-        synchronized (lock) {
-            return (int) Math.min(backingCollection.stream().filter(predicate).count(), Integer.MAX_VALUE);
+        try {
+            lock.readLock().lock();
+            return (int) backingCollection.stream().filter(predicate).count();
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public boolean isEmpty() {
-        synchronized (lock) {
-            return backingCollection.stream().filter(predicate).count() <= 0;
+        try {
+            lock.readLock().lock();
+            return backingCollection.stream().noneMatch(predicate);
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public boolean contains(Object o) {
-        synchronized (lock) {
+        try {
+            lock.readLock().lock();
             return backingCollection.stream().filter(predicate).anyMatch(each -> Objects.equals(each, o));
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public Iterator<E> iterator() {
-        synchronized (lock) {
-            return new Iterator<E>() {
-
-                private final Iterator<E> itr = backingCollection.stream().filter(predicate).collect(Collectors.toList()).iterator();
-                private E currentElement = null;
-
-                @Override
-                public boolean hasNext() {
-                    return itr.hasNext();
-                }
-
-                @Override
-                public E next() {
-                    return currentElement = itr.next();
-                }
-
-                @Override
-                public void remove() {
-                    if (currentElement == null) {
-                        throw new IllegalStateException("Call itr.next() first");
-                    }
-                    backingCollection.remove(currentElement);
-                }
-
-            };
+        Iterator<E> itr;
+        try {
+            lock.readLock().lock();
+            itr = backingCollection.stream().filter(predicate).collect(Collectors.toList()).iterator();
+        } finally {
+            lock.readLock().unlock();
         }
+        return new Iterator<E>() {
+
+            private E currentElement = null;
+
+            @Override
+            public boolean hasNext() {
+                return itr.hasNext();
+            }
+
+            @Override
+            public E next() {
+                return currentElement = itr.next();
+            }
+
+            @Override
+            public void remove() {
+                if (currentElement == null) {
+                    throw new IllegalStateException("Call itr.next() first");
+                }
+                backingCollection.remove(currentElement);
+            }
+
+        };
     }
 
     @Override
     public Object[] toArray() {
-        synchronized (lock) {
+        try {
+            lock.readLock().lock();
             return backingCollection.stream().filter(predicate).toArray();
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T> T[] toArray(T[] a) {
-        synchronized (lock) {
+        try {
+            lock.readLock().lock();
             return backingCollection.stream().filter(predicate).toArray(size -> a.length >= size ? a : (T[]) Array.newInstance(a.getClass().getComponentType(), size));
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public boolean add(E e) {
         if (predicate.test(e)) {
-            return backingCollection.add(e);
+            try {
+                lock.writeLock().lock();
+                return backingCollection.add(e);
+            } finally {
+                lock.writeLock().unlock();
+            }
         }
         return false;
     }
 
     @Override
     public boolean remove(Object o) {
-        return backingCollection.remove(o);
+        try {
+            lock.writeLock().lock();
+            return backingCollection.remove(o);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        synchronized (lock) {
-            Collection<E> list = backingCollection.stream().filter(predicate).collect(Collectors.toList());
-            for (Object o : c) {
-                if (!list.contains(o)) {
-                    return false;
-                }
-            }
-            return true;
+        Collection<E> list;
+        try {
+            lock.readLock().lock();
+            list = backingCollection.stream().filter(predicate).collect(Collectors.toList());
+        } finally {
+            lock.readLock().unlock();
         }
+        for (Object o : c) {
+            if (!list.contains(o)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
         boolean flag = false;
         for (E e : c) {
-            if (add(e)) {
-                flag = true;
+            try {
+                lock.writeLock().lock();
+                if (add(e)) {
+                    flag = true;
+                }
+            } finally {
+                lock.writeLock().unlock();
             }
         }
         return flag;
@@ -169,30 +209,30 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return backingCollection.removeAll(c);
+        try {
+            lock.writeLock().lock();
+            return backingCollection.removeAll(c);
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     @Override
     public boolean removeIf(Predicate<? super E> filter) {
         Predicate<E> test = predicate.and(filter);
-        boolean flag = false;
-        synchronized (lock) {
-            Iterator<E> itr = backingCollection.iterator();
-            while (itr.hasNext()) {
-                E e = itr.next();
-                if (test.test(e)) {
-                    itr.remove();
-                    flag = true;
-                }
-            }
+        try {
+            lock.writeLock().lock();
+            return backingCollection.removeIf(test);
+        } finally {
+            lock.writeLock().unlock();
         }
-        return flag;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
         boolean flag = false;
-        synchronized (lock) {
+        try {
+            lock.writeLock().lock();
             Iterator<E> itr = backingCollection.iterator();
             while (itr.hasNext()) {
                 E e = itr.next();
@@ -201,41 +241,49 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
                     flag = true;
                 }
             }
+        } finally {
+            lock.writeLock().unlock();
         }
         return flag;
     }
 
     @Override
     public void clear() {
-        synchronized (lock) {
-            Iterator<E> itr = backingCollection.iterator();
-            while (itr.hasNext()) {
-                E e = itr.next();
-                if (predicate.test(e)) {
-                    itr.remove();
-                }
-            }
+        try {
+            lock.writeLock().lock();
+            backingCollection.removeIf(predicate);
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
     @Override
     public Spliterator<E> spliterator() {
-        synchronized (lock) {
+        try {
+            lock.readLock().lock();
             return backingCollection.stream().filter(predicate).collect(Collectors.toList()).spliterator();
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public Stream<E> stream() {
-        synchronized (lock) {
+        try {
+            lock.readLock().lock();
             return backingCollection.stream().filter(predicate).collect(Collectors.toList()).stream();
+        } finally {
+            lock.readLock().unlock();
         }
     }
 
     @Override
     public Stream<E> parallelStream() {
-        synchronized (lock) {
+        try {
+            lock.readLock().lock();
             return backingCollection.parallelStream().filter(predicate).collect(Collectors.toList()).parallelStream();
+        } finally {
+            lock.readLock().unlock();
         }
     }
 

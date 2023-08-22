@@ -440,7 +440,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
                 serverSetting = () -> true;
                 break;
         }
-        return SynchronizedFilteredCollection.filterSynchronized(backingPlayerList, player -> {
+        return SynchronizedFilteredCollection.filter(backingPlayerList, player -> {
             if (!serverSetting.getAsBoolean()) {
                 return false;
             }
@@ -452,7 +452,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
     }
 
     public Collection<Player> getPlayerListIgnoreServerSetting(Modules module, EntryKey entry) {
-        return SynchronizedFilteredCollection.filterSynchronized(backingPlayerList, player -> {
+        return SynchronizedFilteredCollection.filter(backingPlayerList, player -> {
             if (!isRegisteredEntry(entry)) {
                 return false;
             }
