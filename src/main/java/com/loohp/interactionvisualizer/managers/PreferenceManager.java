@@ -59,7 +59,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
     private final List<EntryKey> entries;
     private final Map<UUID, Map<Modules, BitSet>> preferences;
 
-    private final Collection<Player> backingPlayerList;
+    private final SynchronizedFilteredCollection<Player> backingPlayerList;
 
     private final AtomicBoolean valid;
 
@@ -68,7 +68,7 @@ public class PreferenceManager implements Listener, AutoCloseable {
         this.valid = new AtomicBoolean(true);
         this.entries = Collections.synchronizedList(ArrayUtils.putToArrayList(Database.getBitIndex(), new ArrayList<>()));
         this.preferences = new ConcurrentHashMap<>();
-        this.backingPlayerList = Collections.synchronizedCollection(new LinkedHashSet<>());
+        this.backingPlayerList = SynchronizedFilteredCollection.from(new LinkedHashSet<>());
         for (Player player : Bukkit.getOnlinePlayers()) {
             backingPlayerList.add(player);
             loadPlayer(player.getUniqueId(), player.getName(), true);

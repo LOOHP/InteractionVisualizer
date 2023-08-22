@@ -44,6 +44,13 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
         return new SynchronizedFilteredCollection<E>(backingCollection, predicate);
     }
 
+    /**
+     * "backingCollection" can be another SynchronizedFilteredCollection, in this case their locks will share.
+     */
+    public static <E> SynchronizedFilteredCollection<E> from(Collection<E> backingCollection) {
+        return new SynchronizedFilteredCollection<E>(backingCollection, e -> true);
+    }
+
     private final Collection<E> backingCollection;
     private final Predicate<E> predicate;
     private final ReentrantReadWriteLock lock;
@@ -194,15 +201,15 @@ public class SynchronizedFilteredCollection<E> implements Collection<E> {
     @Override
     public boolean addAll(Collection<? extends E> c) {
         boolean flag = false;
-        for (E e : c) {
-            try {
-                lock.writeLock().lock();
+        try {
+            lock.writeLock().lock();
+            for (E e : c) {
                 if (add(e)) {
                     flag = true;
                 }
-            } finally {
-                lock.writeLock().unlock();
             }
+        } finally {
+            lock.writeLock().unlock();
         }
         return flag;
     }
