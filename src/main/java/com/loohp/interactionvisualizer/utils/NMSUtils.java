@@ -28,7 +28,7 @@ public class NMSUtils {
 
     public static Class<?> getNMSClass(String path, String... paths) throws ClassNotFoundException {
         String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-        ClassNotFoundException error = null;
+        ClassNotFoundException error;
         try {
             return Class.forName(path.replace("%s", version));
         } catch (ClassNotFoundException e) {

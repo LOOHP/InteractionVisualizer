@@ -43,10 +43,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftItem;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_20_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_20_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R2.entity.CraftItem;
+import org.bukkit.craftbukkit.v1_20_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_R2.util.CraftMagicNumbers;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.EquipmentSlot;
@@ -61,7 +61,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class V1_20 extends NMS {
+public class V1_20_2 extends NMS {
 
     private static Method voxelShapeGetAABBList;
     private static Method nmsTileEntityGetNBTTag;
@@ -74,11 +74,11 @@ public class V1_20 extends NMS {
     static {
         try {
             try {
-                voxelShapeGetAABBList = VoxelShape.class.getMethod("d");
+                voxelShapeGetAABBList = VoxelShape.class.getMethod("e");
             } catch (NoSuchMethodException | SecurityException e) {
                 voxelShapeGetAABBList = VoxelShape.class.getMethod("toList");
             }
-            nmsTileEntityGetNBTTag = net.minecraft.world.level.block.entity.TileEntity.class.getMethod("ao_");
+            nmsTileEntityGetNBTTag = net.minecraft.world.level.block.entity.TileEntity.class.getMethod("as_");
             try {
                 nmsPersistentEntitySectionManager = WorldServer.class.getField("M");
             } catch (NoSuchFieldException e) {
