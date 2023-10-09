@@ -21,6 +21,7 @@
 package com.loohp.interactionvisualizer.utils;
 
 import com.loohp.interactionvisualizer.InteractionVisualizer;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.potion.PotionEffectType;
 
@@ -59,18 +60,20 @@ public class TranslationUtils {
             }
         } else {
             try {
-                nmsMobEffectListClass = NMSUtils.getNMSClass("net.minecraft.server.%s.MobEffectList", "net.minecraft.world.effect.MobEffectList");
-                getEffectFromIdMethod = NMSUtils.reflectiveLookup(Method.class, () -> {
-                    return nmsMobEffectListClass.getMethod("fromId", int.class);
-                }, () -> {
-                    return nmsMobEffectListClass.getMethod("byId", int.class);
-                }, () -> {
-                    return nmsMobEffectListClass.getMethod("a", int.class);
-                });
-                if (InteractionVisualizer.version.isNewerOrEqualTo(MCVersion.V1_19)) {
-                    getEffectKeyMethod = nmsMobEffectListClass.getMethod("d");
-                } else {
-                    getEffectKeyMethod = nmsMobEffectListClass.getMethod("c");
+                if (InteractionVisualizer.version.isOlderOrEqualTo(MCVersion.V1_17)) {
+                    nmsMobEffectListClass = NMSUtils.getNMSClass("net.minecraft.server.%s.MobEffectList", "net.minecraft.world.effect.MobEffectList");
+                    getEffectFromIdMethod = NMSUtils.reflectiveLookup(Method.class, () -> {
+                        return nmsMobEffectListClass.getMethod("fromId", int.class);
+                    }, () -> {
+                        return nmsMobEffectListClass.getMethod("byId", int.class);
+                    }, () -> {
+                        return nmsMobEffectListClass.getMethod("a", int.class);
+                    });
+                    if (InteractionVisualizer.version.isNewerOrEqualTo(MCVersion.V1_19)) {
+                        getEffectKeyMethod = nmsMobEffectListClass.getMethod("d");
+                    } else {
+                        getEffectKeyMethod = nmsMobEffectListClass.getMethod("c");
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -80,7 +83,10 @@ public class TranslationUtils {
 
     @SuppressWarnings("deprecation")
     public static String getEffect(PotionEffectType type) {
-        if (!InteractionVisualizer.version.isLegacy()) {
+        if (InteractionVisualizer.version.isNewerOrEqualTo(MCVersion.V1_18)) {
+            NamespacedKey namespacedKey = type.getKey();
+            return "effect." + namespacedKey.getNamespace() + "." + namespacedKey.getKey();
+        } if (!InteractionVisualizer.version.isLegacy()) {
             try {
                 int id = type.getId();
                 Object nmsMobEffectListObject = getEffectFromIdMethod.invoke(null, id);
