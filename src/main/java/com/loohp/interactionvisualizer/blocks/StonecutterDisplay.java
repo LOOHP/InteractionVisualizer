@@ -246,8 +246,9 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
                 return;
             }
         }
-        if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) {
-            if (event.getWhoClicked().getInventory().getItem(event.getHotbarButton()) != null && !event.getWhoClicked().getInventory().getItem(event.getHotbarButton()).getType().equals(Material.AIR)) {
+        int hotbarSlot = event.getHotbarButton();
+        if (hotbarSlot >= 0 && event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD)) {
+            if (event.getWhoClicked().getInventory().getItem(hotbarSlot) != null && !event.getWhoClicked().getInventory().getItem(hotbarSlot).getType().equals(Material.AIR)) {
                 return;
             }
         }

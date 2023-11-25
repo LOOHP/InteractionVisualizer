@@ -143,8 +143,9 @@ public class HopperDisplay implements Listener, VisualizerDisplay {
                 }
             }
             if (itemstack == null) {
-                if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) || event.getAction().equals(InventoryAction.HOTBAR_SWAP)) {
-                    itemstack = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
+                int hotbarSlot = event.getHotbarButton();
+                if ((event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) || event.getAction().equals(InventoryAction.HOTBAR_SWAP)) && hotbarSlot >= 0) {
+                    itemstack = event.getWhoClicked().getInventory().getItem(hotbarSlot);
                     if (itemstack != null) {
                         if (itemstack.getType().equals(Material.AIR)) {
                             itemstack = null;

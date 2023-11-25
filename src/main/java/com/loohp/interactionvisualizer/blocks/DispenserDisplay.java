@@ -139,8 +139,9 @@ public class DispenserDisplay implements Listener, VisualizerDisplay {
                 }
             }
             if (itemstack == null) {
-                if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) || event.getAction().equals(InventoryAction.HOTBAR_SWAP)) {
-                    itemstack = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
+                int hotbarSlot = event.getHotbarButton();
+                if (hotbarSlot >= 0 && (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) || event.getAction().equals(InventoryAction.HOTBAR_SWAP))) {
+                    itemstack = event.getWhoClicked().getInventory().getItem(hotbarSlot);
                     if (itemstack != null) {
                         if (itemstack.getType().equals(Material.AIR)) {
                             itemstack = null;

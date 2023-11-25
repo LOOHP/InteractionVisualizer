@@ -88,7 +88,7 @@ public class VillagerDisplay implements Listener, VisualizerDisplay {
         }
         int hotbarSlot = event.getHotbarButton();
         if (hotbarSlot >= 0 && !Objects.equals(event.getClickedInventory(), event.getWhoClicked().getInventory())) {
-            ItemStack hotbarItem = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
+            ItemStack hotbarItem = event.getWhoClicked().getInventory().getItem(hotbarSlot);
             if (hotbarItem != null) {
                 return;
             }
