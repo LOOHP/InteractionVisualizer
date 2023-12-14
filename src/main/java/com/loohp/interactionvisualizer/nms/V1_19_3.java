@@ -36,6 +36,7 @@ import net.minecraft.network.protocol.game.PacketPlayOutEntityEquipment;
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.world.entity.EnumItemSlot;
 import net.minecraft.world.entity.item.EntityItem;
+import net.minecraft.world.level.block.state.IBlockData;
 import net.minecraft.world.level.chunk.Chunk;
 import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 import net.minecraft.world.phys.AxisAlignedBB;
@@ -71,6 +72,7 @@ public class V1_19_3 extends NMS {
     private static Method nmsEntityIterable;
     private static Method nmsEntityGetBukkitEntity;
     private static Method nmsGetTileEntitesMethod;
+    private static Method nmsTileEntityGetIBlockData;
 
     static {
         try {
@@ -88,6 +90,7 @@ public class V1_19_3 extends NMS {
             }
             nmsEntityGetBukkitEntity = net.minecraft.world.entity.Entity.class.getMethod("getBukkitEntity");
             nmsGetTileEntitesMethod = Chunk.class.getMethod("E");
+            nmsTileEntityGetIBlockData = net.minecraft.world.level.block.entity.TileEntity.class.getMethod("q");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -117,11 +120,15 @@ public class V1_19_3 extends NMS {
         try {
             return new NMSTileEntitySet<net.minecraft.core.BlockPosition, net.minecraft.world.level.block.entity.TileEntity>((Map<net.minecraft.core.BlockPosition, net.minecraft.world.level.block.entity.TileEntity>) nmsGetTileEntitesMethod.invoke(((CraftChunk) chunk.getChunk()).getHandle()), entry -> {
                 net.minecraft.core.BlockPosition pos = entry.getKey();
-                Material type = CraftMagicNumbers.getMaterial(entry.getValue().q().b());
-                TileEntityType tileEntityType = TileEntity.getTileEntityType(type);
-                if (tileEntityType != null) {
-                    return new TileEntity(world, pos.u(), pos.v(), pos.w(), tileEntityType);
-                } else {
+                try {
+                    Material type = CraftMagicNumbers.getMaterial(((IBlockData) nmsTileEntityGetIBlockData.invoke(entry.getValue())).b());
+                    TileEntityType tileEntityType = TileEntity.getTileEntityType(type);
+                    if (tileEntityType != null) {
+                        return new TileEntity(world, pos.u(), pos.v(), pos.w(), tileEntityType);
+                    } else {
+                        return null;
+                    }
+                } catch (Exception e) {
                     return null;
                 }
             });
