@@ -67,12 +67,9 @@ public class ShulkerBoxDisplay implements Listener, VisualizerDisplay {
         return KEY;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseShulkerbox(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (event.isCancelled()) {
-            return;
-        }
         if (VanishUtils.isVanished(player)) {
             return;
         }
@@ -237,12 +234,9 @@ public class ShulkerBoxDisplay implements Listener, VisualizerDisplay {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDragShulkerbox(InventoryDragEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }

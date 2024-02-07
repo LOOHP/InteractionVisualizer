@@ -217,12 +217,9 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onStonecutter(InventoryClickEvent event) {
         if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
-            return;
-        }
-        if (event.isCancelled()) {
             return;
         }
         if (event.getRawSlot() != 1) {
@@ -309,11 +306,8 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
         }, 1);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseStonecutter(InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (!playermap.containsKey((Player) event.getWhoClicked())) {
             return;
         }
@@ -323,11 +317,8 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDragStonecutter(InventoryDragEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (!playermap.containsKey((Player) event.getWhoClicked())) {
             return;
         }

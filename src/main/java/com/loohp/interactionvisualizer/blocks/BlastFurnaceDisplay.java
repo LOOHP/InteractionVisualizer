@@ -292,12 +292,9 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
         }, 0, checkingPeriod).getTaskId();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlastFurnace(InventoryClickEvent event) {
         if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
-            return;
-        }
-        if (event.isCancelled()) {
             return;
         }
         if (event.getRawSlot() != 0 && event.getRawSlot() != 2) {
@@ -397,11 +394,8 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
         }, 1);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseBlastFurnace(InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }
@@ -427,11 +421,8 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDragBlastFurnace(InventoryDragEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }

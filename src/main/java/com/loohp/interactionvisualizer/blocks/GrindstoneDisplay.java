@@ -179,12 +179,9 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onGrindstone(InventoryClickEvent event) {
         if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
-            return;
-        }
-        if (event.isCancelled()) {
             return;
         }
         if (event.getRawSlot() != 2) {
@@ -307,11 +304,8 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
         }, 1);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseGrindstone(InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }
@@ -337,11 +331,8 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDragGrindstone(InventoryDragEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }

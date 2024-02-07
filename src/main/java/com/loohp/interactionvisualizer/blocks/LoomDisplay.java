@@ -200,12 +200,9 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onLoom(InventoryClickEvent event) {
         if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
-            return;
-        }
-        if (event.isCancelled()) {
             return;
         }
         if (event.getRawSlot() != 0 && event.getRawSlot() != 3) {
@@ -311,11 +308,8 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
         }, 1);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseLoom(InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }
@@ -341,11 +335,8 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDragLoom(InventoryDragEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }

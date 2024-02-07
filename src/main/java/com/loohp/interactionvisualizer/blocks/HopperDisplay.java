@@ -66,12 +66,9 @@ public class HopperDisplay implements Listener, VisualizerDisplay {
         return KEY;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseHopper(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (event.isCancelled()) {
-            return;
-        }
         if (VanishUtils.isVanished(player)) {
             return;
         }
@@ -236,12 +233,9 @@ public class HopperDisplay implements Listener, VisualizerDisplay {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDragHopper(InventoryDragEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }

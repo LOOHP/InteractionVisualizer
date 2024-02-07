@@ -308,11 +308,8 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCraft(InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
             return;
         }
@@ -460,11 +457,8 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
         }, 1);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseCraftingBench(InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (!playermap.containsKey((Player) event.getWhoClicked())) {
             return;
         }
@@ -474,11 +468,8 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDragCraftingBench(InventoryDragEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (!playermap.containsKey((Player) event.getWhoClicked())) {
             return;
         }

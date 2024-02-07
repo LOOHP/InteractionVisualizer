@@ -292,12 +292,9 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
         }, 0, checkingPeriod).getTaskId();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSmoker(InventoryClickEvent event) {
         if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
-            return;
-        }
-        if (event.isCancelled()) {
             return;
         }
         if (event.getRawSlot() != 0 && event.getRawSlot() != 2) {
@@ -396,11 +393,8 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
         }, 1);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseSmoker(InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }
@@ -426,11 +420,8 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDragSmoker(InventoryDragEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }

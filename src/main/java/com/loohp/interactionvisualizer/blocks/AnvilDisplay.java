@@ -183,12 +183,9 @@ public class AnvilDisplay extends VisualizerInteractDisplay implements Listener 
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onAnvil(InventoryClickEvent event) {
         if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
-            return;
-        }
-        if (event.isCancelled()) {
             return;
         }
         if (event.getRawSlot() != 2) {
@@ -311,11 +308,8 @@ public class AnvilDisplay extends VisualizerInteractDisplay implements Listener 
         }, 1);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseAnvil(InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }
@@ -341,11 +335,8 @@ public class AnvilDisplay extends VisualizerInteractDisplay implements Listener 
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onDragAnvil(InventoryDragEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }

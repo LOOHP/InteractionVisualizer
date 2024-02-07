@@ -177,12 +177,9 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
         }, 2);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEnchant(EnchantItemEvent event) {
         if (VanishUtils.isVanished(event.getEnchanter())) {
-            return;
-        }
-        if (event.isCancelled()) {
             return;
         }
         Block block = event.getEnchantBlock();
@@ -212,12 +209,9 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
         }, 2);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEnchantmentTableTake(InventoryClickEvent event) {
         if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
-            return;
-        }
-        if (event.isCancelled()) {
             return;
         }
         if (event.getRawSlot() != 0) {
@@ -269,12 +263,8 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
         }, 1);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseEnchantmentTable(InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         Player player = (Player) event.getWhoClicked();
 
         if (!playermap.containsKey(player)) {
@@ -286,12 +276,8 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDragEnchantmentTable(InventoryDragEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         Player player = (Player) event.getWhoClicked();
 
         if (!playermap.containsKey(player)) {

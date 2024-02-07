@@ -201,11 +201,8 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onSmithingTable(InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         int maxSlot = event.getView().getTopInventory().getSize() - 1;
         String maxSlotStr = String.valueOf(maxSlot);
         if (event.getRawSlot() != maxSlot) {
@@ -337,11 +334,8 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
         }, 1);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseSmithingTable(InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }
@@ -354,11 +348,8 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onDragSmithingTable(InventoryDragEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }
