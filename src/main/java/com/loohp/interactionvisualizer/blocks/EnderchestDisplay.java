@@ -70,11 +70,8 @@ public class EnderchestDisplay implements Listener, VisualizerDisplay {
         return KEY;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onOpenEnderChest(InventoryOpenEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (VanishUtils.isVanished((Player) event.getPlayer())) {
             return;
         }
@@ -121,12 +118,9 @@ public class EnderchestDisplay implements Listener, VisualizerDisplay {
         playermap.put((Player) event.getPlayer(), block);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseEnderChest(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (event.isCancelled()) {
-            return;
-        }
         if (!playermap.containsKey(player)) {
             return;
         }
@@ -263,12 +257,9 @@ public class EnderchestDisplay implements Listener, VisualizerDisplay {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDragEnderChest(InventoryDragEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (event.isCancelled()) {
-            return;
-        }
         if (!playermap.containsKey(player)) {
             return;
         }

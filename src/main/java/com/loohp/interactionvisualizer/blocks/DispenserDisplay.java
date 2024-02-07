@@ -65,12 +65,9 @@ public class DispenserDisplay implements Listener, VisualizerDisplay {
         return KEY;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseDispenser(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (event.isCancelled()) {
-            return;
-        }
         if (VanishUtils.isVanished(player)) {
             return;
         }
@@ -232,12 +229,9 @@ public class DispenserDisplay implements Listener, VisualizerDisplay {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDragDispenser(InventoryDragEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }

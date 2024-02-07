@@ -270,11 +270,8 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
         }, 0, checkingPeriod).getTaskId();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseBrewingStand(InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }
@@ -300,11 +297,8 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDragBrewingStand(InventoryDragEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
             return;
         }

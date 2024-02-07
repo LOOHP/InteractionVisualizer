@@ -196,11 +196,8 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onUseCartographyTable(InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (!playermap.containsKey((Player) event.getWhoClicked())) {
             return;
         }
@@ -210,11 +207,8 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDragCartographyTable(InventoryDragEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (!playermap.containsKey((Player) event.getWhoClicked())) {
             return;
         }

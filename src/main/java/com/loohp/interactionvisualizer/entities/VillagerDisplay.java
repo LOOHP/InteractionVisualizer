@@ -54,11 +54,8 @@ public class VillagerDisplay implements Listener, VisualizerDisplay {
         return KEY;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVillageTrade(InventoryClickEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (VanishUtils.isVanished((Player) event.getWhoClicked())) {
             return;
         }

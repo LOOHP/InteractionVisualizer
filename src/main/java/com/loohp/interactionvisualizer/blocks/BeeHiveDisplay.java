@@ -173,30 +173,21 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
         }, 0, checkingPeriod).getTaskId();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBeeEnterBeehive(EntityEnterBlockEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         Block block = event.getBlock();
         Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> updateBlock(block), 1);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBeeLeaveBeehive(EntityChangeBlockEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         Block block = event.getBlock();
         Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> updateBlock(block), 1);
     }
 
     @SuppressWarnings("deprecation")
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onInteractBeehive(PlayerInteractEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         Block block = event.getClickedBlock();
         if (block != null) {
             Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> updateBlock(block), 1);

@@ -204,11 +204,8 @@ public class ConduitDisplay extends VisualizerRunnableDisplay implements Listene
         }, 0, checkingPeriod).getTaskId();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlaceConduit(BlockPlaceEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         Block block = event.getBlockPlaced();
         if (conduitMap.containsKey(block)) {
             return;
