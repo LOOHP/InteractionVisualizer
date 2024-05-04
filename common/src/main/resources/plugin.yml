@@ -1,0 +1,38 @@
+name: InteractionVisualizer
+author: loohp
+version: ${project.version}
+main: com.loohp.interactionvisualizer.InteractionVisualizer
+api-version: 1.13
+description: Makes function blocks better
+softdepend:
+  - LightAPI
+  - OpenInv
+  - SuperVanish
+  - PremiumVanish
+  - CMI
+  - Essentials
+  - PlaceholderAPI
+prefix: InteractionVisualizer
+
+commands:
+  interactionvisualizer:
+    usage: /<command>
+    aliases: [iv]
+    description: Plugin main command
+
+permissions:
+  interactionvisualizer.reload:
+    description: Allows you to reload the plugin
+    default: op
+  interactionvisualizer.refresh:
+    description: Allows you to refresh all display items
+    default: true
+  interactionvisualizer.toggle:
+    description: Allows you to toggle modules
+    default: true
+  interactionvisualizer.toggle.others:
+    description: Allows you to toggle modules for others
+    default: op
+  interactionvisualizer.update:
+    description: Allows you receive update messages
+    default: op
