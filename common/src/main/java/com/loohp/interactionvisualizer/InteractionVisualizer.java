@@ -114,7 +114,6 @@ public class InteractionVisualizer extends JavaPlugin {
 
     public static Map<World, Integer> playerTrackingRange = new HashMap<>();
     public static boolean hideIfObstructed = false;
-    public static String language = "en_us";
 
     public static boolean allPacketsSync = false;
     public static boolean defaultDisabledAll = false;
@@ -320,8 +319,6 @@ public class InteractionVisualizer extends JavaPlugin {
         lightUpdatePeriod = getConfiguration().getInt("LightUpdate.Period");
 
         updaterEnabled = getConfiguration().getBoolean("Options.Updater");
-
-        language = getConfiguration().getString("Settings.Language");
 
         playerTrackingRange.clear();
         int defaultRange = getServer().spigot().getConfig().getInt("world-settings.default.entity-tracking-range.players", 64);
