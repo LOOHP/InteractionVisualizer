@@ -93,7 +93,7 @@ public class EnderchestDisplay implements Listener, VisualizerDisplay {
         if (!InventoryUtils.compareContents(event.getPlayer().getEnderChest(), event.getView().getTopInventory())) {
             return;
         }
-        if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
+        if (InteractionVisualizer.version.isNewerThan(MCVersion.V1_13_1)) {
             if (event.getPlayer().getTargetBlockExact(7, FluidCollisionMode.NEVER) != null) {
                 if (!event.getPlayer().getTargetBlockExact(7, FluidCollisionMode.NEVER).getType().equals(Material.ENDER_CHEST)) {
                     return;
@@ -111,8 +111,8 @@ public class EnderchestDisplay implements Listener, VisualizerDisplay {
             }
         }
 
-        Block block = null;
-        if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
+        Block block;
+        if (InteractionVisualizer.version.isNewerThan(MCVersion.V1_13_1)) {
             block = event.getPlayer().getTargetBlockExact(7, FluidCollisionMode.NEVER);
         } else {
             block = event.getPlayer().getTargetBlock(MaterialUtils.getNonSolidSet(), 7);

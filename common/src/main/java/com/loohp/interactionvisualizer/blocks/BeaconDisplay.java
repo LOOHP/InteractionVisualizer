@@ -359,102 +359,57 @@ public class BeaconDisplay extends VisualizerRunnableDisplay implements Listener
 
     public ChatColor getBeaconColor(Block block) {
         Block glass = block.getRelative(BlockFace.UP);
-        if (!InteractionVisualizer.version.isLegacy()) {
-            switch (glass.getType()) {
-                case ORANGE_STAINED_GLASS:
-                case ORANGE_STAINED_GLASS_PANE:
-                    return ChatColor.GOLD;
-                case MAGENTA_STAINED_GLASS:
-                case MAGENTA_STAINED_GLASS_PANE:
-                    return ChatColor.LIGHT_PURPLE;
-                case LIGHT_BLUE_STAINED_GLASS:
-                case LIGHT_BLUE_STAINED_GLASS_PANE:
-                    return ChatColor.AQUA;
-                case YELLOW_STAINED_GLASS:
-                case YELLOW_STAINED_GLASS_PANE:
-                    return ChatColor.YELLOW;
-                case LIME_STAINED_GLASS:
-                case LIME_STAINED_GLASS_PANE:
-                    return ChatColor.GREEN;
-                case PINK_STAINED_GLASS:
-                case PINK_STAINED_GLASS_PANE:
-                    return ChatColor.LIGHT_PURPLE;
-                case GRAY_STAINED_GLASS:
-                case GRAY_STAINED_GLASS_PANE:
-                    return ChatColor.DARK_GRAY;
-                case LIGHT_GRAY_STAINED_GLASS:
-                case LIGHT_GRAY_STAINED_GLASS_PANE:
-                    return ChatColor.GRAY;
-                case CYAN_STAINED_GLASS:
-                case CYAN_STAINED_GLASS_PANE:
-                    return ChatColor.DARK_AQUA;
-                case PURPLE_STAINED_GLASS:
-                case PURPLE_STAINED_GLASS_PANE:
-                    return ChatColor.DARK_PURPLE;
-                case BLUE_STAINED_GLASS:
-                case BLUE_STAINED_GLASS_PANE:
-                    return ChatColor.BLUE;
-                case BROWN_STAINED_GLASS:
-                case BROWN_STAINED_GLASS_PANE:
-                    return ChatColor.GOLD;
-                case GREEN_STAINED_GLASS:
-                case GREEN_STAINED_GLASS_PANE:
-                    return ChatColor.DARK_GREEN;
-                case RED_STAINED_GLASS:
-                case RED_STAINED_GLASS_PANE:
-                    return ChatColor.RED;
-                case BLACK_STAINED_GLASS:
-                case BLACK_STAINED_GLASS_PANE:
-                case GLASS:
-                case GLASS_PANE:
-                case WHITE_STAINED_GLASS:
-                case WHITE_STAINED_GLASS_PANE:
-                default:
-                    return ChatColor.WHITE;
-            }
-        } else {
-            if (!glass.getType().name().toUpperCase().contains("GLASS")) {
+        switch (glass.getType()) {
+            case ORANGE_STAINED_GLASS:
+            case ORANGE_STAINED_GLASS_PANE:
+                return ChatColor.GOLD;
+            case MAGENTA_STAINED_GLASS:
+            case MAGENTA_STAINED_GLASS_PANE:
+                return ChatColor.LIGHT_PURPLE;
+            case LIGHT_BLUE_STAINED_GLASS:
+            case LIGHT_BLUE_STAINED_GLASS_PANE:
+                return ChatColor.AQUA;
+            case YELLOW_STAINED_GLASS:
+            case YELLOW_STAINED_GLASS_PANE:
+                return ChatColor.YELLOW;
+            case LIME_STAINED_GLASS:
+            case LIME_STAINED_GLASS_PANE:
+                return ChatColor.GREEN;
+            case PINK_STAINED_GLASS:
+            case PINK_STAINED_GLASS_PANE:
+                return ChatColor.LIGHT_PURPLE;
+            case GRAY_STAINED_GLASS:
+            case GRAY_STAINED_GLASS_PANE:
+                return ChatColor.DARK_GRAY;
+            case LIGHT_GRAY_STAINED_GLASS:
+            case LIGHT_GRAY_STAINED_GLASS_PANE:
+                return ChatColor.GRAY;
+            case CYAN_STAINED_GLASS:
+            case CYAN_STAINED_GLASS_PANE:
+                return ChatColor.DARK_AQUA;
+            case PURPLE_STAINED_GLASS:
+            case PURPLE_STAINED_GLASS_PANE:
+                return ChatColor.DARK_PURPLE;
+            case BLUE_STAINED_GLASS:
+            case BLUE_STAINED_GLASS_PANE:
+                return ChatColor.BLUE;
+            case BROWN_STAINED_GLASS:
+            case BROWN_STAINED_GLASS_PANE:
+                return ChatColor.GOLD;
+            case GREEN_STAINED_GLASS:
+            case GREEN_STAINED_GLASS_PANE:
+                return ChatColor.DARK_GREEN;
+            case RED_STAINED_GLASS:
+            case RED_STAINED_GLASS_PANE:
+                return ChatColor.RED;
+            case BLACK_STAINED_GLASS:
+            case BLACK_STAINED_GLASS_PANE:
+            case GLASS:
+            case GLASS_PANE:
+            case WHITE_STAINED_GLASS:
+            case WHITE_STAINED_GLASS_PANE:
+            default:
                 return ChatColor.WHITE;
-            }
-            @SuppressWarnings("deprecation")
-            DyeColor color = DyeColor.getByWoolData(glass.getData());
-            switch (color.toString().toUpperCase()) {
-                case "BLACK":
-                    return ChatColor.WHITE;
-                case "BLUE":
-                    return ChatColor.BLUE;
-                case "BROWN":
-                    return ChatColor.GOLD;
-                case "CYAN":
-                    return ChatColor.DARK_AQUA;
-                case "GRAY":
-                    return ChatColor.DARK_GRAY;
-                case "GREEN":
-                    return ChatColor.DARK_GREEN;
-                case "LIGHT_BLUE":
-                    return ChatColor.AQUA;
-                case "SILVER":
-                case "LIGHT_GRAY":
-                    return ChatColor.GRAY;
-                case "LIME":
-                    return ChatColor.GREEN;
-                case "MAGENTA":
-                    return ChatColor.LIGHT_PURPLE;
-                case "ORANGE":
-                    return ChatColor.GOLD;
-                case "PINK":
-                    return ChatColor.LIGHT_PURPLE;
-                case "PURPLE":
-                    return ChatColor.DARK_PURPLE;
-                case "RED":
-                    return ChatColor.RED;
-                case "WHITE":
-                    return ChatColor.WHITE;
-                case "YELLOW":
-                    return ChatColor.YELLOW;
-                default:
-                    return ChatColor.WHITE;
-            }
         }
     }
 

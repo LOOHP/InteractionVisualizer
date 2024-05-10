@@ -28,7 +28,6 @@ import com.loohp.interactionvisualizer.entityholders.Item;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
-import com.loohp.interactionvisualizer.utils.LegacyFacingUtils;
 import com.loohp.interactionvisualizer.utils.LocationUtils;
 import com.loohp.interactionvisualizer.utils.OpenInvUtils;
 import com.loohp.interactionvisualizer.utils.VanishUtils;
@@ -125,13 +124,8 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
         }
 
         DoubleChest doublechest = (DoubleChest) holder;
-        BlockFace facing = null;
-        if (!InteractionVisualizer.version.isLegacy()) {
-            BlockData blockData = chest.getBlockData();
-            facing = ((Directional) blockData).getFacing();
-        } else {
-            facing = LegacyFacingUtils.getFacing(chest.getBlock());
-        }
+        BlockData blockData = chest.getBlockData();
+        BlockFace facing = ((Directional) blockData).getFacing();
         if (facing.equals(BlockFace.EAST)) {
             block = doublechest.getLeftSide().getInventory().getLocation().getBlock();
             loc = block.getLocation().add(0.0, 0.0, 0.5);
@@ -329,13 +323,8 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
             return;
         }
         DoubleChest doublechest = (DoubleChest) holder;
-        BlockFace facing = null;
-        if (!InteractionVisualizer.version.isLegacy()) {
-            BlockData blockData = chest.getBlockData();
-            facing = ((Directional) blockData).getFacing();
-        } else {
-            facing = LegacyFacingUtils.getFacing(chest.getBlock());
-        }
+        BlockData blockData = chest.getBlockData();
+        BlockFace facing = ((Directional) blockData).getFacing();
         if (facing.equals(BlockFace.EAST)) {
             block = doublechest.getLeftSide().getInventory().getLocation().getBlock();
             loc = block.getLocation().add(0.0, 0.0, 0.5);

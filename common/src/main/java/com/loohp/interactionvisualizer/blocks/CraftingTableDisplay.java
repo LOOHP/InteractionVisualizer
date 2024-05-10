@@ -103,17 +103,9 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
                             if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
                                 if (player.getOpenInventory() != null) {
                                     if (player.getOpenInventory().getTopInventory() != null) {
-                                        if (!InteractionVisualizer.version.isLegacy()) {
-                                            if (!InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
-                                                if (player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().equalsIgnoreCase("CRAFTING_TABLE")) {
-                                                    return;
-                                                }
-                                            } else {
-                                                if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
-                                                    if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length == 9) {
-                                                        return;
-                                                    }
-                                                }
+                                        if (!InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
+                                            if (player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().equalsIgnoreCase("CRAFTING_TABLE")) {
+                                                return;
                                             }
                                         } else {
                                             if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
@@ -162,21 +154,9 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
             if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
                 return;
             }
-            if (!InteractionVisualizer.version.isLegacy()) {
-                if (!InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
-                    if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().equalsIgnoreCase("CRAFTING_TABLE")) {
-                        return;
-                    }
-                } else {
-                    if (!(player.getOpenInventory().getTopInventory() instanceof CraftingInventory)) {
-                        return;
-                    }
-                    if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length != 9) {
-                        return;
-                    }
-                    if (!player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().equalsIgnoreCase("CRAFTING_TABLE")) {
-                        return;
-                    }
+            if (!InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
+                if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().equalsIgnoreCase("CRAFTING_TABLE")) {
+                    return;
                 }
             } else {
                 if (!(player.getOpenInventory().getTopInventory() instanceof CraftingInventory)) {
@@ -185,13 +165,13 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
                 if (((CraftingInventory) player.getOpenInventory().getTopInventory()).getMatrix().length != 9) {
                     return;
                 }
-                if (!player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().equalsIgnoreCase("WORKBENCH")) {
+                if (!player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7).getType().toString().equalsIgnoreCase("CRAFTING_TABLE")) {
                     return;
                 }
             }
-            Block block = null;
+            Block block;
             InventoryView view = player.getOpenInventory();
-            if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
+            if (InteractionVisualizer.version.isNewerThan(MCVersion.V1_13_1)) {
                 block = view.getTopInventory().getLocation().getBlock();
             } else {
                 block = player.getTargetBlock(MaterialUtils.getNonSolidSet(), 7);

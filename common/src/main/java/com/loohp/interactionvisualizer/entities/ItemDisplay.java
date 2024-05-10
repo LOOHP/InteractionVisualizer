@@ -184,8 +184,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
                     String durDisplay = null;
 
                     if (itemstack.getType().getMaxDurability() > 0) {
-                        @SuppressWarnings("deprecation")
-                        int durability = itemstack.getType().getMaxDurability() - (InteractionVisualizer.version.isLegacy() ? itemstack.getDurability() : ((Damageable) itemstack.getItemMeta()).getDamage());
+                        int durability = itemstack.getType().getMaxDurability() - ((Damageable) itemstack.getItemMeta()).getDamage();
                         int maxDur = itemstack.getType().getMaxDurability();
                         double percentage = ((double) durability / (double) maxDur) * 100;
                         String color;

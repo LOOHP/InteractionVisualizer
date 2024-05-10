@@ -36,7 +36,6 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ChatColorUtils;
 import com.loohp.interactionvisualizer.utils.InventoryUtils;
-import com.loohp.interactionvisualizer.utils.LegacyFacingUtils;
 import com.loohp.interactionvisualizer.utils.MCVersion;
 import com.loohp.interactionvisualizer.utils.VanishUtils;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -239,7 +238,7 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
                         if (hasItemToCook(furnace)) {
                             int time = furnace.getCookTime();
                             int max = 10 * 20;
-                            if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
+                            if (InteractionVisualizer.version.isNewerThan(MCVersion.V1_13_1)) {
                                 max = furnace.getCookTimeTotal();
                             }
                             String symbol = "";
@@ -511,13 +510,8 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
         Map<String, ArmorStand> map = new HashMap<>();
         Location origin = block.getLocation();
 
-        BlockFace facing = null;
-        if (!InteractionVisualizer.version.isLegacy()) {
-            BlockData blockData = block.getState().getBlockData();
-            facing = ((Directional) blockData).getFacing();
-        } else {
-            facing = LegacyFacingUtils.getFacing(block);
-        }
+        BlockData blockData = block.getState().getBlockData();
+        BlockFace facing = ((Directional) blockData).getFacing();
         Location target = block.getRelative(facing).getLocation();
         Vector direction = target.toVector().subtract(origin.toVector()).multiply(0.7);
 

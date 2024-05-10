@@ -34,7 +34,6 @@ import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.objectholders.TileEntity.TileEntityType;
 import com.loohp.interactionvisualizer.utils.ColorUtils;
 import com.loohp.interactionvisualizer.utils.ComponentFont;
-import com.loohp.interactionvisualizer.utils.LegacyRecordsUtils;
 import com.loohp.interactionvisualizer.utils.TranslationUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -159,13 +158,13 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
                     org.bukkit.block.Jukebox jukebox = (org.bukkit.block.Jukebox) block.getState();
 
                     InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(() -> {
-                        ItemStack itemstack = InteractionVisualizer.version.isLegacy() ? (jukebox.getPlaying() == null ? null : (jukebox.getPlaying().equals(Material.AIR) ? null : new ItemStack(jukebox.getPlaying(), 1))) : (jukebox.getRecord() == null ? null : (jukebox.getRecord().getType().equals(Material.AIR) ? null : jukebox.getRecord().clone()));
+                        ItemStack itemstack = jukebox.getRecord() == null ? null : (jukebox.getRecord().getType().equals(Material.AIR) ? null : jukebox.getRecord().clone());
 
                         if (entry.getValue().get("Item") instanceof String) {
                             if (itemstack != null) {
                                 Item item = new Item(jukebox.getLocation().clone().add(0.5, 1.0, 0.5));
 
-                                String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString()) : jukebox.getPlaying().toString();
+                                String disc = jukebox.getPlaying().toString();
                                 Component text;
                                 if (showDiscName) {
                                     if (itemstack.getItemMeta().hasDisplayName()) {
@@ -195,7 +194,7 @@ public class JukeBoxDisplay extends VisualizerRunnableDisplay implements Listene
                             if (itemstack != null) {
                                 if (!item.getItemStack().equals(itemstack)) {
                                     item.setItemStack(itemstack);
-                                    String disc = InteractionVisualizer.version.isLegacy() ? LegacyRecordsUtils.translateFromLegacy(jukebox.getPlaying().toString()) : jukebox.getPlaying().toString();
+                                    String disc = jukebox.getPlaying().toString();
                                     Component text;
                                     if (showDiscName) {
                                         if (itemstack.getItemMeta().hasDisplayName()) {

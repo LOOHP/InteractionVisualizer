@@ -1,5 +1,5 @@
 /*
- * This file is part of InteractiveChat.
+ * This file is part of InteractionVisualizer.
  *
  * Copyright (C) 2022. LoohpJames <jamesloohp@gmail.com>
  * Copyright (C) 2022. Contributors
@@ -21,7 +21,6 @@
 package com.loohp.interactionvisualizer.utils;
 
 import com.cryptomorin.xseries.XMaterial;
-import com.loohp.interactionvisualizer.InteractionVisualizer;
 import org.bukkit.inventory.ItemStack;
 
 public class XMaterialUtils {
@@ -31,24 +30,14 @@ public class XMaterialUtils {
         if (itemstack == null) {
             return null;
         }
-        if (InteractionVisualizer.version.isLegacy()) {
-            try {
-                return XMaterial.matchXMaterial(itemstack);
-            } catch (Throwable e) {
-                ItemStack dataResetItemStack = itemstack.clone();
+        try {
+            return XMaterial.matchXMaterial(itemstack);
+        } catch (Throwable e) {
+            ItemStack dataResetItemStack = itemstack.clone();
+            if (dataResetItemStack.getDurability() != 0) {
                 dataResetItemStack.setDurability((short) 0);
-                return XMaterial.matchXMaterial(dataResetItemStack);
             }
-        } else {
-            try {
-                return XMaterial.matchXMaterial(itemstack);
-            } catch (Throwable e) {
-                ItemStack dataResetItemStack = itemstack.clone();
-                if (dataResetItemStack.getDurability() != 0) {
-                    dataResetItemStack.setDurability((short) 0);
-                }
-                return XMaterial.matchXMaterial(dataResetItemStack);
-            }
+            return XMaterial.matchXMaterial(dataResetItemStack);
         }
     }
 

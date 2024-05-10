@@ -29,7 +29,6 @@ import com.loohp.interactionvisualizer.managers.MusicManager;
 import com.loohp.interactionvisualizer.managers.PacketManager;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.utils.ItemNameUtils;
-import com.loohp.interactionvisualizer.utils.LegacyInstrumentUtils;
 import com.loohp.interactionvisualizer.utils.MCVersion;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -131,18 +130,10 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
             if (InteractionVisualizer.version.isNewerThan(MCVersion.V1_19) && isHead(topBlock) && !(topBlockDrops = topBlock.getDrops()).isEmpty()) {
                 ItemStack skull = topBlockDrops.iterator().next();
                 component = ItemNameUtils.getDisplayName(skull);
-            } else if (!InteractionVisualizer.version.isLegacy()) {
+            } else {
                 NoteBlock state = (NoteBlock) block.getBlockData();
                 Tone tone = state.getNote().getTone();
                 String inst = MusicManager.getMusicConfig().getString("Instruments." + state.getInstrument().toString().toUpperCase());
-                String text = ChatColor.GOLD + inst + " " + getColor(tone) + tone.toString().toUpperCase();
-                text = state.getNote().isSharped() ? text + "#" : text;
-                text = state.getNote().getOctave() == 0 ? text : text + " ^";
-                component = LegacyComponentSerializer.legacySection().deserialize(text);
-            } else {
-                org.bukkit.block.NoteBlock state = (org.bukkit.block.NoteBlock) block.getState();
-                Tone tone = state.getNote().getTone();
-                String inst = MusicManager.getMusicConfig().getString("Instruments." + LegacyInstrumentUtils.getInstrumentNameFromLegacy(block.getRelative(BlockFace.DOWN).getType().toString().toUpperCase()));
                 String text = ChatColor.GOLD + inst + " " + getColor(tone) + tone.toString().toUpperCase();
                 text = state.getNote().isSharped() ? text + "#" : text;
                 text = state.getNote().getOctave() == 0 ? text : text + " ^";

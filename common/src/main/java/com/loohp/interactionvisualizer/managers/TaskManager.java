@@ -57,7 +57,6 @@ import com.loohp.interactionvisualizer.blocks.StonecutterDisplay;
 import com.loohp.interactionvisualizer.debug.Debug;
 import com.loohp.interactionvisualizer.entities.ItemDisplay;
 import com.loohp.interactionvisualizer.entities.VillagerDisplay;
-import com.loohp.interactionvisualizer.listeners.ChunkEvents;
 import com.loohp.interactionvisualizer.objectholders.EntryKey;
 import com.loohp.interactionvisualizer.updater.Updater;
 import com.loohp.interactionvisualizer.utils.MCVersion;
@@ -170,14 +169,9 @@ public class TaskManager {
         Bukkit.getPluginManager().registerEvents(new Updater(), plugin);
         Bukkit.getPluginManager().registerEvents(new com.loohp.interactionvisualizer.listeners.Events(), plugin);
         Bukkit.getPluginManager().registerEvents(new PacketManager(), plugin);
-        if (version.isLegacy()) {
-            ChunkEvents.setup();
-            InteractionVisualizer.getDefaultWorld().getChunkAt(0, 0).load();
-            Bukkit.getPluginManager().registerEvents(new ChunkEvents(), plugin);
-        }
 
         for (InventoryType type : InventoryType.values()) {
-            processes.put(type, new ArrayList<VisualizerInteractDisplay>());
+            processes.put(type, new ArrayList<>());
         }
 
         if (getConfig().getBoolean("Blocks.CraftingTable.Enabled")) {

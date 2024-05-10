@@ -237,7 +237,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
                         if (hasItemToCook(smoker)) {
                             int time = smoker.getCookTime();
                             int max = 10 * 20;
-                            if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
+                            if (InteractionVisualizer.version.isNewerThan(MCVersion.V1_13_1)) {
                                 max = smoker.getCookTimeTotal();
                             }
                             String symbol = "";

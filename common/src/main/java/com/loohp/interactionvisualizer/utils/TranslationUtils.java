@@ -47,11 +47,7 @@ public class TranslationUtils {
         if (!type.contains("MUSIC_DISC_")) {
             return null;
         }
-        if (!InteractionVisualizer.version.isLegacy()) {
-            return "item.minecraft." + type.toLowerCase() + ".desc";
-        } else {
-            return "item.record." + type.substring(type.indexOf("MUSIC_DISC_") + 11).toLowerCase() + ".desc";
-        }
+        return "item.minecraft." + type.toLowerCase() + ".desc";
     }
 
 }

@@ -255,14 +255,8 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
             PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), line1);
         } else {
             Location origin = block.getLocation().add(0.5, 1.0, 0.5);
-            Vector vector;
-            if (InteractionVisualizer.version.isLegacy()) {
-                org.bukkit.material.Banner banner = (org.bukkit.material.Banner) block.getState().getData();
-                vector = getDirection(banner.getFacing()).multiply(0.3125);
-            } else {
-                Rotatable rotate = (Rotatable) block.getBlockData();
-                vector = getDirection(rotate.getRotation()).multiply(0.3125);
-            }
+            Rotatable rotate = (Rotatable) block.getBlockData();
+            Vector vector = getDirection(rotate.getRotation()).multiply(0.3125);
 
             ArmorStand line1 = new ArmorStand(origin.clone().add(vector));
             setStand(line1);

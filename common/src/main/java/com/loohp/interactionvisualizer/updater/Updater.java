@@ -56,7 +56,7 @@ public class Updater implements Listener {
                     InteractionVisualizer.sendMessage(player, url);
                 } else {
                     sender.sendMessage(ChatColor.GREEN + "[InteractionVisualizer] You are running the latest release!");
-                    Component url = LegacyComponentSerializer.legacySection().deserialize(ChatColor.YELLOW + "[InteractiveChat] However, a new Development Build is available if you want to try that!");
+                    Component url = LegacyComponentSerializer.legacySection().deserialize(ChatColor.YELLOW + "[InteractionVisualizer] However, a new Development Build is available if you want to try that!");
                     url = url.hoverEvent(HoverEvent.showText(Component.text("Click me!").color(NamedTextColor.AQUA)));
                     url = url.clickEvent(ClickEvent.openUrl("https://ci.loohpjames.com/job/" + PLUGIN_NAME));
                     InteractionVisualizer.sendMessage(player, url);

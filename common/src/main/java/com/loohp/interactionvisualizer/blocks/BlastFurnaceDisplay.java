@@ -237,7 +237,7 @@ public class BlastFurnaceDisplay extends VisualizerRunnableDisplay implements Li
                         if (hasItemToCook(blastfurnace)) {
                             int time = blastfurnace.getCookTime();
                             int max = 10 * 20;
-                            if (!InteractionVisualizer.version.isLegacy() && !InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
+                            if (InteractionVisualizer.version.isNewerThan(MCVersion.V1_13_1)) {
                                 max = blastfurnace.getCookTimeTotal();
                             }
                             String symbol = "";

@@ -48,8 +48,6 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -61,19 +59,8 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
 
     public static final Pattern VALID_NUMBER = Pattern.compile("-?[0-9]+");
 
-    private static Method bukkitEnchantmentGetIdMethod;
     private static Set<String> translatableEnchantments = new HashSet<>();
     private static Map<String, String> customDefinedEnchantmentNames = new HashMap<>();
-
-    static {
-        if (InteractionVisualizer.version.isLegacy()) {
-            try {
-                bukkitEnchantmentGetIdMethod = Enchantment.class.getMethod("getId");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     public static Set<String> getTranslatableEnchantments() {
         return translatableEnchantments;
@@ -84,16 +71,7 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
     }
 
     public static String getEnchantmentIdOrKey(Enchantment enchantment) {
-        if (InteractionVisualizer.version.isLegacy()) {
-            try {
-                return bukkitEnchantmentGetIdMethod.invoke(enchantment).toString();
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
-                return "-1";
-            }
-        } else {
-            return enchantment.getKey().toString();
-        }
+        return enchantment.getKey().toString();
     }
 
     public Map<Player, Block> playermap = new ConcurrentHashMap<>();
@@ -137,14 +115,8 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
             if (player.getOpenInventory().getTopInventory().getLocation().getBlock() == null) {
                 return;
             }
-            if (!InteractionVisualizer.version.isLegacy()) {
-                if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().equalsIgnoreCase("ENCHANTING_TABLE")) {
-                    return;
-                }
-            } else {
-                if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().equalsIgnoreCase("ENCHANTMENT_TABLE")) {
-                    return;
-                }
+            if (!player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().toString().equalsIgnoreCase("ENCHANTING_TABLE")) {
+                return;
             }
             InventoryView view = player.getOpenInventory();
             Block block = view.getTopInventory().getLocation().getBlock();
