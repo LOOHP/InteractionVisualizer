@@ -82,6 +82,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffectType;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -103,6 +105,10 @@ public class V1_19_3 extends NMSWrapper {
     private final Field dataWatcherItemItemField;
     private final Field[] entityTeleportPacketFields;
 
+    //paper
+    private Method worldServerEntityLookup;
+    private Method paperEntityLookupGetAll;
+
     public V1_19_3() {
         try {
             entityCountField = net.minecraft.world.entity.Entity.class.getDeclaredField("d");
@@ -115,6 +121,13 @@ public class V1_19_3 extends NMSWrapper {
             entityTeleportPacketFields = PacketPlayOutEntityTeleport.class.getDeclaredFields();
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
+        }
+        try {
+            //paper
+            //noinspection JavaReflectionMemberAccess
+            worldServerEntityLookup = WorldServer.class.getMethod("getEntityLookup");
+            paperEntityLookupGetAll = worldServerEntityLookup.getReturnType().getMethod("a");
+        } catch (NoSuchMethodException ignore) {
         }
     }
 
@@ -245,10 +258,21 @@ public class V1_19_3 extends NMSWrapper {
         return tileEntity.ad_().l("CustomName");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public WrappedIterable<?, Entity> getEntities(World world) {
-        WorldServer worldServer = ((CraftWorld) world).getHandle();
-        return new WrappedIterable<>(worldServer.P.d().a(), net.minecraft.world.entity.Entity::getBukkitEntity);
+        try {
+            WorldServer worldServer = ((CraftWorld) world).getHandle();
+            if (worldServerEntityLookup == null) {
+                return new WrappedIterable<>(worldServer.P.d().a(), net.minecraft.world.entity.Entity::getBukkitEntity);
+            } else {
+                Object entityLookup = worldServerEntityLookup.invoke(worldServer);
+                Iterable<net.minecraft.world.entity.Entity> entities = (Iterable<net.minecraft.world.entity.Entity>) paperEntityLookupGetAll.invoke(entityLookup);
+                return new WrappedIterable<>(entities, net.minecraft.world.entity.Entity::getBukkitEntity);
+            }
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
