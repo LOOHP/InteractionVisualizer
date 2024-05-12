@@ -57,8 +57,31 @@ public class Placeholders extends PlaceholderExpansion {
     @Override
     public String onRequest(OfflinePlayer offlineplayer, String identifier) {
 
+        if (identifier.startsWith("all")) {
+            String entryType = identifier.substring("all_".length());
+            if (entryType.equals("all")) {
+                if (InteractionVisualizerAPI.hasAllPreferenceEnabled(offlineplayer.getUniqueId())) {
+                    return "enabled";
+                } else if (InteractionVisualizerAPI.hasAnyPreferenceEnabled(offlineplayer.getUniqueId())) {
+                    return "partly enabled";
+                }
+                return "disabled";
+            } else {
+                EntryKey entry = new EntryKey(entryType);
+                if (InteractionVisualizerAPI.isRegisteredEntry(entry)) {
+                    if (InteractionVisualizerAPI.hasAllPreferenceEnabled(offlineplayer.getUniqueId(), entry)) {
+                        return "enabled";
+                    } else if (InteractionVisualizerAPI.hasAnyPreferenceEnabled(offlineplayer.getUniqueId(), entry)) {
+                        return "partly enabled";
+                    }
+                    return "disabled";
+                }
+            }
+            return "invalid";
+        }
+
         if (identifier.startsWith("itemstand_")) {
-            String entryType = identifier.substring(10);
+            String entryType = identifier.substring("itemstand_".length());
             if (entryType.equals("all")) {
                 if (InteractionVisualizerAPI.hasAllPreferenceEnabled(offlineplayer.getUniqueId(), Modules.ITEMSTAND)) {
                     return "enabled";
@@ -79,7 +102,7 @@ public class Placeholders extends PlaceholderExpansion {
         }
 
         if (identifier.startsWith("itemdrop_")) {
-            String entryType = identifier.substring(9);
+            String entryType = identifier.substring("itemdrop_".length());
             if (entryType.equals("all")) {
                 if (InteractionVisualizerAPI.hasAllPreferenceEnabled(offlineplayer.getUniqueId(), Modules.ITEMDROP)) {
                     return "enabled";
@@ -100,7 +123,7 @@ public class Placeholders extends PlaceholderExpansion {
         }
 
         if (identifier.startsWith("hologram_")) {
-            String entryType = identifier.substring(9);
+            String entryType = identifier.substring("hologram_".length());
             if (entryType.equals("all")) {
                 if (InteractionVisualizerAPI.hasAllPreferenceEnabled(offlineplayer.getUniqueId(), Modules.HOLOGRAM)) {
                     return "enabled";
