@@ -112,7 +112,7 @@ public class V1_20 extends NMSWrapper {
     public V1_20() {
         try {
             entityCountField = net.minecraft.world.entity.Entity.class.getDeclaredField("d");
-            dataWatcherByteField = net.minecraft.world.entity.Entity.class.getDeclaredField("ao");
+            dataWatcherByteField = net.minecraft.world.entity.Entity.class.getDeclaredField("an");
             dataWatcherCustomNameField = net.minecraft.world.entity.Entity.class.getDeclaredField("aU");
             dataWatcherCustomNameVisibleField = net.minecraft.world.entity.Entity.class.getDeclaredField("aV");
             dataWatcherSilentField = net.minecraft.world.entity.Entity.class.getDeclaredField("aW");
