@@ -35,6 +35,7 @@ import com.loohp.interactionvisualizer.blocks.CampfireDisplay;
 import com.loohp.interactionvisualizer.blocks.CartographyTableDisplay;
 import com.loohp.interactionvisualizer.blocks.ChestDisplay;
 import com.loohp.interactionvisualizer.blocks.ConduitDisplay;
+import com.loohp.interactionvisualizer.blocks.CrafterDisplay;
 import com.loohp.interactionvisualizer.blocks.CraftingTableDisplay;
 import com.loohp.interactionvisualizer.blocks.DispenserDisplay;
 import com.loohp.interactionvisualizer.blocks.DoubleChestDisplay;
@@ -91,6 +92,7 @@ public class TaskManager {
     public static boolean chest;
     public static boolean conduit;
     public static boolean craftingtable;
+    public static boolean crafter;
     public static boolean dispenser;
     public static boolean doublechest;
     public static boolean dropper;
@@ -131,6 +133,7 @@ public class TaskManager {
         chest = false;
         conduit = false;
         craftingtable = false;
+        crafter = false;
         dispenser = false;
         doublechest = false;
         dropper = false;
@@ -179,6 +182,13 @@ public class TaskManager {
             keys.add(ctd.registerNative(InventoryType.WORKBENCH));
             Bukkit.getPluginManager().registerEvents(ctd, plugin);
             craftingtable = true;
+        }
+
+        if (getConfig().getBoolean("Blocks.Crafter.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_21)) {
+            CrafterDisplay cd = new CrafterDisplay();
+            keys.add(cd.registerNative());
+            Bukkit.getPluginManager().registerEvents(cd, plugin);
+            crafter = true;
         }
 
         if (getConfig().getBoolean("Blocks.Loom.Enabled") && version.isNewerOrEqualTo(MCVersion.V1_14)) {

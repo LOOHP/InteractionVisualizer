@@ -235,6 +235,7 @@ public class InteractionVisualizer extends JavaPlugin {
         }
 
         exemptBlocks.add("CRAFTING_TABLE");
+        exemptBlocks.add("CRAFTER");
         exemptBlocks.add("WORKBENCH");
         exemptBlocks.add("LOOM");
         exemptBlocks.add("SMITHING_TABLE");

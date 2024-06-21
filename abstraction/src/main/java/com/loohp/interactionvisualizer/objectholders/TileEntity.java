@@ -48,6 +48,7 @@ public class TileEntity {
         TILE_ENTITY_TYPES.put("TRIAL_SPAWNER", TileEntityType.TRIAL_SPAWNER);
         TILE_ENTITY_TYPES.put("MOB_SPAWNER", TileEntityType.SPAWNER);
         TILE_ENTITY_TYPES.put("CONDUIT", TileEntityType.CONDUIT);
+        TILE_ENTITY_TYPES.put("CRAFTER", TileEntityType.CRAFTER);
 
         TILE_ENTITY_TYPES.put("STANDING_BANNER", TileEntityType.BANNER);
         TILE_ENTITY_TYPES.put("WALL_BANNER", TileEntityType.BANNER);
@@ -99,6 +100,7 @@ public class TileEntity {
     public static boolean isTileEntityType(Material material) {
         return TILE_ENTITY_TYPES.containsKey(material.toString());
     }
+
     private final World world;
     private final int x;
     private final int y;
@@ -153,7 +155,8 @@ public class TileEntity {
         SPAWNER,
         TRIAL_SPAWNER,
         CONDUIT,
-        BANNER
+        BANNER,
+        CRAFTER
 
     }
 

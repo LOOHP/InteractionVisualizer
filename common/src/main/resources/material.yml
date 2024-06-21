@@ -115,6 +115,7 @@ LowBlocks:
   - MOSS_CARPET
 #Blocks that should be display as items
 BlockExceptions:
+  - BARRIER
   - ACACIA_SAPLING
   - BAMBOO_SAPLING
   - BIRCH_SAPLING

@@ -69,7 +69,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
     public static final EntryKey KEY = new EntryKey("crafting_table");
 
     public Map<Block, Map<String, Object>> openedBenches = new HashMap<>();
-    public Map<Player, Block> playermap = new HashMap<Player, Block>();
+    public Map<Player, Block> playermap = new HashMap<>();
 
     @Override
     public EntryKey key() {
@@ -80,7 +80,6 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
     public int run() {
         return new BukkitRunnable() {
             public void run() {
-
                 Iterator<Block> itr = openedBenches.keySet().iterator();
                 int count = 0;
                 int maxper = (int) Math.ceil((double) openedBenches.size() / (double) 5);

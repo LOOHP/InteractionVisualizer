@@ -28,6 +28,7 @@ Messages:
   #User-friendly names for the entries
   EntryName:
     "interactionvisualizer:crafting_table": "Crafting Table"
+    "interactionvisualizer:crafter": "Crafter"
     "interactionvisualizer:loom": "Loom"
     "interactionvisualizer:enchantment_table": "Enchantment Table"
     "interactionvisualizer:cartography_table": "Cartography Table"
@@ -167,6 +168,9 @@ Blocks:
     PathType: "CIRCLE"
   CraftingTable:
     Enabled: true
+  Crafter:
+    Enabled: true
+    CheckingPeriod: 20
   Dispenser:
     Enabled: true
   DoubleChest:
