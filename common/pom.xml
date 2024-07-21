@@ -25,7 +25,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>1.18.10.0</version>
+	<version>1.18.10.1</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -339,8 +339,9 @@
 		<dependency>
 			<groupId>com.github.Jikoo</groupId>
 			<artifactId>OpenInv</artifactId>
-			<version>4.1.10</version>
-			<scope>provided</scope>
+			<scope>system</scope>
+			<version>1.0</version>
+			<systemPath>${basedir}/lib/OpenInv-5.0.0.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>LightAPI-Fork</groupId>

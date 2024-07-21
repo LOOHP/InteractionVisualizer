@@ -27,7 +27,7 @@ import org.bukkit.entity.Player;
 
 public class OpenInvUtils {
 
-    private static final boolean openinvhook = InteractionVisualizer.openinv;
+    private static final boolean openInvHook = InteractionVisualizer.openinv;
 
     private static OpenInv openInvInstance = null;
 
@@ -38,13 +38,12 @@ public class OpenInvUtils {
         return openInvInstance;
     }
 
-    public static boolean isSlientChest(Player player) {
-        if (!openinvhook) {
+    public static boolean isSilentChest(Player player) {
+        if (!openInvHook) {
             return false;
         }
         OpenInv openinv = getOpenInvInstance();
-        boolean isSilent = openinv.getPlayerSilentChestStatus(player);
-        return isSilent;
+        return openinv.getSilentContainerStatus(player);
     }
 
 }

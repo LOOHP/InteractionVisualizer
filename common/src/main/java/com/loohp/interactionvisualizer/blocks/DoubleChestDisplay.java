@@ -81,7 +81,7 @@ public class DoubleChestDisplay implements Listener, VisualizerDisplay {
         if (VanishUtils.isVanished(player)) {
             return;
         }
-        if (OpenInvUtils.isSlientChest(player)) {
+        if (OpenInvUtils.isSilentChest(player)) {
             return;
         }
         if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {

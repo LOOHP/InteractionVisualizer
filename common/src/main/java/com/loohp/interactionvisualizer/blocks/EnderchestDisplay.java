@@ -78,7 +78,7 @@ public class EnderchestDisplay implements Listener, VisualizerDisplay {
         if (VanishUtils.isVanished((Player) event.getPlayer())) {
             return;
         }
-        if (OpenInvUtils.isSlientChest((Player) event.getPlayer())) {
+        if (OpenInvUtils.isSilentChest((Player) event.getPlayer())) {
             return;
         }
         if (event.getPlayer().getGameMode().equals(GameMode.SPECTATOR)) {
