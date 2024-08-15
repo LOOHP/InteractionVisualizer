@@ -20,20 +20,33 @@
 
 package com.loohp.interactionvisualizer.utils;
 
-import com.lishid.openinv.OpenInv;
 import com.loohp.interactionvisualizer.InteractionVisualizer;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class OpenInvUtils {
 
     private static final boolean openInvHook = InteractionVisualizer.openinv;
 
-    private static OpenInv openInvInstance = null;
+    private static Object openInvInstance = null;
+    private static Method getSilentContainerStatusMethod;
 
-    private static OpenInv getOpenInvInstance() {
+    private static Object getOpenInvInstance() {
         if (openInvInstance == null) {
-            openInvInstance = (OpenInv) Bukkit.getPluginManager().getPlugin("OpenInv");
+            openInvInstance = Bukkit.getPluginManager().getPlugin("OpenInv");
+            try {
+                getSilentContainerStatusMethod = openInvInstance.getClass().getMethod("getSilentContainerStatus", OfflinePlayer.class);
+            } catch (NoSuchMethodException e) {
+                try {
+                    getSilentContainerStatusMethod = openInvInstance.getClass().getMethod("getPlayerSilentChestStatus", OfflinePlayer.class);
+                } catch (NoSuchMethodException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         }
         return openInvInstance;
     }
@@ -42,8 +55,12 @@ public class OpenInvUtils {
         if (!openInvHook) {
             return false;
         }
-        OpenInv openinv = getOpenInvInstance();
-        return openinv.getSilentContainerStatus(player);
+        try {
+            Object openinv = getOpenInvInstance();
+            return (boolean) getSilentContainerStatusMethod.invoke(openinv, player);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

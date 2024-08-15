@@ -6,7 +6,7 @@
 
     <groupId>com.loohp</groupId>
     <artifactId>InteractionVisualizer-Parent</artifactId>
-    <version>1.18.11.0</version>
+    <version>1.18.11.1</version>
     <packaging>pom</packaging>
 
     <properties>
