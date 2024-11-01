@@ -10,7 +10,7 @@
         <version>1.18.12.0</version>
     </parent>
 
-    <artifactId>InteractionVisualizer-V1_19_4</artifactId>
+    <artifactId>InteractionVisualizer-V1_21_2</artifactId>
 
     <dependencies>
         <dependency>
@@ -52,13 +52,13 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.19.4-R0.1-SNAPSHOT</version>
+            <version>1.21.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>1.19.4-R0.1-SNAPSHOT</version>
+            <version>1.21.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
