@@ -143,7 +143,7 @@ public class V1_21_2 extends NMSWrapper {
 
     @Override
     public int getItemAge(Item item) {
-        return ((CraftItem) item).getHandle().i;
+        return ((CraftItem) item).getHandle().h;
     }
 
     @Override
