@@ -38,11 +38,11 @@ import net.md_5.bungee.api.ChatColor;
 import net.minecraft.core.Vector3f;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundEntityPositionSyncPacket;
 import net.minecraft.network.protocol.game.PacketPlayOutAnimation;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityEquipment;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityMetadata;
-import net.minecraft.network.protocol.game.PacketPlayOutEntityTeleport;
 import net.minecraft.network.protocol.game.PacketPlayOutEntityVelocity;
 import net.minecraft.network.protocol.game.PacketPlayOutSpawnEntity;
 import net.minecraft.network.syncher.DataWatcher;
@@ -89,7 +89,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -449,7 +448,7 @@ public class V1_21_3 extends NMSWrapper {
 
     @Override
     public void teleportEntity(Player player, int entityId, Location location) {
-        PacketPlayOutEntityTeleport packet = new PacketPlayOutEntityTeleport(entityId, new PositionMoveRotation(new Vec3D(location.getX(), location.getY(), location.getZ()), Vec3D.c, location.getYaw(), location.getPitch()), Collections.emptySet(), false);
+        ClientboundEntityPositionSyncPacket packet = new ClientboundEntityPositionSyncPacket(entityId, new PositionMoveRotation(new Vec3D(location.getX(), location.getY(), location.getZ()), Vec3D.c, location.getYaw(), location.getPitch()), false);
         sendPacket(player, packet);
     }
 
@@ -480,7 +479,7 @@ public class V1_21_3 extends NMSWrapper {
     @SuppressWarnings("unchecked")
     @Override
     public void updateArmorStand(Collection<Player> players, ArmorStand entity) {
-        PacketPlayOutEntityTeleport packet1 = new PacketPlayOutEntityTeleport(entity.getEntityId(), new PositionMoveRotation(new Vec3D(entity.getLocation().getX(), entity.getLocation().getY(), entity.getLocation().getZ()), Vec3D.c, entity.getLocation().getYaw(), entity.getLocation().getPitch()), Collections.emptySet(), false);
+        ClientboundEntityPositionSyncPacket packet1 = new ClientboundEntityPositionSyncPacket(entity.getEntityId(), new PositionMoveRotation(new Vec3D(entity.getLocation().getX(), entity.getLocation().getY(), entity.getLocation().getZ()), Vec3D.c, entity.getLocation().getYaw(), entity.getLocation().getPitch()), false);
 
         List<DataWatcher.c<?>> watcher = (List<DataWatcher.c<?>>) entity.getDataWatchers();
         PacketPlayOutEntityMetadata packet2 = createEntityMetadataPacket(entity.getEntityId(), watcher);
@@ -545,7 +544,7 @@ public class V1_21_3 extends NMSWrapper {
         List<DataWatcher.c<?>> watcher = (List<DataWatcher.c<?>>) entity.getDataWatchers();
         PacketPlayOutEntityMetadata packet1 = createEntityMetadataPacket(entity.getEntityId(), watcher);
 
-        PacketPlayOutEntityTeleport packet2 = new PacketPlayOutEntityTeleport(entity.getEntityId(), new PositionMoveRotation(new Vec3D(entity.getLocation().getX(), entity.getLocation().getY(), entity.getLocation().getZ()), Vec3D.c, entity.getLocation().getYaw(), entity.getLocation().getPitch()), Collections.emptySet(), false);
+        ClientboundEntityPositionSyncPacket packet2 = new ClientboundEntityPositionSyncPacket(entity.getEntityId(), new PositionMoveRotation(new Vec3D(entity.getLocation().getX(), entity.getLocation().getY(), entity.getLocation().getZ()), Vec3D.c, entity.getLocation().getYaw(), entity.getLocation().getPitch()), false);
 
         Vec3D velocity = new Vec3D(entity.getVelocity().getX(), entity.getVelocity().getY(), entity.getVelocity().getZ());
         PacketPlayOutEntityVelocity packet3 = new PacketPlayOutEntityVelocity(entity.getEntityId(), velocity);
