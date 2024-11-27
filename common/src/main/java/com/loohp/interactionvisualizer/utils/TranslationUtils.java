@@ -47,7 +47,11 @@ public class TranslationUtils {
         if (!type.contains("MUSIC_DISC_")) {
             return null;
         }
-        return "item.minecraft." + type.toLowerCase() + ".desc";
+        if (InteractionVisualizer.version.isNewerOrEqualTo(MCVersion.V1_21)) {
+            return "jukebox_song.minecraft." + type.toLowerCase().substring("music_disc_".length());
+        } else {
+            return "item.minecraft." + type.toLowerCase() + ".desc";
+        }
     }
 
 }
