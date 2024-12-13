@@ -65,14 +65,14 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_21_R2.CraftEquipmentSlot;
-import org.bukkit.craftbukkit.v1_21_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_21_R2.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_21_R2.entity.CraftItem;
-import org.bukkit.craftbukkit.v1_21_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_21_R2.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_21_R2.util.CraftChatMessage;
-import org.bukkit.craftbukkit.v1_21_R2.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_21_R3.CraftEquipmentSlot;
+import org.bukkit.craftbukkit.v1_21_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_21_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_21_R3.entity.CraftItem;
+import org.bukkit.craftbukkit.v1_21_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_21_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_21_R3.util.CraftChatMessage;
+import org.bukkit.craftbukkit.v1_21_R3.util.CraftMagicNumbers;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -97,7 +97,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
-public class V1_21_3 extends NMSWrapper {
+public class V1_21_4 extends NMSWrapper {
 
     private final Field entityCountField;
     private final Field dataWatcherByteField;
@@ -115,7 +115,7 @@ public class V1_21_3 extends NMSWrapper {
     private Field paperItemDespawnRateField;
     private Method worldServerEntityLookup;
 
-    public V1_21_3() {
+    public V1_21_4() {
         try {
             entityCountField = ReflectionUtils.findDeclaredField(net.minecraft.world.entity.Entity.class, AtomicInteger.class, "ENTITY_COUNTER", "c");
             dataWatcherByteField = ReflectionUtils.findDeclaredField(net.minecraft.world.entity.Entity.class, DataWatcherObject.class, "DATA_SHARED_FLAGS_ID", "aN");
@@ -282,7 +282,7 @@ public class V1_21_3 extends NMSWrapper {
     @Override
     public ChatColor getRarityColor(ItemStack itemStack) {
         net.minecraft.world.item.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
-        String str = nmsItemStack.C().a().toString();
+        String str = nmsItemStack.D().a().toString();
         return ChatColor.getByChar(str.charAt(str.length() - 1));
     }
 
@@ -345,13 +345,13 @@ public class V1_21_3 extends NMSWrapper {
             standbitmask = !stand.hasBasePlate() ? (byte) (standbitmask | 0x08) : standbitmask;
             standbitmask = stand.isMarker() ? (byte) (standbitmask | 0x10) : standbitmask;
 
-            dataWatcher.add(DataWatcher.c.a(EntityArmorStand.bJ, standbitmask));
+            dataWatcher.add(DataWatcher.c.a(EntityArmorStand.bI, standbitmask));
 
             Vector3f headrotation = new Vector3f((float) Math.toDegrees(stand.getHeadPose().getX()), (float) Math.toDegrees(stand.getHeadPose().getY()), (float) Math.toDegrees(stand.getHeadPose().getZ()));
-            dataWatcher.add(DataWatcher.c.a(EntityArmorStand.bK, headrotation));
+            dataWatcher.add(DataWatcher.c.a(EntityArmorStand.bJ, headrotation));
 
             Vector3f rightarmrotation = new Vector3f((float) Math.toDegrees(stand.getRightArmPose().getX()), (float) Math.toDegrees(stand.getRightArmPose().getY()), (float) Math.toDegrees(stand.getRightArmPose().getZ()));
-            dataWatcher.add(DataWatcher.c.a(EntityArmorStand.bN, rightarmrotation));
+            dataWatcher.add(DataWatcher.c.a(EntityArmorStand.bM, rightarmrotation));
 
             return dataWatcher;
         } catch (Exception e) {
@@ -540,7 +540,7 @@ public class V1_21_3 extends NMSWrapper {
             return;
         }
 
-        EntityTypes<EntityItem> type = EntityTypes.ar;
+        EntityTypes<EntityItem> type = EntityTypes.aq;
         Vec3D velocity = new Vec3D(entity.getVelocity().getX(), entity.getVelocity().getY(), entity.getVelocity().getZ());
         PacketPlayOutSpawnEntity packet1 = new PacketPlayOutSpawnEntity(entity.getEntityId(), entity.getUniqueId(), entity.getLocation().getX(), entity.getLocation().getY(), entity.getLocation().getZ(), entity.getLocation().getPitch(), entity.getLocation().getYaw(), type, 0, velocity, entity.getLocation().getYaw());
 
@@ -584,7 +584,7 @@ public class V1_21_3 extends NMSWrapper {
     @SuppressWarnings("unchecked")
     @Override
     public void spawnItemFrame(Collection<Player> players, ItemFrame entity) {
-        EntityTypes<EntityItemFrame> type = EntityTypes.at;
+        EntityTypes<EntityItemFrame> type = EntityTypes.as;
         Vec3D velocity = Vec3D.c;
         PacketPlayOutSpawnEntity packet1 = new PacketPlayOutSpawnEntity(entity.getEntityId(), entity.getUniqueId(), entity.getLocation().getX(), entity.getLocation().getY(), entity.getLocation().getZ(), entity.getLocation().getPitch(), entity.getLocation().getYaw(), type, getItemFrameData(entity), velocity, entity.getLocation().getYaw());
 

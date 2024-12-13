@@ -108,7 +108,12 @@ public class V1_19 extends NMSWrapper {
     private final Field dataWatcherItemFrameRotationField;
     private final Field[] entityTeleportPacketFields;
 
+    //spigot specific
+    private Field spigotWorldConfigField;
+    private Field spigotItemDespawnRateField;
+
     //paper
+    private Field paperItemDespawnRateField;
     private Method worldServerEntityLookup;
     private Method paperEntityLookupGetAll;
 
@@ -128,12 +133,23 @@ public class V1_19 extends NMSWrapper {
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
+
+        try {
+            //spigot specific
+            //noinspection JavaReflectionMemberAccess
+            spigotWorldConfigField = net.minecraft.world.level.World.class.getField("spigotConfig");
+            spigotItemDespawnRateField = spigotWorldConfigField.getType().getField("itemDespawnRate");
+        } catch (NoSuchFieldException ignore) {
+        }
+
         try {
             //paper
             //noinspection JavaReflectionMemberAccess
+            paperItemDespawnRateField = EntityItem.class.getDeclaredField("despawnRate");
+            //noinspection JavaReflectionMemberAccess
             worldServerEntityLookup = WorldServer.class.getMethod("getEntityLookup");
             paperEntityLookupGetAll = worldServerEntityLookup.getReturnType().getMethod("a");
-        } catch (NoSuchMethodException ignore) {
+        } catch (NoSuchMethodException | NoSuchFieldException ignore) {
         }
     }
 
@@ -245,21 +261,20 @@ public class V1_19 extends NMSWrapper {
         });
     }
 
-    @SuppressWarnings("JavaReflectionMemberAccess")
     @Override
     public int getItemDespawnRate(Item item) {
-        int despawnRate;
         try {
-            Object spigotWorldConfig = net.minecraft.world.level.World.class.getField("spigotConfig").get(((CraftWorld) item.getWorld()).getHandle());
-            despawnRate = spigotWorldConfig.getClass().getField("itemDespawnRate").getInt(spigotWorldConfig);
-            try {
-                despawnRate = (int) EntityItem.class.getMethod("getDespawnRate").invoke(((CraftItem) item).getHandle());
-            } catch (Throwable ignore) {
+            if (paperItemDespawnRateField != null) {
+                paperItemDespawnRateField.setAccessible(true);
+                return paperItemDespawnRateField.getInt(((CraftItem) item).getHandle());
             }
-        } catch (Throwable e) {
-            despawnRate = 6000;
+            if (spigotWorldConfigField != null && spigotItemDespawnRateField != null) {
+                Object spigotWorldConfig = spigotWorldConfigField.get(((CraftWorld) item.getWorld()).getHandle());
+                return spigotItemDespawnRateField.getInt(spigotWorldConfig);
+            }
+        } catch (Throwable ignore) {
         }
-        return despawnRate;
+        return 6000;
     }
 
     @Override
