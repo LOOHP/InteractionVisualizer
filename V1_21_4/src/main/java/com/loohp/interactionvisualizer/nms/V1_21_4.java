@@ -173,7 +173,7 @@ public class V1_21_4 extends NMSWrapper {
     @Override
     public Component getItemHoverName(ItemStack itemStack) {
         net.minecraft.world.item.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
-        return GsonComponentSerializer.gson().deserialize(CraftChatMessage.toJSON(nmsItemStack.A()));
+        return GsonComponentSerializer.gson().deserialize(CraftChatMessage.toJSON(nmsItemStack.B()));
     }
 
     @Override
