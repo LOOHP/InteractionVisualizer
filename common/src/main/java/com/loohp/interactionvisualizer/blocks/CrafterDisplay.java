@@ -45,7 +45,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
@@ -207,6 +209,53 @@ public class CrafterDisplay extends VisualizerRunnableDisplay implements Listene
                     stand.setItemInMainHand(new ItemStack(Material.AIR));
                     PacketManager.updateArmorStand(stand);
                 }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onCrafterDropItem(BlockDispenseEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+        Block block = event.getBlock();
+        if (block.getType().equals(Material.CRAFTER)) {
+            Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                Map<String, Object> map = crafterMap.get(block);
+                if (map != null) {
+                    handleUpdate(block, map);
+                }
+            }, 1);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onCrafterMoveItems(InventoryMoveItemEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+        Location initiatorLocation = event.getInitiator().getLocation();
+        if (initiatorLocation != null) {
+            Block block = initiatorLocation.getBlock();
+            if (block.getType().equals(Material.CRAFTER)) {
+                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                    Map<String, Object> map = crafterMap.get(block);
+                    if (map != null) {
+                        handleUpdate(block, map);
+                    }
+                }, 1);
+            }
+        }
+        Location destinationLocation = event.getDestination().getLocation();
+        if (destinationLocation != null) {
+            Block block = destinationLocation.getBlock();
+            if (block.getType().equals(Material.CRAFTER)) {
+                Bukkit.getScheduler().runTaskLater(InteractionVisualizer.plugin, () -> {
+                    Map<String, Object> map = crafterMap.get(block);
+                    if (map != null) {
+                        handleUpdate(block, map);
+                    }
+                }, 1);
             }
         }
     }
