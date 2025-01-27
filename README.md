@@ -1,7 +1,9 @@
 [![Build Status](https://ci.loohpjames.com/job/InteractionVisualizer/badge/icon)](https://ci.loohpjames.com/job/InteractionVisualizer/)
 # InteractionVisualizer
 
-https://www.spigotmc.org/resources/77050/
+https://www.spigotmc.org/resources/77050/<br>
+https://modrinth.com/plugin/interactionvisualizer<br>
+https://hangar.papermc.io/LOOHP/InteractionVisualizer
 
 Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!
 
