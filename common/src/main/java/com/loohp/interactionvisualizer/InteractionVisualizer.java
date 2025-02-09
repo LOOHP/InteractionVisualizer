@@ -52,7 +52,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -61,7 +60,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -112,7 +110,7 @@ public class InteractionVisualizer extends JavaPlugin {
 
     public static boolean updaterEnabled = true;
 
-    public static Map<World, Integer> playerTrackingRange = new HashMap<>();
+    public static Map<World, Integer> playerTrackingRange = new ConcurrentHashMap<>();
     public static boolean hideIfObstructed = false;
 
     public static boolean allPacketsSync = false;
@@ -224,14 +222,6 @@ public class InteractionVisualizer extends JavaPlugin {
 
         if (isPluginEnabled("PlaceholderAPI")) {
             new Placeholders().register();
-        }
-
-        for (World world : Bukkit.getWorlds()) {
-            for (Entity entity : world.getNearbyEntities(new Location(world, 0, 0, 0), 2, 2, 2)) {
-                if (entity.getScoreboardTags().contains("isInteractionVisualizer")) {
-                    entity.remove();
-                }
-            }
         }
 
         exemptBlocks.add("CRAFTING_TABLE");
