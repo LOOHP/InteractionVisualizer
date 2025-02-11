@@ -177,13 +177,9 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
                             }
                         } else {
                             Component component;
-                            if (JsonUtils.isValid(name)) {
-                                try {
-                                    component = GsonComponentSerializer.gson().deserialize(name);
-                                } catch (Throwable e) {
-                                    component = LegacyComponentSerializer.legacySection().deserialize(name);
-                                }
-                            } else {
+                            try {
+                                component = GsonComponentSerializer.gson().deserialize(name);
+                            } catch (Throwable e) {
                                 component = LegacyComponentSerializer.legacySection().deserialize(name);
                             }
                             String matchingName = LegacyComponentSerializer.legacySection().serialize(component);
