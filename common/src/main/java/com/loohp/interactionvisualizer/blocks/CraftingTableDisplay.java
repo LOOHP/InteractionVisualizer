@@ -99,7 +99,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
                             Map<String, Object> map = openedBenches.get(block);
 
                             Player player = (Player) map.get("Player");
-                            if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
+                            if (!GameMode.SPECTATOR.equals(player.getGameMode())) {
                                 if (player.getOpenInventory() != null) {
                                     if (player.getOpenInventory().getTopInventory() != null) {
                                         if (!InteractionVisualizer.version.equals(MCVersion.V1_13) && !InteractionVisualizer.version.equals(MCVersion.V1_13_1)) {
@@ -144,7 +144,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
             return;
         }
         if (!playermap.containsKey(player)) {
-            if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+            if (GameMode.SPECTATOR.equals(player.getGameMode())) {
                 return;
             }
             if (player.getOpenInventory().getTopInventory().getLocation() == null) {

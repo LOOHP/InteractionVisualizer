@@ -170,7 +170,7 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
 
                         int activeRange = spawner.getRequiredPlayerRange();
 
-                        if (PlayerLocationManager.hasPlayerNearby(spawner.getLocation(), activeRange, false, player -> !player.getGameMode().equals(GameMode.SPECTATOR))) {
+                        if (PlayerLocationManager.hasPlayerNearby(spawner.getLocation(), activeRange, false, player -> !GameMode.SPECTATOR.equals(player.getGameMode()))) {
                             int max = spawner.getMaxSpawnDelay();
                             int time = max - spawner.getDelay();
                             String symbol = "";

@@ -99,7 +99,7 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
         }
 
         Player player = event.getPlayer();
-        if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+        if (GameMode.SPECTATOR.equals(player.getGameMode())) {
             return;
         }
 

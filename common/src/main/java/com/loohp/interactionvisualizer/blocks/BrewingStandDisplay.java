@@ -275,7 +275,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
         if (event.isCancelled()) {
             return;
         }
-        if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+        if (GameMode.SPECTATOR.equals(event.getWhoClicked().getGameMode())) {
             return;
         }
         if (event.getView().getTopInventory() == null) {
@@ -305,7 +305,7 @@ public class BrewingStandDisplay extends VisualizerRunnableDisplay implements Li
         if (event.isCancelled()) {
             return;
         }
-        if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+        if (GameMode.SPECTATOR.equals(event.getWhoClicked().getGameMode())) {
             return;
         }
         if (event.getView().getTopInventory() == null) {

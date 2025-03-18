@@ -81,7 +81,7 @@ public class EnderchestDisplay implements Listener, VisualizerDisplay {
         if (OpenInvUtils.isSilentChest((Player) event.getPlayer())) {
             return;
         }
-        if (event.getPlayer().getGameMode().equals(GameMode.SPECTATOR)) {
+        if (GameMode.SPECTATOR.equals(event.getPlayer().getGameMode())) {
             return;
         }
         if (event.getView().getTopInventory() == null) {
@@ -130,7 +130,7 @@ public class EnderchestDisplay implements Listener, VisualizerDisplay {
         if (!playermap.containsKey(player)) {
             return;
         }
-        if (event.getClick().equals(ClickType.MIDDLE) && !event.getWhoClicked().getGameMode().equals(GameMode.CREATIVE)) {
+        if (event.getClick().equals(ClickType.MIDDLE) && !GameMode.CREATIVE.equals(event.getWhoClicked().getGameMode())) {
             return;
         }
 

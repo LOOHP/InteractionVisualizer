@@ -93,7 +93,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
                             Map<String, Object> map = openedLooms.get(block);
                             if (block.getType().equals(Material.LOOM)) {
                                 Player player = (Player) map.get("Player");
-                                if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
+                                if (!GameMode.SPECTATOR.equals(player.getGameMode())) {
                                     if (player.getOpenInventory() != null) {
                                         if (player.getOpenInventory().getTopInventory() != null) {
                                             if (player.getOpenInventory().getTopInventory().getLocation().getBlock().getType().equals(Material.LOOM)) {
@@ -122,7 +122,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
         if (VanishUtils.isVanished(player)) {
             return;
         }
-        if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+        if (GameMode.SPECTATOR.equals(player.getGameMode())) {
             return;
         }
         if (player.getOpenInventory().getTopInventory().getLocation() == null) {
@@ -316,7 +316,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
         if (event.isCancelled()) {
             return;
         }
-        if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+        if (GameMode.SPECTATOR.equals(event.getWhoClicked().getGameMode())) {
             return;
         }
         if (event.getView().getTopInventory() == null) {
@@ -346,7 +346,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
         if (event.isCancelled()) {
             return;
         }
-        if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+        if (GameMode.SPECTATOR.equals(event.getWhoClicked().getGameMode())) {
             return;
         }
         if (event.getView().getTopInventory() == null) {

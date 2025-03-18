@@ -80,7 +80,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
             return;
         }
         if (!playermap.containsKey(player)) {
-            if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+            if (GameMode.SPECTATOR.equals(player.getGameMode())) {
                 return;
             }
             if (!(player.getOpenInventory().getTopInventory() instanceof SmithingInventory)) {
@@ -342,7 +342,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
         if (event.isCancelled()) {
             return;
         }
-        if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+        if (GameMode.SPECTATOR.equals(event.getWhoClicked().getGameMode())) {
             return;
         }
         if (!playermap.containsKey((Player) event.getWhoClicked())) {
@@ -359,7 +359,7 @@ public class SmithingTableDisplay extends VisualizerInteractDisplay implements L
         if (event.isCancelled()) {
             return;
         }
-        if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+        if (GameMode.SPECTATOR.equals(event.getWhoClicked().getGameMode())) {
             return;
         }
         if (event.getView().getTopInventory() == null) {

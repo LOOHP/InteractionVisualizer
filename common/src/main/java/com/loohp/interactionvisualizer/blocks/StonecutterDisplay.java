@@ -92,7 +92,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
                             Map<String, Object> map = openedStonecutter.get(block);
                             if (block.getType().equals(Material.STONECUTTER)) {
                                 Player player = (Player) map.get("Player");
-                                if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
+                                if (!GameMode.SPECTATOR.equals(player.getGameMode())) {
                                     if (player.getOpenInventory() != null) {
                                         if (player.getOpenInventory().getTopInventory() != null) {
                                             if (player.getOpenInventory().getTopInventory() instanceof StonecutterInventory) {
@@ -121,7 +121,7 @@ public class StonecutterDisplay extends VisualizerInteractDisplay implements Lis
             return;
         }
         if (!playermap.containsKey(player)) {
-            if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+            if (GameMode.SPECTATOR.equals(player.getGameMode())) {
                 return;
             }
             if (!(player.getOpenInventory().getTopInventory() instanceof StonecutterInventory)) {

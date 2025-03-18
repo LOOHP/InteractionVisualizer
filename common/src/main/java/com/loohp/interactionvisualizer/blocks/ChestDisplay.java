@@ -81,7 +81,7 @@ public class ChestDisplay implements Listener, VisualizerDisplay {
         if (OpenInvUtils.isSilentChest(player)) {
             return;
         }
-        if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+        if (GameMode.SPECTATOR.equals(event.getWhoClicked().getGameMode())) {
             return;
         }
         if (event.getView().getTopInventory() == null) {
@@ -106,7 +106,7 @@ public class ChestDisplay implements Listener, VisualizerDisplay {
         if (!event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.CHEST) && !event.getView().getTopInventory().getLocation().getBlock().getType().equals(Material.TRAPPED_CHEST)) {
             return;
         }
-        if (event.getClick().equals(ClickType.MIDDLE) && !event.getWhoClicked().getGameMode().equals(GameMode.CREATIVE)) {
+        if (event.getClick().equals(ClickType.MIDDLE) && !GameMode.CREATIVE.equals(event.getWhoClicked().getGameMode())) {
             return;
         }
 
@@ -251,7 +251,7 @@ public class ChestDisplay implements Listener, VisualizerDisplay {
         if (event.isCancelled()) {
             return;
         }
-        if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+        if (GameMode.SPECTATOR.equals(event.getWhoClicked().getGameMode())) {
             return;
         }
         if (event.getView().getTopInventory() == null) {

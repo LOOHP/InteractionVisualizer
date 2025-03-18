@@ -106,7 +106,7 @@ public class EnchantmentTableDisplay extends VisualizerInteractDisplay implement
             return;
         }
         if (!playermap.containsKey(player)) {
-            if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+            if (GameMode.SPECTATOR.equals(player.getGameMode())) {
                 return;
             }
             if (player.getOpenInventory().getTopInventory().getLocation() == null) {

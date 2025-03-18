@@ -86,7 +86,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
                             Map<String, Object> map = openedCTable.get(block);
                             if (block.getType().equals(Material.CARTOGRAPHY_TABLE)) {
                                 Player player = (Player) map.get("Player");
-                                if (!player.getGameMode().equals(GameMode.SPECTATOR)) {
+                                if (!GameMode.SPECTATOR.equals(player.getGameMode())) {
                                     if (player.getOpenInventory() != null) {
                                         if (player.getOpenInventory().getTopInventory() != null) {
                                             if (player.getOpenInventory().getTopInventory() instanceof CartographyInventory) {
@@ -115,7 +115,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
             return;
         }
         if (!playermap.containsKey(player)) {
-            if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+            if (GameMode.SPECTATOR.equals(player.getGameMode())) {
                 return;
             }
             if (!(player.getOpenInventory().getTopInventory() instanceof CartographyInventory)) {

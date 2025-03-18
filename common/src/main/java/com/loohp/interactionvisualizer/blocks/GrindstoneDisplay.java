@@ -75,7 +75,7 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
         if (VanishUtils.isVanished(player)) {
             return;
         }
-        if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+        if (GameMode.SPECTATOR.equals(player.getGameMode())) {
             return;
         }
         if (player.getOpenInventory().getTopInventory().getLocation() == null) {
@@ -312,7 +312,7 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
         if (event.isCancelled()) {
             return;
         }
-        if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+        if (GameMode.SPECTATOR.equals(event.getWhoClicked().getGameMode())) {
             return;
         }
         if (event.getView().getTopInventory() == null) {
@@ -342,7 +342,7 @@ public class GrindstoneDisplay extends VisualizerInteractDisplay implements List
         if (event.isCancelled()) {
             return;
         }
-        if (event.getWhoClicked().getGameMode().equals(GameMode.SPECTATOR)) {
+        if (GameMode.SPECTATOR.equals(event.getWhoClicked().getGameMode())) {
             return;
         }
         if (event.getView().getTopInventory() == null) {
