@@ -6,7 +6,7 @@
 
     <groupId>com.loohp</groupId>
     <artifactId>InteractionVisualizer-Parent</artifactId>
-    <version>1.18.13.0</version>
+    <version>1.18.14.0</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -38,6 +38,7 @@
         <module>V1_21_2</module>
         <module>V1_21_3</module>
         <module>V1_21_4</module>
+        <module>V1_21_5</module>
         <module>common</module>
     </modules>
 </project>
