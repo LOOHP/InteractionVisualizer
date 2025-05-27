@@ -23,13 +23,10 @@ package com.loohp.interactionvisualizer.objectholders;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -47,8 +44,7 @@ import java.util.Objects;
  * if they get modified later. If you want to keep around a bounding box, it may
  * be wise to call {@link #clone()} in order to get a copy.
  */
-@SerializableAs("BoundingBox")
-public class BoundingBox implements Cloneable, ConfigurationSerializable {
+public class BoundingBox implements Cloneable {
 
     /**
      * Creates a new bounding box using the coordinates of the given vectors as
@@ -949,19 +945,6 @@ public class BoundingBox implements Cloneable, ConfigurationSerializable {
         } catch (CloneNotSupportedException e) {
             throw new Error(e);
         }
-    }
-
-    @NotNull
-    @Override
-    public Map<String, Object> serialize() {
-        Map<String, Object> result = new LinkedHashMap<String, Object>();
-        result.put("minX", minX);
-        result.put("minY", minY);
-        result.put("minZ", minZ);
-        result.put("maxX", maxX);
-        result.put("maxY", maxY);
-        result.put("maxZ", maxZ);
-        return result;
     }
 
 }
