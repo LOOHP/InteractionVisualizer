@@ -27,7 +27,7 @@
     <parent>
         <groupId>com.loohp</groupId>
         <artifactId>InteractionVisualizer-Parent</artifactId>
-        <version>1.18.14.0</version>
+        <version>1.18.14.1</version>
     </parent>
 
     <artifactId>InteractionVisualizer-V1_21_2</artifactId>
