@@ -292,15 +292,17 @@ public class V1_21_7 extends NMSWrapper {
         return nmsItemStack.h().j();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public String getEnchantmentTranslationKey(Enchantment enchantment) {
-        NamespacedKey namespacedKey = enchantment.getKeyOrThrow();
+        NamespacedKey namespacedKey = enchantment.getKey();
         return "enchantment." + namespacedKey.getNamespace() + "." + namespacedKey.getKey();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public String getEffectTranslationKey(PotionEffectType type) {
-        NamespacedKey namespacedKey = type.getKeyOrThrow();
+        NamespacedKey namespacedKey = type.getKey();
         return "effect." + namespacedKey.getNamespace() + "." + namespacedKey.getKey();
     }
 
