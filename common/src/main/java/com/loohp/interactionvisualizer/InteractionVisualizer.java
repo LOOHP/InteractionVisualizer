@@ -50,7 +50,6 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -59,8 +58,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -87,9 +84,6 @@ public class InteractionVisualizer extends JavaPlugin {
 
     public static Set<String> exemptBlocks = new HashSet<>();
     public static Set<String> disabledWorlds = new HashSet<>();
-
-    public static Reference<World> defaultWorld;
-    public static Location defaultLocation;
 
     public static boolean itemStandEnabled = true;
     public static boolean itemDropEnabled = true;
@@ -120,10 +114,6 @@ public class InteractionVisualizer extends JavaPlugin {
     public static ILightManager lightManager;
     public static PreferenceManager preferenceManager;
     public static AsyncExecutorManager asyncExecutorManager;
-
-    private static void unsupportedMessage() {
-        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "This version of minecraft is unsupported!");
-    }
 
     private static void hookMessage(String pluginName) {
         Bukkit.getConsoleSender().sendMessage(ChatColor.LIGHT_PURPLE + "[InteractionVisualizer] InteractionVisualizer has hooked into " + pluginName + "!");
@@ -158,6 +148,10 @@ public class InteractionVisualizer extends JavaPlugin {
 
         exactMinecraftVersion = Bukkit.getVersion().substring(Bukkit.getVersion().indexOf("(") + 5, Bukkit.getVersion().indexOf(")"));
         version = MCVersion.resolve();
+
+        if (!version.isSupported()) {
+            getServer().getConsoleSender().sendMessage(org.bukkit.ChatColor.RED + "[InteractionVisualizer] This version of minecraft is unsupported! (" + version.toString() + ")");
+        }
 
         ThreadFactory factory = new ThreadFactoryBuilder().setNameFormat("InteractionVisualizer Async Processing Thread #%d").build();
         ExecutorService threadPool = new ThreadPoolExecutor(8, 120, 5000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), factory);
@@ -194,12 +188,6 @@ public class InteractionVisualizer extends JavaPlugin {
             return;
         }
         loadConfig();
-
-        defaultWorld = new WeakReference<>(getServer().getWorlds().get(0));
-        defaultLocation = new Location(getDefaultWorld(), 0, 0, 0);
-        if (!version.isLegacy() && !version.equals(MCVersion.V1_13) && !version.equals(MCVersion.V1_13_1)) {
-            getDefaultWorld().setChunkForceLoaded(0, 0, true);
-        }
 
         if (getConfiguration().getBoolean("Options.DownloadLanguageFiles")) {
             getServer().getScheduler().runTaskAsynchronously(this, () -> LangManager.generate());
@@ -323,16 +311,6 @@ public class InteractionVisualizer extends JavaPlugin {
         defaultDisabledAll = getConfiguration().getBoolean("Settings.DefaultDisableAll");
 
         getServer().getPluginManager().callEvent(new InteractionVisualizerReloadEvent());
-    }
-
-    public static World getDefaultWorld() {
-        if (defaultWorld == null || defaultWorld.get() == null) {
-            World world = Bukkit.getWorlds().get(0);
-            defaultWorld = new WeakReference<>(world);
-            return world;
-        } else {
-            return defaultWorld.get();
-        }
     }
 
 }
