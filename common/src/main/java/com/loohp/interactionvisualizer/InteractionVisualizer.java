@@ -190,7 +190,7 @@ public class InteractionVisualizer extends JavaPlugin {
         loadConfig();
 
         if (getConfiguration().getBoolean("Options.DownloadLanguageFiles")) {
-            getServer().getScheduler().runTaskAsynchronously(this, () -> LangManager.generate());
+            Scheduler.runTaskAsynchronously(this, () -> LangManager.generate());
         }
 
         MusicManager.setup();
