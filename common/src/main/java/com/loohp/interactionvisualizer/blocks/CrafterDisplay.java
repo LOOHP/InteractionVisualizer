@@ -98,8 +98,8 @@ public class CrafterDisplay extends VisualizerRunnableDisplay implements Listene
                     delay++;
                 }
                 Entry<Block, Map<String, Object>> entry = itr.next();
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         Map<String, Object> map = entry.getValue();
                         for (int i = 1; i <= 9; i++) {
@@ -122,7 +122,7 @@ public class CrafterDisplay extends VisualizerRunnableDisplay implements Listene
                         crafterMap.remove(block);
                         return;
                     }
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, gcPeriod);
     }
@@ -130,17 +130,17 @@ public class CrafterDisplay extends VisualizerRunnableDisplay implements Listene
     @Override
     public ScheduledTask run() {
         return Scheduler.runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-            Scheduler.runTask(InteractionVisualizer.plugin, () -> {
-                Set<Block> list = nearbyCrafter();
-                for (Block block : list) {
+            Set<Block> list = nearbyCrafter();
+            for (Block block : list) {
+                Scheduler.runTask(InteractionVisualizer.plugin, () -> {
                     if (crafterMap.get(block) == null && isActive(block.getLocation())) {
                         if (block.getType().equals(Material.CRAFTER) && getCardinalDirection(block) >= 0F) {
                             Map<String, Object> map = new HashMap<>(spawnArmorStands(block));
                             crafterMap.put(block, map);
                         }
                     }
-                }
-            });
+                }, block.getLocation());
+            }
 
             Iterator<Entry<Block, Map<String, Object>>> itr = crafterMap.entrySet().iterator();
             int count = 0;
@@ -154,7 +154,7 @@ public class CrafterDisplay extends VisualizerRunnableDisplay implements Listene
                     count = 0;
                     delay++;
                 }
-                Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> handleUpdate(entry.getKey(), entry.getValue()), delay);
+                Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> handleUpdate(entry.getKey(), entry.getValue()), delay, entry.getKey().getLocation());
             }
         }, 0, checkingPeriod);
     }
@@ -226,7 +226,7 @@ public class CrafterDisplay extends VisualizerRunnableDisplay implements Listene
                 if (map != null) {
                     handleUpdate(block, map);
                 }
-            }, 1);
+            }, 1, block.getLocation());
         }
     }
 
@@ -244,7 +244,7 @@ public class CrafterDisplay extends VisualizerRunnableDisplay implements Listene
                     if (map != null) {
                         handleUpdate(block, map);
                     }
-                }, 1);
+                }, 1, block.getLocation());
             }
         }
         Location destinationLocation = event.getDestination().getLocation();
@@ -256,7 +256,7 @@ public class CrafterDisplay extends VisualizerRunnableDisplay implements Listene
                     if (map != null) {
                         handleUpdate(block, map);
                     }
-                }, 1);
+                }, 1, block.getLocation());
             }
         }
     }

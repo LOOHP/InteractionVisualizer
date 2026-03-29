@@ -103,8 +103,8 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
                     delay++;
                 }
                 Entry<Block, Map<String, Object>> entry = itr.next();
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         Map<String, Object> map = entry.getValue();
                         if (map.get("1") instanceof ArmorStand) {
@@ -123,7 +123,7 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
                         spawnerMap.remove(block);
                         return;
                     }
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, gcPeriod);
     }
@@ -131,9 +131,9 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
     @Override
     public ScheduledTask run() {
         return Scheduler.runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-            Scheduler.runTask(InteractionVisualizer.plugin, () -> {
-                Set<Block> list = nearbySpawner();
-                for (Block block : list) {
+            Set<Block> list = nearbySpawner();
+            for (Block block : list) {
+                Scheduler.runTask(InteractionVisualizer.plugin, () -> {
                     if (spawnerMap.get(block) == null && isActive(block.getLocation())) {
                         if (isSpawner(block.getType())) {
                             HashMap<String, Object> map = new HashMap<>();
@@ -141,8 +141,8 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
                             spawnerMap.put(block, map);
                         }
                     }
-                }
-            });
+                }, block.getLocation());
+            }
 
             Iterator<Entry<Block, Map<String, Object>>> itr = spawnerMap.entrySet().iterator();
             int count = 0;
@@ -156,8 +156,8 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
                     count = 0;
                     delay++;
                 }
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         return;
                     }
@@ -207,7 +207,7 @@ public class SpawnerDisplay extends VisualizerRunnableDisplay implements Listene
                             }
                         }
                     });
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, checkingPeriod);
     }

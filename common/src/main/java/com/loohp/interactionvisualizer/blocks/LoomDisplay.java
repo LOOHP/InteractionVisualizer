@@ -114,7 +114,7 @@ public class LoomDisplay extends VisualizerInteractDisplay implements Listener {
                             }
                             openedLooms.remove(block);
                         }
-                    }.runTaskLater(InteractionVisualizer.plugin, delay);
+                    }.runTaskLater(InteractionVisualizer.plugin, delay, block.getLocation());
                 }
             }
         }.runTaskTimer(InteractionVisualizer.plugin, 0, 5);

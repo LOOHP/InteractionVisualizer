@@ -135,7 +135,7 @@ public class CraftingTableDisplay extends VisualizerInteractDisplay implements L
                             }
                             openedBenches.remove(block);
                         }
-                    }.runTaskLater(InteractionVisualizer.plugin, delay);
+                    }.runTaskLater(InteractionVisualizer.plugin, delay, block.getLocation());
                 }
             }
         }.runTaskTimer(InteractionVisualizer.plugin, 0, 5);

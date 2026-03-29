@@ -77,7 +77,7 @@ public class PacketManager implements Listener {
                         Collection<Player> players = active.get(entity);
                         if (entry.getValue()) {
                             if (players != null) {
-                                SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(stand.getLocation()) && isOccluding(stand.getLocation().getBlock().getType()), () -> {
+                                SyncUtils.runAsyncWithSyncCondition(stand.getLocation(), () -> LocationUtils.isLoaded(stand.getLocation()) && isOccluding(stand.getLocation().getBlock().getType()), () -> {
                                     if (active.containsKey(entity)) {
                                         removeArmorStand(InteractionVisualizerAPI.getPlayers(), stand, false, false);
                                         loaded.put(entity, false);
@@ -86,7 +86,7 @@ public class PacketManager implements Listener {
                             }
                         } else {
                             if (players != null) {
-                                SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(stand.getLocation()) && !isOccluding(stand.getLocation().getBlock().getType()), () -> {
+                                SyncUtils.runAsyncWithSyncCondition(stand.getLocation(), () -> LocationUtils.isLoaded(stand.getLocation()) && !isOccluding(stand.getLocation().getBlock().getType()), () -> {
                                     if (active.containsKey(entity)) {
                                         sendArmorStandSpawn(players, stand);
                                         updateArmorStand(stand);
@@ -105,7 +105,7 @@ public class PacketManager implements Listener {
                                 if (item.getVelocity().equals(VECTOR_ZERO) && !item.hasGravity()) {
                                     updateItemAsync(item, true);
                                 }
-                                SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(item.getLocation()) && isOccluding(item.getLocation().getBlock().getType()), () -> {
+                                SyncUtils.runAsyncWithSyncCondition(item.getLocation(), () -> LocationUtils.isLoaded(item.getLocation()) && isOccluding(item.getLocation().getBlock().getType()), () -> {
                                     if (active.containsKey(entity)) {
                                         removeItem(InteractionVisualizerAPI.getPlayers(), item, false, false);
                                         loaded.put(entity, false);
@@ -114,7 +114,7 @@ public class PacketManager implements Listener {
                             }
                         } else {
                             if (players != null) {
-                                SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(item.getLocation()) && !isOccluding(item.getLocation().getBlock().getType()), () -> {
+                                SyncUtils.runAsyncWithSyncCondition(item.getLocation(), () -> LocationUtils.isLoaded(item.getLocation()) && !isOccluding(item.getLocation().getBlock().getType()), () -> {
                                     if (active.containsKey(entity)) {
                                         sendItemSpawn(players, item);
                                         updateItem(item);
@@ -130,7 +130,7 @@ public class PacketManager implements Listener {
                         Collection<Player> players = active.get(entity);
                         if (entry.getValue()) {
                             if (players != null) {
-                                SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(frame.getLocation()) && isOccluding(frame.getLocation().getBlock().getType()), () -> {
+                                SyncUtils.runAsyncWithSyncCondition(frame.getLocation(), () -> LocationUtils.isLoaded(frame.getLocation()) && isOccluding(frame.getLocation().getBlock().getType()), () -> {
                                     if (active.containsKey(entity)) {
                                         removeItemFrame(InteractionVisualizerAPI.getPlayers(), frame, false, false);
                                         loaded.put(entity, false);
@@ -139,7 +139,7 @@ public class PacketManager implements Listener {
                             }
                         } else {
                             if (players != null) {
-                                SyncUtils.runAsyncWithSyncCondition(() -> LocationUtils.isLoaded(frame.getLocation()) && !isOccluding(frame.getLocation().getBlock().getType()), () -> {
+                                SyncUtils.runAsyncWithSyncCondition(frame.getLocation(), () -> LocationUtils.isLoaded(frame.getLocation()) && !isOccluding(frame.getLocation().getBlock().getType()), () -> {
                                     if (active.containsKey(entity)) {
                                         sendItemFrameSpawn(players, frame);
                                         updateItemFrame(frame);

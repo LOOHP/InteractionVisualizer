@@ -102,8 +102,8 @@ public class CampfireDisplay extends VisualizerRunnableDisplay implements Listen
                     delay++;
                 }
                 Entry<Block, Map<String, Object>> entry = itr.next();
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         Map<String, Object> map = entry.getValue();
                         if (map.get("1") instanceof ArmorStand) {
@@ -146,7 +146,7 @@ public class CampfireDisplay extends VisualizerRunnableDisplay implements Listen
                         campfireMap.remove(block);
                         return;
                     }
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, gcPeriod);
     }
@@ -154,9 +154,9 @@ public class CampfireDisplay extends VisualizerRunnableDisplay implements Listen
     @Override
     public ScheduledTask run() {
         return Scheduler.runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-            Scheduler.runTask(InteractionVisualizer.plugin, () -> {
-                Set<Block> list = nearbyCampfire();
-                for (Block block : list) {
+            Set<Block> list = nearbyCampfire();
+            for (Block block : list) {
+                Scheduler.runTask(InteractionVisualizer.plugin, () -> {
                     if (campfireMap.get(block) == null && isActive(block.getLocation())) {
                         if (block.getType().equals(Material.CAMPFIRE)) {
                             HashMap<String, Object> map = new HashMap<>();
@@ -164,8 +164,8 @@ public class CampfireDisplay extends VisualizerRunnableDisplay implements Listen
                             campfireMap.put(block, map);
                         }
                     }
-                }
-            });
+                }, block.getLocation());
+            }
 
             Iterator<Entry<Block, Map<String, Object>>> itr = campfireMap.entrySet().iterator();
             int count = 0;
@@ -179,8 +179,8 @@ public class CampfireDisplay extends VisualizerRunnableDisplay implements Listen
                     count = 0;
                     delay++;
                 }
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         return;
                     }
@@ -354,7 +354,7 @@ public class CampfireDisplay extends VisualizerRunnableDisplay implements Listen
                             }
                         }
                     });
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, checkingPeriod);
     }

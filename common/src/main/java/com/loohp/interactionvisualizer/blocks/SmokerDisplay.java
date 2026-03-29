@@ -117,9 +117,9 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
                     delay++;
                 }
                 Entry<Block, Map<String, Object>> entry = itr.next();
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
-                    if (!isActive(block.getLocation())) {
+                   if (!isActive(block.getLocation())) {
                         Map<String, Object> map = entry.getValue();
                         if (map.get("Item") instanceof Item) {
                             Item item = (Item) map.get("Item");
@@ -145,7 +145,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
                         smokerMap.remove(block);
                         return;
                     }
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, gcPeriod);
     }
@@ -153,9 +153,9 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
     @Override
     public ScheduledTask run() {
         return Scheduler.runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-            Scheduler.runTask(InteractionVisualizer.plugin, () -> {
-                Set<Block> list = nearbySmoker();
-                for (Block block : list) {
+            Set<Block> list = nearbySmoker();
+            for (Block block : list) {
+                Scheduler.runTask(InteractionVisualizer.plugin, () -> {
                     if (smokerMap.get(block) == null && isActive(block.getLocation())) {
                         if (block.getType().equals(Material.SMOKER)) {
                             Map<String, Object> map = new HashMap<>();
@@ -164,8 +164,8 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
                             smokerMap.put(block, map);
                         }
                     }
-                }
-            });
+                }, block.getLocation());
+            }
 
             Iterator<Entry<Block, Map<String, Object>>> itr = smokerMap.entrySet().iterator();
             int count = 0;
@@ -179,8 +179,8 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
                     count = 0;
                     delay++;
                 }
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         return;
                     }
@@ -288,7 +288,7 @@ public class SmokerDisplay extends VisualizerRunnableDisplay implements Listener
                             }
                         }
                     });
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, checkingPeriod);
     }
