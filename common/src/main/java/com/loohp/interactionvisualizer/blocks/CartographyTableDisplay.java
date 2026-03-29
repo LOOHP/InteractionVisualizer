@@ -104,7 +104,7 @@ public class CartographyTableDisplay extends VisualizerInteractDisplay implement
                             }
                             openedCTable.remove(block);
                         }
-                    }.runTaskLater(InteractionVisualizer.plugin, delay);
+                    }.runTaskLater(InteractionVisualizer.plugin, delay, block.getLocation());
                 }
             }
         }.runTaskTimer(InteractionVisualizer.plugin, 0, 6);

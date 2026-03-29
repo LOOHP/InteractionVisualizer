@@ -24,10 +24,12 @@ import com.loohp.interactionvisualizer.InteractionVisualizer;
 import com.loohp.interactionvisualizer.objectholders.Condition;
 import com.loohp.platformscheduler.Scheduler;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 
 public class SyncUtils {
 
-    public static void runAsyncWithSyncCondition(Condition syncCondition, Runnable asyncTask) {
+    public static void runAsyncWithSyncCondition(Location location, Condition syncCondition, Runnable asyncTask) {
         if (Bukkit.isPrimaryThread()) {
             if (syncCondition.check()) {
                 InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(asyncTask);
@@ -37,8 +39,7 @@ public class SyncUtils {
                 if (syncCondition.check()) {
                     InteractionVisualizer.asyncExecutorManager.runTaskAsynchronously(asyncTask);
                 }
-            });
+            }, location);
         }
     }
-
 }

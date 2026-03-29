@@ -444,14 +444,14 @@ public class TaskManager {
                 delay++;
             }
             UUID uuid = eachPlayer.getUniqueId();
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null) {
+                continue;
+            }
             Scheduler.runTaskLater(plugin, () -> {
-                Player player = Bukkit.getPlayer(uuid);
-                if (player == null) {
-                    return;
-                }
                 Inventory inv = player.getOpenInventory().getTopInventory();
                 processes.get(inv.getType()).forEach(each -> each.process(player));
-            }, delay);
+            }, delay, player);
         }
         next = next + delay;
         Scheduler.runTaskLater(plugin, () -> run(), next);

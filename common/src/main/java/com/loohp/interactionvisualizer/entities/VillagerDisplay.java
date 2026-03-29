@@ -145,7 +145,7 @@ public class VillagerDisplay implements Listener, VisualizerDisplay {
 
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), in), 14);
             }
-        }, 8);
+        }, 8, villager);
 
         Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
             Item out = new Item(villager.getEyeLocation());
@@ -157,7 +157,7 @@ public class VillagerDisplay implements Listener, VisualizerDisplay {
             PacketManager.updateItem(out);
 
             Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> PacketManager.removeItem(InteractionVisualizerAPI.getPlayers(), out), 12);
-        }, 40);
+        }, 40, villager);
     }
 
 }

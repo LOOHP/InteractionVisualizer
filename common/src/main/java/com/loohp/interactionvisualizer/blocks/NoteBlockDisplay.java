@@ -145,7 +145,7 @@ public class NoteBlockDisplay extends VisualizerRunnableDisplay implements Liste
 
             PacketManager.sendArmorStandSpawn(InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY), stand);
             PacketManager.updateArmorStand(stand);
-        }, 1);
+        }, 1, block.getLocation());
     }
 
     public void setStand(ArmorStand stand) {

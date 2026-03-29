@@ -105,8 +105,8 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
                     delay++;
                 }
                 Entry<Block, Map<String, Object>> entry = itr.next();
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         Map<String, Object> map = entry.getValue();
                         if (map.get("0") instanceof ArmorStand) {
@@ -133,7 +133,7 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
                         beehiveMap.remove(block);
                         return;
                     }
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, gcPeriod);
     }
@@ -141,9 +141,9 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
     @Override
     public ScheduledTask run() {
         return Scheduler.runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-            Scheduler.runTask(InteractionVisualizer.plugin, () -> {
-                Set<Block> list = nearbyBeehive();
-                for (Block block : list) {
+            Set<Block> list = nearbyBeehive();
+            for (Block block : list) {
+                Scheduler.runTask(InteractionVisualizer.plugin, () -> {
                     if (beehiveMap.get(block) == null && isActive(block.getLocation())) {
                         if (block.getType().equals(Material.BEEHIVE)) {
                             Map<String, Object> map = new HashMap<>();
@@ -151,8 +151,8 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
                             beehiveMap.put(block, map);
                         }
                     }
-                }
-            });
+                }, block.getLocation());
+            }
 
             Iterator<Entry<Block, Map<String, Object>>> itr = beehiveMap.entrySet().iterator();
             int count = 0;
@@ -166,10 +166,10 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
                     count = 0;
                     delay++;
                 }
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
                     updateBlock(block);
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, checkingPeriod);
     }
@@ -180,7 +180,7 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
             return;
         }
         Block block = event.getBlock();
-        Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> updateBlock(block), 1);
+        Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> updateBlock(block), 1, block.getLocation());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -189,7 +189,7 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
             return;
         }
         Block block = event.getBlock();
-        Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> updateBlock(block), 1);
+        Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> updateBlock(block), 1, block.getLocation());
     }
 
     @SuppressWarnings("deprecation")
@@ -200,7 +200,7 @@ public class BeeHiveDisplay extends VisualizerRunnableDisplay implements Listene
         }
         Block block = event.getClickedBlock();
         if (block != null) {
-            Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> updateBlock(block), 1);
+            Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> updateBlock(block), 1, block.getLocation());
         }
     }
 

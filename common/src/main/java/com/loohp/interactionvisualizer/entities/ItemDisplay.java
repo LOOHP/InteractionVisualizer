@@ -37,6 +37,7 @@ import com.loohp.interactionvisualizer.utils.LineOfSightUtils;
 import com.loohp.interactionvisualizer.utils.SyncUtils;
 import com.loohp.platformscheduler.ScheduledRunnable;
 import com.loohp.platformscheduler.ScheduledTask;
+import com.loohp.platformscheduler.Scheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -150,7 +151,7 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
                         }
                     }
                     for (Item item : items) {
-                        SyncUtils.runAsyncWithSyncCondition(item::isValid, () -> tick(item, items));
+                        SyncUtils.runAsyncWithSyncCondition(item.getLocation(), item::isValid, () -> tick(item, items));
                     }
                 }
             }
@@ -162,103 +163,125 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
             World world = item.getWorld();
             Location location = item.getLocation();
             BoundingBox area = BoundingBox.of(item.getLocation(), 0.5, 0.5, 0.5);
-            int ticks = NMS.getInstance().getItemAge(item);
-            ItemStack itemstack = item.getItemStack();
-            if (itemstack == null) {
-                itemstack = new ItemStack(Material.AIR);
-            } else {
-                itemstack = itemstack.clone();
-            }
-            Component name = ItemNameUtils.getDisplayName(itemstack);
-            String matchingname = getMatchingName(itemstack, stripColorBlacklist);
-
-            if (!blacklist.test(matchingname, itemstack.getType())) {
-                if (item.getPickupDelay() >= Short.MAX_VALUE || ticks < 0 || isCramping(world, area, items)) {
-                    List<?> watcher = NMS.getInstance().resetCustomNameWatchableCollection(item);
-                    Object defaultPacket = NMS.getInstance().createEntityMetadataPacket(item.getEntityId(), watcher);
-                    Collection<Player> players = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY);
-                    for (Player player : players) {
-                        NMS.getInstance().sendPacket(player, defaultPacket);
-                    }
+            Scheduler.runTask(InteractionVisualizer.plugin, () -> {
+                int ticks = NMS.getInstance().getItemAge(item);
+                ItemStack itemstack = item.getItemStack();
+                if (itemstack == null) {
+                    itemstack = new ItemStack(Material.AIR);
                 } else {
-                    int amount = itemstack.getAmount();
-                    String durDisplay = null;
+                    itemstack = itemstack.clone();
+                }
+                ItemStack finalItemstack = itemstack;
+                Component name = ItemNameUtils.getDisplayName(finalItemstack);
+                String matchingname = getMatchingName(finalItemstack, stripColorBlacklist);
 
-                    if (itemstack.getType().getMaxDurability() > 0) {
-                        int durability = itemstack.getType().getMaxDurability() - ((Damageable) itemstack.getItemMeta()).getDamage();
-                        int maxDur = itemstack.getType().getMaxDurability();
-                        double percentage = ((double) durability / (double) maxDur) * 100;
-                        String color;
-                        if (percentage > 66.666) {
-                            color = highColor;
-                        } else if (percentage > 33.333) {
-                            color = mediumColor;
-                        } else {
-                            color = lowColor;
-                        }
-                        durDisplay = color + durability + "/" + maxDur;
-                    }
-
-                    int despawnRate = NMS.getInstance().getItemDespawnRate(item);
-                    int ticksLeft = despawnRate - ticks;
-                    int secondsLeft = ticksLeft / 20;
-                    String timerColor;
-                    if (secondsLeft <= 30) {
-                        timerColor = lowColor;
-                    } else if (secondsLeft <= 120) {
-                        timerColor = mediumColor;
-                    } else {
-                        timerColor = highColor;
-                    }
-
-                    String timer = timerColor + String.format("%02d:%02d", secondsLeft / 60, secondsLeft % 60);
-
-                    Component display;
-                    String line1;
-                    if (ticksLeft >= 600 && durDisplay != null) {
-                        line1 = toolsFormatting.replace("{Amount}", amount + "").replace("{Timer}", timer).replace("{Durability}", durDisplay);
-                    } else {
-                        if (amount == 1) {
-                            line1 = singularFormatting.replace("{Amount}", amount + "").replace("{Timer}", timer);
-                        } else {
-                            line1 = regularFormatting.replace("{Amount}", amount + "").replace("{Timer}", timer);
-                        }
-                    }
-                    display = ComponentFont.parseFont(LegacyComponentSerializer.legacySection().deserialize(line1));
-                    display = display.replaceText(TextReplacementConfig.builder().matchLiteral("{Item}").replacement(name).build());
-
-                    List<?> modifiedWatcher = NMS.getInstance().createCustomNameWatchableCollection(display);
-                    List<?> defaultWatcher = NMS.getInstance().resetCustomNameWatchableCollection(item);
-
-                    Object modifiedPacket = NMS.getInstance().createEntityMetadataPacket(item.getEntityId(), modifiedWatcher);
-                    Object defaultPacket = NMS.getInstance().createEntityMetadataPacket(item.getEntityId(), defaultWatcher);
-
-                    Location entityCenter = location.clone();
-                    entityCenter.setY(entityCenter.getY() + item.getHeight() * 1.7);
-
-                    Set<Player> outOfRangePlayers;
-                    synchronized (outOfRangePlayersMap) {
-                        outOfRangePlayers = outOfRangePlayersMap.get(item);
-                        if (outOfRangePlayers == null) {
-                            outOfRangePlayers = ConcurrentHashMap.newKeySet();
-                            outOfRangePlayersMap.put(item, outOfRangePlayers);
-                        }
-                    }
-
-                    Collection<Player> players = location.getWorld().getPlayers();
-                    Collection<Player> enabledPlayers = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM, KEY);
-                    Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players, location, player -> !InteractionVisualizer.hideIfObstructed || LineOfSightUtils.hasLineOfSight(player.getEyeLocation(), entityCenter));
-                    for (Player player : players) {
-                        if (playersInRange.contains(player) && enabledPlayers.contains(player)) {
-                            NMS.getInstance().sendPacket(player, modifiedPacket);
-                            outOfRangePlayers.remove(player);
-                        } else if (!outOfRangePlayers.contains(player)) {
+                if (!blacklist.test(matchingname, finalItemstack.getType())) {
+                    if (item.getPickupDelay() >= Short.MAX_VALUE || ticks < 0 || isCramping(world, area, items)) {
+                        List<?> watcher = NMS.getInstance().resetCustomNameWatchableCollection(item);
+                        Object defaultPacket = NMS.getInstance()
+                                                  .createEntityMetadataPacket(item.getEntityId(), watcher);
+                        Collection<Player> players = InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM,
+                                                                                                  KEY);
+                        for (Player player : players) {
                             NMS.getInstance().sendPacket(player, defaultPacket);
-                            outOfRangePlayers.add(player);
+                        }
+                    } else {
+                        int amount = finalItemstack.getAmount();
+                        String durDisplay = null;
+
+                        if (finalItemstack.getType().getMaxDurability() > 0) {
+                            int durability = finalItemstack.getType()
+                                                           .getMaxDurability() - ((Damageable) finalItemstack.getItemMeta()).getDamage();
+                            int maxDur = finalItemstack.getType().getMaxDurability();
+                            double percentage = ((double) durability / (double) maxDur) * 100;
+                            String color;
+                            if (percentage > 66.666) {
+                                color = highColor;
+                            } else if (percentage > 33.333) {
+                                color = mediumColor;
+                            } else {
+                                color = lowColor;
+                            }
+                            durDisplay = color + durability + "/" + maxDur;
+                        }
+
+                        int despawnRate = NMS.getInstance().getItemDespawnRate(item);
+                        int ticksLeft = despawnRate - ticks;
+                        int secondsLeft = ticksLeft / 20;
+                        String timerColor;
+                        if (secondsLeft <= 30) {
+                            timerColor = lowColor;
+                        } else if (secondsLeft <= 120) {
+                            timerColor = mediumColor;
+                        } else {
+                            timerColor = highColor;
+                        }
+
+                        String timer = timerColor + String.format("%02d:%02d", secondsLeft / 60, secondsLeft % 60);
+
+                        Component display;
+                        String line1;
+                        if (ticksLeft >= 600 && durDisplay != null) {
+                            line1 = toolsFormatting.replace("{Amount}", amount + "")
+                                                   .replace("{Timer}", timer)
+                                                   .replace("{Durability}", durDisplay);
+                        } else {
+                            if (amount == 1) {
+                                line1 = singularFormatting.replace("{Amount}", amount + "")
+                                                          .replace("{Timer}", timer);
+                            } else {
+                                line1 = regularFormatting.replace("{Amount}", amount + "")
+                                                         .replace("{Timer}", timer);
+                            }
+                        }
+                        display = ComponentFont.parseFont(LegacyComponentSerializer.legacySection()
+                                                                                   .deserialize(line1));
+                        display = display.replaceText(TextReplacementConfig.builder()
+                                                                           .matchLiteral("{Item}")
+                                                                           .replacement(name)
+                                                                           .build());
+
+                        List<?> modifiedWatcher = NMS.getInstance().createCustomNameWatchableCollection(display);
+                        List<?> defaultWatcher = NMS.getInstance().resetCustomNameWatchableCollection(item);
+
+                        Object modifiedPacket = NMS.getInstance()
+                                                   .createEntityMetadataPacket(item.getEntityId(), modifiedWatcher);
+                        Object defaultPacket = NMS.getInstance()
+                                                  .createEntityMetadataPacket(item.getEntityId(), defaultWatcher);
+
+                        Location entityCenter = location.clone();
+                        entityCenter.setY(entityCenter.getY() + item.getHeight() * 1.7);
+
+                        Set<Player> outOfRangePlayers;
+                        synchronized (outOfRangePlayersMap) {
+                            outOfRangePlayers = outOfRangePlayersMap.get(item);
+                            if (outOfRangePlayers == null) {
+                                outOfRangePlayers = ConcurrentHashMap.newKeySet();
+                                outOfRangePlayersMap.put(item, outOfRangePlayers);
+                            }
+                        }
+
+                        Collection<Player> players = location.getWorld().getPlayers();
+                        Collection<Player> enabledPlayers =
+                                InteractionVisualizerAPI.getPlayerModuleList(Modules.HOLOGRAM,
+                                                                             KEY);
+                        Collection<Player> playersInRange = PlayerLocationManager.filterOutOfRange(players,
+                                                                                                   location,
+                                                                                                   player -> !InteractionVisualizer.hideIfObstructed || LineOfSightUtils.hasLineOfSight(
+                                                                                                           player.getEyeLocation(),
+                                                                                                           entityCenter));
+                        for (Player player : players) {
+                            if (playersInRange.contains(player) && enabledPlayers.contains(player)) {
+                                NMS.getInstance().sendPacket(player, modifiedPacket);
+                                outOfRangePlayers.remove(player);
+                            } else if (!outOfRangePlayers.contains(player)) {
+                                NMS.getInstance().sendPacket(player, defaultPacket);
+                                outOfRangePlayers.add(player);
+                            }
                         }
                     }
                 }
-            }
+            }, item);
         } catch (Exception e) {
             e.printStackTrace();
         }

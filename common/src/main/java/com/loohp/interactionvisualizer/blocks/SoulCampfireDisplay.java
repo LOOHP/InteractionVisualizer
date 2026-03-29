@@ -102,8 +102,8 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
                     delay++;
                 }
                 Entry<Block, Map<String, Object>> entry = itr.next();
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         Map<String, Object> map = entry.getValue();
                         if (map.get("1") instanceof ArmorStand) {
@@ -146,7 +146,7 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
                         soulcampfireMap.remove(block);
                         return;
                     }
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, gcPeriod);
     }
@@ -154,9 +154,9 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
     @Override
     public ScheduledTask run() {
         return Scheduler.runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-            Scheduler.runTask(InteractionVisualizer.plugin, () -> {
-                Set<Block> list = nearbySoulCampfire();
-                for (Block block : list) {
+            Set<Block> list = nearbySoulCampfire();
+            for (Block block : list) {
+                Scheduler.runTask(InteractionVisualizer.plugin, () -> {
                     if (soulcampfireMap.get(block) == null && isActive(block.getLocation())) {
                         if (block.getType().equals(Material.SOUL_CAMPFIRE)) {
                             HashMap<String, Object> map = new HashMap<>();
@@ -164,8 +164,8 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
                             soulcampfireMap.put(block, map);
                         }
                     }
-                }
-            });
+                }, block.getLocation());
+            }
 
             Iterator<Entry<Block, Map<String, Object>>> itr = soulcampfireMap.entrySet().iterator();
             int count = 0;
@@ -179,8 +179,8 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
                     count = 0;
                     delay++;
                 }
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         return;
                     }
@@ -354,7 +354,7 @@ public class SoulCampfireDisplay extends VisualizerRunnableDisplay implements Li
                             }
                         }
                     });
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, checkingPeriod);
     }

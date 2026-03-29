@@ -105,8 +105,8 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
                     delay++;
                 }
                 Entry<Block, Map<String, Object>> entry = itr.next();
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         Map<String, Object> map = entry.getValue();
                         if (map.get("1") instanceof ArmorStand) {
@@ -124,7 +124,7 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
                         }
                         bannerMap.remove(block);
                     }
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, gcPeriod);
     }
@@ -132,9 +132,9 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
     @Override
     public ScheduledTask run() {
         return Scheduler.runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-            Scheduler.runTask(InteractionVisualizer.plugin, () -> {
-                Set<Block> list = nearbyBanner();
-                for (Block block : list) {
+            Set<Block> list = nearbyBanner();
+            for (Block block : list) {
+                Scheduler.runTask(InteractionVisualizer.plugin, () -> {
                     if (bannerMap.get(block) == null && isActive(block.getLocation())) {
                         if (isBanner(block.getType())) {
                             Map<String, Object> map = new HashMap<>();
@@ -143,8 +143,8 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
                             bannerMap.put(block, map);
                         }
                     }
-                }
-            });
+                }, block.getLocation());
+            }
 
             Iterator<Entry<Block, Map<String, Object>>> itr = bannerMap.entrySet().iterator();
             int count = 0;
@@ -158,8 +158,8 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
                     count = 0;
                     delay++;
                 }
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         return;
                     }
@@ -201,7 +201,7 @@ public class BannerDisplay extends VisualizerRunnableDisplay implements Listener
                             }
                         }
                     });
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, checkingPeriod);
     }

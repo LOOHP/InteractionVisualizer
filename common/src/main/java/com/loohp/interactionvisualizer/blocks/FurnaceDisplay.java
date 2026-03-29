@@ -117,8 +117,8 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
                     delay++;
                 }
                 Entry<Block, Map<String, Object>> entry = itr.next();
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
                     if (!isActive(block.getLocation())) {
                         Map<String, Object> map = entry.getValue();
                         if (map.get("Item") instanceof Item) {
@@ -145,7 +145,7 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
                         furnaceMap.remove(block);
                         return;
                     }
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, gcPeriod);
     }
@@ -153,9 +153,9 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
     @Override
     public ScheduledTask run() {
         return Scheduler.runTaskTimerAsynchronously(InteractionVisualizer.plugin, () -> {
-            Scheduler.runTask(InteractionVisualizer.plugin, () -> {
-                Set<Block> list = nearbyFurnace();
-                for (Block block : list) {
+            Set<Block> list = nearbyFurnace();
+            for (Block block : list) {
+                Scheduler.runTask(InteractionVisualizer.plugin, () -> {
                     if (furnaceMap.get(block) == null && isActive(block.getLocation())) {
                         if (isFurnace(block.getType())) {
                             Map<String, Object> map = new HashMap<>();
@@ -164,8 +164,8 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
                             furnaceMap.put(block, map);
                         }
                     }
-                }
-            });
+                }, block.getLocation());
+            }
 
             Iterator<Entry<Block, Map<String, Object>>> itr = furnaceMap.entrySet().iterator();
             int count = 0;
@@ -179,8 +179,8 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
                     count = 0;
                     delay++;
                 }
+                Block block = entry.getKey();
                 Scheduler.runTaskLater(InteractionVisualizer.plugin, () -> {
-                    Block block = entry.getKey();
 
                     if (!isActive(block.getLocation())) {
                         return;
@@ -289,7 +289,7 @@ public class FurnaceDisplay extends VisualizerRunnableDisplay implements Listene
                             }
                         }
                     });
-                }, delay);
+                }, delay, block.getLocation());
             }
         }, 0, checkingPeriod);
     }
