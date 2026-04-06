@@ -25,7 +25,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>1.18.19.0</version>
+	<version>2026.1.0.0</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -75,10 +75,6 @@
 								<relocation>
 									<pattern>net.kyori</pattern>
 									<shadedPattern>com.loohp.interactionvisualizer.libs.net.kyori</shadedPattern>
-								</relocation>
-								<relocation>
-									<pattern>com.cryptomorin.xseries</pattern>
-									<shadedPattern>com.loohp.interactionvisualizer.libs.com.cryptomorin.xseries</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>org.apache.commons</pattern>
@@ -272,12 +268,6 @@
 			<groupId>com.loohp</groupId>
 			<artifactId>YamlConfiguration</artifactId>
 			<version>1.0.1.4</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.cryptomorin</groupId>
-			<artifactId>XSeries</artifactId>
-			<version>13.6.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -536,6 +526,18 @@
 		<dependency>
 			<groupId>com.loohp</groupId>
 			<artifactId>InteractionVisualizer-V1_21_11</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.loohp</groupId>
+			<artifactId>InteractionVisualizer-V26_1</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.loohp</groupId>
+			<artifactId>InteractionVisualizer-V26_1_1</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
