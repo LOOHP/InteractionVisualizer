@@ -25,7 +25,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>InteractionVisualizer</artifactId>
 	<name>InteractionVisualizer</name>
-	<version>2026.1.2.0</version>
+	<version>2026.1.3.0</version>
 
 	<description>Visualize Function Blocks like Crafting Tables with Animations CLIENT-SIDE!</description>
 	<url>https://github.com/LOOHP/InteractionVisualizer</url>
@@ -87,10 +87,6 @@
 								<relocation>
 									<pattern>org.awaitility</pattern>
 									<shadedPattern>com.loohp.interactionvisualizer.libs.org.awaitility</shadedPattern>
-								</relocation>
-								<relocation>
-									<pattern>io.github.bananapuncher714.nbteditor</pattern>
-									<shadedPattern>com.loohp.interactionvisualizer.libs.io.github.bananapuncher714.nbteditor</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>org.json.simple</pattern>
@@ -550,6 +546,12 @@
 		<dependency>
 			<groupId>com.loohp</groupId>
 			<artifactId>InteractionVisualizer-V26_2</artifactId>
+			<version>${project.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.loohp</groupId>
+			<artifactId>InteractionVisualizer-V26_3</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>
 		</dependency>
