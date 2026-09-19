@@ -52,19 +52,21 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
-import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
 import net.minecraft.network.protocol.game.ClientboundEntityPositionSyncPacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
+import net.minecraft.network.protocol.game.ClientboundSwingAnimationPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.PositionPath;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -466,7 +468,7 @@ public class V26_3 extends NMSWrapper {
     @Override
     public void sendHandMovement(Collection<Player> players, Player entity) {
         ServerPlayer entityPlayer = ((CraftPlayer) entity).getHandle();
-        ClientboundAnimatePacket packet = new ClientboundAnimatePacket(entityPlayer, 0);
+        ClientboundSwingAnimationPacket packet = new ClientboundSwingAnimationPacket(entityPlayer, InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT);
         for (Player player : players) {
             sendPacket(player, packet);
         }
