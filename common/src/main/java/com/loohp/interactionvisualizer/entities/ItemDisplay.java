@@ -55,8 +55,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -142,23 +144,28 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
                     return;
                 }
                 i = updateRate;
+                Map<ItemStack, Component> nameCache = new ConcurrentHashMap<>();
                 for (World world : Bukkit.getWorlds()) {
                     WrappedIterable<?, Entity> itr = NMS.getInstance().getEntities(world);
                     Set<Item> items = new HashSet<>();
+                    Map<Long, List<Item>> grid = new HashMap<>();
                     for (Entity entity : itr) {
                         if (entity instanceof Item) {
-                            items.add((Item) entity);
+                            Item item = (Item) entity;
+                            items.add(item);
+                            Location itemLoc = item.getLocation();
+                            grid.computeIfAbsent(blockKey(itemLoc.getBlockX(), itemLoc.getBlockY(), itemLoc.getBlockZ()), k -> new ArrayList<>()).add(item);
                         }
                     }
                     for (Item item : items) {
-                        SyncUtils.runAsyncWithSyncCondition(item.getLocation(), item::isValid, () -> tick(item, items));
+                        SyncUtils.runAsyncWithSyncCondition(item.getLocation(), item::isValid, () -> tick(item, grid, nameCache));
                     }
                 }
             }
         }.runTaskTimer(InteractionVisualizer.plugin, 0, 1);
     }
 
-    private void tick(Item item, Collection<Item> items) {
+    private void tick(Item item, Map<Long, List<Item>> grid, Map<ItemStack, Component> nameCache) {
         try {
             World world = item.getWorld();
             Location location = item.getLocation();
@@ -172,11 +179,11 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
                     itemstack = itemstack.clone();
                 }
                 ItemStack finalItemstack = itemstack;
-                Component name = ItemNameUtils.getDisplayName(finalItemstack);
+                Component name = nameCache.computeIfAbsent(finalItemstack, ItemNameUtils::getDisplayName);
                 String matchingname = getMatchingName(finalItemstack, stripColorBlacklist);
 
                 if (!blacklist.test(matchingname, finalItemstack.getType())) {
-                    if (item.getPickupDelay() >= Short.MAX_VALUE || ticks < 0 || isCramping(world, area, items)) {
+                    if (item.getPickupDelay() >= Short.MAX_VALUE || ticks < 0 || isCramping(world, area, grid, location)) {
                         List<?> watcher = NMS.getInstance().resetCustomNameWatchableCollection(item);
                         Object defaultPacket = NMS.getInstance()
                                                   .createEntityMetadataPacket(item.getEntityId(), watcher);
@@ -301,15 +308,40 @@ public class ItemDisplay extends VisualizerRunnableDisplay implements Listener {
         return "";
     }
 
-    private boolean isCramping(World world, BoundingBox area, Collection<? extends Entity> items) {
+    private boolean isCramping(World world, BoundingBox area, Map<Long, List<Item>> grid, Location location) {
         if (cramp <= 0) {
             return false;
         }
         try {
-            return items.stream().filter(each -> each != null && each.getWorld().equals(world) && area.contains(each.getLocation().toVector())).skip(cramp).findAny().isPresent();
+            int bx = location.getBlockX();
+            int by = location.getBlockY();
+            int bz = location.getBlockZ();
+            int count = 0;
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    for (int dz = -1; dz <= 1; dz++) {
+                        List<Item> bucket = grid.get(blockKey(bx + dx, by + dy, bz + dz));
+                        if (bucket == null) {
+                            continue;
+                        }
+                        for (Item each : bucket) {
+                            if (each != null && each.getWorld().equals(world) && area.contains(each.getLocation().toVector())) {
+                                if (++count > cramp) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
         } catch (Throwable e) {
             return false;
         }
+    }
+
+    private static long blockKey(int x, int y, int z) {
+        return ((x & 0x3FFFFFFL) << 38) | ((y & 0xFFFL) << 26) | (z & 0x3FFFFFFL);
     }
 
 }
